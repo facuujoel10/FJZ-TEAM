@@ -331,3 +331,155 @@ p.write_text(html,encoding="utf-8")
 sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-0","team-fjz-v9-1")
 swp.write_text(sw,encoding="utf-8")
 print("TEAM FJZ V9.1 checkin polish:",len(html),"bytes")
+
+
+# V9.2 · carga de fotos históricas desde Coach
+html = p.read_text(encoding="utf-8")
+html = html.replace("TEAM FJZ V9.1","TEAM FJZ V9.2")
+
+v92_css = r"""
+<style id="v92CoachPhotoUpload">
+.v92-photo-card{margin-top:14px}
+.v92-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.v92-photo-slot{border:1px solid var(--border);background:#0d0d10;border-radius:12px;padding:10px}
+.v92-photo-slot strong{display:block;font-size:12px;margin-bottom:6px}
+.v92-photo-slot input{width:100%}
+.v92-photo-status{margin-top:10px}
+@media(max-width:760px){.v92-photo-grid{grid-template-columns:1fr}}
+</style>
+"""
+
+v92_js = r"""
+<script id="v92CoachPhotoUploadRuntime">
+(function(){
+  function coachAthleteV92(){
+    if(currentProfile?.role!=='coach')return null;
+    return cloudAthletes.get(student()?.id)||null;
+  }
+
+  function coachPhotoUploaderHtmlV92(){
+    return '<div class="card v92-photo-card" id="v92CoachPhotoUploader">'+
+      '<div class="section-title"><div><h3>Subir fotos de progreso</h3><div class="muted tiny">Podés cargar fotos actuales o históricas que el alumno te mande por WhatsApp.</div></div><span class="badge blue">Coach</span></div>'+
+      '<div class="form-grid">'+
+        '<label class="tiny muted">Fecha de las fotos<input id="v92PhotoDate" class="input" type="date" value="'+dateInputToday()+'"></label>'+
+        '<label class="tiny muted span2">Nota opcional<input id="v92PhotoNotes" class="input" placeholder="Ej: chequeo mensual, fotos iniciales..."></label>'+
+      '</div>'+
+      '<div class="v92-photo-grid" style="margin-top:10px">'+
+        '<label class="v92-photo-slot"><strong>Frente</strong><input id="v92PhotoFront" class="input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label>'+
+        '<label class="v92-photo-slot"><strong>Perfil</strong><input id="v92PhotoSide" class="input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label>'+
+        '<label class="v92-photo-slot"><strong>Espalda</strong><input id="v92PhotoBack" class="input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label>'+
+      '</div>'+
+      '<div id="v92PhotoStatus" class="muted tiny v92-photo-status"></div>'+
+      '<button class="btn primary" style="width:100%;margin-top:10px" onclick="uploadCoachProgressPhotosV92()">Subir fotos seleccionadas</button>'+
+    '</div>';
+  }
+
+  async function uploadOneCoachPhotoV92(athlete,file,date,pose,notes){
+    if(!file)return false;
+    if(file.size>8*1024*1024)throw new Error('Cada foto debe pesar menos de 8 MB');
+    const allowed=['image/jpeg','image/png','image/webp','image/heic','image/heif'];
+    if(file.type&& !allowed.includes(file.type))throw new Error('Formato de imagen no compatible');
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const safePose=pose.replace(/[^a-z]/g,'');
+    const path=athlete.id+'/'+date+'/'+safePose+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.'+ext;
+
+    const up=await supabaseClient.storage.from('progress-photos').upload(path,file,{
+      cacheControl:'3600',
+      upsert:false,
+      contentType:file.type||undefined
+    });
+    if(up.error)throw up.error;
+
+    const row={
+      athlete_id:athlete.id,
+      student_id:athlete.user_id||null,
+      taken_on:date,
+      pose:pose,
+      storage_path:path,
+      notes:notes||''
+    };
+    const ins=await supabaseClient.from('progress_photos').insert(row);
+    if(ins.error){
+      await supabaseClient.storage.from('progress-photos').remove([path]);
+      throw ins.error;
+    }
+    return true;
+  }
+
+  window.uploadCoachProgressPhotosV92=async function(){
+    const athlete=coachAthleteV92();
+    if(!athlete){toast('No encuentro la ficha del alumno');return}
+    const date=el('v92PhotoDate')?.value;
+    if(!date){toast('Elegí la fecha de las fotos');return}
+    const notes=el('v92PhotoNotes')?.value.trim()||'';
+    const jobs=[
+      ['front',el('v92PhotoFront')?.files?.[0]||null],
+      ['side',el('v92PhotoSide')?.files?.[0]||null],
+      ['back',el('v92PhotoBack')?.files?.[0]||null]
+    ].filter(x=>x[1]);
+
+    if(!jobs.length){toast('Seleccioná al menos una foto');return}
+
+    const status=el('v92PhotoStatus');
+    if(status)status.textContent='Subiendo '+jobs.length+' foto'+(jobs.length>1?'s':'')+'…';
+
+    try{
+      let done=0;
+      for(const [pose,file] of jobs){
+        await uploadOneCoachPhotoV92(athlete,file,date,pose,notes);
+        done++;
+        if(status)status.textContent='Subidas '+done+' de '+jobs.length+'…';
+      }
+
+      trackingLoadedFor=null;
+      await loadTracking(true);
+      if(typeof renderTrackingCoachLoaded==='function')renderTrackingCoachLoaded();
+      setTimeout(injectCoachPhotoUploaderV92,80);
+      toast('Fotos guardadas en el perfil del alumno');
+    }catch(e){
+      console.error(e);
+      if(status)status.textContent='';
+      toast(cloudErr(e));
+    }
+  };
+
+  function injectCoachPhotoUploaderV92(){
+    if(currentProfile?.role!=='coach'||coachTab!=='student'||coachStudentTab!=='tracking')return;
+    if(el('v92CoachPhotoUploader'))return;
+    const host=el('coachStudentBody');
+    if(!host)return;
+    const wrap=document.createElement('div');
+    wrap.innerHTML=coachPhotoUploaderHtmlV92();
+    const node=wrap.firstElementChild;
+    const photoSection=host.querySelector('#coachPhotoGrid')?.closest('.card');
+    if(photoSection)photoSection.insertAdjacentElement('beforebegin',node);
+    else host.appendChild(node);
+  }
+
+  const oldRenderV92=window.render;
+  window.render=function(){
+    oldRenderV92();
+    setTimeout(injectCoachPhotoUploaderV92,120);
+    setTimeout(injectCoachPhotoUploaderV92,700);
+  };
+
+  const oldCoachTrackingV92=window.renderTrackingCoachLoaded;
+  if(typeof oldCoachTrackingV92==='function'){
+    window.renderTrackingCoachLoaded=function(){
+      oldCoachTrackingV92();
+      setTimeout(injectCoachPhotoUploaderV92,0);
+    };
+  }
+
+  Object.assign(window,{uploadCoachProgressPhotosV92});
+})();
+</script>
+"""
+
+html = html.replace("</head>", v92_css + "\n</head>", 1)
+html = html.replace("</body>", v92_js + "\n</body>", 1)
+p.write_text(html,encoding="utf-8")
+
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-1","team-fjz-v9-2")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V9.2 coach photo upload:",len(html),"bytes")
