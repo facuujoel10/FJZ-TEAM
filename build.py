@@ -143,3 +143,95 @@ html = html.replace(
     "<p>Pedile a tu coach el código de invitación que aparece dentro de tu ficha de TEAM FJZ.</p>",
     "<p>Tu cuenta fue creada correctamente. Para entrar a TEAM FJZ necesitás el código de vinculación que te entrega tu coach.</p><div class=\"card\" style=\"padding:10px 12px;margin:10px 0\"><strong>Acceso bloqueado hasta vincular</strong><div class=\"muted tiny\">Sin un código válido no se cargan rutinas, nutrición, progreso, agenda ni datos de alumnos.</div></div>"
 )
+
+
+# V8.5: eliminación de alumnos desde Coach + realtime más estable para reducir parpadeos/lag.
+html = html.replace(
+    "if(Date.now()-cloudLastWrite<1200)return;",
+    "if(Date.now()-cloudLastWrite<3000)return;"
+)
+html = html.replace(
+    "cloudRefreshTimer=setTimeout(refreshCloudFromRealtime,500)",
+    "cloudRefreshTimer=setTimeout(refreshCloudFromRealtime,900)"
+)
+
+html = re.sub(
+    r"function studentRows\(arr\)\{return arr\.map\(s=>`.*?`\)\.join\(''\)\}",
+    """function studentRows(arr){return arr.map(s=>`<div class="student-row"><div class="student-main"><div class="avatar">${esc(s.name.slice(0,2).toUpperCase())}</div><div><strong>${esc(s.name)}</strong><div class="muted tiny">${esc(s.goal)}</div></div></div><div><strong>${adherence(s)}%</strong><div class="muted tiny">Adherencia</div></div><div><strong>${fmtDate(s.lastWorkout)}</strong><div class="muted tiny">Último entreno</div></div><div>${badge(statusFor(s))}</div><div class="pill-row" style="justify-content:flex-end"><button class="btn small" onclick="openStudent('${s.id}')">Abrir</button><button class="btn small" style="border-color:rgba(255,31,47,.55);color:#ff7a84" onclick="deleteStudentCloud('${s.id}')">Eliminar</button></div></div>`).join('')}""",
+    html,
+    count=1,
+    flags=re.S
+)
+
+delete_fn = r"""
+async function deleteStudentCloud(id){
+  const s=state.students.find(x=>x.id===id);
+  const row=cloudAthletes.get(id);
+  if(!s||!row){toast('No se encontró el alumno en la nube');return}
+  if(!confirm('¿Eliminar a '+s.name+' de TEAM FJZ? Se borrarán su ficha, rutina, registros, nutrición, check-ins y acceso.'))return;
+  if(!confirm('Esta acción es definitiva. ¿Confirmás eliminar al alumno?'))return;
+  try{
+    setCloudStatus('syncing','Eliminando');
+    const {error}=await supabaseClient.rpc('delete_my_athlete',{p_athlete:row.id});
+    if(error)throw error;
+    cloudAthletes.delete(id);
+    state.students=state.students.filter(x=>x.id!==id);
+    state.selectedStudentId=state.students[0]?.id||'';
+    localStorage.setItem('fjz_v4_state',JSON.stringify(state));
+    coachTab='dashboard';
+    coachStudentTab='summary';
+    render();
+    setCloudStatus('online','En nube');
+    toast('Alumno eliminado');
+  }catch(e){
+    console.error(e);
+    setCloudStatus('error','Error');
+    alert('No se pudo eliminar el alumno. Probá de nuevo.');
+  }
+}
+"""
+html = html.replace("function openStudent(id){", delete_fn + "\nfunction openStudent(id){", 1)
+
+html = re.sub(
+    r"async function refreshCloudFromRealtime\(\)\{.*?\}\nfunction setupRealtime\(\)",
+    r"""async function refreshCloudFromRealtime(){
+  if(!cloudEnabled||!currentProfile)return;
+  if(window.__fjzRtBusy){window.__fjzRtQueued=true;return}
+  window.__fjzRtBusy=true;
+  try{
+    cloudApplying=true;window.__fjzCloudApplying=true;
+    if(currentProfile.role==='coach'){
+      await loadCoachCloud();
+    }else{
+      const linked=await loadStudentCloud();
+      if(!linked){
+        linkedAthleteId=null;
+        cloudAthletes=new Map();
+        state={version:5,selectedStudentId:'',templates:state.templates?.length?state.templates:clone(initialState.templates),students:[]};
+        localStorage.setItem('fjz_v4_state',JSON.stringify(state));
+        cloudApplying=false;window.__fjzCloudApplying=false;
+        showClaimGate('Tu acceso no está vinculado. Pedile un nuevo código a tu coach.');
+        setCloudStatus('online','En nube');
+        return;
+      }
+    }
+    cloudApplying=false;window.__fjzCloudApplying=false;
+    render();
+    setCloudStatus('online','Actualizado');
+  }catch(e){
+    cloudApplying=false;window.__fjzCloudApplying=false;
+    console.error(e);
+  }finally{
+    window.__fjzRtBusy=false;
+    if(window.__fjzRtQueued){
+      window.__fjzRtQueued=false;
+      clearTimeout(window.__fjzRtQueueTimer);
+      window.__fjzRtQueueTimer=setTimeout(()=>refreshCloudFromRealtime(),900);
+    }
+  }
+}
+function setupRealtime()""",
+    html,
+    count=1,
+    flags=re.S
+)
