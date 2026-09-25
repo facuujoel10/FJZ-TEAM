@@ -483,3 +483,245 @@ p.write_text(html,encoding="utf-8")
 sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-1","team-fjz-v9-2")
 swp.write_text(sw,encoding="utf-8")
 print("TEAM FJZ V9.2 coach photo upload:",len(html),"bytes")
+
+
+# V9.3 · cargador robusto PC/móvil + comparación de medidas
+html = p.read_text(encoding="utf-8")
+html = html.replace("TEAM FJZ V9.2","TEAM FJZ V9.3")
+
+v93_css = r"""
+<style id="v93ProgressTools">
+#v92CoachPhotoUploader{display:none!important}
+.v93-upload{margin-top:14px}
+.v93-drop{
+  border:1px dashed rgba(255,255,255,.22);
+  background:#0d0d10;
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+  transition:.18s ease;
+}
+.v93-drop.drag{border-color:var(--red);background:rgba(255,31,47,.06)}
+.v93-file-list{display:grid;gap:8px;margin-top:10px}
+.v93-file-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 150px auto;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:9px;
+  background:#0b0b0d
+}
+.v93-file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.v93-status{margin-top:9px;min-height:18px}
+.v93-compare{margin-top:14px}
+.v93-compare-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap}
+.v93-measure-table{display:grid;gap:7px}
+.v93-measure-row{
+  display:grid;
+  grid-template-columns:minmax(110px,1.2fr) repeat(3,minmax(72px,.8fr));
+  gap:8px;
+  align-items:center;
+  padding:9px 10px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#0d0d10
+}
+.v93-measure-row.header{background:transparent;border:0;padding:0 10px 4px;color:var(--muted);font-size:9px}
+.v93-measure-row strong{font-size:12px}
+.v93-delta{font-weight:800}
+@media(max-width:620px){
+  .v93-file-row{grid-template-columns:1fr;gap:6px}
+  .v93-measure-row{grid-template-columns:1.2fr repeat(3,.8fr);padding:8px 7px;gap:5px;font-size:10px}
+  .v93-measure-row.header{padding:0 7px 4px}
+}
+</style>
+"""
+
+v93_js = r"""
+<script id="v93ProgressToolsRuntime">
+(function(){
+  let filesV93=[];
+
+  function athleteV93(){
+    if(currentProfile?.role==='coach')return cloudAthletes.get(student()?.id)||null;
+    return [...cloudAthletes.values()][0]||null;
+  }
+
+  function uploadCardV93(){
+    return '<div class="card v93-upload" id="v93CoachPhotoUploader">'+
+      '<div class="section-title"><div><h3>Fotos de progreso</h3><div class="muted tiny">Subí fotos desde PC o celular, incluso si te las mandaron por WhatsApp.</div></div><span class="badge blue">Hasta 15 MB</span></div>'+
+      '<div class="form-grid"><label class="tiny muted">Fecha<input id="v93Date" class="input" type="date" value="'+dateInputToday()+'"></label>'+
+      '<label class="tiny muted span2">Nota opcional<input id="v93Notes" class="input" placeholder="Ej: chequeo mensual, fotos iniciales..."></label></div>'+
+      '<div id="v93Drop" class="v93-drop" style="margin-top:10px"><strong>Elegir fotos</strong><div class="muted tiny" style="margin:5px 0 10px">Podés seleccionar hasta 3 juntas o arrastrarlas desde la PC.</div>'+
+      '<button type="button" class="btn" onclick="el(\'v93Input\').click()">Seleccionar archivos</button>'+
+      '<input id="v93Input" type="file" accept="image/*,.heic,.heif" multiple style="display:none" onchange="selectPhotosV93(this.files)"></div>'+
+      '<div id="v93Files" class="v93-file-list"></div><div id="v93Status" class="muted tiny v93-status"></div>'+
+      '<button id="v93UploadBtn" type="button" class="btn primary" style="width:100%;margin-top:8px" onclick="uploadPhotosV93()">Subir fotos</button>'+
+    '</div>';
+  }
+
+  window.selectPhotosV93=function(list){
+    filesV93=[...list].slice(0,3);
+    const host=el('v93Files');if(!host)return;
+    const poses=['front','side','back'];
+    const labels={front:'Frente',side:'Perfil',back:'Espalda',other:'Otra'};
+    host.innerHTML=filesV93.map(function(file,i){
+      return '<div class="v93-file-row"><div class="v93-file-name"><strong>'+esc(file.name)+'</strong><div class="muted micro">'+(file.size/1024/1024).toFixed(1)+' MB</div></div>'+
+        '<select class="input v93Pose" data-i="'+i+'">'+Object.keys(labels).map(function(k){return '<option value="'+k+'" '+(poses[i]===k?'selected':'')+'>'+labels[k]+'</option>'}).join('')+'</select>'+
+        '<button type="button" class="btn ghost small" onclick="removePhotoV93('+i+')">Quitar</button></div>';
+    }).join('');
+  };
+
+  window.removePhotoV93=function(i){
+    filesV93.splice(i,1);
+    selectPhotosV93(filesV93);
+  };
+
+  async function sendOneV93(athlete,file,date,pose,notes){
+    const fd=new FormData();
+    fd.append('athlete_id',athlete.id);
+    fd.append('taken_on',date);
+    fd.append('pose',pose);
+    fd.append('notes',notes||'');
+    fd.append('file',file,file.name);
+    const res=await supabaseClient.functions.invoke('team-fjz-photo-upload',{body:fd});
+    if(res.error)throw res.error;
+    if(res.data?.error)throw new Error(res.data.detail||res.data.error);
+    return res.data;
+  }
+
+  window.uploadPhotosV93=async function(){
+    const athlete=athleteV93();
+    if(!athlete){toast('No encuentro la ficha del alumno');return}
+    const date=el('v93Date')?.value;
+    if(!date){toast('Elegí la fecha de las fotos');return}
+    if(!filesV93.length){toast('Seleccioná al menos una foto');return}
+    for(const f of filesV93){
+      if(f.size>15*1024*1024){toast('Cada foto debe pesar menos de 15 MB');return}
+    }
+    const notes=el('v93Notes')?.value.trim()||'';
+    const poses=[...document.querySelectorAll('.v93Pose')].map(x=>x.value);
+    const btn=el('v93UploadBtn'),status=el('v93Status');
+    if(btn)btn.disabled=true;
+    try{
+      for(let i=0;i<filesV93.length;i++){
+        if(status)status.textContent='Subiendo '+(i+1)+' de '+filesV93.length+'…';
+        await sendOneV93(athlete,filesV93[i],date,poses[i]||'other',notes);
+      }
+      filesV93=[];
+      if(el('v93Input'))el('v93Input').value='';
+      if(el('v93Files'))el('v93Files').innerHTML='';
+      if(status)status.textContent='Fotos guardadas correctamente.';
+      trackingLoadedFor=null;
+      await loadTracking(true);
+      if(currentProfile?.role==='coach'&&coachStudentTab==='tracking'&&typeof renderTrackingCoachLoaded==='function')renderTrackingCoachLoaded();
+      toast('Fotos guardadas en el perfil');
+    }catch(e){
+      console.error(e);
+      if(status)status.textContent='No se pudo completar la carga. '+(e?.message||'Probá nuevamente.');
+      toast('No se pudo subir la foto');
+    }finally{
+      if(btn)btn.disabled=false;
+      setTimeout(injectToolsV93,100);
+    }
+  };
+
+  function setupDropV93(){
+    const drop=el('v93Drop');if(!drop||drop.dataset.ready)return;
+    drop.dataset.ready='1';
+    ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag')}));
+    ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag')}));
+    drop.addEventListener('drop',function(e){if(e.dataTransfer?.files?.length)selectPhotosV93(e.dataTransfer.files)});
+  }
+
+  const fieldsV93=[
+    ['weight_kg','Peso','kg'],['waist_cm','Cintura','cm'],['abdomen_cm','Abdomen','cm'],
+    ['hip_cm','Cadera','cm'],['chest_cm','Pecho','cm'],['arm_left_cm','Brazo izq.','cm'],
+    ['arm_right_cm','Brazo der.','cm'],['thigh_left_cm','Muslo izq.','cm'],['thigh_right_cm','Muslo der.','cm']
+  ];
+  function nV93(v){const n=Number(v);return Number.isFinite(n)?n:null}
+  function fmtV93(v,u){const n=nV93(v);return n==null?'—':n.toLocaleString('es-AR',{maximumFractionDigits:1})+' '+u}
+
+  function compareHtmlV93(){
+    const arr=(trackingCache.measurements||[]).slice().filter(x=>x.measured_on).sort((a,b)=>String(a.measured_on).localeCompare(String(b.measured_on)));
+    if(!arr.length)return '';
+    const first=arr[0],last=arr[arr.length-1];
+    const rows=fieldsV93.filter(([k])=>nV93(first[k])!=null||nV93(last[k])!=null).map(function(x){
+      const [k,label,u]=x,a=nV93(first[k]),b=nV93(last[k]),d=(a!=null&&b!=null)?b-a:null;
+      return '<div class="v93-measure-row"><strong>'+label+'</strong><span>'+fmtV93(a,u)+'</span><span>'+fmtV93(b,u)+'</span><span class="v93-delta">'+(d==null?'—':(d>0?'+':'')+d.toLocaleString('es-AR',{maximumFractionDigits:1})+' '+u)+'</span></div>';
+    }).join('');
+    if(!rows)return '';
+    return '<div class="card v93-compare" id="v93MeasureCompare"><div class="v93-compare-head"><div><h3 style="margin:0">Evolución de medidas</h3><div class="muted tiny">Comparación entre el primer registro y el último chequeo.</div></div><div class="muted tiny">'+esc(first.measured_on)+' → '+esc(last.measured_on)+'</div></div>'+
+      '<div class="v93-measure-table"><div class="v93-measure-row header"><span>Medida</span><span>Inicio</span><span>Actual</span><span>Cambio</span></div>'+rows+'</div></div>';
+  }
+
+  async function injectCompareV93(){
+    const isCoach=currentProfile?.role==='coach'&&coachTab==='student'&&(coachStudentTab==='tracking'||coachStudentTab==='progress'||coachStudentTab==='summary');
+    const isStudent=currentProfile?.role==='student'&&(studentTab==='tracking'||studentTab==='progress'||studentTab==='home');
+    if(!isCoach&&!isStudent)return;
+    if(el('v93MeasureCompare'))return;
+    try{await loadTracking(false)}catch(e){return}
+    const html=compareHtmlV93();if(!html)return;
+    let host=null;
+    if(isCoach)host=el('coachStudentBody')||el('view');
+    else host=el('studentSubBody')||el('view');
+    if(!host)return;
+    const temp=document.createElement('div');temp.innerHTML=html;
+    const node=temp.firstElementChild;
+    if(isCoach&&el('v80Student360'))el('v80Student360').insertAdjacentElement('afterend',node);
+    else host.insertBefore(node,host.firstChild);
+  }
+
+  function injectUploaderV93(){
+    if(currentProfile?.role!=='coach'||coachTab!=='student'||(coachStudentTab!=='tracking'&&coachStudentTab!=='progress'))return;
+    if(el('v93CoachPhotoUploader')){setupDropV93();return}
+    const host=el('coachStudentBody');if(!host)return;
+    const temp=document.createElement('div');temp.innerHTML=uploadCardV93();
+    const node=temp.firstElementChild;
+    host.appendChild(node);
+    setupDropV93();
+  }
+
+  function injectToolsV93(){
+    injectUploaderV93();
+    injectCompareV93();
+  }
+
+  const oldRenderV93=window.render;
+  window.render=function(){
+    oldRenderV93();
+    setTimeout(injectToolsV93,120);
+    setTimeout(injectToolsV93,700);
+  };
+
+  const oldCoachLoadedV93=window.renderTrackingCoachLoaded;
+  if(typeof oldCoachLoadedV93==='function'){
+    window.renderTrackingCoachLoaded=function(){
+      oldCoachLoadedV93();
+      setTimeout(injectToolsV93,50);
+    };
+  }
+
+  const oldStudentHistV93=window.renderStudentTrackingHistory;
+  if(typeof oldStudentHistV93==='function'){
+    window.renderStudentTrackingHistory=function(){
+      oldStudentHistV93();
+      setTimeout(injectCompareV93,50);
+    };
+  }
+
+  Object.assign(window,{selectPhotosV93,removePhotoV93,uploadPhotosV93});
+  setTimeout(injectToolsV93,150);
+})();
+</script>
+"""
+
+html = html.replace("</head>", v93_css + "\n</head>", 1)
+html = html.replace("</body>", v93_js + "\n</body>", 1)
+p.write_text(html,encoding="utf-8")
+
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-2","team-fjz-v9-3")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V9.3 fotos y comparacion:",len(html),"bytes")
