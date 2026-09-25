@@ -116,3 +116,30 @@ self.addEventListener('fetch',event=>{
 (OUT / "sw.js").write_text(sw, encoding="utf-8")
 
 print("TEAM FJZ V8.4 lista para publicar:", len(html), "bytes")
+
+
+# Producción cerrada: un alumno registrado no accede a la app hasta vincular el código del coach.
+html = html.replace(
+    "function startLocalV4(){cloudEnabled=false;currentUser=null;currentProfile=null;hideGate();setCloudStatus('', 'Local');render()}",
+    "function startLocalV4(){showAuthGate('login','El modo local está deshabilitado. Ingresá con tu cuenta TEAM FJZ.');}"
+)
+
+html = html.replace(
+    "if(!data){data={id:currentUser.id,full_name:currentUser.user_metadata?.full_name||'',role:currentUser.user_metadata?.role==='coach'?'coach':'student'}}",
+    "if(!data){data={id:currentUser.id,full_name:currentUser.user_metadata?.full_name||'',role:'student'}}"
+)
+
+html = html.replace(
+    "if(!linked){showClaimGate();return}",
+    "if(!linked){linkedAthleteId=null;cloudAthletes=new Map();cloudApplying=true;window.__fjzCloudApplying=true;state={version:5,selectedStudentId:'',templates:state.templates?.length?state.templates:clone(initialState.templates),students:[]};localStorage.setItem('fjz_v4_state',JSON.stringify(state));cloudApplying=false;window.__fjzCloudApplying=false;showClaimGate();return}"
+)
+
+html = html.replace(
+    '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:14px"><button class="btn ghost small" onclick="showCloudConfigForm()">Configurar nube</button><button class="btn ghost small" onclick="startLocalV4()">Modo local</button></div>',
+    '<div class="muted micro" style="margin-top:14px;text-align:center">Acceso privado TEAM FJZ · Los alumnos necesitan un código de vinculación del coach.</div>'
+)
+
+html = html.replace(
+    "<p>Pedile a tu coach el código de invitación que aparece dentro de tu ficha de TEAM FJZ.</p>",
+    "<p>Tu cuenta fue creada correctamente. Para entrar a TEAM FJZ necesitás el código de vinculación que te entrega tu coach.</p><div class=\"card\" style=\"padding:10px 12px;margin:10px 0\"><strong>Acceso bloqueado hasta vincular</strong><div class=\"muted tiny\">Sin un código válido no se cargan rutinas, nutrición, progreso, agenda ni datos de alumnos.</div></div>"
+)
