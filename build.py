@@ -25,10 +25,24 @@ html = html.replace(
     "<meta name=\"format-detection\" content=\"telephone=no\">"
 )
 
+# Ajustes finales de producción.
 # Elimina el registro antiguo duplicado del service worker; se conserva registerPwaV82().
 html = html.replace(
     "if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));",
     ""
+)
+
+# Todos los iconos/runtime apuntan al asset versionado para evitar caché vieja.
+html = html.replace("icon.webp", "icon-v84.webp")
+
+# El alta pública es únicamente para alumnos. El perfil Coach existente se mantiene.
+html = html.replace(
+    '<label class="tiny muted">Tipo de cuenta<select id="authRole" class="input"><option value="coach">Coach</option><option value="student">Alumno</option></select></label>',
+    '<input id="authRole" type="hidden" value="student"><div class="card" style="padding:10px 12px"><strong>Cuenta de alumno</strong><div class="muted tiny">El acceso Coach se administra de forma privada.</div></div>'
+)
+html = html.replace(
+    "const full_name=el('authName').value.trim(),role=el('authRole').value,email=el('authEmail').value.trim(),password=el('authPass').value;",
+    "const full_name=el('authName').value.trim(),role='student',email=el('authEmail').value.trim(),password=el('authPass').value;"
 )
 
 # Extrae el logo WebP embebido para usarlo como icono PWA.
