@@ -262,3 +262,6 @@ exec(compile(open("v94_training.py", encoding="utf-8").read(), "v94_training.py"
 
 # V9.6 professional alerts
 exec(compile(open("v96_alerts.py", encoding="utf-8").read(), "v96_alerts.py", "exec"))
+
+# V9.7 migrated profile metadata
+exec(compile(open("v97_migration_profiles.py", encoding="utf-8").read(), "v97_migration_profiles.py", "exec"))
