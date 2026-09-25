@@ -235,3 +235,8 @@ function setupRealtime()""",
     count=1,
     flags=re.S
 )
+
+
+# FINAL_REWRITE_V85: las transformaciones añadidas arriba deben persistirse después de aplicarse.
+(OUT / "index.html").write_text(html, encoding="utf-8")
+print("TEAM FJZ V8.5 final:", len(html), "bytes")
