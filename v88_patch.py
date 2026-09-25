@@ -110,3 +110,70 @@ p.write_text(html,encoding="utf-8")
 sw=swp.read_text(encoding="utf-8").replace("team-fjz-v8-8","team-fjz-v8-9")
 swp.write_text(sw,encoding="utf-8")
 print("TEAM FJZ V8.9 mejoras:",len(html),"bytes")
+
+
+# V9.0 · motivación garantizada en Check-in
+html = p.read_text(encoding="utf-8")
+html = html.replace("TEAM FJZ V8.9","TEAM FJZ V9.0")
+
+v90_js = r"""
+<script id="v90MotivationFix">
+(function(){
+  function injectMotivationV90(){
+    var grid=document.querySelector('#studentSubBody .tracking-grid, #studentSubBody .v701-checkin-scores');
+    if(!grid)return false;
+    if(document.getElementById('ciMotivation'))return true;
+    var card=document.createElement('div');
+    card.className='track-score';
+    card.setAttribute('data-v90-motivation','1');
+    card.innerHTML='<label>Motivación</label><input id="ciMotivation" class="input" type="number" min="1" max="10" value="7">';
+    var recovery=document.getElementById('ciRecovery');
+    var recoveryCard=recovery&&recovery.closest('.track-score');
+    if(recoveryCard)grid.insertBefore(card,recoveryCard);else grid.appendChild(card);
+    return true;
+  }
+
+  function watchCheckinV90(){
+    injectMotivationV90();
+    var host=document.getElementById('studentSubBody')||document.getElementById('view');
+    if(!host)return;
+    if(window.__v90CheckinObserver)window.__v90CheckinObserver.disconnect();
+    window.__v90CheckinObserver=new MutationObserver(function(){injectMotivationV90();});
+    window.__v90CheckinObserver.observe(host,{childList:true,subtree:true});
+    setTimeout(injectMotivationV90,50);
+    setTimeout(injectMotivationV90,250);
+    setTimeout(injectMotivationV90,800);
+  }
+
+  var oldRenderV90=window.render;
+  window.render=function(){
+    oldRenderV90();
+    setTimeout(watchCheckinV90,20);
+  };
+
+  var oldTrackingV90=window.renderTrackingStudent;
+  if(typeof oldTrackingV90==='function'){
+    window.renderTrackingStudent=function(){
+      oldTrackingV90();
+      setTimeout(watchCheckinV90,0);
+    };
+  }
+
+  var oldSubmitV90=window.submitWeeklyCheckin;
+  if(typeof oldSubmitV90==='function'){
+    window.submitWeeklyCheckin=async function(){
+      injectMotivationV90();
+      return oldSubmitV90();
+    };
+  }
+
+  setTimeout(watchCheckinV90,100);
+})();
+</script>
+"""
+html = html.replace("</body>", v90_js + "\n</body>", 1)
+p.write_text(html,encoding="utf-8")
+
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v8-9","team-fjz-v9-0")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V9.0 motivacion garantizada:",len(html),"bytes")
