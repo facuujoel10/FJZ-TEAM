@@ -244,3 +244,7 @@ print("TEAM FJZ V8.5 final:", len(html), "bytes")
 
 # V8.6 final patch
 exec(compile(open("v86_patch.py", encoding="utf-8").read(), "v86_patch.py", "exec"))
+
+
+# V8.7 final UI polish
+exec(compile(open("v87_patch.py", encoding="utf-8").read(), "v87_patch.py", "exec"))
