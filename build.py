@@ -252,3 +252,10 @@ exec(compile(open("v87_patch.py", encoding="utf-8").read(), "v87_patch.py", "exe
 
 # V8.8 final fixes
 exec(compile(open("v88_patch.py", encoding="utf-8").read(), "v88_patch.py", "exec"))
+
+
+# V9.4 nutrition + tracking
+exec(compile(open("v94_nutrition_tracking.py", encoding="utf-8").read(), "v94_nutrition_tracking.py", "exec"))
+
+# V9.4 training guidance
+exec(compile(open("v94_training.py", encoding="utf-8").read(), "v94_training.py", "exec"))
