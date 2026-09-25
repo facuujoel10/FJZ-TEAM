@@ -177,3 +177,157 @@ p.write_text(html,encoding="utf-8")
 sw=swp.read_text(encoding="utf-8").replace("team-fjz-v8-9","team-fjz-v9-0")
 swp.write_text(sw,encoding="utf-8")
 print("TEAM FJZ V9.0 motivacion garantizada:",len(html),"bytes")
+
+
+# V9.1 · check-in simétrico + validación estricta 1-10
+html = p.read_text(encoding="utf-8")
+html = html.replace("TEAM FJZ V9.0","TEAM FJZ V9.1")
+
+v91_css = r"""
+<style id="v91CheckinPolish">
+#studentSubBody .tracking-grid,
+#studentSubBody .v701-checkin-scores{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+#studentSubBody .tracking-grid .track-score,
+#studentSubBody .v701-checkin-scores .track-score{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  min-height:96px!important;
+  height:100%!important;
+  padding:12px!important;
+  border-radius:13px!important;
+  box-sizing:border-box!important;
+}
+#studentSubBody .tracking-grid .track-score label,
+#studentSubBody .v701-checkin-scores .track-score label{
+  display:block!important;
+  min-height:30px!important;
+  margin:0 0 8px!important;
+  line-height:1.2!important;
+}
+#studentSubBody .tracking-grid .track-score input,
+#studentSubBody .v701-checkin-scores .track-score input{
+  width:100%!important;
+  min-height:40px!important;
+  text-align:center!important;
+  font-weight:800!important;
+  box-sizing:border-box!important;
+}
+#studentSubBody .section-title .badge.blue{
+  min-width:52px!important;
+  text-align:center!important;
+  justify-content:center!important;
+  padding:6px 9px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  letter-spacing:.2px!important;
+  white-space:nowrap!important;
+}
+@media(max-width:900px){
+  #studentSubBody .tracking-grid,
+  #studentSubBody .v701-checkin-scores{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:430px){
+  #studentSubBody .tracking-grid,
+  #studentSubBody .v701-checkin-scores{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  #studentSubBody .tracking-grid .track-score,
+  #studentSubBody .v701-checkin-scores .track-score{
+    min-height:92px!important;
+    padding:10px!important;
+  }
+}
+</style>
+"""
+
+v91_js = r"""
+<script id="v91CheckinClamp">
+(function(){
+  function clampScoreV91(input){
+    if(!input)return;
+    let raw=String(input.value||'').replace(/[^0-9]/g,'');
+    if(raw===''){input.value='';return}
+    let n=parseInt(raw,10);
+    if(!Number.isFinite(n))n=1;
+    if(n<1)n=1;
+    if(n>10)n=10;
+    input.value=String(n);
+  }
+
+  function setupScoresV91(){
+    const ids=['ciSleep','ciStress','ciEnergy','ciAdh','ciMood','ciMotivation','ciRecovery'];
+    ids.forEach(function(id){
+      const input=document.getElementById(id);
+      if(!input)return;
+      input.setAttribute('min','1');
+      input.setAttribute('max','10');
+      input.setAttribute('step','1');
+      input.setAttribute('inputmode','numeric');
+      input.setAttribute('pattern','[0-9]*');
+      input.oninput=function(){clampScoreV91(input)};
+      input.onchange=function(){clampScoreV91(input)};
+      input.onblur=function(){
+        clampScoreV91(input);
+        if(input.value==='')input.value='1';
+      };
+    });
+    const badge=document.querySelector('#studentSubBody .section-title .badge.blue');
+    if(badge)badge.textContent='1–10';
+  }
+
+  const oldRenderV91=window.render;
+  window.render=function(){
+    oldRenderV91();
+    setTimeout(setupScoresV91,40);
+    setTimeout(setupScoresV91,300);
+  };
+
+  const oldTrackingV91=window.renderTrackingStudent;
+  if(typeof oldTrackingV91==='function'){
+    window.renderTrackingStudent=function(){
+      oldTrackingV91();
+      setTimeout(setupScoresV91,0);
+    };
+  }
+
+  const oldSubmitV91=window.submitWeeklyCheckin;
+  if(typeof oldSubmitV91==='function'){
+    window.submitWeeklyCheckin=async function(){
+      setupScoresV91();
+      const ids=['ciSleep','ciStress','ciEnergy','ciAdh','ciMood','ciMotivation','ciRecovery'];
+      for(const id of ids){
+        const input=document.getElementById(id);
+        if(!input)continue;
+        clampScoreV91(input);
+        const n=Number(input.value);
+        if(!Number.isFinite(n)||n<1||n>10){
+          toast('Todos los valores del check-in deben estar entre 1 y 10');
+          input.focus();
+          return;
+        }
+      }
+      return oldSubmitV91();
+    };
+  }
+
+  setTimeout(setupScoresV91,100);
+})();
+</script>
+"""
+
+html = html.replace("</head>", v91_css + "\n</head>", 1)
+html = html.replace("</body>", v91_js + "\n</body>", 1)
+p.write_text(html,encoding="utf-8")
+
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-0","team-fjz-v9-1")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V9.1 checkin polish:",len(html),"bytes")
