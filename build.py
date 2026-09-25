@@ -248,3 +248,7 @@ exec(compile(open("v86_patch.py", encoding="utf-8").read(), "v86_patch.py", "exe
 
 # V8.7 final UI polish
 exec(compile(open("v87_patch.py", encoding="utf-8").read(), "v87_patch.py", "exec"))
+
+
+# V8.8 final fixes
+exec(compile(open("v88_patch.py", encoding="utf-8").read(), "v88_patch.py", "exec"))
