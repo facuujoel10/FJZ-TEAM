@@ -259,3 +259,6 @@ exec(compile(open("v94_nutrition_tracking.py", encoding="utf-8").read(), "v94_nu
 
 # V9.4 training guidance
 exec(compile(open("v94_training.py", encoding="utf-8").read(), "v94_training.py", "exec"))
+
+# V9.6 professional alerts
+exec(compile(open("v96_alerts.py", encoding="utf-8").read(), "v96_alerts.py", "exec"))
