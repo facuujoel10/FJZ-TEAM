@@ -32,9 +32,13 @@ html = html.replace(
 )
 
 # Extrae el logo WebP embebido para usarlo como icono PWA.
-m = re.search(r"data:image/webp;base64,([A-Za-z0-9+/=]+)", html)
-if m:
-    (OUT / "icon.webp").write_bytes(base64.b64decode(m.group(1)))
+icons = re.findall(r"data:image/webp;base64,([A-Za-z0-9+/=]+)", html)
+if icons:
+    logo_b64 = max(icons, key=len)
+    icon_bytes = base64.b64decode(logo_b64)
+    if len(icon_bytes) < 1000:
+        raise RuntimeError("El icono TEAM FJZ encontrado es demasiado pequeño.")
+    (OUT / "icon.webp").write_bytes(icon_bytes)
 else:
     raise RuntimeError("No se encontró el icono TEAM FJZ embebido.")
 
