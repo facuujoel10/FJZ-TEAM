@@ -1,6 +1,7 @@
 import pathlib
 p=pathlib.Path("public/index.html")
 html=p.read_text(encoding="utf-8")
+html=html.replace("TEAM FJZ V9.4","TEAM FJZ V9.5")
 
 css=r"""
 <style id="v94TrainingPro">
@@ -22,6 +23,41 @@ css=r"""
 js=r"""
 <script id="v94TrainingProRuntime">
 (function(){
+  let exerciseLibraryCloudLoadedV95=false;
+  let exerciseLibraryCloudLoadingV95=false;
+
+  async function loadExerciseLibraryCloudV95(){
+    if(exerciseLibraryCloudLoadedV95||exerciseLibraryCloudLoadingV95||!window.supabaseClient||!window.currentUser)return;
+    exerciseLibraryCloudLoadingV95=true;
+    try{
+      const {data,error}=await supabaseClient.from('exercise_library').select('*').order('name');
+      if(error)throw error;
+      const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+      const byName=new Map((exerciseLibrary||[]).map(x=>[norm(x.name),x]));
+      for(const row of (data||[])){
+        const key=norm(row.name);
+        const mapped={
+          id:row.id,
+          name:row.name,
+          muscle:row.primary_muscle||'General',
+          equipment:row.equipment||'',
+          pattern:row.movement_pattern||'',
+          cue:row.technique_cue||row.execution_notes||'',
+          variants:row.variants||[]
+        };
+        if(!byName.has(key)){
+          exerciseLibrary.push(mapped);
+          byName.set(key,mapped);
+        }
+      }
+      exerciseLibraryCloudLoadedV95=true;
+    }catch(e){
+      console.warn('exercise library cloud sync',e);
+    }finally{
+      exerciseLibraryCloudLoadingV95=false;
+    }
+  }
+
   function ensureDayV94(d){
     d.warmup=d.warmup||[];
     d.stretching=d.stretching||[];
@@ -152,12 +188,12 @@ js=r"""
   const oldRenderTrainingV94=window.render;
   window.render=function(){
     oldRenderTrainingV94();
-    setTimeout(function(){enhanceRoutineEditorV94();injectWorkoutGuideV94()},80);
-    setTimeout(function(){enhanceRoutineEditorV94();injectWorkoutGuideV94()},500);
+    setTimeout(function(){loadExerciseLibraryCloudV95();enhanceRoutineEditorV94();injectWorkoutGuideV94()},80);
+    setTimeout(function(){loadExerciseLibraryCloudV95();enhanceRoutineEditorV94();injectWorkoutGuideV94()},500);
   };
 
   Object.assign(window,{openPrepPickerV94,filterPrepPickerV94,configurePrepV94,customPrepV94,editPrepItemV94,savePrepV94,removePrepItemV94,editCardioV94,saveCardioV94});
-  setTimeout(function(){enhanceRoutineEditorV94();injectWorkoutGuideV94()},200);
+  setTimeout(function(){loadExerciseLibraryCloudV95();enhanceRoutineEditorV94();injectWorkoutGuideV94()},200);
 })();
 </script>
 """
@@ -165,4 +201,7 @@ js=r"""
 html=html.replace("</head>",css+"\n</head>",1)
 html=html.replace("</body>",js+"\n</body>",1)
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V9.4 entrenamiento pro:",len(html),"bytes")
+swp=pathlib.Path("public/sw.js")
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-4","team-fjz-v9-5")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V9.5 estabilidad entrenamiento:",len(html),"bytes")
