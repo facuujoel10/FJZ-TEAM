@@ -240,3 +240,7 @@ function setupRealtime()""",
 # FINAL_REWRITE_V85: las transformaciones añadidas arriba deben persistirse después de aplicarse.
 (OUT / "index.html").write_text(html, encoding="utf-8")
 print("TEAM FJZ V8.5 final:", len(html), "bytes")
+
+
+# V8.6 final patch
+exec(compile(open("v86_patch.py", encoding="utf-8").read(), "v86_patch.py", "exec"))
