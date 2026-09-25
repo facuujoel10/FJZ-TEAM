@@ -21,7 +21,7 @@ html = html.replace("/* TEAM FJZ V8.3", "/* TEAM FJZ V8.4")
 html = html.replace(
     "<link rel=\"manifest\" href=\"./manifest.webmanifest\">",
     "<link rel=\"manifest\" href=\"./manifest.webmanifest\">\n"
-    "<link rel=\"apple-touch-icon\" href=\"./icon.webp\">\n"
+    "<link rel=\"apple-touch-icon\" href=\"./icon-v84.webp\">\n"
     "<meta name=\"format-detection\" content=\"telephone=no\">"
 )
 
@@ -38,7 +38,7 @@ if icons:
     icon_bytes = base64.b64decode(logo_b64)
     if len(icon_bytes) < 1000:
         raise RuntimeError("El icono TEAM FJZ encontrado es demasiado pequeño.")
-    (OUT / "icon.webp").write_bytes(icon_bytes)
+    (OUT / "icon-v84.webp").write_bytes(icon_bytes)
 else:
     raise RuntimeError("No se encontró el icono TEAM FJZ embebido.")
 
@@ -56,7 +56,7 @@ manifest = """{
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "./icon.webp",
+      "src": "./icon-v84.webp",
       "sizes": "any",
       "type": "image/webp",
       "purpose": "any maskable"
@@ -67,7 +67,7 @@ manifest = """{
 (OUT / "manifest.webmanifest").write_text(manifest, encoding="utf-8")
 
 sw = """const CACHE='team-fjz-v8-4';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.webp'];
+const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-v84.webp'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).catch(()=>{}));
