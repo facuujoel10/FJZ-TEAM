@@ -265,3 +265,6 @@ exec(compile(open("v96_alerts.py", encoding="utf-8").read(), "v96_alerts.py", "e
 
 # V9.7 migrated profile metadata
 exec(compile(open("v97_migration_profiles.py", encoding="utf-8").read(), "v97_migration_profiles.py", "exec"))
+
+# V9.8 precision UI polish
+exec(compile(open("v98_ui_precision.py", encoding="utf-8").read(), "v98_ui_precision.py", "exec"))
