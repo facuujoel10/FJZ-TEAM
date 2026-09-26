@@ -286,3 +286,6 @@ exec(compile(open("v105_ariel_routine.py", encoding="utf-8").read(), "v105_ariel
 
 # V10.6 allow partial workout session saves
 exec(compile(open("v106_partial_sessions.py", encoding="utf-8").read(), "v106_partial_sessions.py", "exec"))
+
+# V11.0 method loads + coach intelligence + final polish
+exec(compile(open("v110_final_polish.py", encoding="utf-8").read(), "v110_final_polish.py", "exec"))
