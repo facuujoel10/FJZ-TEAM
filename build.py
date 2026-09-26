@@ -271,3 +271,6 @@ exec(compile(open("v98_ui_precision.py", encoding="utf-8").read(), "v98_ui_preci
 
 # V9.9 full audit
 exec(compile(open("v99_full_audit.py", encoding="utf-8").read(), "v99_full_audit.py", "exec"))
+
+# V10.0 consolidated core cleanup
+exec(compile(open("v100_core_cleanup.py", encoding="utf-8").read(), "v100_core_cleanup.py", "exec"))
