@@ -293,3 +293,79 @@ sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-9","team-fjz-v10-0")
 swp.write_text(sw,encoding="utf-8")
 
 print("TEAM FJZ V10.0 core cleanup:",len(html),"bytes")
+
+
+# V10.1 · encuadre ajustable de foto de perfil
+html=p.read_text(encoding="utf-8")
+html=html.replace("TEAM FJZ V10.0","TEAM FJZ V10.1")
+avatar_css=r"""
+<style id="v101AvatarAdjustStyles">
+.v70-avatar{overflow:hidden!important}
+.v70-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.v101-avatar-preview{width:min(280px,72vw);aspect-ratio:1;margin:0 auto 14px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.82);background:#09090b}
+.v101-avatar-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.v101-adjust-grid{display:grid;gap:12px}
+.v101-adjust-row{display:grid;grid-template-columns:86px minmax(0,1fr) 42px;gap:10px;align-items:center}
+.v101-adjust-row input[type="range"]{width:100%;accent-color:var(--red)}
+.v101-adjust-value{text-align:right;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media(max-width:520px){.v101-adjust-row{grid-template-columns:68px minmax(0,1fr) 38px}}
+</style>
+"""
+avatar_js=r"""
+<script id="v101AvatarAdjustRuntime">
+(function(){
+  const cache=new Map();
+  async function getFrame(id,force=false){
+    if(!id)return{x:50,y:50,z:1};
+    if(!force&&cache.has(id))return cache.get(id);
+    const r=await supabaseClient.from('profiles').select('id,avatar_position_x,avatar_position_y,avatar_zoom').eq('id',id).maybeSingle();
+    if(r.error)return{x:50,y:50,z:1};
+    const v={x:Number(r.data?.avatar_position_x??50),y:Number(r.data?.avatar_position_y??50),z:Number(r.data?.avatar_zoom??1)};
+    cache.set(id,v);return v;
+  }
+  window.avatarHtmlV70=async function(userId,name,size=''){
+    const path=await profilePathV70(userId),url=await signedAvatarV70(path),a=await getFrame(userId);
+    const body=url?'<img src="'+url+'" alt="'+esc(name||'Perfil')+'" style="object-position:'+a.x+'% '+a.y+'%;transform:scale('+a.z+');transform-origin:'+a.x+'% '+a.y+'%;">':esc((name||'?').slice(0,2).toUpperCase());
+    return '<div class="v70-avatar '+size+'">'+body+'</div>';
+  };
+  function inject(){
+    if(currentProfile?.role!=='student'||!currentProfile?.avatar_url)return;
+    const actions=document.querySelector('#v70StudentProfile .v70-profile-actions');
+    if(!actions||document.getElementById('v101AdjustAvatarBtn'))return;
+    const b=document.createElement('button');b.id='v101AdjustAvatarBtn';b.className='btn ghost small';b.textContent='Acomodar';b.onclick=openAvatarAdjustV101;
+    actions.insertBefore(b,actions.children[1]||null);
+  }
+  window.openAvatarAdjustV101=async function(){
+    const url=await signedAvatarV70(currentProfile.avatar_url),a=await getFrame(currentUser.id,true);
+    showModal('<div class="modal-head"><div><h3>Acomodar foto de perfil</h3><div class="muted tiny">Mové el encuadre y el zoom hasta que quede como te gusta.</div></div><button class="btn small" onclick="closeModal()">✕</button></div><div class="v101-avatar-preview"><img id="v101AvatarPreviewImg" src="'+url+'"></div><div class="v101-adjust-grid"><div class="v101-adjust-row"><strong class="tiny">Horizontal</strong><input id="v101AvatarX" type="range" min="0" max="100" value="'+a.x+'" oninput="previewAvatarAdjustV101()"><span id="v101AvatarXVal" class="v101-adjust-value"></span></div><div class="v101-adjust-row"><strong class="tiny">Vertical</strong><input id="v101AvatarY" type="range" min="0" max="100" value="'+a.y+'" oninput="previewAvatarAdjustV101()"><span id="v101AvatarYVal" class="v101-adjust-value"></span></div><div class="v101-adjust-row"><strong class="tiny">Zoom</strong><input id="v101AvatarZoom" type="range" min="1" max="3" step=".05" value="'+a.z+'" oninput="previewAvatarAdjustV101()"><span id="v101AvatarZoomVal" class="v101-adjust-value"></span></div><div class="pill-row" style="justify-content:flex-end"><button class="btn ghost" onclick="resetAvatarAdjustV101()">Centrar</button><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveAvatarAdjustV101()">Guardar encuadre</button></div></div>');
+    previewAvatarAdjustV101();
+  };
+  window.previewAvatarAdjustV101=function(){
+    const img=el('v101AvatarPreviewImg');if(!img)return;
+    const x=+el('v101AvatarX').value,y=+el('v101AvatarY').value,z=+el('v101AvatarZoom').value;
+    img.style.objectPosition=x+'% '+y+'%';img.style.transform='scale('+z+')';img.style.transformOrigin=x+'% '+y+'%';
+    el('v101AvatarXVal').textContent=Math.round(x)+'%';el('v101AvatarYVal').textContent=Math.round(y)+'%';el('v101AvatarZoomVal').textContent=z.toFixed(1)+'×';
+  };
+  window.resetAvatarAdjustV101=function(){el('v101AvatarX').value=50;el('v101AvatarY').value=50;el('v101AvatarZoom').value=1;previewAvatarAdjustV101()};
+  window.saveAvatarAdjustV101=async function(){
+    const x=+el('v101AvatarX').value,y=+el('v101AvatarY').value,z=+el('v101AvatarZoom').value;
+    const r=await supabaseClient.from('profiles').update({avatar_position_x:x,avatar_position_y:y,avatar_zoom:z}).eq('id',currentUser.id);
+    if(r.error){toast(cloudErr(r.error));return}
+    cache.set(currentUser.id,{x,y,z});closeModal();toast('Encuadre guardado');render();
+  };
+  const oldUpload=window.uploadProfilePhotoV70;
+  if(typeof oldUpload==='function')window.uploadProfilePhotoV70=async function(input){await oldUpload(input);if(currentUser?.id){await supabaseClient.from('profiles').update({avatar_position_x:50,avatar_position_y:50,avatar_zoom:1}).eq('id',currentUser.id);cache.set(currentUser.id,{x:50,y:50,z:1})}};
+  const oldRender=window.render;
+  window.render=function(){const out=oldRender.apply(this,arguments);setTimeout(inject,120);setTimeout(inject,600);return out};
+  Object.assign(window,{openAvatarAdjustV101,previewAvatarAdjustV101,resetAvatarAdjustV101,saveAvatarAdjustV101});
+  setTimeout(inject,250);
+})();
+</script>
+"""
+html=html.replace("</head>",avatar_css+"\n</head>",1)
+html=html.replace("</body>",avatar_js+"\n</body>",1)
+p.write_text(html,encoding="utf-8")
+swp=pathlib.Path("public/sw.js")
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v10-0","team-fjz-v10-1")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V10.1 avatar adjust:",len(html),"bytes")
