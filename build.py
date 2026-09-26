@@ -293,3 +293,7 @@ exec(compile(open("v110_final_polish.py", encoding="utf-8").read(), "v110_final_
 
 # V11.1 production release cleanup
 exec(compile(open("v111_release_cleanup.py", encoding="utf-8").read(), "v111_release_cleanup.py", "exec"))
+
+
+# V11.2 synchronization hardening
+exec(compile(open("v112_sync_hardening.py", encoding="utf-8").read(), "v112_sync_hardening.py", "exec"))
