@@ -369,3 +369,131 @@ swp=pathlib.Path("public/sw.js")
 sw=swp.read_text(encoding="utf-8").replace("team-fjz-v10-0","team-fjz-v10-1")
 swp.write_text(sw,encoding="utf-8")
 print("TEAM FJZ V10.1 avatar adjust:",len(html),"bytes")
+
+
+# V10.2 · editor completo de opciones nutricionales
+html=p.read_text(encoding="utf-8")
+html=html.replace("TEAM FJZ V10.1","TEAM FJZ V10.2")
+nutedit_css=r"""
+<style id="v102NutritionEditStyles">
+.v102-option-note{margin-top:7px;padding:7px 9px;border-left:2px solid rgba(255,255,255,.18);color:var(--muted);font-size:10px;background:rgba(255,255,255,.02);border-radius:0 8px 8px 0}
+.v102-edit-list{display:grid;gap:10px;margin-top:12px}
+.v102-edit-item{border:1px solid var(--border);background:#0d0d10;border-radius:12px;padding:11px}
+.v102-edit-item-grid{display:grid;grid-template-columns:minmax(0,2fr) repeat(5,minmax(80px,.7fr));gap:8px;align-items:end}
+.v102-edit-item-grid .wide{grid-column:auto}
+.v102-edit-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:8px}
+.v102-option-toolbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:900px){
+ .v102-edit-item-grid{grid-template-columns:1fr 1fr}
+ .v102-edit-item-grid .wide{grid-column:1/-1}
+}
+@media(max-width:520px){
+ .v102-edit-item-grid{grid-template-columns:1fr}
+ .v102-edit-item-grid .wide{grid-column:auto}
+ .v102-option-toolbar{justify-content:flex-start}
+}
+</style>
+"""
+nutedit_js=r"""
+<script id="v102NutritionEditRuntime">
+(function(){
+  function numV102(v){const n=Number(v);return Number.isFinite(n)?n:0}
+  function optV102(mealId,optId){return findNutritionOption(mealId,optId)}
+
+  window.renderNutritionOptionCoach=function(meal,opt){
+    const t=nutritionOptionTotals(opt);
+    return '<div class="option-card"><div class="option-head"><div><strong>'+esc(opt.name||'Opción')+'</strong>'+
+      '<div class="macro-row" style="margin-top:5px"><span class="macro-chip">'+nFmt(t.kcal,0)+' kcal</span><span class="macro-chip">P '+nFmt(t.protein_g,1)+' g</span><span class="macro-chip">C '+nFmt(t.carbs_g,1)+' g</span><span class="macro-chip">G '+nFmt(t.fat_g,1)+' g</span></div>'+
+      (opt.note?'<div class="v102-option-note">'+esc(opt.note)+'</div>':'')+
+      '</div><div class="v102-option-toolbar"><button class="btn small" onclick="openNutritionOptionEditorV102(\''+meal.id+'\',\''+opt.id+'\')">Editar opción</button><button class="btn small" onclick="openNutritionFoodPicker(\''+meal.id+'\',\''+opt.id+'\')">+ Alimento</button><button class="btn ghost small" onclick="deleteNutritionOption(\''+meal.id+'\',\''+opt.id+'\')">Eliminar</button></div></div>'+
+      '<div>'+((opt.items||[]).length?opt.items.map(i=>{
+        const grams=i.grams!=null&&Number(i.grams)>0?nFmt(i.grams,0)+' g':'Cantidad personalizada';
+        return '<div class="food-item-v61"><div><strong>'+esc(i.name)+'</strong><div class="muted micro">'+esc(grams)+' · '+nFmt(i.kcal,0)+' kcal · P '+nFmt(i.protein_g,1)+' · C '+nFmt(i.carbs_g,1)+' · G '+nFmt(i.fat_g,1)+'</div></div><div class="food-item-v61-actions"><button class="btn small" onclick="openNutritionItemEditorV102(\''+meal.id+'\',\''+opt.id+'\',\''+i.id+'\')">Editar</button><button class="btn ghost small" onclick="removeNutritionItem(\''+meal.id+'\',\''+opt.id+'\',\''+i.id+'\')">✕</button></div></div>';
+      }).join(''):'<div class="muted tiny" style="margin-top:10px">Agregá alimentos a esta opción.</div>')+'</div></div>';
+  };
+  try{renderNutritionOptionCoach=window.renderNutritionOptionCoach}catch(_){}
+
+  function editorItemHtmlV102(i,idx){
+    return '<div class="v102-edit-item" data-v102-index="'+idx+'">'+
+      '<div class="v102-edit-item-grid">'+
+      '<label class="tiny muted wide">Descripción / alimento<input class="input v102-name" value="'+esc(i.name||'')+'"></label>'+
+      '<label class="tiny muted">Gramos<input class="input v102-grams" type="number" min="0" step="1" value="'+(i.grams??'')+'" placeholder="Opcional"></label>'+
+      '<label class="tiny muted">kcal<input class="input v102-kcal" type="number" min="0" step="1" value="'+numV102(i.kcal)+'"></label>'+
+      '<label class="tiny muted">Proteína g<input class="input v102-p" type="number" min="0" step=".1" value="'+numV102(i.protein_g)+'"></label>'+
+      '<label class="tiny muted">Carbos g<input class="input v102-c" type="number" min="0" step=".1" value="'+numV102(i.carbs_g)+'"></label>'+
+      '<label class="tiny muted">Grasas g<input class="input v102-f" type="number" min="0" step=".1" value="'+numV102(i.fat_g)+'"></label>'+
+      '</div><div class="v102-edit-actions"><button class="btn ghost small" onclick="removeNutritionEditorRowV102(this)">Quitar de opción</button></div></div>';
+  }
+
+  window.openNutritionOptionEditorV102=function(mealId,optId){
+    const o=optV102(mealId,optId);if(!o)return;
+    showModal('<div class="modal-head"><div><h3>Editar opción de comida</h3><div class="muted tiny">Podés corregir cantidades, descripción y macros sin borrar la opción.</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
+      '<div class="form-grid"><label class="tiny muted span2">Nombre de la opción<input id="v102OptName" class="input" value="'+esc(o.name||'Opción')+'"></label><label class="tiny muted span2">Nota<input id="v102OptNote" class="input" value="'+esc(o.note||'')+'" placeholder="Ej: recomendable en día de piernas"></label></div>'+
+      '<div id="v102EditItems" class="v102-edit-list">'+(o.items||[]).map(editorItemHtmlV102).join('')+'</div>'+
+      '<div class="nutrition-note" style="margin-top:12px"><strong>Edición manual</strong><div class="muted tiny" style="margin-top:4px">Si es una opción importada del PDF, podés corregir directamente el texto y los macros. Si es un alimento de la biblioteca y cambiás los gramos, la app recalcula usando sus valores por 100 g.</div></div>'+
+      '<button class="btn primary" style="width:100%;margin-top:12px" onclick="saveNutritionOptionEditorV102(\''+mealId+'\',\''+optId+'\')">Guardar cambios</button>');
+  };
+
+  window.removeNutritionEditorRowV102=function(btn){btn.closest('.v102-edit-item')?.remove()};
+
+  function readRowsV102(o){
+    const oldById=new Map((o.items||[]).map(x=>[x.id,x]));
+    return [...document.querySelectorAll('#v102EditItems .v102-edit-item')].map((row,idx)=>{
+      const old=(o.items||[])[Number(row.dataset.v102Index)]||{};
+      const name=row.querySelector('.v102-name')?.value.trim()||old.name||'Alimento';
+      const gramsRaw=row.querySelector('.v102-grams')?.value;
+      const grams=gramsRaw===''?null:Math.max(0,numV102(gramsRaw));
+      let kcal=numV102(row.querySelector('.v102-kcal')?.value);
+      let protein_g=numV102(row.querySelector('.v102-p')?.value);
+      let carbs_g=numV102(row.querySelector('.v102-c')?.value);
+      let fat_g=numV102(row.querySelector('.v102-f')?.value);
+      if(grams&&old.kcal_100g!=null){
+        const m=macroCalcFrom100(old,grams);kcal=m.kcal;protein_g=m.protein_g;carbs_g=m.carbs_g;fat_g=m.fat_g;
+      }
+      return {...old,id:old.id||uid('food'),name,grams,kcal,protein_g,carbs_g,fat_g};
+    });
+  }
+
+  window.saveNutritionOptionEditorV102=async function(mealId,optId){
+    const o=optV102(mealId,optId);if(!o)return;
+    o.name=el('v102OptName')?.value.trim()||o.name||'Opción';
+    o.note=el('v102OptNote')?.value.trim()||'';
+    o.items=readRowsV102(o);
+    closeModal();
+    renderNutritionCoachLoaded();
+    await saveNutritionPlan();
+    toast('Opción actualizada');
+  };
+
+  window.openNutritionItemEditorV102=function(mealId,optId,itemId){
+    const o=optV102(mealId,optId),i=o?.items?.find(x=>x.id===itemId);if(!o||!i)return;
+    showModal('<div class="modal-head"><div><h3>Editar alimento</h3><div class="muted tiny">Corregí cantidad o información de esta opción.</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
+      '<div class="form-grid"><label class="tiny muted span2">Descripción<input id="v102ItemName" class="input" value="'+esc(i.name||'')+'"></label><label class="tiny muted">Gramos<input id="v102ItemGrams" class="input" type="number" min="0" step="1" value="'+(i.grams??'')+'" placeholder="Opcional"></label><label class="tiny muted">kcal<input id="v102ItemKcal" class="input" type="number" min="0" step="1" value="'+numV102(i.kcal)+'"></label><label class="tiny muted">Proteína g<input id="v102ItemP" class="input" type="number" min="0" step=".1" value="'+numV102(i.protein_g)+'"></label><label class="tiny muted">Carbos g<input id="v102ItemC" class="input" type="number" min="0" step=".1" value="'+numV102(i.carbs_g)+'"></label><label class="tiny muted">Grasas g<input id="v102ItemF" class="input" type="number" min="0" step=".1" value="'+numV102(i.fat_g)+'"></label></div>'+
+      '<button class="btn primary" style="width:100%;margin-top:12px" onclick="saveNutritionItemEditorV102(\''+mealId+'\',\''+optId+'\',\''+itemId+'\')">Guardar alimento</button>');
+  };
+
+  window.saveNutritionItemEditorV102=async function(mealId,optId,itemId){
+    const o=optV102(mealId,optId),i=o?.items?.find(x=>x.id===itemId);if(!i)return;
+    i.name=el('v102ItemName')?.value.trim()||i.name;
+    const raw=el('v102ItemGrams')?.value;i.grams=raw===''?null:Math.max(0,numV102(raw));
+    if(i.grams&&i.kcal_100g!=null)Object.assign(i,macroCalcFrom100(i,i.grams));
+    else{
+      i.kcal=numV102(el('v102ItemKcal')?.value);
+      i.protein_g=numV102(el('v102ItemP')?.value);
+      i.carbs_g=numV102(el('v102ItemC')?.value);
+      i.fat_g=numV102(el('v102ItemF')?.value);
+    }
+    closeModal();renderNutritionCoachLoaded();await saveNutritionPlan();toast('Alimento actualizado');
+  };
+
+  Object.assign(window,{openNutritionOptionEditorV102,saveNutritionOptionEditorV102,removeNutritionEditorRowV102,openNutritionItemEditorV102,saveNutritionItemEditorV102});
+})();
+</script>
+"""
+html=html.replace("</head>",nutedit_css+"\n</head>",1)
+html=html.replace("</body>",nutedit_js+"\n</body>",1)
+p.write_text(html,encoding="utf-8")
+swp=pathlib.Path("public/sw.js")
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v10-1","team-fjz-v10-2")
+swp.write_text(sw,encoding="utf-8")
+print("TEAM FJZ V10.2 nutrition option editor:",len(html),"bytes")
