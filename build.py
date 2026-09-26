@@ -268,3 +268,6 @@ exec(compile(open("v97_migration_profiles.py", encoding="utf-8").read(), "v97_mi
 
 # V9.8 precision UI polish
 exec(compile(open("v98_ui_precision.py", encoding="utf-8").read(), "v98_ui_precision.py", "exec"))
+
+# V9.9 full audit
+exec(compile(open("v99_full_audit.py", encoding="utf-8").read(), "v99_full_audit.py", "exec"))
