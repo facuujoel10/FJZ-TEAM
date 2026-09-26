@@ -18,10 +18,10 @@ js = r"""
   }
   function markPendingV112(){
     try{
-      if(!window.currentUser||!window.currentProfile)return;
+      if(!currentUser||!currentProfile)return;
       localStorage.setItem(DIRTY_KEY,JSON.stringify({
-        userId:window.currentUser.id,
-        role:window.currentProfile.role,
+        userId:currentUser.id,
+        role:currentProfile.role,
         at:new Date().toISOString()
       }));
     }catch(e){}
@@ -34,7 +34,7 @@ js = r"""
   }
   function isPendingForCurrentV112(){
     const p=pendingV112();
-    return !!(p&&window.currentUser&&p.userId===window.currentUser.id);
+    return !!(p&&currentUser&&p.userId===currentUser.id);
   }
   function cloneV112(x){return x==null?x:JSON.parse(JSON.stringify(x))}
 
@@ -93,7 +93,7 @@ js = r"""
   function writeStateQuietV112(){
     try{
       window.__fjzCloudApplying=true;
-      localStorage.setItem('fjz_v4_state',JSON.stringify(window.state));
+      localStorage.setItem('fjz_v4_state',JSON.stringify(state));
     }finally{
       window.__fjzCloudApplying=false;
     }
@@ -102,7 +102,7 @@ js = r"""
   const baseSaveStateV112=window.saveState;
   window.saveState=function(){
     const out=baseSaveStateV112.apply(this,arguments);
-    if(window.__fjzCloudReady&&!window.__fjzCloudApplying&&window.currentUser&&window.currentProfile){
+    if(window.__fjzCloudReady&&!window.__fjzCloudApplying&&currentUser&&currentProfile){
       markPendingV112();
     }
     return out;
@@ -110,19 +110,19 @@ js = r"""
 
   const baseSyncStudentStateV112=window.syncStudentState;
   window.syncStudentState=async function(){
-    const local=cloneV112(window.student?.());
-    if(local&&window.linkedAthleteId&&window.supabaseClient){
+    const local=cloneV112(student());
+    if(local&&linkedAthleteId&&supabaseClient){
       try{
-        const {data,error}=await window.supabaseClient
+        const {data,error}=await supabaseClient
           .from('athlete_snapshots')
           .select('data,updated_at')
-          .eq('athlete_id',window.linkedAthleteId)
+          .eq('athlete_id',linkedAthleteId)
           .maybeSingle();
         if(error)throw error;
         if(data?.data){
           const merged=mergeForStudentV112(local,data.data);
-          const idx=window.state.students.findIndex(x=>x.id===local.id);
-          if(idx>=0)window.state.students[idx]=merged;
+          const idx=state.students.findIndex(x=>x.id===local.id);
+          if(idx>=0)state.students[idx]=merged;
           writeStateQuietV112();
         }
       }catch(e){
@@ -134,18 +134,18 @@ js = r"""
 
   const baseSyncCoachStateV112=window.syncCoachState;
   window.syncCoachState=async function(){
-    if(window.supabaseClient&&window.cloudAthletes?.size){
+    if(supabaseClient&&cloudAthletes?.size){
       try{
-        const ids=[...window.cloudAthletes.values()].map(x=>x.id).filter(Boolean);
+        const ids=[...cloudAthletes.values()].map(x=>x.id).filter(Boolean);
         if(ids.length){
-          const {data,error}=await window.supabaseClient
+          const {data,error}=await supabaseClient
             .from('athlete_snapshots')
             .select('athlete_id,data,updated_at')
             .in('athlete_id',ids);
           if(error)throw error;
           const remoteByAthlete=new Map((data||[]).map(x=>[x.athlete_id,x.data]));
-          window.state.students=window.state.students.map(local=>{
-            const row=window.cloudAthletes.get(local.id);
+          state.students=state.students.map(local=>{
+            const row=cloudAthletes.get(local.id);
             const remote=row?remoteByAthlete.get(row.id):null;
             return remote?mergeForCoachV112(local,remote):local;
           });
@@ -195,7 +195,7 @@ js = r"""
   };
 
   function recoverPendingV112(reason){
-    if(!window.currentUser||!window.currentProfile||!window.cloudEnabled||!window.supabaseClient)return;
+    if(!currentUser||!currentProfile||!cloudEnabled||!supabaseClient)return;
     if(!isPendingForCurrentV112())return;
     if(navigator.onLine===false)return;
     setTimeout(()=>window.syncCloudNow().catch(e=>console.warn('V11.2 retry '+reason,e)),250);
