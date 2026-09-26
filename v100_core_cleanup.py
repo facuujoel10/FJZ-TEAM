@@ -1,0 +1,295 @@
+import pathlib,re
+p=pathlib.Path("public/index.html")
+html=p.read_text(encoding="utf-8")
+html=html.replace("TEAM FJZ V9.9","TEAM FJZ V10.0")
+
+# V10 consolida parches visuales/check-in ya reemplazados por una única capa.
+obsolete_styles=[
+  "v88Fixes","v91CheckinPolish","v92CoachPhotoUpload",
+  "v98PrecisionPolish","v99AuditPolish"
+]
+obsolete_scripts=[
+  "v88Runtime","v90MotivationFix","v91CheckinClamp",
+  "v92CoachPhotoUploadRuntime","v98PrecisionPolishRuntime","v99AuditRuntime"
+]
+for sid in obsolete_styles:
+    html=re.sub(r'<style\\s+id=["\\\']'+re.escape(sid)+r'["\\\'][^>]*>.*?</style>\\s*','',html,flags=re.S|re.I)
+for sid in obsolete_scripts:
+    html=re.sub(r'<script\\s+id=["\\\']'+re.escape(sid)+r'["\\\'][^>]*>.*?</script>\\s*','',html,flags=re.S|re.I)
+
+css=r"""
+<style id="v100CorePolish">
+/* TEAM FJZ V10 · capa visual consolidada */
+.v65-lib-shortcuts,.v88-version,#v88Version,#v92CoachPhotoUploader,#cloudFeedWrap{display:none!important}
+
+.input,input.input,select.input,textarea.input{box-sizing:border-box!important;max-width:100%!important}
+input.input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),select.input{
+  min-height:42px!important;height:42px!important;padding-top:0!important;padding-bottom:0!important
+}
+textarea.input{min-height:92px!important;resize:vertical}
+.card,.hero,.grid,.form-grid,#view,#studentSubBody,#coachStudentBody{min-width:0;max-width:100%;box-sizing:border-box}
+.section-title{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important}
+.section-title>div:first-child,.modal-head>div{min-width:0}
+.section-title h3,.modal-head h3,.exercise-row h4,.student-row h4{overflow-wrap:anywhere}
+.btn.small{min-height:32px;display:inline-flex;align-items:center;justify-content:center}
+.btn:not(.small){min-height:40px}
+.pill-row{align-items:center!important}
+
+/* Check-in: 8 métricas, mismas dimensiones y sin reglas heredadas */
+#studentSubBody .tracking-grid,
+#studentSubBody .v701-checkin-scores{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:9px!important;
+  align-items:stretch!important
+}
+#studentSubBody .tracking-grid>.track-score,
+#studentSubBody .v701-checkin-scores>.track-score{
+  grid-column:auto!important;grid-row:auto!important;
+  min-width:0!important;width:100%!important;
+  min-height:100px!important;height:100px!important;
+  padding:11px!important;border-radius:12px!important;
+  display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+  align-self:stretch!important;box-sizing:border-box!important
+}
+#studentSubBody .tracking-grid>.track-score label,
+#studentSubBody .v701-checkin-scores>.track-score label{
+  display:flex!important;align-items:center!important;
+  min-height:28px!important;height:28px!important;
+  margin:0 0 7px!important;line-height:1.15!important;font-size:10px!important
+}
+#studentSubBody .tracking-grid>.track-score input,
+#studentSubBody .v701-checkin-scores>.track-score input{
+  min-height:40px!important;height:40px!important;width:100%!important;
+  margin:0!important;text-align:center!important;font-weight:800!important;
+  box-sizing:border-box!important;font-variant-numeric:tabular-nums
+}
+@media(max-width:760px){
+  #studentSubBody .tracking-grid,#studentSubBody .v701-checkin-scores{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important
+  }
+}
+@media(max-width:360px){
+  #studentSubBody .tracking-grid,#studentSubBody .v701-checkin-scores{grid-template-columns:1fr!important}
+}
+
+/* Campos de medición retirados */
+label:has(>#mAbd),label:has(>#mArmRight),label:has(>#mThighRight){display:none!important}
+
+/* Ritmo visual consistente */
+.form-grid{align-items:end!important}
+.form-grid>label{min-width:0!important}
+.form-grid>label>.input,.form-grid>label>input,.form-grid>label>select{margin-top:5px!important}
+.grid.kpi,.metric-grid,.summary-grid,.v72-progress-kpis,.v81-agenda-kpis,.v96-alert-summary{align-items:stretch!important}
+.grid.kpi>.card,.metric-grid>*,.summary-grid>*,.v72-progress-kpi,.v81-agenda-kpi,.v96-alert-kpi{
+  height:100%!important;min-height:86px!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  box-sizing:border-box!important
+}
+.v86-profile-grid{grid-auto-rows:1fr!important;align-items:stretch!important}
+.v86-profile-field{height:100%!important;min-height:72px!important;padding:10px 11px!important;justify-content:center!important}
+.nutrition-targets,.macro-preview{align-items:stretch!important}
+.nutrition-targets>.macro-card,.macro-preview>div{height:100%!important;box-sizing:border-box!important}
+.v94-guide-box,.v93-measure-row,.v96-alert-card,.v96-notice-item{box-sizing:border-box!important}
+.v94-guide-head{min-height:38px!important}
+.v94-guide-item{min-height:48px!important;box-sizing:border-box!important}
+.v93-measure-row{min-height:46px!important}
+.v94-chart{min-height:265px!important;box-sizing:border-box!important}
+.v94-chart svg{height:190px!important}
+.v96-alert-card{min-height:72px!important}
+.v96-alert-kpi{min-height:78px!important}
+.v96-notice-item{min-height:58px!important}
+.v70-recipe-grid,.photo-grid{align-items:stretch!important}
+.v70-recipe-card,.photo-card,.photo-slot{height:100%!important;box-sizing:border-box!important}
+.v70-recipe-card{display:flex!important;flex-direction:column!important}
+
+.student-row{min-height:68px;box-sizing:border-box!important}
+.exercise-row{min-height:58px;box-sizing:border-box!important}
+.history-item{min-height:52px;box-sizing:border-box!important}
+.food-item,.food-item-v61,.nutrition-log-row{min-width:0}
+
+@media(max-width:700px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:520px){
+  .nutrition-targets,.macro-preview{grid-template-columns:1fr 1fr!important}
+  .food-item{grid-template-columns:1fr!important}
+}
+@media(max-width:430px){.photo-grid{grid-template-columns:1fr!important}}
+@media(max-width:760px){
+  .section-title{flex-wrap:wrap!important}
+  .section-title>.badge,.section-title>.btn{flex:0 0 auto}
+  .card,.hero,.track-row,.v93-measure-row,.v94-guide-box,.v96-alert-card{max-width:100%!important}
+}
+</style>
+"""
+
+js=r"""
+<script id="v100CoreRuntime">
+(function(){
+  const SCORE_IDS=['ciSleep','ciStress','ciEnergy','ciAdh','ciMood','ciHunger','ciMotivation','ciRecovery'];
+  let polishTimer=null;
+
+  function clamp110(input){
+    if(!input)return;
+    const raw=String(input.value??'').replace(/[^0-9]/g,'');
+    if(raw===''){input.value='';return}
+    let n=parseInt(raw,10);
+    if(!Number.isFinite(n))n=1;
+    input.value=String(Math.max(1,Math.min(10,n)));
+  }
+
+  function ensureMotivation(){
+    if(document.getElementById('ciMotivation'))return;
+    const grid=document.querySelector('#studentSubBody .tracking-grid, #studentSubBody .v701-checkin-scores');
+    if(!grid)return;
+    const card=document.createElement('div');
+    card.className='track-score';
+    card.innerHTML='<label>Motivación</label><input id="ciMotivation" class="input" type="number" min="1" max="10" step="1" inputmode="numeric" value="7">';
+    const recovery=document.getElementById('ciRecovery')?.closest('.track-score');
+    recovery?grid.insertBefore(card,recovery):grid.appendChild(card);
+  }
+
+  function moveHunger(){
+    const input=document.getElementById('ciHunger');
+    const grid=document.querySelector('#studentSubBody .tracking-grid, #studentSubBody .v701-checkin-scores');
+    if(!input||!grid)return;
+    let card=input.closest('.track-score');
+    if(!card){
+      const oldLabel=input.closest('label');
+      card=document.createElement('div');
+      card.className='track-score';
+      const label=document.createElement('label');
+      label.textContent='Hambre';
+      card.appendChild(label);
+      card.appendChild(input);
+      if(oldLabel&&oldLabel!==card&&oldLabel.parentNode)oldLabel.remove();
+    }
+    const motivation=document.getElementById('ciMotivation')?.closest('.track-score');
+    motivation?grid.insertBefore(card,motivation):grid.appendChild(card);
+  }
+
+  function normalizeCheckin(){
+    ensureMotivation();
+    moveHunger();
+    const grid=document.querySelector('#studentSubBody .tracking-grid, #studentSubBody .v701-checkin-scores');
+    SCORE_IDS.forEach(id=>{
+      const inputs=[...document.querySelectorAll('#'+id)];
+      inputs.slice(1).forEach(x=>{
+        const card=x.closest('.track-score');
+        card?card.remove():x.remove();
+      });
+      const input=document.getElementById(id);
+      if(!input)return;
+      input.min='1';input.max='10';input.step='1';input.inputMode='numeric';input.pattern='[0-9]*';
+      input.oninput=()=>clamp110(input);
+      input.onchange=()=>clamp110(input);
+      input.onblur=()=>{clamp110(input);if(input.value==='')input.value='1'};
+      const card=input.closest('.track-score');
+      if(card){card.style.gridColumn='auto';card.style.width='100%'}
+    });
+    if(grid){
+      SCORE_IDS.forEach(id=>{
+        const card=document.getElementById(id)?.closest('.track-score');
+        if(card)grid.appendChild(card);
+      });
+    }
+    const badge=document.querySelector('#studentSubBody .section-title .badge.blue');
+    if(badge&&/1.?10|10/.test(badge.textContent||''))badge.textContent='1–10';
+  }
+
+  function removeDuplicateId(id){
+    const nodes=[...document.querySelectorAll('#'+id)];
+    nodes.slice(1).forEach(n=>n.remove());
+  }
+
+  function cleanupDom(){
+    document.querySelectorAll('.v65-lib-shortcuts,#v88Version,#v92CoachPhotoUploader,#cloudFeedWrap').forEach(n=>n.remove());
+    [
+      'v93MeasureCompare','v96CoachAlerts','v96StudentPreview','v94SuppCoach',
+      'v94SuppStudent','v86StudentProfileCard','v86CoachProfile',
+      'v93CoachPhotoUploader','v96NoticeCoachCard'
+    ].forEach(removeDuplicateId);
+  }
+
+  function prettyDates(){
+    document.querySelectorAll('.v93-compare-head .muted.tiny').forEach(n=>{
+      n.textContent=n.textContent.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g,'$3/$2/$1');
+    });
+  }
+
+  function polish(){
+    cleanupDom();
+    normalizeCheckin();
+    prettyDates();
+  }
+
+  const previousChart=window.simpleLineChart;
+  if(typeof previousChart==='function'){
+    window.simpleLineChart=function(){
+      const out=previousChart.apply(this,arguments);
+      return typeof out==='string'?out.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g,'$3/$2/$1'):out;
+    };
+  }
+
+  const previousSubmit=window.submitWeeklyCheckin;
+  if(typeof previousSubmit==='function'){
+    window.submitWeeklyCheckin=async function(){
+      normalizeCheckin();
+      for(const id of SCORE_IDS){
+        const input=document.getElementById(id);
+        if(!input)continue;
+        clamp110(input);
+        const n=Number(input.value);
+        if(!Number.isFinite(n)||n<1||n>10){
+          toast('Todos los valores del check-in deben estar entre 1 y 10');
+          input.focus();
+          return;
+        }
+      }
+      return previousSubmit.apply(this,arguments);
+    };
+  }
+
+  const previousOpenLibrary=window.openLibrary;
+  if(typeof previousOpenLibrary==='function'){
+    window.openLibrary=function(){
+      const out=previousOpenLibrary.apply(this,arguments);
+      setTimeout(()=>document.querySelectorAll('.v65-lib-shortcuts').forEach(n=>n.remove()),0);
+      return out;
+    };
+  }
+
+  const previousRender=window.render;
+  window.render=function(){
+    const out=previousRender.apply(this,arguments);
+    setTimeout(polish,40);
+    setTimeout(polish,300);
+    return out;
+  };
+
+  const observer=new MutationObserver(()=>{
+    clearTimeout(polishTimer);
+    polishTimer=setTimeout(polish,45);
+  });
+
+  setTimeout(()=>{
+    const view=document.getElementById('view');
+    if(view)observer.observe(view,{childList:true,subtree:true});
+    polish();
+  },180);
+})();
+</script>
+"""
+
+html=html.replace("</head>",css+"\n</head>",1)
+html=html.replace("</body>",js+"\n</body>",1)
+
+# Limpieza de espacios excesivos generados por capas eliminadas.
+html=re.sub(r'\n{4,}','\n\n\n',html)
+
+p.write_text(html,encoding="utf-8")
+
+swp=pathlib.Path("public/sw.js")
+sw=swp.read_text(encoding="utf-8").replace("team-fjz-v9-9","team-fjz-v10-0")
+swp.write_text(sw,encoding="utf-8")
+
+print("TEAM FJZ V10.0 core cleanup:",len(html),"bytes")
