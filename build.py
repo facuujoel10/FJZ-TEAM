@@ -283,3 +283,6 @@ exec(compile(open("v104_rep_scheme.py", encoding="utf-8").read(), "v104_rep_sche
 
 # V10.5 Ariel historical routine import
 exec(compile(open("v105_ariel_routine.py", encoding="utf-8").read(), "v105_ariel_routine.py", "exec"))
+
+# V10.6 allow partial workout session saves
+exec(compile(open("v106_partial_sessions.py", encoding="utf-8").read(), "v106_partial_sessions.py", "exec"))
