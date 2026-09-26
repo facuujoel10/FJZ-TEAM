@@ -277,3 +277,6 @@ exec(compile(open("v100_core_cleanup.py", encoding="utf-8").read(), "v100_core_c
 
 # V10.0 remove superseded legacy layers
 exec(compile(open("v100_post_cleanup.py", encoding="utf-8").read(), "v100_post_cleanup.py", "exec"))
+
+# V10.4 exact repetition schemes
+exec(compile(open("v104_rep_scheme.py", encoding="utf-8").read(), "v104_rep_scheme.py", "exec"))
