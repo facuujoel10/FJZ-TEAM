@@ -274,3 +274,6 @@ exec(compile(open("v99_full_audit.py", encoding="utf-8").read(), "v99_full_audit
 
 # V10.0 consolidated core cleanup
 exec(compile(open("v100_core_cleanup.py", encoding="utf-8").read(), "v100_core_cleanup.py", "exec"))
+
+# V10.0 remove superseded legacy layers
+exec(compile(open("v100_post_cleanup.py", encoding="utf-8").read(), "v100_post_cleanup.py", "exec"))
