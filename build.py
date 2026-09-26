@@ -289,3 +289,7 @@ exec(compile(open("v106_partial_sessions.py", encoding="utf-8").read(), "v106_pa
 
 # V11.0 method loads + coach intelligence + final polish
 exec(compile(open("v110_final_polish.py", encoding="utf-8").read(), "v110_final_polish.py", "exec"))
+
+
+# V11.1 production release cleanup
+exec(compile(open("v111_release_cleanup.py", encoding="utf-8").read(), "v111_release_cleanup.py", "exec"))
