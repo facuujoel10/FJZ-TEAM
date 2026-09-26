@@ -280,3 +280,6 @@ exec(compile(open("v100_post_cleanup.py", encoding="utf-8").read(), "v100_post_c
 
 # V10.4 exact repetition schemes
 exec(compile(open("v104_rep_scheme.py", encoding="utf-8").read(), "v104_rep_scheme.py", "exec"))
+
+# V10.5 Ariel historical routine import
+exec(compile(open("v105_ariel_routine.py", encoding="utf-8").read(), "v105_ariel_routine.py", "exec"))
