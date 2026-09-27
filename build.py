@@ -376,5 +376,8 @@ exec(compile(open("v135_nutrition_learn_visibility.py", encoding="utf-8").read()
 # V13.6 final nutrition + render/data stability
 exec(compile(open("v136_final_stability.py", encoding="utf-8").read(), "v136_final_stability.py", "exec"))
 
+# V13.7 method tracking + desktop stability
+exec(compile(open("v137_method_tracking_stability.py", encoding="utf-8").read(), "v137_method_tracking_stability.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
