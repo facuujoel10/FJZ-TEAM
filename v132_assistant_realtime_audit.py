@@ -349,7 +349,7 @@ js=r"""
       if(window.__fjzUnifiedRealtimeV132)supabaseClient.removeChannel(window.__fjzUnifiedRealtimeV132);
       const tables=[
         'athlete_snapshots','athletes','weekly_checkins','body_measurements','progress_photos',
-        'nutrition_logs','nutrition_plans','nutrition_habit_logs','nutrition_plan_revisions',
+        'nutrition_logs','nutrition_plans','nutrition_habit_logs','nutrition_plan_revisions','nutrition_templates',
         'exercise_feedback','checkin_schedules','coach_payments','student_notices',
         'athlete_schedule','athlete_reminders','coach_media_settings','exercise_media',
         'workout_sessions','workout_sets','progression_recommendations'
@@ -421,7 +421,7 @@ html=html.replace("</body>",js+"\n</body>",1)
 remaining_delayed=len(re.findall(r"setTimeout\(\(\)=>render\(\)",html))
 if remaining_delayed>8:
     raise RuntimeError(f"Too many delayed render calls remain: {remaining_delayed}")
-for marker in ["Asistente Coach 360","fjz-v132-unified","profile integrity","TEAM FJZ"]:
+for marker in ["Asistente Coach 360","fjz-v132-unified","Perfil actualizado y guardado","Datos actualizados y guardados"]:
     if marker not in html:
         raise RuntimeError("V13.2 missing marker: "+marker)
 
