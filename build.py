@@ -305,3 +305,7 @@ exec(compile(open("v113_exercise_order_descriptions.py", encoding="utf-8").read(
 
 # V11.4 editable student profiles
 exec(compile(open("v114_editable_student_profiles.py", encoding="utf-8").read(), "v114_editable_student_profiles.py", "exec"))
+
+
+# V11.5 student profile height editing
+exec(compile(open("v115_student_profile_height.py", encoding="utf-8").read(), "v115_student_profile_height.py", "exec"))
