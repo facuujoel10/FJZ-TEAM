@@ -27,6 +27,26 @@ html=re.sub(
     html
 )
 
+# Remove the legacy V11.9 PWA updater so only the centralized updater remains.
+legacy_pwa_block = r"""
+  // PWA update hardening: reload once when a newer service worker takes control.
+  if('serviceWorker' in navigator){
+    let refreshed=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(refreshed)return;
+      refreshed=true;
+      const key='fjz_sw_reload_v119';
+      if(sessionStorage.getItem(key)==='1')return;
+      sessionStorage.setItem(key,'1');
+      location.reload();
+    });
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.getRegistration().then(reg=>reg?.update?.()).catch(()=>{});
+    });
+  }
+"""
+html, legacy_pwa_removed = html.replace(legacy_pwa_block, ""), (1 if legacy_pwa_block in html else 0)
+
 marker=f'<meta name="fjz-release" content="{release}">'
 if re.search(r'<meta\s+name=["\']fjz-release["\']',html,re.I):
     html=re.sub(
@@ -36,7 +56,7 @@ if re.search(r'<meta\s+name=["\']fjz-release["\']',html,re.I):
 else:
     html=html.replace("</head>",marker+"\n</head>",1)
 
-runtime=f"""
+runtime=fr"""
 <script id="fjzReleaseRuntime">
 (function(){{
   const RELEASE={json.dumps(release)};
@@ -203,7 +223,12 @@ if f'TEAM FJZ V{release}' not in final_html:
     raise RuntimeError("Current visible release label missing")
 if f"const CACHE='{cache_name}'" not in sw:
     raise RuntimeError("Service Worker cache does not match release")
+controller_handlers = final_html.count("controllerchange")
+if controller_handlers != 1:
+    raise RuntimeError(f"Expected exactly 1 controllerchange handler, found {controller_handlers}")
 
 print("TEAM FJZ release authority:",release)
 print("TEAM FJZ cache authority:",cache_name)
 print("TEAM FJZ stale release constants:",len(wrong))
+print("TEAM FJZ legacy PWA updater removed:",legacy_pwa_removed)
+print("TEAM FJZ controllerchange handlers:",controller_handlers)
