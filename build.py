@@ -313,3 +313,7 @@ exec(compile(open("v115_student_profile_height.py", encoding="utf-8").read(), "v
 
 # V11.6 student avatar fix
 exec(compile(open("v116_student_avatar_fix.py", encoding="utf-8").read(), "v116_student_avatar_fix.py", "exec"))
+
+
+# V11.7 remove duplicate student profile UI
+exec(compile(open("v117_profile_dedup.py", encoding="utf-8").read(), "v117_profile_dedup.py", "exec"))
