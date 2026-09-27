@@ -325,3 +325,7 @@ exec(compile(open("v118_audit_cleanup.py", encoding="utf-8").read(), "v118_audit
 
 # V11.9 hard profile dedup + PWA refresh
 exec(compile(open("v119_profile_hard_dedup.py", encoding="utf-8").read(), "v119_profile_hard_dedup.py", "exec"))
+
+
+# V12.0 progress photo replace/delete
+exec(compile(open("v120_progress_photo_manage.py", encoding="utf-8").read(), "v120_progress_photo_manage.py", "exec"))
