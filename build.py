@@ -364,5 +364,8 @@ exec(compile(open("v131_profile_integrity.py", encoding="utf-8").read(), "v131_p
 # V13.2 Coach Assistant 360 + realtime batching
 exec(compile(open("v132_assistant_realtime_audit.py", encoding="utf-8").read(), "v132_assistant_realtime_audit.py", "exec"))
 
+# V13.3 platform-standard PWA icons
+exec(compile(open("v133_pwa_icons.py", encoding="utf-8").read(), "v133_pwa_icons.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
