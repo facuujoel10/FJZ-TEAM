@@ -309,3 +309,7 @@ exec(compile(open("v114_editable_student_profiles.py", encoding="utf-8").read(),
 
 # V11.5 student profile height editing
 exec(compile(open("v115_student_profile_height.py", encoding="utf-8").read(), "v115_student_profile_height.py", "exec"))
+
+
+# V11.6 student avatar fix
+exec(compile(open("v116_student_avatar_fix.py", encoding="utf-8").read(), "v116_student_avatar_fix.py", "exec"))
