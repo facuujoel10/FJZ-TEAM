@@ -329,3 +329,7 @@ exec(compile(open("v119_profile_hard_dedup.py", encoding="utf-8").read(), "v119_
 
 # V12.0 progress photo replace/delete
 exec(compile(open("v120_progress_photo_manage.py", encoding="utf-8").read(), "v120_progress_photo_manage.py", "exec"))
+
+
+# V12.1 normalize visible release label
+exec(compile(open("v121_release_label.py", encoding="utf-8").read(), "v121_release_label.py", "exec"))
