@@ -301,3 +301,7 @@ exec(compile(open("v112_sync_hardening.py", encoding="utf-8").read(), "v112_sync
 
 # V11.3 exercise ordering and descriptions
 exec(compile(open("v113_exercise_order_descriptions.py", encoding="utf-8").read(), "v113_exercise_order_descriptions.py", "exec"))
+
+
+# V11.4 editable student profiles
+exec(compile(open("v114_editable_student_profiles.py", encoding="utf-8").read(), "v114_editable_student_profiles.py", "exec"))
