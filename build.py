@@ -341,3 +341,7 @@ exec(compile(open("v122_followups_payments.py", encoding="utf-8").read(), "v122_
 
 # V12.3 consolidate coach alert center
 exec(compile(open("v123_alert_center_cleanup.py", encoding="utf-8").read(), "v123_alert_center_cleanup.py", "exec"))
+
+
+# V12.4 coach admin visibility + manual alerts + release fix
+exec(compile(open("v124_coach_admin.py", encoding="utf-8").read(), "v124_coach_admin.py", "exec"))
