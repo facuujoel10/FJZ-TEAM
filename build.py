@@ -373,5 +373,8 @@ exec(compile(open("v134_nutrition_education.py", encoding="utf-8").read(), "v134
 # V13.5 nutrition learn visibility fix
 exec(compile(open("v135_nutrition_learn_visibility.py", encoding="utf-8").read(), "v135_nutrition_learn_visibility.py", "exec"))
 
+# V13.6 final nutrition + render/data stability
+exec(compile(open("v136_final_stability.py", encoding="utf-8").read(), "v136_final_stability.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
