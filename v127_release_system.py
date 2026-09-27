@@ -39,7 +39,7 @@ else:
 runtime=f"""
 <script id="fjzReleaseRuntime">
 (function(){{
-  const RELEASE={json.dumps("12.8")};
+  const RELEASE={json.dumps(release)};
   window.__FJZ_RELEASE__=RELEASE;
 
   function fixTextNode(node){{
