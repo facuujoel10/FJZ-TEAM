@@ -297,3 +297,7 @@ exec(compile(open("v111_release_cleanup.py", encoding="utf-8").read(), "v111_rel
 
 # V11.2 synchronization hardening
 exec(compile(open("v112_sync_hardening.py", encoding="utf-8").read(), "v112_sync_hardening.py", "exec"))
+
+
+# V11.3 exercise ordering and descriptions
+exec(compile(open("v113_exercise_order_descriptions.py", encoding="utf-8").read(), "v113_exercise_order_descriptions.py", "exec"))
