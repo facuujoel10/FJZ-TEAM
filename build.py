@@ -349,3 +349,7 @@ exec(compile(open("v124_coach_admin.py", encoding="utf-8").read(), "v124_coach_a
 
 # V12.5 render/performance consolidation
 exec(compile(open("v125_render_optimization.py", encoding="utf-8").read(), "v125_render_optimization.py", "exec"))
+
+
+# V12.6 stable layout + profile first
+exec(compile(open("v126_stable_layout.py", encoding="utf-8").read(), "v126_stable_layout.py", "exec"))
