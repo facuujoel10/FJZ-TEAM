@@ -22,8 +22,8 @@ html=html.replace(old_filters,new_filters)
 
 # Make the toolbar visually stable even when a filter is empty.
 html=html.replace(
-  "'<div class="v96-alert-tools">'+",
-  "'<div class="v96-alert-tools v123-alert-toolbar">'+"
+  """'<div class="v96-alert-tools">'+""",
+  """'<div class="v96-alert-tools v123-alert-toolbar">'+"""
 )
 
 js=r"""
