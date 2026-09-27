@@ -353,3 +353,7 @@ exec(compile(open("v125_render_optimization.py", encoding="utf-8").read(), "v125
 
 # V12.6 stable layout + profile first
 exec(compile(open("v126_stable_layout.py", encoding="utf-8").read(), "v126_stable_layout.py", "exec"))
+
+
+# V12.7 centralized release + PWA update system
+exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
