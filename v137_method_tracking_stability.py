@@ -254,7 +254,7 @@ js=r"""
   const baseShowExerciseV137=showExerciseForm;
   showExerciseForm=function(dayIndex,exIndex,e){
     const out=baseShowExerciseV137.apply(this,arguments);
-    const grid=document.querySelector('.modal .form-grid, .modal-card .form-grid, .modal-backdrop .form-grid')||document.querySelector('.form-grid');
+    const grid=el('modal')?.querySelector('.form-grid');
     if(grid&&!el('v137MethodCoachBox')){
       grid.insertAdjacentHTML('beforeend',methodCoachHtmlV137(e));
       syncMethodFormV137();
