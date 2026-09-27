@@ -333,3 +333,7 @@ exec(compile(open("v120_progress_photo_manage.py", encoding="utf-8").read(), "v1
 
 # V12.1 normalize visible release label
 exec(compile(open("v121_release_label.py", encoding="utf-8").read(), "v121_release_label.py", "exec"))
+
+
+# V12.2 scheduled check-ins and payment tracking
+exec(compile(open("v122_followups_payments.py", encoding="utf-8").read(), "v122_followups_payments.py", "exec"))
