@@ -321,3 +321,7 @@ exec(compile(open("v117_profile_dedup.py", encoding="utf-8").read(), "v117_profi
 
 # V11.8 audit cleanup
 exec(compile(open("v118_audit_cleanup.py", encoding="utf-8").read(), "v118_audit_cleanup.py", "exec"))
+
+
+# V11.9 hard profile dedup + PWA refresh
+exec(compile(open("v119_profile_hard_dedup.py", encoding="utf-8").read(), "v119_profile_hard_dedup.py", "exec"))
