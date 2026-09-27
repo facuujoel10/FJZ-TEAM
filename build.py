@@ -358,5 +358,5 @@ exec(compile(open("v126_stable_layout.py", encoding="utf-8").read(), "v126_stabl
 # V13.0 canonical profile persistence
 exec(compile(open("v130_profile_persistence.py", encoding="utf-8").read(), "v130_profile_persistence.py", "exec"))
 
-# V12.7 centralized release + PWA update system
+# V13.1 profile integrity\nexec(compile(open("v131_profile_integrity.py", encoding="utf-8").read(), "v131_profile_integrity.py", "exec"))\n\n# V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
