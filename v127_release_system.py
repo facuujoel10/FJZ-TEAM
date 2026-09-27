@@ -76,7 +76,7 @@ html=re.sub(r'<script id="fjzReleaseRuntime">.*?</script>','',html,flags=re.S)
 html=html.replace("</body>",runtime+"\n</body>",1)
 p.write_text(html,encoding="utf-8")
 
-(OUT/"version.json").write_text(json.dumps({{"release":release}},ensure_ascii=False),encoding="utf-8")
+(OUT/"version.json").write_text(json.dumps({"release":release},ensure_ascii=False),encoding="utf-8")
 
 swp=OUT/"sw.js"
 sw=swp.read_text(encoding="utf-8")
