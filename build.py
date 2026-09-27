@@ -337,3 +337,7 @@ exec(compile(open("v121_release_label.py", encoding="utf-8").read(), "v121_relea
 
 # V12.2 scheduled check-ins and payment tracking
 exec(compile(open("v122_followups_payments.py", encoding="utf-8").read(), "v122_followups_payments.py", "exec"))
+
+
+# V12.3 consolidate coach alert center
+exec(compile(open("v123_alert_center_cleanup.py", encoding="utf-8").read(), "v123_alert_center_cleanup.py", "exec"))
