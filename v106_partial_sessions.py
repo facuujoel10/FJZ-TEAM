@@ -20,10 +20,13 @@ js=r"""
     const explicit=String(e?.loadMode||'').toLowerCase();
     if(['external','bodyweight','weighted','assisted'].includes(explicit))return explicit;
     const name=String(e?.name||'').toLowerCase();
-    if(/asistid|assisted/.test(name))return 'assisted';
-    if(/lastre|weighted/.test(name))return 'weighted';
-    if(/dominad|chin[- ]?up|pull[- ]?up|fondos?|dips?|flexi[oó]n|push[- ]?up/.test(name))return 'bodyweight';
-    if(/peso corporal|bodyweight/i.test(String(e?.equipment||'')))return 'bodyweight';
+    const equipment=String(e?.equipment||'').toLowerCase();
+    const mixed=/\+|superserie|biserie/.test(name)||(/\+/.test(equipment)&&!/peso corporal\s*\+\s*carga/.test(equipment));
+    if(/asistid|assisted/.test(name+' '+equipment))return 'assisted';
+    if(/lastre|weighted|con carga|peso corporal\s*\+\s*carga/.test(name+' '+equipment))return 'weighted';
+    if(mixed)return 'external';
+    if(/^\s*(dominadas?(?:\s|$)|chin[- ]?ups?(?:\s|$)|pull[- ]?ups?(?:\s|$)|fondos?(?:\s+en\s+paralelas)?\s*$|dips?\s*$|flexiones?(?:\s+de\s+brazos)?\s*$|push[- ]?ups?\s*$)/.test(name))return 'bodyweight';
+    if(/^\s*(peso corporal|bodyweight)\s*$/.test(equipment))return 'bodyweight';
     return 'external';
   }
   function isBodyweightV106(e){

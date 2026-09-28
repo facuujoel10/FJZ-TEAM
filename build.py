@@ -396,7 +396,7 @@ exec(compile(open("v148_session_delete.py", encoding="utf-8").read(), "v148_sess
 # V14.9 clearer progress metrics / audited release
 exec(compile(open("v149_progress_clarity.py", encoding="utf-8").read(), "v149_progress_clarity.py", "exec"))
 
-# V15.0 bodyweight / weighted / assisted load modes
+# V15.1 bodyweight / weighted / assisted load modes + mixed-exercise hardening
 exec(compile(open("v150_bodyweight_load_modes.py", encoding="utf-8").read(), "v150_bodyweight_load_modes.py", "exec"))
 
 # V15.1 full audit hardening / single-save editor
