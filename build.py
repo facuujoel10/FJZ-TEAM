@@ -387,5 +387,8 @@ exec(compile(open("v145_workout_autosave.py", encoding="utf-8").read(), "v145_wo
 # V14.6 render stability / background refresh guard
 exec(compile(open("v146_render_stability.py", encoding="utf-8").read(), "v146_render_stability.py", "exec"))
 
+# V14.7 coach-programmed routine authority
+exec(compile(open("v147_program_authority.py", encoding="utf-8").read(), "v147_program_authority.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
