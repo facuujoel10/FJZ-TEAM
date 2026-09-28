@@ -381,5 +381,8 @@ exec(compile(open("v143_interaction_qa.py", encoding="utf-8").read(), "v143_inte
 # V14.4 stretching / mobility library
 exec(compile(open("v144_stretching_library.py", encoding="utf-8").read(), "v144_stretching_library.py", "exec"))
 
+# V14.5 workout draft autosave / resume
+exec(compile(open("v145_workout_autosave.py", encoding="utf-8").read(), "v145_workout_autosave.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
