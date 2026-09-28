@@ -331,10 +331,6 @@ exec(compile(open("v119_profile_hard_dedup.py", encoding="utf-8").read(), "v119_
 exec(compile(open("v120_progress_photo_manage.py", encoding="utf-8").read(), "v120_progress_photo_manage.py", "exec"))
 
 
-# V12.1 normalize visible release label
-exec(compile(open("v121_release_label.py", encoding="utf-8").read(), "v121_release_label.py", "exec"))
-
-
 # V12.2 scheduled check-ins and payment tracking
 exec(compile(open("v122_followups_payments.py", encoding="utf-8").read(), "v122_followups_payments.py", "exec"))
 
@@ -367,12 +363,6 @@ exec(compile(open("v132_assistant_realtime_audit.py", encoding="utf-8").read(), 
 # V13.3 platform-standard PWA icons
 exec(compile(open("v133_pwa_icons.py", encoding="utf-8").read(), "v133_pwa_icons.py", "exec"))
 
-# V13.4 nutrition education
-exec(compile(open("v134_nutrition_education.py", encoding="utf-8").read(), "v134_nutrition_education.py", "exec"))
-
-# V13.5 nutrition learn visibility fix
-exec(compile(open("v135_nutrition_learn_visibility.py", encoding="utf-8").read(), "v135_nutrition_learn_visibility.py", "exec"))
-
 # V13.6 final nutrition + render/data stability
 exec(compile(open("v136_final_stability.py", encoding="utf-8").read(), "v136_final_stability.py", "exec"))
 
@@ -382,8 +372,8 @@ exec(compile(open("v137_method_tracking_stability.py", encoding="utf-8").read(),
 # V13.8 stable nutrition habits guide
 exec(compile(open("v138_nutrition_habits_guide.py", encoding="utf-8").read(), "v138_nutrition_habits_guide.py", "exec"))
 
-# V13.9 final QA / consolidation
-exec(compile(open("v139_final_qa.py", encoding="utf-8").read(), "v139_final_qa.py", "exec"))
+# V14.0 consolidated runtime / final optimization
+exec(compile(open("v140_consolidated_runtime.py", encoding="utf-8").read(), "v140_consolidated_runtime.py", "exec"))
 
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
