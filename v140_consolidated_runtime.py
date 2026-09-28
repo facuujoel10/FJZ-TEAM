@@ -61,6 +61,58 @@ new_payment="""      const body=el('v122PaymentsBody');
 if old_payment in html:
     html=html.replace(old_payment,new_payment,1)
 
+# ---------- 1b) Move legacy profile/layout guards into the final V14 pass ----------
+# V11.9: observer + render wrapper -> one exported cleanup function.
+legacy_marker = """  // Remove legacy nodes immediately if an older delayed callback tries to reinsert them.
+"""
+if legacy_marker in html and "window.__fjzRemoveLegacyProfileV119" not in html:
+    html=html.replace(
+        legacy_marker,
+        """  window.__fjzRemoveLegacyProfileV119=removeLegacyProfileV119;
+
+  // V14 handles this after render; no document-wide observer required.
+""",1
+    )
+
+html,n119_obs=re.subn(
+    r"""  const obs=new MutationObserver\(muts=>\{.*?  obs\.observe\(document\.documentElement,\{childList:true,subtree:true\}\);\s*""",
+    "",
+    html,count=1,flags=re.S
+)
+html,n119_render=re.subn(
+    r"""  const baseRenderV119=window\.render;\s*window\.render=function\(\)\{.*?return out;\s*\};\s*""",
+    "",
+    html,count=1,flags=re.S
+)
+html=html.replace("  document.addEventListener('DOMContentLoaded',removeLegacyProfileV119,{once:true});\n","")
+
+# V12.6: keep targeted renderCoachStudent/renderCloudExtras hooks, but remove
+# the general render wrapper + observer. Export its final layout pass.
+post_layout_marker="""  function postLayoutV126(){
+    ensureCoachProfileFirstV126();
+    ensureStudentOwnDataFirstV126();
+    normalizeBoxesV126();
+  }
+"""
+if post_layout_marker in html and "window.__fjzPostLayoutV126" not in html:
+    html=html.replace(
+        post_layout_marker,
+        post_layout_marker+"\n  window.__fjzPostLayoutV126=postLayoutV126;\n",
+        1
+    )
+
+html,n126_render=re.subn(
+    r"""  // Student side: place "Mis datos" first as soon as it exists\.\s*const baseRenderV126=render;\s*render=function\(\)\{.*?return out;\s*\};\s*""",
+    "",
+    html,count=1,flags=re.S
+)
+html,n126_obs=re.subn(
+    r"""  // One lightweight observer only while a student summary/home is visible\.\s*let queued=false;\s*const observer=new MutationObserver\(\(\)=>\{.*?if\(view\)observer\.observe\(view,\{childList:true,subtree:false\}\);\s*""",
+    "",
+    html,count=1,flags=re.S
+)
+
+
 # ---------- 2) Export recent post-render tasks, remove their wrappers ----------
 # V13.6 nutrition finalizer.
 needle136="""  function ensureCoachNutritionLearnV136(){
@@ -85,7 +137,7 @@ if needle136 in html and "window.__fjzPostRenderV136" not in html:
     html=html.replace(marker,repl,1)
 
 html,n136=re.subn(
-    r"""  const baseRenderV136=render;\s*render=function\(\)\{\s*const out=baseRenderV136\.apply\(this,arguments\);\s*fjzPostRenderV125\('nutrition-final-v136',\(\)=>\{\s*ensureStudentNutritionNavV136\(\);\s*ensureCoachNutritionLearnV136\(\);\s*\}\);\s*return out;\s*\};\s*""",
+    r"""  const baseRenderV136=render;.*?return out;\s*\};\s*(?=// Async nutrition loaders)""",
     "",
     html,count=1,flags=re.S
 )
@@ -228,6 +280,8 @@ js=r"""
   ];
 
   function finalPass(){
+    window.__fjzRemoveLegacyProfileV119?.();
+    window.__fjzPostLayoutV126?.();
     window.__fjzInjectCoachAdminV124?.();
     window.__fjzPostRenderV136?.();
     window.__fjzEnhanceCoachRoutineV137?.();
@@ -341,10 +395,12 @@ for marker in [
     "window.__fjzEnhanceCoachRoutineV137",
     "window.__fjzEnsureHabitsTabsV138",
     "window.__fjzInjectCoachAdminV124",
+    "window.__fjzRemoveLegacyProfileV119",
+    "window.__fjzPostLayoutV126",
 ]:
     if marker not in html: raise RuntimeError("V14 missing marker: "+marker)
 
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V14.0 CONSOLIDATED:",metrics)
-print("V14 wrapper removals:",{"v124":n_admin_wrap,"v136":n136,"v137":n137,"v138":n138,"old_normalizer":n_norm})
+print("V14 wrapper removals:",{"v119_observer":n119_obs,"v119_render":n119_render,"v124":n_admin_wrap,"v126_render":n126_render,"v126_observer":n126_obs,"v136":n136,"v137":n137,"v138":n138,"old_normalizer":n_norm})
 print("V14 merged style blocks:",len(mergeable),"remaining styles:",parser.styles)
