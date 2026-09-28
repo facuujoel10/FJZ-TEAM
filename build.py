@@ -393,7 +393,7 @@ exec(compile(open("v147_program_authority.py", encoding="utf-8").read(), "v147_p
 # V14.8 coach/student session deletion
 exec(compile(open("v148_session_delete.py", encoding="utf-8").read(), "v148_session_delete.py", "exec"))
 
-# V14.9 clearer progress metrics
+# V14.9 clearer progress metrics / audited release
 exec(compile(open("v149_progress_clarity.py", encoding="utf-8").read(), "v149_progress_clarity.py", "exec"))
 
 # V12.7 centralized release + PWA update system
