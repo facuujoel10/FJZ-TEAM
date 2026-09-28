@@ -196,12 +196,36 @@ html=html.replace("Date.now()-(Number(cloudLastWrite)||0)>700","Date.now()-(Numb
 # Remove layout containment from the V12.5 optimization if present.
 html=re.sub(r"#view\s*\{\s*contain\s*:\s*layout\s+style\s*;?\s*\}","#view{contain:none}",html)
 
+# ---------- 3b) V14.2 scroll contract ----------
+# Remove legacy root overscroll locking. Nested panels can still scroll, but the
+# document must always accept vertical wheel/touch scrolling.
+html=html.replace("body{overscroll-behavior-y:none}","body{overscroll-behavior-y:auto}")
+html=re.sub(r"html\s*\{([^}]*)overflow-y\s*:\s*hidden\s*;?([^}]*)\}",r"html{\1overflow-y:auto;\2}",html,flags=re.I)
+html=re.sub(r"body\s*\{([^}]*)overflow-y\s*:\s*hidden\s*;?([^}]*)\}",r"body{\1overflow-y:auto;\2}",html,flags=re.I)
+
 # ---------- 4) V14 consolidated runtime ----------
 css=r"""
 <style id="v140ConsolidatedLayout">
 *,*::before,*::after{box-sizing:border-box}
-html{scrollbar-gutter:stable}
-body{overflow-x:hidden}
+/* V14.2 scroll contract: document owns vertical scrolling. */
+html{
+  scrollbar-gutter:stable;
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+}
+body{
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden!important;
+  overflow-y:visible!important;
+  overscroll-behavior-y:auto!important;
+  touch-action:pan-x pan-y;
+}
+.app,.shell,#view{height:auto!important;max-height:none!important}
+
 #view,#coachStudentBody,#studentSubBody,.app-shell,.main,.content{min-width:0;max-width:100%}
 .card,.hero,.metric,.option-card,.student-row,.exercise-row,.day-card,.invite-card,
 .v114-profile-card,.v115-profile-card,.v122-row,.v132-step,.v136-learn-card,.v138-habit-card{
@@ -225,11 +249,16 @@ img,video,svg,canvas{max-width:100%}
 .section-title h1,.section-title h2,.section-title h3,.section-title p,
 .card h1,.card h2,.card h3,.card p,.card strong,.card span{overflow-wrap:anywhere}
 .tabs,.v70-recipe-tabs,.v136-nutrition-tabs{
-  min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-y:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin
 }
 .pill-row,.day-actions,.exercise-actions,.nutrition-builder-actions,.modal-actions{flex-wrap:wrap}
 .modal,.modal-card,.modal-content{max-width:min(94vw,760px)}
-@media(min-width:900px){html{overflow-y:scroll}#coachStudentBody,#studentSubBody{min-height:620px}}
+@media(min-width:900px){#coachStudentBody,#studentSubBody{min-height:620px}}
 @media(max-width:760px){
   .grid.two,.v114-profile-grid,.v115-profile-grid,.v132-assistant-top,
   .v136-learn-grid,.v138-habit-grid,.v138-general-list{grid-template-columns:1fr!important}
@@ -315,6 +344,7 @@ js=r"""
     cloudRefreshMinGapMs:1200,
     duplicateCleanup:true,
     layoutContract:true,
+    documentScrollContract:true,
     getStatus(){
       return {
         version:window.__FJZ_RELEASE__||RELEASE,
