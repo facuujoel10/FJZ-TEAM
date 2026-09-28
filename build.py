@@ -390,5 +390,8 @@ exec(compile(open("v146_render_stability.py", encoding="utf-8").read(), "v146_re
 # V14.7 coach-programmed routine authority
 exec(compile(open("v147_program_authority.py", encoding="utf-8").read(), "v147_program_authority.py", "exec"))
 
+# V14.8 coach/student session deletion
+exec(compile(open("v148_session_delete.py", encoding="utf-8").read(), "v148_session_delete.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
