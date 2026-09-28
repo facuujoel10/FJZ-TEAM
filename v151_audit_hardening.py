@@ -137,7 +137,7 @@ js=r"""
       sets,min,max,rirMin,rirMax,
       rest:clampV151(el('fRest')?.value,15,900,old?.rest||120),
       cue:(el('fCue')?.value||'').trim(),
-      increment:Math.max(0,Number(el('fInc')?.value)||Number(old?.increment)||2.5),
+      increment:(()=>{const raw=Number(el('fInc')?.value);if(Number.isFinite(raw))return Math.max(0,raw);const prev=Number(old?.increment);return Number.isFinite(prev)?Math.max(0,prev):2.5})(),
       method,
       methodNote,
       methodApply,
