@@ -16,8 +16,18 @@ css=r"""
 js=r"""
 <script id="v106PartialSessionsRuntime">
 (function(){
+  function loadModeV106(e){
+    const explicit=String(e?.loadMode||'').toLowerCase();
+    if(['external','bodyweight','weighted','assisted'].includes(explicit))return explicit;
+    const name=String(e?.name||'').toLowerCase();
+    if(/asistid|assisted/.test(name))return 'assisted';
+    if(/lastre|weighted/.test(name))return 'weighted';
+    if(/dominad|chin[- ]?up|pull[- ]?up|fondos?|dips?|flexi[oó]n|push[- ]?up/.test(name))return 'bodyweight';
+    if(/peso corporal|bodyweight/i.test(String(e?.equipment||'')))return 'bodyweight';
+    return 'external';
+  }
   function isBodyweightV106(e){
-    return /peso corporal|bodyweight/i.test(String(e?.equipment||''));
+    return loadModeV106(e)==='bodyweight';
   }
   function validSetV106(e,set){
     if(!Array.isArray(set))return false;
@@ -45,9 +55,11 @@ js=r"""
   }
   function targetSigV106(e){
     const base=targetSig(e);
-    return e?.repMode==='exact'&&Array.isArray(e.repsExact)&&e.repsExact.length
+    const reps=e?.repMode==='exact'&&Array.isArray(e.repsExact)&&e.repsExact.length
       ? base+'|'+e.repsExact.join('-')
       : base;
+    const mode=loadModeV106(e);
+    return mode==='external'?reps:reps+'|load:'+mode;
   }
 
   function saveSessionV106(pack){
@@ -69,7 +81,8 @@ js=r"""
           date:nowISO(),
           sets:sets.map(x=>[...x]),
           target:targetSigV106(e),
-          recommendation:clone(r)
+          recommendation:clone(r),
+          loadMode:loadModeV106(e)
         });
       }else{
         partial++;
@@ -86,7 +99,8 @@ js=r"""
         sets:sets.map(x=>[...x]),
         setIndexes:[...setIndexes],
         completed:complete,
-        recommendation:clone(r)
+        recommendation:clone(r),
+        loadMode:loadModeV106(e)
       });
     });
 
