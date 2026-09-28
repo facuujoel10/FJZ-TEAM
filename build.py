@@ -375,5 +375,8 @@ exec(compile(open("v138_nutrition_habits_guide.py", encoding="utf-8").read(), "v
 # V14.0 consolidated runtime / final optimization
 exec(compile(open("v140_consolidated_runtime.py", encoding="utf-8").read(), "v140_consolidated_runtime.py", "exec"))
 
+# V14.3 final interaction QA
+exec(compile(open("v143_interaction_qa.py", encoding="utf-8").read(), "v143_interaction_qa.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
