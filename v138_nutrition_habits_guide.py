@@ -1,38 +1,11 @@
-import pathlib,re
+import pathlib
 p=pathlib.Path("public/index.html")
 html=p.read_text(encoding="utf-8")
 
-# Add Habitos to the real nutrition nav built by V13.6.
-old_nav = """    '<button class="btn '+(active==='learn'?'primary':'')+'" onclick="switchNutritionViewV70(\'learn\')">Aprender</button>'+"""
-new_nav = old_nav + """
-    '<button class="btn '+(active==='habits'?'primary':'')+'" onclick="switchNutritionViewV70(\'habits\')">Hábitos</button>'+"""
-if old_nav not in html:
-    raise RuntimeError("V13.8 could not locate student nutrition nav")
-html = html.replace(old_nav,new_nav,1)
-
-# Add Habitos to the real student dispatcher.
-old_dispatch = """  if(nutritionStudentViewV70==='learn')return renderNutritionLearnV136();"""
-new_dispatch = old_dispatch + """
-  if(nutritionStudentViewV70==='habits')return renderNutritionHabitsGuideV138();"""
-if old_dispatch not in html:
-    raise RuntimeError("V13.8 could not locate nutrition dispatcher")
-html = html.replace(old_dispatch,new_dispatch,1)
-
-# Add Habitos to the coach nutrition nav.
-old_coach = """<button class="btn" onclick="openCoachNutritionLearnV136()">Aprender</button>"""
-new_coach = old_coach + """<button class="btn" onclick="openCoachNutritionHabitsV138()">Hábitos</button>"""
-if old_coach not in html:
-    raise RuntimeError("V13.8 could not locate coach nutrition nav")
-html = html.replace(old_coach,new_coach,1)
-
 css=r"""
 <style id="v138NutritionHabitsGuideStyles">
-/* The legacy checkbox card is replaced by the dedicated text-only guide. */
 #v66StudentHabits{display:none!important}
-.v138-habits-hero{
-  border:1px solid rgba(90,167,255,.22);
-  background:linear-gradient(180deg,rgba(90,167,255,.055),rgba(255,255,255,.015))
-}
+.v138-habits-hero{border:1px solid rgba(90,167,255,.22);background:linear-gradient(180deg,rgba(90,167,255,.055),rgba(255,255,255,.015))}
 .v138-habit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
 .v138-habit-card{border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--card);min-width:0}
 .v138-habit-card strong{font-size:12px}
@@ -64,6 +37,17 @@ js=r"""
     ['Alcohol','No es necesario para una alimentación saludable ni para el rendimiento. Evitarlo o limitarlo según edad, contexto e indicación profesional.']
   ];
 
+  function navV138(active){
+    return '<div class="v70-recipe-tabs v136-nutrition-tabs" id="v138NutritionTabs">'+
+      '<button class="btn '+(active==='plan'?'primary':'')+'" onclick="switchNutritionViewV70(\'plan\')">Mi plan</button>'+
+      '<button class="btn '+(active==='recipes'?'primary':'')+'" onclick="switchNutritionViewV70(\'recipes\')">Recetas</button>'+
+      '<button class="btn '+(active==='learn'?'primary':'')+'" onclick="switchNutritionViewV70(\'learn\')">Aprender</button>'+
+      '<button class="btn '+(active==='habits'?'primary':'')+'" onclick="switchNutritionViewV70(\'habits\')">Hábitos</button>'+
+    '</div>';
+  }
+
+  nutritionRecipesNavV70=navV138;
+
   function activeCoachHabitsV138(){
     try{
       const arr=activeNutritionHabitsV66?.()||[];
@@ -73,9 +57,7 @@ js=r"""
 
   function habitCardsV138(){
     const habits=activeCoachHabitsV138();
-    if(!habits.length){
-      return '<div class="empty">Tu coach todavía no cargó consejos específicos para esta etapa.</div>';
-    }
+    if(!habits.length)return '<div class="empty">Tu coach todavía no cargó consejos específicos para esta etapa.</div>';
     return '<div class="v138-habit-grid">'+habits.map(h=>
       '<div class="v138-habit-card">'+
         '<span class="v138-habit-tag">'+(h.custom?'Personalizado':'Consejo del plan')+'</span>'+
@@ -95,7 +77,7 @@ js=r"""
   }
 
   function habitsBodyV138(includeNav){
-    return (includeNav?nutritionRecipesNavV70('habits'):'')+
+    return (includeNav?navV138('habits'):'')+
       '<div class="card v138-habits-hero">'+
         '<div class="section-title"><div><h3>Hábitos y consejos</h3><div class="muted tiny">Recomendaciones para acompañar tu alimentación y hacerla más fácil de sostener.</div></div><span class="badge green">TEAM FJZ</span></div>'+
         '<div class="v138-note" style="margin-top:10px">No hace falta “cumplir perfecto”. Usá estos consejos como referencia práctica y priorizá lo que tu coach marcó para tu etapa.</div>'+
@@ -120,12 +102,30 @@ js=r"""
     );
   };
 
-  // Final safety net after async nutrition renders.
-  function ensureHabitsTabV138(){
+  const baseSwitchV138=switchNutritionViewV70;
+  switchNutritionViewV70=function(view){
+    nutritionStudentViewV70=view;
+    if(view==='habits'){render();return}
+    return baseSwitchV138.apply(this,arguments);
+  };
+
+  const baseNutritionStudentV138=renderNutritionStudent;
+  renderNutritionStudent=function(){
+    if(nutritionStudentViewV70==='habits')return renderNutritionHabitsGuideV138();
+    return baseNutritionStudentV138.apply(this,arguments);
+  };
+
+  function ensureHabitsTabsV138(){
     if(currentProfile?.role==='student'&&studentTab==='nutrition'){
-      const nav=el('studentSubBody')?.querySelector('.v70-recipe-tabs');
+      const host=el('studentSubBody');
+      if(!host)return;
+      if(nutritionStudentViewV70==='habits'){
+        if(!host.querySelector('.v138-habits-hero'))renderNutritionHabitsGuideV138();
+        return;
+      }
+      const nav=host.querySelector('.v70-recipe-tabs');
       if(nav&&![...nav.querySelectorAll('button')].some(b=>(b.textContent||'').trim()==='Hábitos')){
-        nav.insertAdjacentHTML('beforeend','<button class="btn '+(nutritionStudentViewV70==='habits'?'primary':'')+'" onclick="switchNutritionViewV70(\'habits\')">Hábitos</button>');
+        nav.outerHTML=navV138(nutritionStudentViewV70||'plan');
       }
     }
     if(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='nutrition'){
@@ -139,7 +139,7 @@ js=r"""
   const baseRenderV138=render;
   render=function(){
     const out=baseRenderV138.apply(this,arguments);
-    fjzPostRenderV125('nutrition-habits-v138',ensureHabitsTabV138);
+    fjzPostRenderV125('nutrition-habits-v138',ensureHabitsTabsV138);
     return out;
   };
 
@@ -147,16 +147,11 @@ js=r"""
   renderNutritionStudentLoaded=function(){
     const out=baseStudentLoadedV138.apply(this,arguments);
     if(nutritionStudentViewV70==='habits')renderNutritionHabitsGuideV138();
-    else ensureHabitsTabV138();
+    else ensureHabitsTabsV138();
     return out;
   };
 
-  window.__fjzV138={
-    version:'13.8',
-    habitsGuide:true,
-    textOnlyStudentHabits:true,
-    nutritionSubtab:true
-  };
+  window.__fjzV138={version:'13.8',habitsGuide:true,textOnlyStudentHabits:true,nutritionSubtab:true};
 })();
 </script>
 """
@@ -164,19 +159,10 @@ js=r"""
 html=html.replace("</head>",css+"\n</head>",1)
 html=html.replace("</body>",js+"\n</body>",1)
 
-for marker in [
-    "Hábitos</button>",
-    "renderNutritionHabitsGuideV138",
-    "textOnlyStudentHabits:true",
-    "Consejos de tu plan",
-    "Guía general de hábitos"
-]:
+for marker in ["Hábitos</button>","renderNutritionHabitsGuideV138","textOnlyStudentHabits:true","Consejos de tu plan","Guía general de hábitos"]:
     if marker not in html:
         raise RuntimeError("V13.8 missing habits marker: "+marker)
 
-if html.count("Hábitos</button>") < 2:
-    raise RuntimeError("V13.8 habits nav missing for student or coach")
-
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V13.8 nutrition habits guide:",len(html),"bytes")
-print("V13.8 Habitos button occurrences:",html.count("Hábitos</button>"))
+print("V13.8 runtime nav: Mi plan / Recetas / Aprender / Hábitos")
