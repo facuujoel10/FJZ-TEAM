@@ -399,5 +399,8 @@ exec(compile(open("v149_progress_clarity.py", encoding="utf-8").read(), "v149_pr
 # V15.0 bodyweight / weighted / assisted load modes
 exec(compile(open("v150_bodyweight_load_modes.py", encoding="utf-8").read(), "v150_bodyweight_load_modes.py", "exec"))
 
+# V15.1 full audit hardening / single-save editor
+exec(compile(open("v151_audit_hardening.py", encoding="utf-8").read(), "v151_audit_hardening.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
