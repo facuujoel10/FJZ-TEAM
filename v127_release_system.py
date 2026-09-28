@@ -62,23 +62,15 @@ runtime=fr"""
   const RELEASE={json.dumps(release)};
   window.__FJZ_RELEASE__=RELEASE;
 
-  function fixTextNode(node){{
-    if(!node||node.nodeType!==Node.TEXT_NODE)return;
-    const before=node.nodeValue||'';
-    let after=before
-      .replace(/TEAM FJZ V\d+(?:\.\d+)+/gi,'TEAM FJZ V'+RELEASE)
-      .replace(/(versi[oó]n\s*[:·-]?\s*)V?\d+(?:\.\d+)+/gi,'$1V'+RELEASE);
-    if(after!==before)node.nodeValue=after;
-  }}
-
-  function normalizeReleaseLabels(root=document.body){{
+  function normalizeReleaseLabels(){{
     document.querySelectorAll('[data-fjz-version]').forEach(el=>el.textContent='V'+RELEASE);
-    if(!root)return;
-    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-    while(walker.nextNode())fixTextNode(walker.currentNode);
   }}
 
+  let lastReleaseCheck=0;
   async function checkRelease(){{
+    const now=Date.now();
+    if(now-lastReleaseCheck<30000)return;
+    lastReleaseCheck=now;
     try{{
       const res=await fetch('./version.json?ts='+Date.now(),{{
         cache:'no-store',
@@ -97,21 +89,8 @@ runtime=fr"""
     }}catch(_e){{}}
   }}
 
-  // Guard against any legacy runtime or delayed DOM injection writing an old version.
-  const versionObserver=new MutationObserver(muts=>{{
-    for(const m of muts){{
-      if(m.type==='characterData')fixTextNode(m.target);
-      for(const n of m.addedNodes||[]){{
-        if(n.nodeType===Node.TEXT_NODE)fixTextNode(n);
-        else if(n.nodeType===Node.ELEMENT_NODE)normalizeReleaseLabels(n);
-      }}
-    }}
-  }});
-  if(document.documentElement){{
-    versionObserver.observe(document.documentElement,{{
-      childList:true,subtree:true,characterData:true
-    }});
-  }}
+  // V14: release constants are normalized at build time. No DOM-wide
+  // MutationObserver or full text-tree scan is needed at runtime.
 
   if('serviceWorker' in navigator){{
     window.addEventListener('load',async()=>{{
