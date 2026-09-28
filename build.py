@@ -379,5 +379,8 @@ exec(compile(open("v136_final_stability.py", encoding="utf-8").read(), "v136_fin
 # V13.7 method tracking + desktop stability
 exec(compile(open("v137_method_tracking_stability.py", encoding="utf-8").read(), "v137_method_tracking_stability.py", "exec"))
 
+# V13.8 stable nutrition habits guide
+exec(compile(open("v138_nutrition_habits_guide.py", encoding="utf-8").read(), "v138_nutrition_habits_guide.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
