@@ -402,5 +402,8 @@ exec(compile(open("v150_bodyweight_load_modes.py", encoding="utf-8").read(), "v1
 # V15.1 full audit hardening / single-save editor
 exec(compile(open("v151_audit_hardening.py", encoding="utf-8").read(), "v151_audit_hardening.py", "exec"))
 
+# V15.2 routine day deletion
+exec(compile(open("v152_day_delete.py", encoding="utf-8").read(), "v152_day_delete.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
