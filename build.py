@@ -426,5 +426,8 @@ exec(compile(open("v158_fluid_navigation.py", encoding="utf-8").read(), "v158_fl
 # V15.9 mobile layout + check-in + render polish
 exec(compile(open("v159_mobile_layout_checkin_render.py", encoding="utf-8").read(), "v159_mobile_layout_checkin_render.py", "exec"))
 
+# V16.0 final simple check-in numeric inputs
+exec(compile(open("v160_simple_checkin_inputs.py", encoding="utf-8").read(), "v160_simple_checkin_inputs.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
