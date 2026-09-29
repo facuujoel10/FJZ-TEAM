@@ -57,8 +57,10 @@ new_v96="""  const oldRenderV96=window.render;
 if old_v96 in html:
     html=html.replace(old_v96,new_v96,1)
 
-if len(removed)!=20:
-    raise RuntimeError("V17.0 expected 20 obsolete blocks removed, got "+str(len(removed)))
+# V123's style was already merged by the V14 style consolidator, so 19 runtime/style
+# blocks physically remain at this stage. All required obsolete runtimes are checked below.
+if len(removed)!=19:
+    raise RuntimeError("V17.0 expected 19 obsolete blocks removed, got "+str(len(removed)))
 
 css=r"""
 <style id="v170ConsolidatedRuntimeStyles">
