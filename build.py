@@ -447,5 +447,8 @@ exec(compile(open("v165_agenda_hard_reset.py", encoding="utf-8").read(), "v165_a
 # V16.6 explicit date reminders
 exec(compile(open("v166_explicit_date_reminders.py", encoding="utf-8").read(), "v166_explicit_date_reminders.py", "exec"))
 
+# V16.7 clean submitted check-in + full coach view
+exec(compile(open("v167_checkin_cleanup_full_coach.py", encoding="utf-8").read(), "v167_checkin_cleanup_full_coach.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
