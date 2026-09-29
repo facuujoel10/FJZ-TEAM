@@ -5,17 +5,17 @@ html=p.read_text(encoding="utf-8")
 
 before_metrics={
     "bytes":len(html),
-    "scripts":len(re.findall(r"<script\\b",html)),
-    "styles":len(re.findall(r"<style\\b",html)),
-    "render_assignments":len(re.findall(r"(?:window\\.)?render\\s*=\\s*function",html)),
-    "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
-    "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
+    "scripts":len(re.findall(r"<script\b",html)),
+    "styles":len(re.findall(r"<style\b",html)),
+    "render_assignments":len(re.findall(r"(?:window\.)?render\s*=\s*function",html)),
+    "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
+    "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
 }
 
 removed=[]
 def remove_tag(tag, ident):
     global html
-    pat=rf'<{tag}\\s+id="{re.escape(ident)}"[^>]*>.*?</{tag}>\\s*'
+    pat=rf'<{tag}\s+id="{re.escape(ident)}"[^>]*>.*?</{tag}>\s*'
     html,n=re.subn(pat,'',html,count=1,flags=re.S)
     if n: removed.append(ident)
     return n
@@ -35,7 +35,7 @@ for ident in [
     remove_tag("style" if "Styles" in ident else "script",ident)
 
 # Retire V12.4's separate Administration card; the same actions live in the V17 hero.
-html=html.replace("    setTimeout(injectCoachAdminCardV124,60);\\n","",1)
+html=html.replace("    setTimeout(injectCoachAdminCardV124,60);\n","",1)
 
 # V9.6 used three delayed reinjections after every render. Keep one scheduled pass.
 old_v96="""  const oldRenderV96=window.render;
@@ -56,6 +56,9 @@ new_v96="""  const oldRenderV96=window.render;
   };"""
 if old_v96 in html:
     html=html.replace(old_v96,new_v96,1)
+
+if len(removed)!=20:
+    raise RuntimeError("V17.0 expected 20 obsolete blocks removed, got "+str(len(removed)))
 
 css=r"""
 <style id="v170ConsolidatedRuntimeStyles">
@@ -475,11 +478,11 @@ for marker in ["__fjzRuntimeV170","canonicalDashboard:true","canonicalSummary:tr
 
 after_metrics={
     "bytes":len(html),
-    "scripts":len(re.findall(r"<script\\b",html)),
-    "styles":len(re.findall(r"<style\\b",html)),
-    "render_assignments":len(re.findall(r"(?:window\\.)?render\\s*=\\s*function",html)),
-    "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
-    "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
+    "scripts":len(re.findall(r"<script\b",html)),
+    "styles":len(re.findall(r"<style\b",html)),
+    "render_assignments":len(re.findall(r"(?:window\.)?render\s*=\s*function",html)),
+    "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
+    "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
 }
 print("TEAM FJZ V17.0 obsolete blocks removed:",removed)
 print("TEAM FJZ V17.0 metrics before:",before_metrics)
