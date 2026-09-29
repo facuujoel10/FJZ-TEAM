@@ -455,7 +455,7 @@ js=r"""
     };
   }
 
-  window.__fjzRuntimeV170={version:VERSION,consolidated:true,obsoleteRuntimeBlocksRemoved:20,canonicalDashboard:true,canonicalSummary:true,canonicalCheckin:true,alertReinjectCoalesced:true,photoDedup:true};
+  window.__fjzRuntimeV170={version:VERSION,consolidated:true,obsoleteRuntimeBlocksRemoved:19,canonicalDashboard:true,canonicalSummary:true,canonicalCheckin:true,alertReinjectCoalesced:true,photoDedup:true};
 })();
 </script>
 """
