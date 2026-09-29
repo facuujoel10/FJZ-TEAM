@@ -411,5 +411,8 @@ exec(compile(open("v153_nutrition_logging.py", encoding="utf-8").read(), "v153_n
 # V15.4 interactive weekly check-in scores
 exec(compile(open("v154_checkin_scores.py", encoding="utf-8").read(), "v154_checkin_scores.py", "exec"))
 
+# V15.5 mobile modal / exercise editor scroll fix
+exec(compile(open("v155_modal_scroll_fix.py", encoding="utf-8").read(), "v155_modal_scroll_fix.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
