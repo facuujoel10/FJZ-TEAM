@@ -432,5 +432,8 @@ exec(compile(open("v160_simple_checkin_inputs.py", encoding="utf-8").read(), "v1
 # V16.1 unified coach summary 360
 exec(compile(open("v161_unified_coach_summary.py", encoding="utf-8").read(), "v161_unified_coach_summary.py", "exec"))
 
+# V16.2 coach panel dedup + smart integrated guidance
+exec(compile(open("v162_coach_panel_dedup_guidance.py", encoding="utf-8").read(), "v162_coach_panel_dedup_guidance.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
