@@ -405,5 +405,8 @@ exec(compile(open("v151_audit_hardening.py", encoding="utf-8").read(), "v151_aud
 # V15.2 routine day deletion
 exec(compile(open("v152_day_delete.py", encoding="utf-8").read(), "v152_day_delete.py", "exec"))
 
+# V15.3 nutrition calculator / logging reliability
+exec(compile(open("v153_nutrition_logging.py", encoding="utf-8").read(), "v153_nutrition_logging.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
