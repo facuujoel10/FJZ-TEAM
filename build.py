@@ -420,5 +420,8 @@ exec(compile(open("v156_interaction_calculator_audit.py", encoding="utf-8").read
 # V15.7 compact check-in inputs
 exec(compile(open("v157_compact_checkin.py", encoding="utf-8").read(), "v157_compact_checkin.py", "exec"))
 
+# V15.8 fluid navigation / render stability
+exec(compile(open("v158_fluid_navigation.py", encoding="utf-8").read(), "v158_fluid_navigation.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
