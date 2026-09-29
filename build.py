@@ -423,5 +423,8 @@ exec(compile(open("v157_compact_checkin.py", encoding="utf-8").read(), "v157_com
 # V15.8 fluid navigation / render stability
 exec(compile(open("v158_fluid_navigation.py", encoding="utf-8").read(), "v158_fluid_navigation.py", "exec"))
 
+# V15.9 mobile layout + check-in + render polish
+exec(compile(open("v159_mobile_layout_checkin_render.py", encoding="utf-8").read(), "v159_mobile_layout_checkin_render.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
