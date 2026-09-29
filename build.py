@@ -408,5 +408,8 @@ exec(compile(open("v152_day_delete.py", encoding="utf-8").read(), "v152_day_dele
 # V15.3 nutrition calculator / logging reliability
 exec(compile(open("v153_nutrition_logging.py", encoding="utf-8").read(), "v153_nutrition_logging.py", "exec"))
 
+# V15.4 interactive weekly check-in scores
+exec(compile(open("v154_checkin_scores.py", encoding="utf-8").read(), "v154_checkin_scores.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
