@@ -444,5 +444,8 @@ exec(compile(open("v164_agenda_reliability.py", encoding="utf-8").read(), "v164_
 # V16.5 agenda hard reset / direct handlers
 exec(compile(open("v165_agenda_hard_reset.py", encoding="utf-8").read(), "v165_agenda_hard_reset.py", "exec"))
 
+# V16.6 explicit date reminders
+exec(compile(open("v166_explicit_date_reminders.py", encoding="utf-8").read(), "v166_explicit_date_reminders.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
