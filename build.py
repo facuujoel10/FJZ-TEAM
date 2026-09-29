@@ -414,5 +414,8 @@ exec(compile(open("v154_checkin_scores.py", encoding="utf-8").read(), "v154_chec
 # V15.5 mobile modal / exercise editor scroll fix
 exec(compile(open("v155_modal_scroll_fix.py", encoding="utf-8").read(), "v155_modal_scroll_fix.py", "exec"))
 
+# V15.6 tab interaction audit + calculator hardening
+exec(compile(open("v156_interaction_calculator_audit.py", encoding="utf-8").read(), "v156_interaction_calculator_audit.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
