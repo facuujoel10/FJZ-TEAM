@@ -456,5 +456,8 @@ exec(compile(open("v170_consolidated_runtime.py", encoding="utf-8").read(), "v17
 # V17.3 safe summary dedup + payments navigation
 exec(compile(open("v173_safe_summary_payments.py", encoding="utf-8").read(), "v173_safe_summary_payments.py", "exec"))
 
+# V17.4 single canonical 360 + integrated coach assistant
+exec(compile(open("v174_single_360_assistant.py", encoding="utf-8").read(), "v174_single_360_assistant.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
