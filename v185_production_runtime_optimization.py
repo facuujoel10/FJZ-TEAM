@@ -480,8 +480,8 @@ critical=[
   "openMeasurementManagerV179",
   "window.studentRows=renderStudentRowsV185",
   "v145", # workout autosave generation remains in final source
-  "deleteWorkoutSession",
-  "deleteRoutineDay",
+  "deleteSessionV148",
+  "deleteDayV152",
 ]
 missing=[x for x in critical if x not in html]
 if missing:
