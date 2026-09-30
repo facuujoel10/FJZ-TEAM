@@ -44,6 +44,17 @@ html,n66=re.subn(
     flags=re.S
 )
 
+# Consolidated builds may have dropped the V6.6 section comment while keeping
+# the engine. Remove the engine by its stable lexical boundaries as a second,
+# stricter cleanup pass.
+html,n66_core=re.subn(
+    r"const nutritionHabitPresetsV66=\[.*?Object\.assign\(window,\{\s*toggleCoachHabitV66.*?\}\);\s*",
+    "",
+    html,
+    count=1,
+    flags=re.S
+)
+
 # V6.8 later redefined only the visual habits renderer before its Spotify fix.
 # Remove that habits-only subsection while preserving Spotify.
 html,n68_habits=re.subn(
@@ -953,6 +964,10 @@ if "Aprender</button>" in html:
     raise RuntimeError("V17.6 visible Aprender button still present")
 if "Hábitos</button>" in html:
     raise RuntimeError("V17.6 visible Habits button still present")
+if "nutrition_habit_logs" in html:
+    raise RuntimeError("V17.6 retired nutrition_habit_logs code still present")
+if "nutritionHabitPresetsV66" in html:
+    raise RuntimeError("V17.6 retired V6.6 habits engine still present")
 
 ids=re.findall(r'id="(v176[^"]+)"',html)
 dupes=sorted({x for x in ids if ids.count(x)>1})
@@ -964,6 +979,7 @@ print("V17.6 cleanup:",{
     "v136_runtime_removed":n136_script,
     "v138_runtime_removed":n138_script,
     "v66_habits_removed":n66,
+    "v66_core_removed":n66_core,
     "v68_habits_removed":n68_habits,
     "learn_branch_removed":n_learn_branch,
     "new_id_duplicates":len(dupes)
