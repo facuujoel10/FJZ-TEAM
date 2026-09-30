@@ -483,5 +483,8 @@ exec(compile(open("v181_tracking_date_symmetry.py", encoding="utf-8").read(), "v
 # V18.2 geometry + coach dashboard polish
 exec(compile(open("v182_geometry_dashboard_polish.py", encoding="utf-8").read(), "v182_geometry_dashboard_polish.py", "exec"))
 
+# V18.3 student measurement scope + input alignment
+exec(compile(open("v183_student_scope_input_alignment.py", encoding="utf-8").read(), "v183_student_scope_input_alignment.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
