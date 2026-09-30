@@ -65,7 +65,7 @@ html=html.replace('"nutrition_habit_logs",',"")
 # Restore canonical student nutrition sub-navigation: Plan + Recipes only.
 nav_re=r"""function nutritionRecipesNavV70\(active\)\{.*?\n\}"""
 nav_fn=r"""function nutritionRecipesNavV70(active){
-  return '<div class="v70-recipe-tabs v176-nutrition-tabs" id="v176NutritionTabs">'+
+  return '<div class="v70-recipe-tabs v176-nutrition-tabs">'+
     '<button class="btn '+(active==='plan'?'primary':'')+'" onclick="switchNutritionViewV70(\'plan\')">Mi plan</button>'+
     '<button class="btn '+(active==='recipes'?'primary':'')+'" onclick="switchNutritionViewV70(\'recipes\')">Recetas</button>'+
   '</div>'
