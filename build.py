@@ -450,7 +450,7 @@ exec(compile(open("v166_explicit_date_reminders.py", encoding="utf-8").read(), "
 # V16.7 clean submitted check-in + full coach view
 exec(compile(open("v167_checkin_cleanup_full_coach.py", encoding="utf-8").read(), "v167_checkin_cleanup_full_coach.py", "exec"))
 
-# V17.0 consolidated coach/check-in runtime + dashboard polish
+# V17.x canonical consolidated runtime + coach/dashboard polish
 exec(compile(open("v170_consolidated_runtime.py", encoding="utf-8").read(), "v170_consolidated_runtime.py", "exec"))
 
 # V12.7 centralized release + PWA update system
