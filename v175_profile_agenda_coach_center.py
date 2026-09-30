@@ -995,11 +995,11 @@ if dupes:
 print("TEAM FJZ V17.5 profile/agenda/coach-center enabled")
 print("V17.5 audit:",{
     "bytes":len(html),
-    "scripts":len(re.findall(r"<script\\b",html)),
-    "styles":len(re.findall(r"<style\\b",html)),
-    "render_assignments":len(re.findall(r"(?:window\\.)?render\\s*=\\s*function",html)),
-    "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
-    "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
+    "scripts":html.count("<script"),
+    "styles":html.count("<style"),
+    "render_assignments":html.count("render=function")+html.count("window.render=function"),
+    "mutation_observers":html.count("new MutationObserver"),
+    "timeouts":html.count("setTimeout("),
     "new_id_duplicates":len(dupes)
 })
 
