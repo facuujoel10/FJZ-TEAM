@@ -471,5 +471,8 @@ exec(compile(open("v177_mobile_stability_measurements.py", encoding="utf-8").rea
 # V17.8 final mobile/render audit + post-render consolidation
 exec(compile(open("v178_final_mobile_render_audit.py", encoding="utf-8").read(), "v178_final_mobile_render_audit.py", "exec"))
 
-# V17.9 compact mobile layout + check-in time + measurement editing\nexec(compile(open("v179_compact_mobile_time_measure_edit.py", encoding="utf-8").read(), "v179_compact_mobile_time_measure_edit.py", "exec"))\n\n# V12.7 centralized release + PWA update system
+# V17.9 compact mobile layout + check-in time + measurement editing
+exec(compile(open("v179_compact_mobile_time_measure_edit.py", encoding="utf-8").read(), "v179_compact_mobile_time_measure_edit.py", "exec"))
+
+# V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
