@@ -6,15 +6,6 @@ html=p.read_text(encoding="utf-8")
 # V17.9 COMPACT MOBILE LAYOUT + CHECK-IN TIME + MEASURE EDIT
 # =========================================================
 
-# Put the measurement editor directly on the legacy Evolution card used in
-# Progress/Summary, not only on the newer Tracking history.
-old_head="""'<div class="muted tiny">'+esc(first.measured_on)+' → '+esc(last.measured_on)+'</div></div>'+"""
-new_head="""'<div class="v179-measure-head-actions"><div class="muted tiny">'+esc(first.measured_on)+' → '+esc(last.measured_on)+'</div><button type="button" class="btn small" onclick="openMeasurementManagerV179()">Editar medidas</button></div></div>'+"""
-head_count=html.count(old_head)
-if head_count!=1:
-    raise RuntimeError(f"V17.9 expected one legacy measurement header, got {head_count}")
-html=html.replace(old_head,new_head,1)
-
 css=r"""
 <style id="v179CompactMobileFixStyles">
 /* Undo V17.8 rules that made mobile screens look vertically inflated. */
@@ -271,9 +262,42 @@ js=r"""
     }
   }
 
+  let measureObserverV179=null;
+
+  function watchMeasurementCardV179(){
+    if(measureObserverV179){
+      measureObserverV179.disconnect();
+      measureObserverV179=null;
+    }
+
+    const coachRelevant=currentProfile?.role==='coach'&&coachTab==='student'&&
+      ['progress','summary'].includes(coachStudentTab);
+    const studentRelevant=mode==='student'&&['progress','home'].includes(studentTab);
+    if(!coachRelevant&&!studentRelevant)return;
+
+    const root=coachRelevant
+      ?document.getElementById('coachStudentBody')
+      :(document.getElementById('studentSubBody')||document.getElementById('view'));
+    if(!root)return;
+
+    if(document.getElementById('v93MeasureCompare')){
+      enhanceMeasurementCardsV179();
+      return;
+    }
+
+    measureObserverV179=new MutationObserver(()=>{
+      if(!document.getElementById('v93MeasureCompare'))return;
+      enhanceMeasurementCardsV179();
+      measureObserverV179?.disconnect();
+      measureObserverV179=null;
+    });
+    measureObserverV179.observe(root,{childList:true,subtree:true});
+  }
+
   function polishV179(){
     fixTimeFieldsV179();
     enhanceMeasurementCardsV179();
+    watchMeasurementCardV179();
   }
 
   // Reuse the already-consolidated final render pass instead of adding
