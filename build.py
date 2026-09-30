@@ -468,5 +468,5 @@ exec(compile(open("v176_mobile_tracking_meals_cleanup.py", encoding="utf-8").rea
 # V17.7 mobile stability + reliable measurement editing
 exec(compile(open("v177_mobile_stability_measurements.py", encoding="utf-8").read(), "v177_mobile_stability_measurements.py", "exec"))
 
-# V12.7 centralized release + PWA update system
+# V17.8 final mobile/render audit + post-render consolidation\nexec(compile(open("v178_final_mobile_render_audit.py", encoding="utf-8").read(), "v178_final_mobile_render_audit.py", "exec"))\n\n# V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
