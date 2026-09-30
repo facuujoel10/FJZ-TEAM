@@ -57,27 +57,10 @@ new_v96="""  const oldRenderV96=window.render;
 if old_v96 in html:
     html=html.replace(old_v96,new_v96,1)
 
-# V17.1 · remove the obsolete V6.3 summary completely.
-# It duplicated the canonical Resumen 360 and forced extra tracking/nutrition loads after render.
-legacy_v63_summary=re.compile(
-    r"async function injectUnifiedStudentSummaryV63\(\)\{.*?\n\}\n\nconst _renderV63Base=render;\nrender=function\(\)\{\n  _renderV63Base\(\);\n  if\(currentProfile\?\.role==='coach'&&coachTab==='student'&&coachStudentTab==='summary'\)injectUnifiedStudentSummaryV63\(\)\n\}\n",
-    re.S
-)
-html,legacy_v63_removed=legacy_v63_summary.subn("",html,count=1)
-if legacy_v63_removed!=1:
-    raise RuntimeError("V17.1 could not remove legacy V6.3 Resumen integral hook")
-html=html.replace(
-    "updateNutritionItemAmountV63,injectUnifiedStudentSummaryV63",
-    "updateNutritionItemAmountV63",
-    1
-)
-if "Resumen integral" in html:
-    raise RuntimeError("V17.1 legacy Resumen integral text still present")
-
 # V123's style was already merged by the V14 style consolidator, so 19 runtime/style
 # blocks physically remain at this stage. All required obsolete runtimes are checked below.
 if len(removed)!=19:
-    raise RuntimeError("V17.1 expected 19 obsolete blocks removed, got "+str(len(removed)))
+    raise RuntimeError("V17.0 expected 19 obsolete blocks removed, got "+str(len(removed)))
 
 css=r"""
 <style id="v170ConsolidatedRuntimeStyles">
@@ -172,7 +155,7 @@ body.v158-rendering #view{min-height:calc(100dvh - 145px)!important}
 js=r"""
 <script id="v170ConsolidatedRuntime">
 (function(){
-  const VERSION='17.1';
+  const VERSION='17.0';
   let checkinBusy=false;
   let editingCheckinWeek='';
   let summarySeq=0;
@@ -323,10 +306,12 @@ js=r"""
     const sessions30=typeof progressSessionsInDaysV72==='function'?progressSessionsInDaysV72(s,30).length:(s.sessions||[]).length;
     const weight=meas?.weight_kg??latest?.weight_kg??null;
     if(el('v170SummaryGrid'))el('v170SummaryGrid').innerHTML=
-      metricV170(sessions30,'Entrenos 30 días')+
-      metricV170(weight!=null?round1(weight)+' kg':'—','Peso reciente')+
+      metricV170(adherence(s)+'%','Adherencia 7 días')+metricV170(sessions30,'Entrenos 30 días')+
+      metricV170(fmtDate(s.lastWorkout),'Último entreno')+metricV170(weight!=null?round1(weight)+' kg':'—','Peso reciente')+
       metricV170(latest?.energy_level!=null?latest.energy_level+'/10':'—','Energía')+
-      metricV170(latest?.recovery_level!=null?latest.recovery_level+'/10':'—','Recuperación');
+      metricV170(latest?.recovery_level!=null?latest.recovery_level+'/10':'—','Recuperación')+
+      metricV170(latest?.sleep_quality!=null?latest.sleep_quality+'/10':'—','Sueño')+
+      metricV170(latest?.stress_level!=null?latest.stress_level+'/10':'—','Estrés');
     const signals=[];
     if(latest?.week_start)signals.push(signalV170('Check-in '+fmtDate(latest.week_start))); else signals.push(signalV170('Sin check-in reciente',true));
     if(nutritionCache?.plan)signals.push(signalV170('Plan nutricional activo')); else signals.push(signalV170('Sin plan nutricional',true));
@@ -353,11 +338,14 @@ js=r"""
     b.innerHTML='<div class="v170-overview"><div class="card" id="v170CoachOverview">'+
       '<div class="v170-section-head"><div><h3>Resumen 360</h3><p>Estado, seguimiento y señales útiles sin repetir la información del encabezado.</p></div>'+
       '<span id="v170SummaryState" class="muted micro">Actualizando…</span></div>'+
-      '<div id="v170SummaryGrid" class="v170-summary-grid">'+metricV170('—','Entrenos 30 días')+metricV170('—','Peso reciente')+metricV170('—','Energía')+metricV170('—','Recuperación')+'</div>'+
+      '<div id="v170SummaryGrid" class="v170-summary-grid">'+metricV170(adherence(s)+'%','Adherencia 7 días')+metricV170('—','Entrenos 30 días')+
+      metricV170(fmtDate(s.lastWorkout),'Último entreno')+metricV170('—','Peso reciente')+metricV170('—','Energía')+metricV170('—','Recuperación')+metricV170('—','Sueño')+metricV170('—','Estrés')+'</div>'+
       '<div class="v170-summary-section"><div class="v170-section-head"><div><h3>Estado conectado</h3><p>Check-in, nutrición y comentarios pendientes.</p></div></div><div id="v170SummarySignals" class="v170-summary-signals">'+signalV170('Cargando datos…')+'</div></div>'+
       '<div class="v170-summary-section"><div class="v170-section-head"><div><h3>Sugerencias del coach</h3><p>Máximo tres acciones concretas. No modifica ningún plan automáticamente.</p></div></div><div id="v170Guidance" class="v170-guide-list"></div></div>'+
       '<div class="v170-summary-section"><div class="section-title"><div><h3>Mensaje para el alumno</h3><div class="muted tiny">Mensaje general visible para el alumno.</div></div><button class="btn small" onclick="editCoachMessage()">Editar</button></div>'+
       '<div class="coach-note">'+esc(s.coachMessage||'Sin mensaje cargado.')+'</div></div>'+
+      '<div class="v170-overview-actions"><button class="btn primary small" onclick="coachStudentTab=\'routine\';render()">Rutina</button><button class="btn small" onclick="coachStudentTab=\'progress\';render()">Progreso</button>'+
+      '<button class="btn small" onclick="coachStudentTab=\'tracking\';render()">Seguimiento</button><button class="btn small" onclick="coachStudentTab=\'nutrition\';render()">Nutrición</button><button class="btn small" onclick="coachStudentTab=\'agenda\';render()">Agenda</button></div>'+
       '</div></div>';
     hydrateSummaryV170();
   };
@@ -456,25 +444,6 @@ js=r"""
     const row=(trackingCache.checkins||[]).find(x=>x.id===id);if(row&&data)Object.assign(row,data);toast('Feedback guardado');
   };
 
-  const basePaymentsV171=window.renderCoachPaymentsV122;
-  if(typeof basePaymentsV171==='function'){
-    window.renderCoachPaymentsV122=async function(){
-      const out=await basePaymentsV171.apply(this,arguments);
-      const hero=el('view')?.querySelector('.hero');
-      if(hero&&!el('v171PaymentsBack')){
-        const btn=document.createElement('button');
-        btn.id='v171PaymentsBack';
-        btn.className='btn ghost';
-        btn.textContent='← Panel Coach';
-        btn.onclick=()=>{coachTab='dashboard';render()};
-        const actions=hero.querySelector('.pill-row');
-        if(actions)actions.prepend(btn);
-        else hero.appendChild(btn);
-      }
-      return out;
-    };
-  }
-
   const baseProgressV170=window.renderProgress;
   if(typeof baseProgressV170==='function'){
     window.renderProgress=function(isCoach,targetId){
@@ -488,7 +457,7 @@ js=r"""
     };
   }
 
-  window.__fjzRuntimeV170={version:VERSION,consolidated:true,obsoleteRuntimeBlocksRemoved:19,canonicalDashboard:true,canonicalSummary:true,canonicalCheckin:true,alertReinjectCoalesced:true,photoDedup:true,legacyIntegralSummaryRemoved:true,paymentsBackNavigation:true,leanStudentSummary:true};
+  window.__fjzRuntimeV170={version:VERSION,consolidated:true,obsoleteRuntimeBlocksRemoved:19,canonicalDashboard:true,canonicalSummary:true,canonicalCheckin:true,alertReinjectCoalesced:true,photoDedup:true};
 })();
 </script>
 """
@@ -505,7 +474,7 @@ for ident in [
     if ident in html:
         raise RuntimeError("V17.0 legacy runtime still present: "+ident)
 
-for marker in ["__fjzRuntimeV170","canonicalDashboard:true","canonicalSummary:true","canonicalCheckin:true","alertReinjectCoalesced:true","photoDedup:true","legacyIntegralSummaryRemoved:true","paymentsBackNavigation:true","leanStudentSummary:true"]:
+for marker in ["__fjzRuntimeV170","canonicalDashboard:true","canonicalSummary:true","canonicalCheckin:true","alertReinjectCoalesced:true","photoDedup:true"]:
     if marker not in html:
         raise RuntimeError("V17.0 missing marker: "+marker)
 
@@ -517,8 +486,8 @@ after_metrics={
     "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
     "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
 }
-print("TEAM FJZ V17.1 obsolete blocks removed:",removed)
-print("TEAM FJZ V17.1 metrics before:",before_metrics)
-print("TEAM FJZ V17.1 metrics after:",after_metrics)
+print("TEAM FJZ V17.0 obsolete blocks removed:",removed)
+print("TEAM FJZ V17.0 metrics before:",before_metrics)
+print("TEAM FJZ V17.0 metrics after:",after_metrics)
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V17.1 consolidated runtime/dashboard enabled")
+print("TEAM FJZ V17.0 consolidated runtime/dashboard enabled")
