@@ -453,5 +453,8 @@ exec(compile(open("v167_checkin_cleanup_full_coach.py", encoding="utf-8").read()
 # V17.0 consolidated coach/check-in runtime + dashboard polish
 exec(compile(open("v170_consolidated_runtime.py", encoding="utf-8").read(), "v170_consolidated_runtime.py", "exec"))
 
+# V17.3 safe summary dedup + payments navigation
+exec(compile(open("v173_safe_summary_payments.py", encoding="utf-8").read(), "v173_safe_summary_payments.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
