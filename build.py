@@ -465,5 +465,8 @@ exec(compile(open("v175_profile_agenda_coach_center.py", encoding="utf-8").read(
 # V17.6 mobile UX + measurement editing + grouped meals + nutrition cleanup
 exec(compile(open("v176_mobile_tracking_meals_cleanup.py", encoding="utf-8").read(), "v176_mobile_tracking_meals_cleanup.py", "exec"))
 
+# V17.7 mobile stability + reliable measurement editing
+exec(compile(open("v177_mobile_stability_measurements.py", encoding="utf-8").read(), "v177_mobile_stability_measurements.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
