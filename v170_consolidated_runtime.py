@@ -60,7 +60,7 @@ if old_v96 in html:
 # V123's style was already merged by the V14 style consolidator, so 19 runtime/style
 # blocks physically remain at this stage. All required obsolete runtimes are checked below.
 if len(removed)!=19:
-    raise RuntimeError("V17.0 expected 19 obsolete blocks removed, got "+str(len(removed)))
+    raise RuntimeError("V17.2 expected 19 obsolete blocks removed, got "+str(len(removed)))
 
 css=r"""
 <style id="v170ConsolidatedRuntimeStyles">
@@ -155,7 +155,7 @@ body.v158-rendering #view{min-height:calc(100dvh - 145px)!important}
 js=r"""
 <script id="v170ConsolidatedRuntime">
 (function(){
-  const VERSION='17.0';
+  const VERSION='17.2';
   let checkinBusy=false;
   let editingCheckinWeek='';
   let summarySeq=0;
@@ -486,8 +486,8 @@ after_metrics={
     "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
     "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
 }
-print("TEAM FJZ V17.0 obsolete blocks removed:",removed)
-print("TEAM FJZ V17.0 metrics before:",before_metrics)
-print("TEAM FJZ V17.0 metrics after:",after_metrics)
+print("TEAM FJZ V17.2 obsolete blocks removed:",removed)
+print("TEAM FJZ V17.2 metrics before:",before_metrics)
+print("TEAM FJZ V17.2 metrics after:",after_metrics)
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V17.0 consolidated runtime/dashboard enabled")
+print("TEAM FJZ V17.2 consolidated runtime/dashboard enabled")
