@@ -474,5 +474,8 @@ exec(compile(open("v178_final_mobile_render_audit.py", encoding="utf-8").read(),
 # V17.9 compact mobile layout + check-in time + measurement editing
 exec(compile(open("v179_compact_mobile_time_measure_edit.py", encoding="utf-8").read(), "v179_compact_mobile_time_measure_edit.py", "exec"))
 
+# V18.0 visual stability + canonical navigation scroll
+exec(compile(open("v180_visual_stability_navigation.py", encoding="utf-8").read(), "v180_visual_stability_navigation.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
