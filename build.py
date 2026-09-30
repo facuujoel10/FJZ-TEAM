@@ -498,5 +498,8 @@ exec(compile(open("v186_exact_tracking_field_alignment.py", encoding="utf-8").re
 # V18.7 strict 2-by-2 tracking geometry
 exec(compile(open("v187_strict_paired_tracking_geometry.py", encoding="utf-8").read(), "v187_strict_paired_tracking_geometry.py", "exec"))
 
+# V18.8 panel click scroll fix
+exec(compile(open("v188_panel_click_scroll_fix.py", encoding="utf-8").read(), "v188_panel_click_scroll_fix.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
