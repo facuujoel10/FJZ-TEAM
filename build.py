@@ -492,5 +492,8 @@ exec(compile(open("v184_hard_measure_isolation_date_geometry.py", encoding="utf-
 # V18.5 production rendering/runtime optimization
 exec(compile(open("v185_production_runtime_optimization.py", encoding="utf-8").read(), "v185_production_runtime_optimization.py", "exec"))
 
+# V18.6 exact tracking field alignment
+exec(compile(open("v186_exact_tracking_field_alignment.py", encoding="utf-8").read(), "v186_exact_tracking_field_alignment.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
