@@ -495,5 +495,8 @@ exec(compile(open("v185_production_runtime_optimization.py", encoding="utf-8").r
 # V18.6 exact tracking field alignment
 exec(compile(open("v186_exact_tracking_field_alignment.py", encoding="utf-8").read(), "v186_exact_tracking_field_alignment.py", "exec"))
 
+# V18.7 strict 2-by-2 tracking geometry
+exec(compile(open("v187_strict_paired_tracking_geometry.py", encoding="utf-8").read(), "v187_strict_paired_tracking_geometry.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
