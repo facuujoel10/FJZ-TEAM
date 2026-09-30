@@ -477,5 +477,5 @@ exec(compile(open("v179_compact_mobile_time_measure_edit.py", encoding="utf-8").
 # V18.0 visual stability + canonical navigation scroll
 exec(compile(open("v180_visual_stability_navigation.py", encoding="utf-8").read(), "v180_visual_stability_navigation.py", "exec"))
 
-# V12.7 centralized release + PWA update system
+# V18.1 tracking date-field symmetry\nexec(compile(open("v181_tracking_date_symmetry.py", encoding="utf-8").read(), "v181_tracking_date_symmetry.py", "exec"))\n\n# V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
