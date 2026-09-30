@@ -80,11 +80,35 @@ runtime=fr"""
       const info=await res.json();
       const server=String(info?.release||'');
       if(server&&server!==RELEASE){{
-        const key='fjz_release_reload_'+server;
-        if(sessionStorage.getItem(key)!=='1'){{
-          sessionStorage.setItem(key,'1');
-          location.replace(location.pathname+'?v='+encodeURIComponent(server)+location.hash);
-        }}
+        const key='fjz_release_retry_'+server;
+        const retries=Math.min(3,Number(sessionStorage.getItem(key)||'0')+1);
+        sessionStorage.setItem(key,String(retries));
+
+        try{{
+          if('caches' in window){{
+            const keys=await caches.keys();
+            await Promise.all(keys
+              .filter(k=>k.startsWith('team-fjz-v')&&k!=='team-fjz-v'+server.replaceAll('.','-'))
+              .map(k=>caches.delete(k)));
+          }}
+        }}catch(_e){{}}
+
+        try{{
+          const reg=await navigator.serviceWorker?.getRegistration?.();
+          await reg?.update?.();
+          if(reg?.waiting)reg.waiting.postMessage?.({{type:'SKIP_WAITING'}});
+        }}catch(_e){{}}
+
+        const sep=location.pathname.includes('?')?'&':'?';
+        location.replace(
+          location.pathname+
+          '?v='+encodeURIComponent(server)+
+          '&refresh='+Date.now()+
+          location.hash
+        );
+        return;
+      }}else if(server===RELEASE){{
+        try{{sessionStorage.removeItem('fjz_release_retry_'+server)}}catch(_e){{}}
       }}
     }}catch(_e){{}}
   }}
@@ -109,6 +133,7 @@ runtime=fr"""
       }}catch(_e){{}}
       normalizeReleaseLabels();
       checkRelease();
+      setTimeout(()=>checkRelease(),7000);
     }},{{once:true}});
 
     let reloaded=false;
