@@ -486,5 +486,8 @@ exec(compile(open("v182_geometry_dashboard_polish.py", encoding="utf-8").read(),
 # V18.3 student measurement scope + input alignment
 exec(compile(open("v183_student_scope_input_alignment.py", encoding="utf-8").read(), "v183_student_scope_input_alignment.py", "exec"))
 
+# V18.4 hard measurement isolation + exact date geometry
+exec(compile(open("v184_hard_measure_isolation_date_geometry.py", encoding="utf-8").read(), "v184_hard_measure_isolation_date_geometry.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
