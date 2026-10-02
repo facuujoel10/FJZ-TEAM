@@ -501,5 +501,8 @@ exec(compile(open("v187_strict_paired_tracking_geometry.py", encoding="utf-8").r
 # V18.8 panel click scroll fix
 exec(compile(open("v188_panel_click_scroll_fix.py", encoding="utf-8").read(), "v188_panel_click_scroll_fix.py", "exec"))
 
+# V19.0 session save confirmation + alert badge geometry
+exec(compile(open("v190_session_save_alert_badge_hardening.py", encoding="utf-8").read(), "v190_session_save_alert_badge_hardening.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
