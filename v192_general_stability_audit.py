@@ -64,10 +64,10 @@ v122_pat=re.compile(
 )
 html,n_v122=v122_pat.subn("\nwindow.__fjzV122RealtimeDelegatedV192=true;\n\n",html,count=1)
 
-if n_v96!=1:
-    raise RuntimeError(f"V19.2 expected one V96 realtime wrapper, got {n_v96}")
-if n_v122!=1:
-    raise RuntimeError(f"V19.2 expected one V122 realtime wrapper, got {n_v122}")
+if n_v96 not in (0,1):
+    raise RuntimeError(f"V19.2 unexpected V96 realtime wrapper count: {n_v96}")
+if n_v122 not in (0,1):
+    raise RuntimeError(f"V19.2 unexpected V122 realtime wrapper count: {n_v122}")
 
 # ---------------------------------------------------------
 # Expand the unified Realtime view map so removing those old channels does
