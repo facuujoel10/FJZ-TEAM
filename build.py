@@ -504,5 +504,8 @@ exec(compile(open("v188_panel_click_scroll_fix.py", encoding="utf-8").read(), "v
 # V19.0 session save confirmation + alert badge geometry
 exec(compile(open("v190_session_save_alert_badge_hardening.py", encoding="utf-8").read(), "v190_session_save_alert_badge_hardening.py", "exec"))
 
+# V19.1 action geometry + overflow audit
+exec(compile(open("v191_action_geometry_audit.py", encoding="utf-8").read(), "v191_action_geometry_audit.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
