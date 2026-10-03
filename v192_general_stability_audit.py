@@ -70,36 +70,10 @@ if n_v122 not in (0,1):
     raise RuntimeError(f"V19.2 unexpected V122 realtime wrapper count: {n_v122}")
 
 # ---------------------------------------------------------
-# Expand the unified Realtime view map so removing those old channels does
-# not lose live updates where the data is actually visible.
+# Realtime view coverage is extended at runtime below, instead of rewriting
+# historical source text. This is resilient to prior consolidation passes.
 # ---------------------------------------------------------
-replacements={
-"home:new Set(['athlete_schedule','athlete_reminders','student_notices','workout_sessions','workout_sets','progression_recommendations']),":
-"home:new Set(['athlete_schedule','athlete_reminders','student_notices','weekly_checkins','nutrition_plans','exercise_feedback','workout_sessions','workout_sets','progression_recommendations']),",
-
-"agenda:new Set(['athlete_schedule','athlete_reminders']),":
-"agenda:new Set(['athlete_schedule','athlete_reminders','checkin_schedules','coach_payments']),",
-
-"if(coachTab==='agenda')return ['athlete_schedule','athlete_reminders'].includes(table);":
-"if(coachTab==='agenda')return ['athlete_schedule','athlete_reminders','checkin_schedules','coach_payments'].includes(table);",
-
-"summary:new Set(['weekly_checkins','body_measurements','nutrition_plans','exercise_feedback','workout_sessions','workout_sets','progression_recommendations','progress_photos']),":
-"summary:new Set(['weekly_checkins','body_measurements','nutrition_plans','exercise_feedback','student_notices','athlete_reminders','checkin_schedules','workout_sessions','workout_sets','progression_recommendations','progress_photos']),"
-}
-counts={}
-for old,new in replacements.items():
-    n=html.count(old)
-    counts[old[:28]]=n
-    html=html.replace(old,new)
-
-if counts.get("home:new Set(['athlete_sche",0)!=1:
-    raise RuntimeError("V19.2 student-home realtime map not found")
-if counts.get("agenda:new Set(['athlete_sc",0)<2:
-    raise RuntimeError("V19.2 agenda realtime maps not found")
-if counts.get("if(coachTab==='agenda')retu",0)!=1:
-    raise RuntimeError("V19.2 coach agenda realtime map not found")
-if counts.get("summary:new Set(['weekly_che",0)!=1:
-    raise RuntimeError("V19.2 coach summary realtime map not found")
+counts={"runtime_extension":1}
 
 css=r"""
 <style id="v192GeneralStabilityStyles">
@@ -312,6 +286,26 @@ js=r"""
       window[key]=null;
     });
   }
+
+  const baseShouldRenderRealtimeV192=window.__fjzShouldRenderRealtimeV146;
+  window.__fjzShouldRenderRealtimeV146=function(tables){
+    if(baseShouldRenderRealtimeV192?.(tables))return true;
+    const list=tables||[];
+    const has=(...names)=>list.some(t=>names.includes(t));
+
+    if(mode==='student'){
+      if(studentTab==='home'&&has('weekly_checkins','nutrition_plans','exercise_feedback'))return true;
+      if(studentTab==='agenda'&&has('checkin_schedules','coach_payments'))return true;
+    }
+
+    if(mode==='coach'){
+      if(coachTab==='agenda'&&has('checkin_schedules','coach_payments'))return true;
+      if(coachTab==='student'&&coachStudentTab==='agenda'&&has('checkin_schedules','coach_payments'))return true;
+      if(coachTab==='student'&&coachStudentTab==='summary'&&has('student_notices','athlete_reminders','checkin_schedules'))return true;
+    }
+
+    return false;
+  };
 
   const baseSetupRealtimeV192=window.setupRealtime;
   window.setupRealtime=function(){
