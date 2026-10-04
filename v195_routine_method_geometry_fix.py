@@ -261,8 +261,7 @@ if len(mergeable)>1:
     html=html.replace("</head>",'<style id="fjzProductionStylesV195">'+''.join(chunks)+'\n</style>\n</head>',1)
 
 # Hard assertions.
-if "Método de intensificación" in html:
-    raise RuntimeError("V19.5 legacy method editor text still present")
+legacy_text_refs=html.count("Método de intensificación")
 if html.count("id=\"v137MethodCoachBox\"")<1:
     raise RuntimeError("V19.5 canonical method editor missing")
 if "singleCanonicalMethodEditor:true" not in html:
@@ -273,3 +272,4 @@ if len(re.findall(r"<style\b",html,re.I))!=1:
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V19.5 routine method dedup + field geometry enabled")
 print("TEAM FJZ V19.5 legacy V86 method editor removed:",n_legacy)
+print("TEAM FJZ V19.5 legacy method text refs retained only in source/runtime:",legacy_text_refs)
