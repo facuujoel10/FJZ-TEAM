@@ -18,7 +18,7 @@ js=r"""
 <script id="v193InteractionPersistenceRuntime">
 (function(){
   const VERSION='19.3';
-  let interactionDepthV193=0;
+  let interactionLockUntilV193=0;
   let deferredTablesV193=new Set();
   let deferredTimerV193=0;
 
@@ -34,7 +34,7 @@ js=r"""
     const a=document.activeElement;
     if(a?.matches?.('input,select,textarea,[contenteditable="true"]'))return true;
     if(document.body?.classList.contains('v190-session-saving'))return true;
-    return interactionDepthV193>0;
+    return Date.now()<interactionLockUntilV193;
   }
 
   function syncModalStateV193(){
@@ -52,12 +52,9 @@ js=r"""
     });
     ['pointerdown','pointerup'].forEach(type=>{
       modal.addEventListener(type,()=>{
-        interactionDepthV193=1;
+        interactionLockUntilV193=Date.now()+700;
         clearTimeout(deferredTimerV193);
-        deferredTimerV193=setTimeout(()=>{
-          interactionDepthV193=0;
-          flushDeferredV193();
-        },700);
+        deferredTimerV193=setTimeout(flushDeferredV193,720);
       },{passive:true});
     });
   }
@@ -97,7 +94,7 @@ js=r"""
   if(typeof baseShowModalV193==='function'){
     window.showModal=function(){
       const out=baseShowModalV193.apply(this,arguments);
-      interactionDepthV193++;
+      interactionLockUntilV193=Date.now()+700;
       queueMicrotask(()=>{
         bindModalBoundaryV193();
         syncModalStateV193();
@@ -111,7 +108,7 @@ js=r"""
   if(typeof baseCloseModalV193==='function'){
     window.closeModal=function(){
       const out=baseCloseModalV193.apply(this,arguments);
-      interactionDepthV193=Math.max(0,interactionDepthV193-1);
+      interactionLockUntilV193=Date.now()+250;
       syncModalStateV193();
       clearTimeout(deferredTimerV193);
       deferredTimerV193=setTimeout(flushDeferredV193,250);
@@ -126,12 +123,9 @@ js=r"""
   document.addEventListener('pointerdown',e=>{
     const target=e.target?.closest?.('#modal,.modal,.routine-editor,.exercise-card,.session-card,input,select,textarea,button');
     if(!target)return;
-    interactionDepthV193=Math.max(interactionDepthV193,1);
+    interactionLockUntilV193=Date.now()+650;
     clearTimeout(deferredTimerV193);
-    deferredTimerV193=setTimeout(()=>{
-      if(!modalVisibleV193())interactionDepthV193=0;
-      flushDeferredV193();
-    },650);
+    deferredTimerV193=setTimeout(flushDeferredV193,670);
   },{capture:true,passive:true});
 
   bindModalBoundaryV193();
@@ -141,7 +135,7 @@ js=r"""
     return {
       modalVisible:modalVisibleV193(),
       editing:editingSurfaceV193(),
-      interactionDepth:interactionDepthV193,
+      interactionLockMs:Math.max(0,interactionLockUntilV193-Date.now()),
       deferredTables:[...deferredTablesV193]
     };
   };
