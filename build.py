@@ -516,5 +516,8 @@ exec(compile(open("v193_interaction_persistence.py", encoding="utf-8").read(), "
 # V19.4 final UI symmetry + functional audit
 exec(compile(open("v194_final_ui_functional_audit.py", encoding="utf-8").read(), "v194_final_ui_functional_audit.py", "exec"))
 
+# V19.5 routine method dedup + field geometry
+exec(compile(open("v195_routine_method_geometry_fix.py", encoding="utf-8").read(), "v195_routine_method_geometry_fix.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
