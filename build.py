@@ -510,5 +510,8 @@ exec(compile(open("v191_action_geometry_audit.py", encoding="utf-8").read(), "v1
 # V19.2 general stability / realtime / visual audit
 exec(compile(open("v192_general_stability_audit.py", encoding="utf-8").read(), "v192_general_stability_audit.py", "exec"))
 
+# V19.3 interaction persistence / modal protection
+exec(compile(open("v193_interaction_persistence.py", encoding="utf-8").read(), "v193_interaction_persistence.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
