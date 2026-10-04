@@ -19,8 +19,8 @@ legacy_repl="""  var showExerciseFormV86Base=window.showExerciseForm;
   };
 """
 html,n_legacy=legacy_pat.subn(legacy_repl,html,count=1)
-if n_legacy!=1:
-    raise RuntimeError(f"V19.5 expected one legacy V86 method editor, got {n_legacy}")
+if n_legacy not in (0,1):
+    raise RuntimeError(f"V19.5 unexpected legacy V86 editor count: {n_legacy}")
 
 # 2) Harden the canonical V13.7 exercise editor: if any stale legacy method
 #    control is produced by an older cached/runtime layer, remove it before
@@ -198,13 +198,20 @@ js=r"""
   function cleanupLegacyMethodV195(){
     const modal=document.getElementById('modal');
     if(!modal)return;
-    const old=modal.querySelector('#fMethod');
-    if(old){
+
+    // Remove legacy controls by ID, regardless of which historical wrapper
+    // created them.
+    modal.querySelectorAll('#fMethod,#fMethodNote').forEach(old=>{
       const host=old.closest('.span4')||old.closest('.card');
-      if(host&&host!==modal)host.remove();
+      if(host&&host!==modal&&!host.querySelector('#v137MethodCoachBox'))host.remove();
       else old.closest('label')?.remove();
-    }
-    modal.querySelector('#fMethodNote')?.closest('label')?.remove();
+    });
+
+    // Extra safety for an old card whose controls were already transformed.
+    [...modal.querySelectorAll('.card,.span4')].forEach(node=>{
+      if(node.querySelector('#v137MethodCoachBox'))return;
+      if(/Método de intensificación/i.test(node.textContent||''))node.remove();
+    });
 
     // Canonical editor must never be duplicated.
     const canonical=[...modal.querySelectorAll('#v137MethodCoachBox')];
