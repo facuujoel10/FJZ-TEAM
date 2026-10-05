@@ -522,5 +522,8 @@ exec(compile(open("v195_routine_method_geometry_fix.py", encoding="utf-8").read(
 # V19.6 fresh workout loads + routine builder stability
 exec(compile(open("v196_fresh_workout_routine_flow.py", encoding="utf-8").read(), "v196_fresh_workout_routine_flow.py", "exec"))
 
+# V19.7 reviewed alert archival
+exec(compile(open("v197_alert_archive_behavior.py", encoding="utf-8").read(), "v197_alert_archive_behavior.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
