@@ -528,5 +528,8 @@ exec(compile(open("v197_alert_archive_behavior.py", encoding="utf-8").read(), "v
 # V19.8 method panel persistence
 exec(compile(open("v198_method_panel_persistence.py", encoding="utf-8").read(), "v198_method_panel_persistence.py", "exec"))
 
+# V20.0 state/save/routine stability authority
+exec(compile(open("v200_state_save_routine_stability.py", encoding="utf-8").read(), "v200_state_save_routine_stability.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
