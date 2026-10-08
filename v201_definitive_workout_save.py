@@ -209,17 +209,18 @@ js=r"""
         const athleteId=currentAthleteIdV201();
         if(!s||!athleteId||!supabaseClient)throw new Error('Ficha o nube no disponible');
 
-        /* One write, only for the athlete whose session was just saved.
-           The athlete_snapshots trigger keeps workout_sessions/workout_sets
-           normalized and idempotent. */
-        const payload=cloneV201(s);
-        const {error}=await supabaseClient
-          .from('athlete_snapshots')
-          .upsert({
-            athlete_id:athleteId,
-            data:payload,
-            updated_at:new Date().toISOString()
-          },{onConflict:'athlete_id'});
+        /* V20.2 fast path: send only the completed session + affected
+           routine day. The RPC atomically merges both into the snapshot and
+           the optimized trigger normalizes only this changed session. */
+        const day=(s.days||[]).find(x=>x?.id===dayId)||null;
+        if(!day)throw new Error('Día de rutina no disponible');
+
+        const {error}=await supabaseClient.rpc('commit_workout_session_v202',{
+          p_athlete_id:athleteId,
+          p_day_id:String(dayId),
+          p_day:cloneV201(day),
+          p_session:cloneV201(session)
+        });
         if(error)throw error;
 
         window.__fjzSessionCloudConfirmedId=session.id;
@@ -344,6 +345,8 @@ js=r"""
     baseDraftNeverCopiesHistory:true,
     sessionLocalCommitImmediate:true,
     targetedAthleteSnapshotWrite:true,
+    compactSessionRpc:true,
+    incrementalSessionTrigger:true,
     noBlockingCloudConfirmation:true,
     repeatedSaveGuard:true,
     pendingSessionRetry:true
