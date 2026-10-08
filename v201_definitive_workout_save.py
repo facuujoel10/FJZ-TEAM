@@ -154,7 +154,7 @@ body.v201-session-committed button[onclick*="confirmPartialSessionV106"]{
 js=r"""
 <script id="v201WorkoutSaveRuntime">
 (function(){
-  const VERSION='20.1';
+  const VERSION='20.2';
   const PENDING_KEY='fjz_v201_pending_session';
   let syncPromiseV201=null;
   let retryTimerV201=0;
@@ -230,7 +230,7 @@ js=r"""
         try{window.setCloudStatus?.('online','Sesión guardada')}catch(_e){}
         return true;
       }catch(e){
-        console.warn('TEAM FJZ V20.1 targeted session sync pending',e);
+        console.warn('TEAM FJZ V20.2 targeted session sync pending',e);
         try{window.setCloudStatus?.('error','Sesión pendiente')}catch(_e){}
         clearTimeout(retryTimerV201);
         retryTimerV201=setTimeout(()=>retryPendingV201('timer'),5000);
@@ -264,7 +264,7 @@ js=r"""
     try{
       await persistSelectedSnapshotV201(session,p.dayId);
     }catch(e){
-      console.warn('TEAM FJZ V20.1 retry '+reason,e);
+      console.warn('TEAM FJZ V20.2 retry '+reason,e);
     }
   }
 
@@ -397,7 +397,7 @@ if len(re.findall(r"<style\b",html,re.I))!=1:
     raise RuntimeError("V20.1 expected one final stylesheet")
 
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V20.1 definitive workout save + empty load inputs enabled")
-print("TEAM FJZ V20.1 historical input fallbacks replaced:",n_vals)
-print("TEAM FJZ V20.1 base draft helpers replaced:",n_ensure,n_current)
-print("TEAM FJZ V20.1 blocking save function replaced:",n_save)
+print("TEAM FJZ V20.2 definitive workout save + empty load inputs enabled")
+print("TEAM FJZ V20.2 historical input fallbacks replaced:",n_vals)
+print("TEAM FJZ V20.2 base draft helpers replaced:",n_ensure,n_current)
+print("TEAM FJZ V20.2 blocking save function replaced:",n_save)
