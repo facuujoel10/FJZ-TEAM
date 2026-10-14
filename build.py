@@ -543,5 +543,8 @@ exec(compile(open("v204_terminal_save_scroll_stability.py", encoding="utf-8").re
 # V20.5 canonical workout completion + progress visuals
 exec(compile(open("v205_canonical_workout_progress.py", encoding="utf-8").read(), "v205_canonical_workout_progress.py", "exec"))
 
+# V20.6 fluidity/runtime audit
+exec(compile(open("v206_fluidity_runtime_audit.py", encoding="utf-8").read(), "v206_fluidity_runtime_audit.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
