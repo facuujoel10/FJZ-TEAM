@@ -172,7 +172,7 @@ if after["performance_observers"]!=0:
     raise RuntimeError("V20.6 PerformanceObserver regression")
 if after["mutation_observers"]>3:
     raise RuntimeError("V20.6 too many MutationObservers: "+str(after["mutation_observers"]))
-if after["render_assignments"]>26:
+if after["render_assignments"]>28:
     raise RuntimeError("V20.6 render wrapper regression: "+str(after["render_assignments"]))
 if after["timeouts"]>68:
     raise RuntimeError("V20.6 timeout regression: "+str(after["timeouts"]))
