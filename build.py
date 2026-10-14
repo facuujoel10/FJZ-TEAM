@@ -540,5 +540,8 @@ exec(compile(open("v203_terminal_workout_save.py", encoding="utf-8").read(), "v2
 # V20.4 terminal save + zero-jump reorder
 exec(compile(open("v204_terminal_save_scroll_stability.py", encoding="utf-8").read(), "v204_terminal_save_scroll_stability.py", "exec"))
 
+# V20.5 canonical workout completion + progress visuals
+exec(compile(open("v205_canonical_workout_progress.py", encoding="utf-8").read(), "v205_canonical_workout_progress.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
