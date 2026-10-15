@@ -546,5 +546,8 @@ exec(compile(open("v205_canonical_workout_progress.py", encoding="utf-8").read()
 # V20.6 fluidity/runtime audit
 exec(compile(open("v206_fluidity_runtime_audit.py", encoding="utf-8").read(), "v206_fluidity_runtime_audit.py", "exec"))
 
+# V20.7 confirmed session commit state machine
+exec(compile(open("v207_confirmed_session_commit.py", encoding="utf-8").read(), "v207_confirmed_session_commit.py", "exec"))
+
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
