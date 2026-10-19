@@ -1,6 +1,7 @@
 import pathlib
 import re
 import sys
+import runpy
 
 ROOT = pathlib.Path(__file__).resolve().parent
 BUILD = ROOT / "build.py"
@@ -58,3 +59,6 @@ print("TEAM FJZ PREFLIGHT OK")
 print(f"Release: {release}")
 print("Pinned base: base/team-fjz-source-v20.7.html")
 print("Production/staging isolation guards: OK")
+
+# Artifact-level regression checks.
+runpy.run_path(str(ROOT / 'smoke_static.py'), run_name='__main__')
