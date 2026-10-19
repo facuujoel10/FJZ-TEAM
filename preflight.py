@@ -33,8 +33,10 @@ if "TEAM_FJZ_SUPABASE_URL" not in build or "TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY" n
     errors.append("Staging Supabase env guards are missing")
 
 if (
-    "non-production build is pointing at the production Supabase URL" not in build
-    or "staging-local" not in build
+    "PRODUCTION_SUPABASE_URL" not in build
+    or 'APP_ENV == "staging-local"' not in build
+    or "TEAM_FJZ_SUPABASE_URL" not in build
+    or "TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY" not in build
     or "staging_local_guard.py" not in build
 ):
     errors.append("Production Supabase isolation guards are incomplete")
