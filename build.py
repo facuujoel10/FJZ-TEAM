@@ -4,24 +4,60 @@ import re
 import urllib.request
 import os
 
-PRODUCTION_SOURCE = "https://cujipwacwwpejhqjhnkr.supabase.co/functions/v1/team-fjz-source"
+PINNED_SOURCE = pathlib.Path("base/team-fjz-source-v20.7.html")
+PRODUCTION_SUPABASE_URL = "https://cujipwacwwpejhqjhnkr.supabase.co"
 APP_ENV = os.environ.get("TEAM_FJZ_ENV", "production").strip().lower()
-SOURCE = os.environ.get("TEAM_FJZ_SOURCE_URL", PRODUCTION_SOURCE).strip()
 
-# Safety guard: any non-production build must explicitly point to a
-# non-production source. This prevents a staging frontend from accidentally
-# reading/writing against the live TEAM FJZ backend.
-if APP_ENV != "production" and SOURCE == PRODUCTION_SOURCE:
+if APP_ENV not in {"production", "staging", "development", "test"}:
+    raise RuntimeError(f"TEAM FJZ safety guard: unknown TEAM_FJZ_ENV={APP_ENV!r}")
+
+if not PINNED_SOURCE.exists():
     raise RuntimeError(
-        "TEAM FJZ safety guard: non-production builds cannot use the production source. "
-        "Set TEAM_FJZ_SOURCE_URL to the staging Supabase Edge Function URL."
+        "TEAM FJZ reproducible-build guard: pinned base source is missing: "
+        f"{PINNED_SOURCE}"
     )
+
+# Reproducible baseline: builds start from the exact V20.7 base stored in Git.
+# We no longer fetch a mutable Edge Function during the build.
+html = PINNED_SOURCE.read_text(encoding="utf-8")
+
+if APP_ENV != "production":
+    staging_url = os.environ.get("TEAM_FJZ_SUPABASE_URL", "").strip().rstrip("/")
+    staging_key = os.environ.get("TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY", "").strip()
+
+    if not staging_url or not staging_key:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: non-production builds require "
+            "TEAM_FJZ_SUPABASE_URL and TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY."
+        )
+    if staging_url == PRODUCTION_SUPABASE_URL:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: non-production build is pointing at the "
+            "production Supabase URL."
+        )
+
+    url_pattern = r"const DEFAULT_SUPABASE_URL='[^']+';"
+    key_pattern = r"const DEFAULT_SUPABASE_KEY='[^']+';"
+    html, url_count = re.subn(
+        url_pattern,
+        "const DEFAULT_SUPABASE_URL=" + repr(staging_url) + ";",
+        html,
+        count=1,
+    )
+    html, key_count = re.subn(
+        key_pattern,
+        "const DEFAULT_SUPABASE_KEY=" + repr(staging_key) + ";",
+        html,
+        count=1,
+    )
+    if url_count != 1 or key_count != 1:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: expected exactly one Supabase URL/key "
+            "constant in the pinned base."
+        )
+
 OUT = pathlib.Path("public")
 OUT.mkdir(parents=True, exist_ok=True)
-
-req = urllib.request.Request(SOURCE, headers={"User-Agent": "TEAM-FJZ-Render-Build/1.0"})
-with urllib.request.urlopen(req, timeout=60) as response:
-    html = response.read().decode("utf-8")
 
 if "<!doctype html" not in html.lower() or "TEAM FJZ" not in html:
     raise RuntimeError("La fuente de TEAM FJZ no devolvió la aplicación esperada.")
