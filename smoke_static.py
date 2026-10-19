@@ -48,6 +48,20 @@ if "previousWeightReferenceOnly:true" not in html:
 if "methodPreviousReference:true" not in html:
     errors.append("method previous reference marker missing")
 
+# V20.8 is an optional consolidation layer on the feature/develop branch.
+# If present, it must reduce dead completion wrappers without replacing V20.7.
+if "__fjzV208" in html:
+    finish_count=len(re.findall(r"(?:window\\.)?finishWorkout\\s*=",html))
+    partial_count=len(re.findall(r"(?:window\\.)?confirmPartialSessionV106\\s*=",html))
+    if finish_count > 5:
+        errors.append(f"V20.8 finishWorkout consolidation incomplete: {finish_count}")
+    if partial_count > 6:
+        errors.append(f"V20.8 partial-save consolidation incomplete: {partial_count}")
+    if html.rfind('id="v207ConfirmedSessionCommitRuntime"') > html.rfind('id="v208WorkoutSaveConsolidationMarker"'):
+        errors.append("V20.8 marker must come after V20.7 final save runtime")
+    if "finalSaveAuthority:'V20.7'" not in html:
+        errors.append("V20.8 lost V20.7 final-save authority marker")
+
 env=os.environ.get("TEAM_FJZ_ENV","").strip().lower()
 artifact_is_staging_local=(
     "productionNetworkBlocked:true" in html
