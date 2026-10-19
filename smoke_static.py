@@ -60,6 +60,8 @@ if artifact_is_staging_local:
     require("productionNetworkBlocked:true","staging network kill-switch missing")
     require("cloudDisabled:true","staging cloud-disabled marker missing")
     require("syntheticDataOnly:true","staging synthetic-data marker missing")
+    require("workoutSaveSimulator:true","staging workout save simulator missing")
+    require("__fjzStagingSaveSimulator","staging save simulator API missing")
     require("STAGING</b> · DATOS DE PRUEBA","staging banner missing")
     for forbidden in (
         "cujipwacwwpejhqjhnkr",
