@@ -2,8 +2,20 @@ import base64
 import pathlib
 import re
 import urllib.request
+import os
 
-SOURCE = "https://cujipwacwwpejhqjhnkr.supabase.co/functions/v1/team-fjz-source"
+PRODUCTION_SOURCE = "https://cujipwacwwpejhqjhnkr.supabase.co/functions/v1/team-fjz-source"
+APP_ENV = os.environ.get("TEAM_FJZ_ENV", "production").strip().lower()
+SOURCE = os.environ.get("TEAM_FJZ_SOURCE_URL", PRODUCTION_SOURCE).strip()
+
+# Safety guard: any non-production build must explicitly point to a
+# non-production source. This prevents a staging frontend from accidentally
+# reading/writing against the live TEAM FJZ backend.
+if APP_ENV != "production" and SOURCE == PRODUCTION_SOURCE:
+    raise RuntimeError(
+        "TEAM FJZ safety guard: non-production builds cannot use the production source. "
+        "Set TEAM_FJZ_SOURCE_URL to the staging Supabase Edge Function URL."
+    )
 OUT = pathlib.Path("public")
 OUT.mkdir(parents=True, exist_ok=True)
 
