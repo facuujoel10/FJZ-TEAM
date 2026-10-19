@@ -99,7 +99,13 @@ js = r"""
 </script>
 """
 
-html = html.replace("</head>", css + "\n</head>", 1)
+style_matches=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
+if len(style_matches)!=1:
+    raise RuntimeError(f"staging-local: expected one consolidated stylesheet before staging injection, got {len(style_matches)}")
+sm=style_matches[0]
+staging_css=re.sub(r"^<style[^>]*>|</style>$","",css.strip(),flags=re.S|re.I)
+merged="<style"+sm.group("attrs")+">"+sm.group("body")+"\n/* STAGING LOCAL */\n"+staging_css+"\n</style>"
+html=html[:sm.start()]+merged+html[sm.end():]
 html = html.replace("</body>", js + "\n</body>", 1)
 
 # Absolute safety assertions.
