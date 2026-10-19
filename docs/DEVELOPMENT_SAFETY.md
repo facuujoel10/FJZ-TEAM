@@ -40,7 +40,7 @@ El build debe fallar si un entorno no productivo apunta al Supabase de producci�
 - No ejecutar migraciones destructivas.
 - Toda migración futura debe tener rollback o estrategia reversible.
 
-## Release checklist mínima
+## Validación automática\n\nCada build de staging debe ejecutar:\n\n```bash\npython preflight.py\npython smoke_static.py\n```\n\nUn fallo en cualquiera bloquea la publicación.\n\n## Release checklist mínima
 
 ### Auth y aislamiento
 - Coach Test inicia sesión.
