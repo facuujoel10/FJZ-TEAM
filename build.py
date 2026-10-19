@@ -8,7 +8,7 @@ PINNED_SOURCE = pathlib.Path("base/team-fjz-source-v20.7.html")
 PRODUCTION_SUPABASE_URL = "https://cujipwacwwpejhqjhnkr.supabase.co"
 APP_ENV = os.environ.get("TEAM_FJZ_ENV", "production").strip().lower()
 
-if APP_ENV not in {"production", "staging", "development", "test"}:
+if APP_ENV not in {"production", "staging", "staging-local", "development", "test"}:
     raise RuntimeError(f"TEAM FJZ safety guard: unknown TEAM_FJZ_ENV={APP_ENV!r}")
 
 if not PINNED_SOURCE.exists():
@@ -21,13 +21,34 @@ if not PINNED_SOURCE.exists():
 # We no longer fetch a mutable Edge Function during the build.
 html = PINNED_SOURCE.read_text(encoding="utf-8")
 
-if APP_ENV != "production":
+if APP_ENV == "staging-local":
+    # Safe zero-cost staging: cloud access is deliberately disabled.
+    # The final staging guard patch forces local synthetic/demo state.
+    url_pattern = r"const DEFAULT_SUPABASE_URL='[^']+';"
+    key_pattern = r"const DEFAULT_SUPABASE_KEY='[^']+';"
+    html, url_count = re.subn(
+        url_pattern,
+        "const DEFAULT_SUPABASE_URL='https://staging-local.invalid';",
+        html,
+        count=1,
+    )
+    html, key_count = re.subn(
+        key_pattern,
+        "const DEFAULT_SUPABASE_KEY='staging-local-cloud-disabled';",
+        html,
+        count=1,
+    )
+    if url_count != 1 or key_count != 1:
+        raise RuntimeError(
+            "TEAM FJZ staging-local guard: expected exactly one Supabase URL/key constant."
+        )
+elif APP_ENV != "production":
     staging_url = os.environ.get("TEAM_FJZ_SUPABASE_URL", "").strip().rstrip("/")
     staging_key = os.environ.get("TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY", "").strip()
 
     if not staging_url or not staging_key:
         raise RuntimeError(
-            "TEAM FJZ staging guard: non-production builds require "
+            "TEAM FJZ staging guard: non-production cloud builds require "
             "TEAM_FJZ_SUPABASE_URL and TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY."
         )
     if staging_url == PRODUCTION_SUPABASE_URL:
@@ -596,6 +617,10 @@ exec(compile(open("v206_fluidity_runtime_audit.py", encoding="utf-8").read(), "v
 
 # V20.7 confirmed session commit state machine
 exec(compile(open("v207_confirmed_session_commit.py", encoding="utf-8").read(), "v207_confirmed_session_commit.py", "exec"))
+
+# Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
+if APP_ENV == "staging-local":
+    exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
 
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
