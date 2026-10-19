@@ -6,8 +6,8 @@ html=p.read_text(encoding="utf-8")
 
 def counts(doc):
     return {
-        "finish":len(re.findall(r"(?:window\\.)?finishWorkout\\s*=",doc)),
-        "partial":len(re.findall(r"(?:window\\.)?confirmPartialSessionV106\\s*=",doc)),
+        "finish":len(re.findall(r"(?:window\.)?finishWorkout\s*=",doc)),
+        "partial":len(re.findall(r"(?:window\.)?confirmPartialSessionV106\s*=",doc)),
         "bytes":len(doc.encode("utf-8")),
     }
 
