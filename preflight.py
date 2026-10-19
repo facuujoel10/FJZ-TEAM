@@ -64,3 +64,6 @@ print("Production/staging isolation guards: OK")
 
 # Artifact-level regression checks.
 runpy.run_path(str(ROOT / 'smoke_static.py'), run_name='__main__')
+
+# Canonical authority / wrapper regression audit.
+runpy.run_path(str(ROOT / 'consolidation_audit.py'), run_name='__main__')
