@@ -46,8 +46,6 @@ css = r"""
 js = r"""
 <script id="fjzStagingLocalRuntime">
 (function(){
-  const PROD_HOST='cujipwacwwpejhqjhnkr.supabase.co';
-
   // Hard network kill-switch. A staging-local build may not contact production,
   // even if a historical handler is invoked manually.
   const nativeFetch=window.fetch?.bind(window);
@@ -56,7 +54,7 @@ js = r"""
       const raw=typeof input==='string'?input:(input?.url||'');
       try{
         const u=new URL(raw,location.href);
-        if(u.hostname===PROD_HOST || /\.supabase\.co$/i.test(u.hostname)){
+        if(/\.supabase\.co$/i.test(u.hostname)){
           return Promise.reject(new Error('TEAM FJZ staging-local: cloud access disabled'));
         }
       }catch(_e){}
