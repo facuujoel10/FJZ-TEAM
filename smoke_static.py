@@ -48,9 +48,17 @@ if "previousWeightReferenceOnly:true" not in html:
 if "methodPreviousReference:true" not in html:
     errors.append("method previous reference marker missing")
 
-env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
-if env=="staging-local":
+env=os.environ.get("TEAM_FJZ_ENV","").strip().lower()
+artifact_is_staging_local=(
+    "productionNetworkBlocked:true" in html
+    or "syntheticDataOnly:true" in html
+    or "STAGING</b> · DATOS DE PRUEBA" in html
+)
+effective_env="staging-local" if artifact_is_staging_local else (env or "production")
+
+if artifact_is_staging_local:
     require("productionNetworkBlocked:true","staging network kill-switch missing")
+    require("cloudDisabled:true","staging cloud-disabled marker missing")
     require("syntheticDataOnly:true","staging synthetic-data marker missing")
     require("STAGING</b> · DATOS DE PRUEBA","staging banner missing")
     for forbidden in (
@@ -67,7 +75,7 @@ if errors:
     sys.exit(1)
 
 print("TEAM FJZ SMOKE TEST OK")
-print(f"Environment: {env}")
+print(f"Environment: {effective_env}")
 print(f"Styles: {style_count}")
 print(f"Static IDs: {len(ids)}")
 print("Critical workout/routine/tracking/progress markers: OK")
