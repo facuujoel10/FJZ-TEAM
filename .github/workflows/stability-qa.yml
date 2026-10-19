@@ -1,0 +1,60 @@
+name: TEAM FJZ Stability QA
+
+on:
+  push:
+    branches:
+      - v208-stability-hardening
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile stability scripts
+        run: |
+          python -m py_compile build.py v207_confirmed_session_commit.py v208_pending_session_reload_guard.py
+
+      - name: Build TEAM FJZ
+        run: python build.py
+
+      - name: Verify V20.8 output
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path("public/index.html").read_text(encoding="utf-8")
+          release = Path("RELEASE").read_text(encoding="utf-8").strip()
+
+          required = [
+              "__fjzV207",
+              "__fjzV208",
+              "__fjzQueueSessionSyncV201",
+              "__fjzPendingSessionStateV208",
+              "reloadPendingGuard:true",
+              "startBlockedWhilePending:true",
+              "finishBlockedWhilePending:true",
+              "sameSessionRecovery:true",
+          ]
+          missing = [x for x in required if x not in html]
+          if missing:
+              raise SystemExit("Missing V20.8 markers: " + repr(missing))
+          if html.count('id="v208PendingSessionReloadGuard"') != 1:
+              raise SystemExit("V20.8 runtime guard count is not exactly one")
+          if release != "20.8":
+              raise SystemExit("Unexpected RELEASE: " + release)
+          print("TEAM FJZ V20.8 QA OK")
+          PY
