@@ -31,7 +31,7 @@ metrics={
 }
 
 authorities={
-    "release_v127":"TEAM FJZ release authority" in html or "__TEAM_FJZ_RELEASE__" in html,
+    "release_v127":('id="fjzReleaseRuntime"' in html and 'name="fjz-release"' in html),
     "save_v207":"cloudConfirmationBeforeSuccess:true" in html,
     "progress_v205":"professionalProgressCharts:true" in html,
     "reorder_v204":"modalReorderUsesAtomicRpc:true" in html,
