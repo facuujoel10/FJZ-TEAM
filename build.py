@@ -618,6 +618,9 @@ exec(compile(open("v206_fluidity_runtime_audit.py", encoding="utf-8").read(), "v
 # V20.7 confirmed session commit state machine
 exec(compile(open("v207_confirmed_session_commit.py", encoding="utf-8").read(), "v207_confirmed_session_commit.py", "exec"))
 
+# V20.8 consolidate superseded workout completion wrappers.
+exec(compile(open("v208_workout_save_wrapper_consolidation.py", encoding="utf-8").read(), "v208_workout_save_wrapper_consolidation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
