@@ -67,3 +67,6 @@ runpy.run_path(str(ROOT / 'smoke_static.py'), run_name='__main__')
 
 # Canonical authority / wrapper regression audit.
 runpy.run_path(str(ROOT / 'consolidation_audit.py'), run_name='__main__')
+
+# Diagnostic ownership map for consolidation planning.
+runpy.run_path(str(ROOT / 'authority_map.py'), run_name='__main__')
