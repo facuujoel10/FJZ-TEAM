@@ -84,6 +84,33 @@ js = r"""
     toast?.('Staging local: usá los datos sintéticos');
   };
 
+  // Safe cloud simulator for workout-save characterization.
+  // It never performs network I/O. By default it confirms quickly; set
+  // window.__fjzStagingFailNextSave=true to exercise the retry/error path.
+  window.__fjzStagingFailNextSave=false;
+  window.__fjzQueueSessionSyncV201=async function(session,dayId){
+    await new Promise(resolve=>setTimeout(resolve,140));
+    if(window.__fjzStagingFailNextSave){
+      window.__fjzStagingFailNextSave=false;
+      return false;
+    }
+    try{
+      window.__fjzSessionCloudConfirmedId=session?.id||null;
+      localStorage.setItem('fjz_staging_last_confirmed_session',JSON.stringify({
+        sessionId:session?.id||null,
+        dayId:dayId||null,
+        confirmedAt:new Date().toISOString()
+      }));
+    }catch(_e){}
+    return true;
+  };
+
+  window.__fjzStagingSaveSimulator={
+    enabled:true,
+    networkCalls:0,
+    setFailNext:function(){window.__fjzStagingFailNextSave=true}
+  };
+
   const badge=document.createElement('div');
   badge.id='fjzStagingLocalBanner';
   badge.innerHTML='<b>STAGING</b> · DATOS DE PRUEBA · SIN NUBE';
@@ -93,7 +120,8 @@ js = r"""
     enabled:true,
     productionNetworkBlocked:true,
     cloudDisabled:true,
-    syntheticDataOnly:true
+    syntheticDataOnly:true,
+    workoutSaveSimulator:true
   };
 })();
 </script>
