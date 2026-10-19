@@ -32,10 +32,12 @@ style_count=len(re.findall(r"<style\b",html,re.I))
 if style_count!=1:
     errors.append(f"expected 1 consolidated stylesheet, found {style_count}")
 
-ids=re.findall(r'\bid=["\']([^"\']+)["\']',html,re.I)
+static_dom=re.sub(r"<script\b.*?</script>","",html,flags=re.S|re.I)
+static_dom=re.sub(r"<style\b.*?</style>","",static_dom,flags=re.S|re.I)
+ids=re.findall(r'\bid=["\']([^"\']+)["\']',static_dom,re.I)
 dups=sorted({x for x in ids if ids.count(x)>1})
 if dups:
-    errors.append("duplicate static DOM ids: "+", ".join(dups[:12]))
+    errors.append("duplicate literal DOM ids: "+", ".join(dups[:12]))
 
 if "cloudConfirmationBeforeSuccess:true" not in html:
     errors.append("confirmed-save state machine marker missing")
