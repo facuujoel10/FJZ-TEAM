@@ -15,7 +15,7 @@ before=counts(html)
 
 def edit_script(doc, script_id, pattern, label):
     rx=re.compile(
-        r'(<script\\s+id=["\\']'+re.escape(script_id)+r'["\\'][^>]*>)(.*?)(</script>)',
+        r"(<script\s+id=[\"']"+re.escape(script_id)+r"[\"'][^>]*>)(.*?)(</script>)",
         re.S|re.I,
     )
     m=rx.search(doc)
