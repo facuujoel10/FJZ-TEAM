@@ -663,6 +663,9 @@ exec(compile(open("v221_general_repair_render_consolidation.py", encoding="utf-8
 # V20.22 integrate the V15.8 fluid render transaction into V17.8.
 exec(compile(open("v222_fluid_render_transaction_consolidation.py", encoding="utf-8").read(), "v222_fluid_render_transaction_consolidation.py", "exec"))
 
+# V20.23 professional visual foundation; CSS-only/runtime-topology neutral.
+exec(compile(open("v223_professional_ui_foundation.py", encoding="utf-8").read(), "v223_professional_ui_foundation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
