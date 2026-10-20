@@ -633,8 +633,11 @@ exec(compile(open("v211_core_realtime_delegation.py", encoding="utf-8").read(), 
 # V20.12 delegate exercise feedback realtime to the unified authority.
 exec(compile(open("v212_feedback_realtime_delegation.py", encoding="utf-8").read(), "v212_feedback_realtime_delegation.py", "exec"))
 
-# V20.13 delegate nutrition habit realtime to the unified authority.
+# V20.13 inventory the final realtime surface without behavior changes.
 exec(compile(open("v213_nutrition_habit_realtime_delegation.py", encoding="utf-8").read(), "v213_nutrition_habit_realtime_delegation.py", "exec"))
+
+# V20.14 delegate global music realtime to the unified authority.
+exec(compile(open("v214_global_music_realtime_delegation.py", encoding="utf-8").read(), "v214_global_music_realtime_delegation.py", "exec"))
 
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
