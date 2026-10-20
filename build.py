@@ -657,8 +657,11 @@ exec(compile(open("v219_profile_render_wrapper_consolidation.py", encoding="utf-
 # V20.20 consolidate V17.7 tracking repair wrappers into V19.2.
 exec(compile(open("v220_tracking_repair_wrapper_consolidation.py", encoding="utf-8").read(), "v220_tracking_repair_wrapper_consolidation.py", "exec"))
 
-# V20.21 delegate V17.7 general repair to the V18.0 route authority.
+# V20.21 remove the duplicate V11.9 profile cleanup render wrapper.
 exec(compile(open("v221_general_repair_render_consolidation.py", encoding="utf-8").read(), "v221_general_repair_render_consolidation.py", "exec"))
+
+# V20.22 integrate the V15.8 fluid render transaction into V17.8.
+exec(compile(open("v222_fluid_render_transaction_consolidation.py", encoding="utf-8").read(), "v222_fluid_render_transaction_consolidation.py", "exec"))
 
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
