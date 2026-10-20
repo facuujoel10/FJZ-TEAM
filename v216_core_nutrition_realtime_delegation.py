@@ -26,11 +26,11 @@ if "fjz-v132-unified" not in html:
     raise RuntimeError("V20.16 unified realtime authority missing")
 
 start_marker="const _setupRealtimeV61=setupRealtime;"
-end_marker="// ===== TEAM FJZ V8.3 · PLANTILLAS"
+end_marker="let nutritionV63={"
 if html.count(start_marker)!=1:
     raise RuntimeError("V20.16 nutrition start marker mismatch: "+str(html.count(start_marker)))
 if html.count(end_marker)!=1:
-    raise RuntimeError("V20.16 nutrition end marker mismatch: "+str(html.count(end_marker)))
+    raise RuntimeError("V20.16 nutrition module boundary mismatch: "+str(html.count(end_marker)))
 
 start=html.index(start_marker)
 end=html.index(end_marker,start)
