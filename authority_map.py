@@ -24,3 +24,53 @@ for m in re.finditer(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>",html,re.S
 
 print("TEAM FJZ AUTHORITY MAP")
 print(json.dumps(rows,indent=2,ensure_ascii=False))
+
+
+routine_targets=[
+    "moveExercise",
+    "confirmMoveExerciseV113",
+    "saveExercise",
+    "dayEditor",
+    "editDay",
+    "openLibrary",
+    "configureExercise",
+    "customExercise",
+    "editExercise",
+    "showExerciseForm",
+    "saveDay",
+    "addDay",
+    "duplicateDay",
+    "moveDay",
+    "deleteDayV152",
+]
+routine_rows=[]
+routine_totals={name:0 for name in routine_targets}
+
+for m in re.finditer(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>",html,re.S|re.I):
+    attrs=m.group("attrs") or ""
+    body=m.group("body") or ""
+    ident=re.search(r'id=["\']([^"\']+)["\']',attrs,re.I)
+    sid=ident.group(1) if ident else "(anonymous)"
+    row={"script":sid}
+    used=False
+    for name in routine_targets:
+        n=len(re.findall(r"(?:window\.)?"+re.escape(name)+r"\s*=",body))
+        row[name]=n
+        routine_totals[name]+=n
+        used=used or bool(n)
+    if used:
+        routine_rows.append(row)
+
+print("TEAM FJZ ROUTINE AUTHORITY MAP")
+print(json.dumps({
+    "totals":routine_totals,
+    "scripts":routine_rows,
+    "markers":{
+        "atomicReorderRpc":"reorder_athlete_exercises" in html,
+        "modalReorderAuthority":"modalReorderUsesAtomicRpc:true" in html,
+        "routineSavingGuard":"__fjzRoutineSavingV200" in html,
+        "routineFlowGuard":"__fjzRoutineFlowV196" in html,
+        "singleExerciseSave":"singleExerciseSave:true" in html,
+        "dayDeletePreservesHistory":"preservesSessionHistory:true" in html,
+    }
+},indent=2,ensure_ascii=False))
