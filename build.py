@@ -651,8 +651,11 @@ exec(compile(open("v217_nutrition_extra_realtime_delegation.py", encoding="utf-8
 # V20.18 delegate agenda realtime to the unified authority.
 exec(compile(open("v218_agenda_realtime_delegation.py", encoding="utf-8").read(), "v218_agenda_realtime_delegation.py", "exec"))
 
-# V20.19 consolidate V11.4-V11.9 profile render wrappers at V11.9 authority.
+# V20.19 consolidate profile render work into the V14 authority.
 exec(compile(open("v219_profile_render_wrapper_consolidation.py", encoding="utf-8").read(), "v219_profile_render_wrapper_consolidation.py", "exec"))
+
+# V20.20 consolidate V17.7 tracking repair wrappers into V19.2.
+exec(compile(open("v220_tracking_repair_wrapper_consolidation.py", encoding="utf-8").read(), "v220_tracking_repair_wrapper_consolidation.py", "exec"))
 
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
