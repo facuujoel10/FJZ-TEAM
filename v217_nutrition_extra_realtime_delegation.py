@@ -26,8 +26,8 @@ if "fjz-v132-unified" not in html:
     raise RuntimeError("V20.17 unified realtime authority missing")
 
 # Make nutrition_templates use the same canonical stale-data invalidation.
-old_inv="['nutrition_logs','nutrition_plans','nutrition_habit_logs','nutrition_plan_revisions'].includes(table)"
-new_inv="['nutrition_logs','nutrition_plans','nutrition_habit_logs','nutrition_plan_revisions','nutrition_templates'].includes(table)"
+old_inv="['nutrition_logs','nutrition_plans','nutrition_plan_revisions'].includes(table)"
+new_inv="['nutrition_logs','nutrition_plans','nutrition_plan_revisions','nutrition_templates'].includes(table)"
 if html.count(old_inv)!=1:
     raise RuntimeError("V20.17 nutrition invalidation anchor mismatch: "+str(html.count(old_inv)))
 html=html.replace(old_inv,new_inv,1)
