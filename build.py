@@ -666,6 +666,9 @@ exec(compile(open("v222_fluid_render_transaction_consolidation.py", encoding="ut
 # V20.23 professional visual foundation; CSS-only/runtime-topology neutral.
 exec(compile(open("v223_professional_ui_foundation.py", encoding="utf-8").read(), "v223_professional_ui_foundation.py", "exec"))
 
+# V20.24 professional student home using existing data/actions only.
+exec(compile(open("v224_student_dashboard_pro.py", encoding="utf-8").read(), "v224_student_dashboard_pro.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
