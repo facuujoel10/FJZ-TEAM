@@ -260,7 +260,7 @@ critical=[
     "v80AttentionFilters","v80AttentionBody","studentSearch","studentList",
     "hydrateCoachDashboardV80()","showSystemStatusV80()","showTemplates()",
     "coachTab='music';render()","newStudent()",
-    "v122FollowupPaymentsRuntime","__fjzV224"
+    "v122FollowupPaymentsRuntime",'meta name="fjz-student-dashboard" content="20.24"'
 ]
 missing=[x for x in critical if x not in html]
 if missing:
