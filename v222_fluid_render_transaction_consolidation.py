@@ -91,15 +91,13 @@ html=edit_script(html,"v158FluidNavigationRuntime",patch_v158)
 def patch_v178(body):
     old="out=baseRenderV178.apply(this,arguments);"
     if body.count(old)!=1:
-        probe=body.find("baseRenderV178")
-        print("V20.22 V17.8 PROBE:",repr(body[max(0,probe-320):probe+900]))
         raise RuntimeError("V20.22 V17.8 base invocation mismatch: "+str(body.count(old)))
     new="""out=window.__fjzRunRenderV158
           ?window.__fjzRunRenderV158(baseRenderV178,this,arguments)
           :baseRenderV178.apply(this,arguments);"""
     return body.replace(old,new,1)
 
-html=edit_script(html,"v178FinalMobileAuditRuntime",patch_v178)
+html=edit_script(html,"v177MobileStabilityMeasurementRuntime",patch_v178)
 
 after=metrics(html)
 if after["render_assignments"]!=20:
