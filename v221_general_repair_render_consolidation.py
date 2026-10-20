@@ -4,22 +4,29 @@ p=pathlib.Path("public/index.html")
 html=p.read_text(encoding="utf-8")
 
 # =========================================================
-# V20.21 GENERAL MOBILE REPAIR RENDER CONSOLIDATION
+# V20.21 LEGACY PROFILE RENDER CONSOLIDATION
 # =========================================================
-# V17.7's remaining general render wrapper only queues queueRepairV177().
-# V18.0 is the immediately-later route/scroll authority.
+# V11.9 still carries one post-render cleanup wrapper after V12.5:
+#   fjzPostRenderV125('profile-guard-v119', removeLegacyProfileV119)
 #
-# Move the repair queue call into V18.0 immediately after baseRenderV180()
-# returns and BEFORE route-top scheduling. This preserves the original enqueue
-# order while removing one nested general render wrapper.
+# V14 already exports the same function and invokes it from finalPass():
+#   window.__fjzRemoveLegacyProfileV119?.()
 #
-# V17.7 tracking-specific repair is already preserved by V20.20/V19.2.
-# Resize/orientation listeners stay untouched.
+# Remove only the duplicate V11.9 render wrapper. Preserve:
+# - initial profile cleanup
+# - legacy-profile CSS hard hide
+# - PWA/service-worker refresh handling
+# - V14 canonical cleanup on every render
+#
+# No navigation, measurement, workout, realtime or payment logic changes.
 
 def metrics(doc):
     return {
         "render_assignments":len(re.findall(r"(?:window\.)?render\s*=",doc)),
-        "v177_general_wrapper":doc.count("const baseRenderV177=render;"),
+        "v119_render_wrappers":len(re.findall(
+            r"const\s+baseRenderV119\s*=\s*window\.render;[\s\S]*?window\.render\s*=\s*function\(\)",
+            doc
+        )),
         "timeouts":len(re.findall(r"setTimeout\s*\(",doc)),
         "rafs":len(re.findall(r"requestAnimationFrame\s*\(",doc)),
         "listeners":len(re.findall(r"addEventListener\s*\(",doc)),
@@ -43,88 +50,80 @@ def edit_script(doc,script_id,transform):
 before=metrics(html)
 if before["render_assignments"]!=22:
     raise RuntimeError("V20.21 unexpected render baseline: "+repr(before))
-if before["v177_general_wrapper"]!=1:
-    raise RuntimeError("V20.21 expected one V17.7 general wrapper: "+repr(before))
-if "__fjzQueueRepairV177" not in html:
-    raise RuntimeError("V20.21 V17.7 exported repair queue missing")
+if before["v119_render_wrappers"]!=1:
+    raise RuntimeError("V20.21 expected one V11.9 render wrapper: "+repr(before))
 
-def patch_v177(body):
-    old="""  // One post-render repair frame only. No MutationObserver and no repeating timer.
-  if(typeof render==='function'){
-    const baseRenderV177=render;
-    render=function(){
-      const out=baseRenderV177.apply(this,arguments);
-      queueRepairV177();
-      return out;
-    };
-  }
+if "window.__fjzRemoveLegacyProfileV119=removeLegacyProfileV119;" not in html:
+    raise RuntimeError("V20.21 V14/V11.9 exported cleanup missing")
+if "window.__fjzRemoveLegacyProfileV119?.();" not in html:
+    raise RuntimeError("V20.21 V14 canonical cleanup call missing")
 
-"""
-    if body.count(old)!=1:
-        raise RuntimeError("V20.21 V17.7 general wrapper mismatch: "+str(body.count(old)))
-    return body.replace(
-        old,
-        """  // General render repair delegated to the V18.0 route authority by V20.21.
+def patch_v119(body):
+    start_marker="  const baseRenderV119=window.render;"
+    end_marker="  document.addEventListener('DOMContentLoaded',removeLegacyProfileV119,{once:true});"
 
-""",
-        1
-    )
+    if body.count(start_marker)!=1:
+        raise RuntimeError("V20.21 V11.9 render start mismatch: "+str(body.count(start_marker)))
+    if body.count(end_marker)!=1:
+        raise RuntimeError("V20.21 V11.9 render end mismatch: "+str(body.count(end_marker)))
 
-html=edit_script(html,"v177MobileStabilityMeasurementRuntime",patch_v177)
+    start=body.index(start_marker)
+    end=body.index(end_marker,start)
+    block=body[start:end]
 
-def patch_v180(body):
-    old="""      const out=baseRenderV180.apply(this,arguments);
-      const after=routeKeyV180();"""
-    new="""      const out=baseRenderV180.apply(this,arguments);
+    required=[
+        "window.render=function()",
+        "baseRenderV119.apply(this,arguments)",
+        "profile-guard-v119",
+        "removeLegacyProfileV119",
+        "return out;",
+    ]
+    missing=[x for x in required if x not in block]
+    if missing:
+        raise RuntimeError("V20.21 V11.9 wrapper shape changed: "+repr(missing))
 
-      // Preserve V17.7's original repair enqueue before route-top RAFs.
-      window.__fjzQueueRepairV177?.();
+    return body[:start]+"""  // V20.21: per-render cleanup delegated to V14 finalPass.
 
-      const after=routeKeyV180();"""
-    if body.count(old)!=1:
-        raise RuntimeError("V20.21 V18.0 render authority mismatch: "+str(body.count(old)))
-    return body.replace(old,new,1)
+"""+body[end:]
 
-html=edit_script(html,"v180VisualStabilityRuntime",patch_v180)
+html=edit_script(html,"v119LegacyProfileHardGuard",patch_v119)
 
 after=metrics(html)
 if after["render_assignments"]!=21:
     raise RuntimeError("V20.21 expected render assignments 22 -> 21: "+repr({"before":before,"after":after}))
-if after["v177_general_wrapper"]!=0:
-    raise RuntimeError("V20.21 V17.7 general wrapper still present")
+if after["v119_render_wrappers"]!=0:
+    raise RuntimeError("V20.21 legacy V11.9 render wrapper still present")
+
+# Removing this wrapper should not change timer/RAF/listener counts.
 for key in ("timeouts","rafs","listeners"):
     if after[key]!=before[key]:
         raise RuntimeError("V20.21 must preserve "+key+": "+repr({"before":before,"after":after}))
 
 critical=[
-    "__fjzQueueRepairV177",
-    "queueRepairV177",
-    "repairV177",
-    "ensureMeasurementEditV177",
-    "hardContainNativeInputsV177",
-    "window.addEventListener('resize',queueRepairV177",
-    "window.addEventListener('orientationchange',queueRepairV177",
-    "routeKeyV180",
-    "scheduleRouteTopV180",
-    "routeScrollAuthority:true",
-    "doubleRafTopReset:true",
-    "window.__fjzQueueRepairV177?.();",
+    "window.__fjzRemoveLegacyProfileV119=removeLegacyProfileV119;",
+    "window.__fjzRemoveLegacyProfileV119?.();",
+    "removeLegacyProfileV119();",
+    "v119LegacyProfileHardHide",
+    "__fjzProfileGuardV119",
+    "controllerchange",
+    "navigator.serviceWorker.getRegistration()",
+    "consolidatedRuntime:true",
+    "final-v140",
 ]
 missing=[x for x in critical if x not in html]
 if missing:
-    raise RuntimeError("V20.21 missing mobile/navigation behavior: "+repr(missing))
+    raise RuntimeError("V20.21 missing profile/PWA behavior: "+repr(missing))
 
 runtime=r"""
-<script id="v221GeneralRepairRenderConsolidationRuntime">
+<script id="v221LegacyProfileRenderConsolidationRuntime">
 (function(){
   window.__fjzV221={
     version:'20.21',
-    v177GeneralRenderWrapperRemoved:true,
-    v180RouteAuthorityReused:true,
-    repairEnqueueOrderPreserved:true,
-    routeScrollPreserved:true,
-    resizeListenersPreserved:true,
-    trackingRepairPreserved:true,
+    legacyProfileRenderWrapperRemoved:true,
+    v14CleanupAuthorityPreserved:true,
+    initialCleanupPreserved:true,
+    pwaRefreshPreserved:true,
+    profileHardHidePreserved:true,
     behaviorChange:false
   };
 })();
@@ -133,7 +132,7 @@ runtime=r"""
 html=html.replace("</body>",runtime+"\n</body>",1)
 
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V20.21 general mobile repair render consolidation")
+print("TEAM FJZ V20.21 legacy profile render consolidation")
 print("V20.21 BEFORE:",before)
 print("V20.21 AFTER:",after)
-print("V20.21 V17.7 general render wrapper delegated to V18.0")
+print("V20.21 V11.9 duplicate render cleanup delegated to V14")
