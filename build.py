@@ -627,6 +627,9 @@ exec(compile(open("v209_routine_authority_consolidation.py", encoding="utf-8").r
 # V20.10 consolidate duplicate alert realtime into the unified authority.
 exec(compile(open("v210_alert_realtime_consolidation.py", encoding="utf-8").read(), "v210_alert_realtime_consolidation.py", "exec"))
 
+# V20.11 delegate the original core realtime subscription to V13.2.
+exec(compile(open("v211_core_realtime_delegation.py", encoding="utf-8").read(), "v211_core_realtime_delegation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
