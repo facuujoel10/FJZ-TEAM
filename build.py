@@ -621,6 +621,9 @@ exec(compile(open("v207_confirmed_session_commit.py", encoding="utf-8").read(), 
 # V20.8 consolidate superseded workout completion wrappers.
 exec(compile(open("v208_workout_save_wrapper_consolidation.py", encoding="utf-8").read(), "v208_workout_save_wrapper_consolidation.py", "exec"))
 
+# V20.9 consolidate superseded routine save/reorder authorities.
+exec(compile(open("v209_routine_authority_consolidation.py", encoding="utf-8").read(), "v209_routine_authority_consolidation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
