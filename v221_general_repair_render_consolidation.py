@@ -59,32 +59,23 @@ if "window.__fjzRemoveLegacyProfileV119?.();" not in html:
     raise RuntimeError("V20.21 V14 canonical cleanup call missing")
 
 def patch_v119(body):
-    start_marker="  const baseRenderV119=window.render;"
-    end_marker="  document.addEventListener('DOMContentLoaded',removeLegacyProfileV119,{once:true});"
-
-    if body.count(start_marker)!=1:
-        raise RuntimeError("V20.21 V11.9 render start mismatch: "+str(body.count(start_marker)))
-    if body.count(end_marker)!=1:
-        raise RuntimeError("V20.21 V11.9 render end mismatch: "+str(body.count(end_marker)))
-
-    start=body.index(start_marker)
-    end=body.index(end_marker,start)
-    block=body[start:end]
-
-    required=[
-        "window.render=function()",
-        "baseRenderV119.apply(this,arguments)",
-        "profile-guard-v119",
-        "removeLegacyProfileV119",
-        "return out;",
-    ]
-    missing=[x for x in required if x not in block]
-    if missing:
-        raise RuntimeError("V20.21 V11.9 wrapper shape changed: "+repr(missing))
-
-    return body[:start]+"""  // V20.21: per-render cleanup delegated to V14 finalPass.
-
-"""+body[end:]
+    pat=re.compile(
+        r"""
+        \s*const\s+baseRenderV119\s*=\s*window\.render\s*;\s*
+        window\.render\s*=\s*function\s*\(\s*\)\s*\{\s*
+        const\s+out\s*=\s*baseRenderV119\.apply\s*\(\s*this\s*,\s*arguments\s*\)\s*;\s*
+        fjzPostRenderV125\s*\(\s*['"]profile-guard-v119['"]\s*,\s*removeLegacyProfileV119\s*\)\s*;\s*
+        return\s+out\s*;\s*
+        \}\s*;\s*
+        """,
+        re.S|re.X
+    )
+    matches=list(pat.finditer(body))
+    if len(matches)!=1:
+        raise RuntimeError("V20.21 V11.9 structural wrapper mismatch: "+str(len(matches)))
+    m=matches[0]
+    replacement="\n  // V20.21: per-render cleanup delegated to V14 finalPass.\n\n"
+    return body[:m.start()]+replacement+body[m.end():]
 
 html=edit_script(html,"v119LegacyProfileHardGuard",patch_v119)
 
