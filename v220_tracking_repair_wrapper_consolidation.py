@@ -18,6 +18,8 @@ html=p.read_text(encoding="utf-8")
 def metrics(doc):
     return {
         "render_assignments":len(re.findall(r"(?:window\.)?render\s*=",doc)),
+        "v177_student_tracking_wrappers":doc.count("const baseStudentHistoryV177=renderStudentTrackingHistory;"),
+        "v177_coach_tracking_wrappers":doc.count("const baseCoachTrackingV177=renderTrackingCoachLoaded;"),
         "timeouts":len(re.findall(r"setTimeout\s*\(",doc)),
         "rafs":len(re.findall(r"requestAnimationFrame\s*\(",doc)),
         "listeners":len(re.findall(r"addEventListener\s*\(",doc)),
@@ -40,7 +42,9 @@ def edit_script(doc,script_id,transform):
 
 before=metrics(html)
 if before["render_assignments"]!=22:
-    raise RuntimeError("V20.20 unexpected render baseline: "+repr(before))
+    raise RuntimeError("V20.20 unexpected general-render baseline: "+repr(before))
+if before["v177_student_tracking_wrappers"]!=1 or before["v177_coach_tracking_wrappers"]!=1:
+    raise RuntimeError("V20.20 unexpected V17.7 tracking-wrapper baseline: "+repr(before))
 
 def patch_v177(body):
     old_student="""  if(typeof renderStudentTrackingHistory==='function'){
@@ -118,8 +122,10 @@ def patch_v192(body):
 html=edit_script(html,"v192GeneralStabilityRuntime",patch_v192)
 
 after=metrics(html)
-if after["render_assignments"]!=20:
-    raise RuntimeError("V20.20 expected render assignments 22 -> 20: "+repr({"before":before,"after":after}))
+if after["render_assignments"]!=22:
+    raise RuntimeError("V20.20 must preserve general render assignments at 22: "+repr({"before":before,"after":after}))
+if after["v177_student_tracking_wrappers"]!=0 or after["v177_coach_tracking_wrappers"]!=0:
+    raise RuntimeError("V20.20 expected V17.7 targeted wrappers 2 -> 0: "+repr({"before":before,"after":after}))
 for key in ("timeouts","rafs","listeners"):
     if after[key]!=before[key]:
         raise RuntimeError("V20.20 must preserve "+key+": "+repr({"before":before,"after":after}))
@@ -166,3 +172,4 @@ print("TEAM FJZ V20.20 tracking repair wrapper consolidation")
 print("V20.20 BEFORE:",before)
 print("V20.20 AFTER:",after)
 print("V20.20 V17.7 targeted tracking wrappers consolidated into V19.2: 2 -> 0")
+print("V20.20 general render assignments preserved at:",after["render_assignments"])
