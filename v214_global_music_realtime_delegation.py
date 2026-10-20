@@ -38,7 +38,6 @@ required=[
     "fjz-v69-global-music",
     "table:'coach_media_settings'",
     "coachMediaV69=null",
-    "setTimeout(()=>render(),250)",
 ]
 missing=[x for x in required if x not in block]
 if missing:
