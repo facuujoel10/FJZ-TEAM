@@ -624,6 +624,9 @@ exec(compile(open("v208_workout_save_wrapper_consolidation.py", encoding="utf-8"
 # V20.9 consolidate superseded routine save/reorder authorities.
 exec(compile(open("v209_routine_authority_consolidation.py", encoding="utf-8").read(), "v209_routine_authority_consolidation.py", "exec"))
 
+# V20.10 consolidate duplicate alert realtime into the unified authority.
+exec(compile(open("v210_alert_realtime_consolidation.py", encoding="utf-8").read(), "v210_alert_realtime_consolidation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
