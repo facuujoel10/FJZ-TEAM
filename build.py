@@ -648,6 +648,9 @@ exec(compile(open("v216_core_nutrition_realtime_delegation.py", encoding="utf-8"
 # V20.17 delegate nutrition templates/revisions realtime to V13.2.
 exec(compile(open("v217_nutrition_extra_realtime_delegation.py", encoding="utf-8").read(), "v217_nutrition_extra_realtime_delegation.py", "exec"))
 
+# V20.18 delegate agenda realtime to the unified authority.
+exec(compile(open("v218_agenda_realtime_delegation.py", encoding="utf-8").read(), "v218_agenda_realtime_delegation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
