@@ -642,6 +642,9 @@ exec(compile(open("v214_global_music_realtime_delegation.py", encoding="utf-8").
 # V20.15 delegate V80 media/feedback realtime to the unified authority.
 exec(compile(open("v215_v80_realtime_delegation.py", encoding="utf-8").read(), "v215_v80_realtime_delegation.py", "exec"))
 
+# V20.16 delegate core nutrition realtime to the unified authority.
+exec(compile(open("v216_core_nutrition_realtime_delegation.py", encoding="utf-8").read(), "v216_core_nutrition_realtime_delegation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
