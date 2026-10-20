@@ -630,6 +630,9 @@ exec(compile(open("v210_alert_realtime_consolidation.py", encoding="utf-8").read
 # V20.11 delegate the original core realtime subscription to V13.2.
 exec(compile(open("v211_core_realtime_delegation.py", encoding="utf-8").read(), "v211_core_realtime_delegation.py", "exec"))
 
+# V20.12 delegate exercise feedback realtime to the unified authority.
+exec(compile(open("v212_feedback_realtime_delegation.py", encoding="utf-8").read(), "v212_feedback_realtime_delegation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
