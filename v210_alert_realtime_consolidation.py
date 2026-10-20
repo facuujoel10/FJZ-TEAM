@@ -60,19 +60,21 @@ html=edit_script(html,"v132CoachAssistantRealtime",patch_v132)
 # Remove only the duplicate realtime wrapper from V9.6. Keep every alert
 # render, action, notice, read/dismiss and UI helper intact.
 def patch_v96(body):
-    pat=re.compile(
-        r"""\n\s*const oldSetupRealtimeV96=window\.setupRealtime;\s*
-            if\(typeof oldSetupRealtimeV96==='function'\)\{\s*
-              window\.setupRealtime=function\(\)\{.*?
-              \n\s*\};\s*
-            \}\s*
-            (?=\n\s*Object\.assign\(window,)""",
-        re.S|re.X
-    )
-    new,n=pat.subn("\n  window.__fjzV96RealtimeDelegatedV210=true;\n",body,count=1)
-    if n!=1:
-        raise RuntimeError("V20.10 V9.6 realtime wrapper mismatch: "+str(n))
-    return new
+    start_marker="  const oldSetupRealtimeV96=window.setupRealtime;"
+    end_marker="  Object.assign(window,"
+    if body.count(start_marker)!=1:
+        raise RuntimeError("V20.10 V9.6 start marker mismatch: "+str(body.count(start_marker)))
+    if body.count(end_marker)!=1:
+        raise RuntimeError("V20.10 V9.6 end marker mismatch: "+str(body.count(end_marker)))
+    start=body.index(start_marker)
+    end=body.index(end_marker,start)
+    block=body[start:end]
+    if block.count("fjz-v96-alerts")!=1:
+        raise RuntimeError("V20.10 expected exactly one V9.6 channel in wrapper block")
+    if block.count("__fjzV96AlertChannel")<2:
+        raise RuntimeError("V20.10 V9.6 channel guard/assignment not found")
+    replacement="  window.__fjzV96RealtimeDelegatedV210=true;\n\n"
+    return body[:start]+replacement+body[end:]
 
 html=edit_script(html,"v96AlertCenterRuntime",patch_v96)
 
