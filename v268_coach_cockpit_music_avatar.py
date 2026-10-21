@@ -302,23 +302,6 @@ def patch_v175(body):
         raise RuntimeError("V20.68 cockpit section mismatch")
     body=body.replace(section_anchor,section_new,1)
 
-    reserve_anchor="""    if(actions)actions.classList.add('v175-coach-profile-actions');
-
-    const old=el('v70CoachStudentAvatar');"""
-    reserve_repl="""    if(actions)actions.classList.add('v175-coach-profile-actions');
-
-    if(info&&!hero.querySelector('.v268-avatar-state')){
-      const avatarMeta=document.createElement('div');
-      avatarMeta.className='v268-avatar-state';
-      avatarMeta.textContent=window.__fjzStagingLocal?.syntheticDataOnly?'Foto demo · staging aislado':'Foto de perfil';
-      info.appendChild(avatarMeta);
-    }
-
-    const old=el('v70CoachStudentAvatar');"""
-    if body.count(reserve_anchor)!=1:
-        raise RuntimeError("V20.68 avatar state reserve anchor mismatch")
-    body=body.replace(reserve_anchor,reserve_repl,1)
-
     marker="""    coachProfileCommandCenter:true,
     coachAvatarDirectLinkedProfile:true,
 """
