@@ -352,6 +352,7 @@ def patch_v175(body):
     premiumCoachShellFirstFrame:true,
     cockpitOwnedByCanonicalShell:true,
     scrollbarSafeTabletBreakpoint:true,
+    stableScrollbarGutter:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -535,6 +536,9 @@ runtime=r"""
 
 css=r"""
 /* TEAM FJZ · V20.68 COACH COCKPIT + AVATAR SURFACE */
+/* Reserve vertical-scroll space before async profile hydration so tablet
+   breakpoints never oscillate when the page becomes taller. */
+html{scrollbar-gutter:stable}
 #v175CoachAvatarSlot{
   width:104px!important;height:104px!important;flex-basis:104px!important;border-radius:22px!important;
   display:grid!important;place-items:center!important;background:#0a0b0e!important;overflow:hidden!important
@@ -745,6 +749,7 @@ for marker in [
     "premiumCoachShellFirstFrame:true",
     "cockpitOwnedByCanonicalShell:true",
     "scrollbarSafeTabletBreakpoint:true",
+    "stableScrollbarGutter:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
