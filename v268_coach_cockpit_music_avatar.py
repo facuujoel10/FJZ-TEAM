@@ -325,6 +325,25 @@ def patch_v175(body):
         raise RuntimeError("V20.68 old avatar note cleanup mismatch: "+str(body.count(old_avatar_note)))
     body=body.replace(old_avatar_note,"",1)
 
+    sync_meta_anchor="""    if(actions)actions.classList.add('v175-coach-profile-actions');
+    ensureCoachWorkspaceV266(hero,s);
+
+    const old=el('v70CoachStudentAvatar');"""
+    sync_meta_repl="""    if(actions)actions.classList.add('v175-coach-profile-actions');
+    ensureCoachWorkspaceV266(hero,s);
+
+    if(info&&!hero.querySelector('.v268-avatar-state')){
+      const avatarMeta=document.createElement('div');
+      avatarMeta.className='v268-avatar-state';
+      avatarMeta.textContent=window.__fjzStagingLocal?.syntheticDataOnly?'Foto demo · staging aislado':'Foto de perfil';
+      info.appendChild(avatarMeta);
+    }
+
+    const old=el('v70CoachStudentAvatar');"""
+    if body.count(sync_meta_anchor)!=1:
+        raise RuntimeError("V20.68 synchronous avatar meta anchor mismatch: "+str(body.count(sync_meta_anchor)))
+    body=body.replace(sync_meta_anchor,sync_meta_repl,1)
+
     marker="""    coachProfileCommandCenter:true,
     coachAvatarDirectLinkedProfile:true,
 """
