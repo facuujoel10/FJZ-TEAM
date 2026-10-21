@@ -21,7 +21,12 @@ audit_js=r"""
      hero:rect(document.querySelector('.hero')),
      workspace:rect(document.querySelector('#v266CoachWorkspace')),
      cockpit:rect(document.querySelector('#v268CoachCockpit')),
-     profile:rect(document.querySelector('#v114ProfileCard'))
+     profile:rect(document.querySelector('#v114ProfileCard')),
+     info:rect(document.querySelector('.v175-coach-profile-info')),
+     actions:rect(document.querySelector('.v175-coach-profile-actions')),
+     avatar:rect(document.querySelector('#v175CoachAvatarSlot')),
+     state:rect(document.querySelector('.v266-profile-state')),
+     avatarState:rect(document.querySelector('.v268-avatar-state'))
    };
  }
  function dup(id){return document.querySelectorAll('#'+id).length}
@@ -33,10 +38,25 @@ audit_js=r"""
    mode='coach';coachTab='student';coachStudentTab='summary';render();
    await sleep(250);
    const base=snap();
+   out.base=base;
    for(let i=0;i<8;i++){
      render();await sleep(90);
      const now=snap();
-     out.runs.push({i,overflow:Math.max(0,now.scrollW-now.width),hero:diff(base.hero,now.hero),workspace:diff(base.workspace,now.workspace),cockpit:diff(base.cockpit,now.cockpit),profile:diff(base.profile,now.profile),scrollY:now.scrollY});
+     out.runs.push({
+       i,
+       overflow:Math.max(0,now.scrollW-now.width),
+       hero:diff(base.hero,now.hero),
+       workspace:diff(base.workspace,now.workspace),
+       cockpit:diff(base.cockpit,now.cockpit),
+       profile:diff(base.profile,now.profile),
+       info:diff(base.info,now.info),
+       actions:diff(base.actions,now.actions),
+       avatar:diff(base.avatar,now.avatar),
+       state:diff(base.state,now.state),
+       avatarState:diff(base.avatarState,now.avatarState),
+       scrollY:now.scrollY,
+       rects:{hero:now.hero,profile:now.profile,info:now.info,actions:now.actions,avatar:now.avatar,state:now.state,avatarState:now.avatarState}
+     });
    }
    out.duplicates={
      cockpit:dup('v268CoachCockpit'),workspace:dup('v266CoachWorkspace'),
