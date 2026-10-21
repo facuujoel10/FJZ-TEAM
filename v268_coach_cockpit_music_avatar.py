@@ -102,31 +102,6 @@ def patch_v146(body):
 
 html=edit_script(html,"v146RenderStabilityRuntime",patch_v146)
 
-# V17.8 deferred the complete V17.5/V17.6 visual passes to the next RAF.
-# That allowed one basic Coach frame to paint before avatar/workspace/cockpit
-# existed. Keep the same single render authority, but run these idempotent
-# visual passes synchronously after the base render. Route/repair stay batched.
-def patch_v178_sync_coach_frame(body):
-    old="""      const runFinalPass=()=>{
-        try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V17.5 final pass',e)}
-        try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V17.6 final pass',e)}
-        try{window.__fjzRouteAfterRenderV176?.()}catch(e){console.warn('TEAM FJZ V17.6 route pass',e)}
-        try{repairV177()}catch(e){console.warn('TEAM FJZ V17.7 repair',e)}
-"""
-    new="""      // Identity/workspace/profile polish must exist before the first paint.
-      try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V17.5 sync pass',e)}
-      try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V17.6 sync pass',e)}
-
-      const runFinalPass=()=>{
-        try{window.__fjzRouteAfterRenderV176?.()}catch(e){console.warn('TEAM FJZ V17.6 route pass',e)}
-        try{repairV177()}catch(e){console.warn('TEAM FJZ V17.7 repair',e)}
-"""
-    if body.count(old)!=1:
-        raise RuntimeError("V20.68 V17.8 sync coach-frame anchor mismatch: "+str(body.count(old)))
-    return body.replace(old,new,1)
-
-html=edit_script(html,"v177MobileStabilityMeasurementRuntime",patch_v178_sync_coach_frame)
-
 # Retire obsolete Spotify columns from athlete SELECT projections. The
 # production columns are left untouched in the database until release review.
 html=html.replace(",spotify_url,spotify_title","")
@@ -376,7 +351,6 @@ def patch_v175(body):
     coachCockpitV268:true,
     coachDecisionSignals:true,
     coachDataCoverage:true,
-    synchronousCoachProfileFrame:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -529,6 +503,20 @@ runtime=r"""
     applyStudentAvatarV268(seq);
   };
 
+  // Coach profile is a synchronous view contract: every time the selected
+  // athlete view renders, identity/workspace/cockpit must exist before paint.
+  const baseRenderCoachStudentV268=window.renderCoachStudent;
+  if(typeof baseRenderCoachStudentV268==='function'){
+    window.renderCoachStudent=function(){
+      const out=baseRenderCoachStudentV268.apply(this,arguments);
+      try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach sync V17.5',e)}
+      try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach sync V17.6',e)}
+      try{window.__fjzApplyProfileUiV268?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach avatar sync',e)}
+      return out;
+    };
+    try{renderCoachStudent=window.renderCoachStudent}catch(_e){}
+  }
+
   window.__fjzApplyProfileUiV268();
 
   window.__fjzV268={
@@ -536,6 +524,7 @@ runtime=r"""
     musicFeatureRemoved:true,
     coachMediaRealtimeRemoved:true,
     coachCockpitV268:true,
+    coachStudentSynchronousAuthority:true,
     coachAvatarProductionLinkedProfile:true,
     studentAvatarProductionLinkedProfile:true,
     stagingAvatarClearlyDemo:true,
@@ -713,6 +702,7 @@ for marker in [
     "musicFeatureRemoved:true",
     "coachMediaRealtimeRemoved:true",
     "coachCockpitV268:true",
+    "coachStudentSynchronousAuthority:true",
     "coachDecisionSignals:true",
     "coachDataCoverage:true",
     "synchronousCoachProfileFrame:true",
