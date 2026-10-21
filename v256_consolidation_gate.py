@@ -63,6 +63,21 @@ for marker in [
     if marker not in html:
         raise RuntimeError("V20.56 missing current authority: "+marker)
 
+# V100 still carried a legacy submitWeeklyCheckin wrapper that only repeated
+# the 1–10 validation before delegating. V170 is now the canonical authority
+# and already performs the same validation plus confirmed cloud persistence.
+def patch_v100(body):
+    start=body.find("  const previousSubmit=window.submitWeeklyCheckin;")
+    end=body.find("  const previousOpenLibrary=window.openLibrary;",start)
+    if start<0 or end<0:
+        raise RuntimeError("V20.56 legacy V100 check-in wrapper boundaries missing")
+    block=body[start:end]
+    if "window.submitWeeklyCheckin=async function()" not in block or "previousSubmit.apply" not in block:
+        raise RuntimeError("V20.56 V100 check-in wrapper shape changed")
+    return body[:start]+body[end:]
+
+html=edit_script(html,"v100CoreRuntime",patch_v100)
+
 # The V20.43 card became obsolete once V20.45 made the Action Hub canonical.
 # V20.45 explicitly removes #v243StudentNextStep on every Home render, so
 # building it immediately beforehand is pure DOM churn.
@@ -104,13 +119,17 @@ for key,val in expected.items():
 for key in (
     "styles","render_assignments","start_assignments","finish_assignments",
     "channels","timeouts","rafs","listeners","mutation_observers",
-    "performance_observers","submit_checkin","save_exercise","coach_dashboard_defs"
+    "performance_observers","save_exercise","coach_dashboard_defs"
 ):
     if after[key]!=before[key]:
         raise RuntimeError("V20.56 topology unexpectedly changed "+key+": "+repr({"before":before,"after":after}))
 
+if before["submit_checkin"]!=2 or after["submit_checkin"]!=1:
+    raise RuntimeError("V20.56 check-in authority consolidation mismatch: "+repr({"before":before["submit_checkin"],"after":after["submit_checkin"],"scripts":submit_scripts}))
 if "injectStudentNextStepV243();" in html:
     raise RuntimeError("V20.56 obsolete V20.43 post-render call remains")
+if re.search(r'<script[^>]*id=["\']v100CoreRuntime["\'][^>]*>[\s\S]*?window\.submitWeeklyCheckin\s*=\s*async\s+function',html,re.I):
+    raise RuntimeError("V20.56 legacy V100 check-in authority remains")
 
 # Critical feature/authority inventory.
 critical=[
@@ -140,4 +159,4 @@ p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V20.56 consolidation gate")
 print("V20.56 BEFORE:",before)
 print("V20.56 AFTER:",after)
-print("V20.56 removed obsolete V20.43 Home DOM pass; canonical authorities/topology frozen")
+print("V20.56 removed legacy V100 check-in wrapper + obsolete V20.43 Home DOM pass; canonical authorities/topology frozen")
