@@ -293,6 +293,12 @@ def patch_v175(body):
     coachStudentTab=tab||'summary';
     render();
   };
+  window.__fjzRenderCoachCockpitV268=function(){
+    if(!(currentProfile?.role==='coach'&&mode==='coach'&&coachTab==='student'&&coachStudentTab==='summary'))return;
+    const s=student?.();if(!s)return;
+    const latest=trackingCache?.checkins?.[0]||null;
+    renderCoachCockpitV268(s,latest);
+  };
 
 """
     body=body.replace(anchor,helpers+anchor,1)
@@ -307,14 +313,6 @@ def patch_v175(body):
     if body.count(hydrate_anchor)!=1:
         raise RuntimeError("V20.68 cockpit hydrate mismatch")
     body=body.replace(hydrate_anchor,hydrate_repl,1)
-
-    section_anchor="""      '<div class="v175-360-section v260-four-week" id="v260CoachFourWeek"><div class="empty">Preparando estado de 4 semanas…</div></div>'+
-"""
-    section_new="""      '<div class="v175-360-section v268-cockpit" id="v268CoachCockpit"><div class="empty">Preparando lectura operativa…</div></div>'+
-""" + section_anchor
-    if body.count(section_anchor)!=1:
-        raise RuntimeError("V20.68 cockpit section mismatch")
-    body=body.replace(section_anchor,section_new,1)
 
     old_avatar_note="""      const chip=hero.querySelector('.v266-profile-state');
       if(chip&&!hero.querySelector('.v267-avatar-note')){
@@ -352,6 +350,7 @@ def patch_v175(body):
     coachDecisionSignals:true,
     coachDataCoverage:true,
     premiumCoachShellFirstFrame:true,
+    cockpitOwnedByCanonicalShell:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -367,7 +366,7 @@ html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 # renderCoachStudent references. Patch the original core renderer itself so
 # every normal profile path performs the professional DOM pass synchronously.
 core_old="""function renderCoachStudent(){const s=student(),v=el('view');v.innerHTML=`<section class="hero"><div><button class="btn ghost small" onclick="coachTab='dashboard';render()">← Alumnos</button><h2 style="margin-top:10px">${esc(s.name)}</h2><p>${esc(s.goal)} · ${adherence(s)}% adherencia · último entreno ${fmtDate(s.lastWorkout)}</p></div><div class="pill-row">${badge(statusFor(s))}<button class="btn" onclick="mode='student';studentTab='home';render()">Ver como alumno</button></div></section>${coachTabs()}<div id="coachStudentBody"></div>`;if(coachStudentTab==='summary')renderCoachSummary();if(coachStudentTab==='routine')renderRoutineEditor();if(coachStudentTab==='progress')renderProgress(true);if(coachStudentTab==='history')renderHistory(true);if(coachStudentTab==='tracking')renderTrackingCoach()}"""
-core_new="""function renderCoachStudent(){const s=student(),v=el('view'),st=statusFor(s),adh=adherence(s),freq=Math.max(0,Number(s?.plannedPerWeek)||s?.days?.length||0),initials=esc((s?.name||'AL').slice(0,2).toUpperCase());v.innerHTML=`<section class="hero v175-coach-profile-hero"><div id="v175CoachAvatarSlot" data-avatar-state="initial"><div class="v70-avatar big">${initials}</div></div><div class="v175-coach-profile-info"><div class="v266-profile-kicker">ATHLETE WORKSPACE · TEAM FJZ</div><button class="btn ghost small" onclick="coachTab='dashboard';render()">← Alumnos</button><h2>${esc(s.name)}</h2><p>${esc(s.goal||'Plan personalizado')}</p><div class="v266-profile-state">${esc(st||'Seguimiento')}</div><div class="v268-avatar-state">Foto de perfil</div></div><div class="pill-row v175-coach-profile-actions">${badge(st)}<button class="btn" onclick="mode='student';studentTab='home';render()">Ver como alumno</button></div></section><section id="v266CoachWorkspace" class="v266-coach-workspace"><div class="v266-context-main"><div class="v266-context-metric"><span>Estado</span><strong>${esc(st||'Seguimiento')}</strong><small>Situación actual</small></div><div class="v266-context-metric"><span>Adherencia</span><strong>${adh}%</strong><small>Últimos 7 días</small></div><div class="v266-context-metric"><span>Último entreno</span><strong>${esc(fmtDate(s.lastWorkout))}</strong><small>Registro más reciente</small></div><div class="v266-context-metric"><span>Frecuencia</span><strong>${freq?freq+'x / semana':'—'}</strong><small>Planificada</small></div></div><div class="v266-quick-actions"><button class="btn small" onclick="coachStudentTab='routine';render()">Rutina</button><button class="btn small" onclick="coachStudentTab='tracking';render()">Seguimiento</button><button class="btn small" onclick="coachStudentTab='nutrition';render()">Nutrición</button><button class="btn small" onclick="coachStudentTab='agenda';render()">Agenda</button></div></section>${coachTabs()}<div id="coachStudentBody"></div>`;if(coachStudentTab==='summary')(window.renderCoachSummary||renderCoachSummary)();if(coachStudentTab==='routine')renderRoutineEditor();if(coachStudentTab==='progress')renderProgress(true);if(coachStudentTab==='history')renderHistory(true);if(coachStudentTab==='tracking')renderTrackingCoach();try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.5',e)}try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.6',e)}try{window.__fjzApplyProfileUiV268?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach avatar',e)}}"""
+core_new="""function renderCoachStudent(){const s=student(),v=el('view'),st=statusFor(s),adh=adherence(s),freq=Math.max(0,Number(s?.plannedPerWeek)||s?.days?.length||0),initials=esc((s?.name||'AL').slice(0,2).toUpperCase());v.innerHTML=`<section class="hero v175-coach-profile-hero"><div id="v175CoachAvatarSlot" data-avatar-state="initial"><div class="v70-avatar big">${initials}</div></div><div class="v175-coach-profile-info"><div class="v266-profile-kicker">ATHLETE WORKSPACE · TEAM FJZ</div><button class="btn ghost small" onclick="coachTab='dashboard';render()">← Alumnos</button><h2>${esc(s.name)}</h2><p>${esc(s.goal||'Plan personalizado')}</p><div class="v266-profile-state">${esc(st||'Seguimiento')}</div><div class="v268-avatar-state">Foto de perfil</div></div><div class="pill-row v175-coach-profile-actions">${badge(st)}<button class="btn" onclick="mode='student';studentTab='home';render()">Ver como alumno</button></div></section><section id="v266CoachWorkspace" class="v266-coach-workspace"><div class="v266-context-main"><div class="v266-context-metric"><span>Estado</span><strong>${esc(st||'Seguimiento')}</strong><small>Situación actual</small></div><div class="v266-context-metric"><span>Adherencia</span><strong>${adh}%</strong><small>Últimos 7 días</small></div><div class="v266-context-metric"><span>Último entreno</span><strong>${esc(fmtDate(s.lastWorkout))}</strong><small>Registro más reciente</small></div><div class="v266-context-metric"><span>Frecuencia</span><strong>${freq?freq+'x / semana':'—'}</strong><small>Planificada</small></div></div><div class="v266-quick-actions"><button class="btn small" onclick="coachStudentTab='routine';render()">Rutina</button><button class="btn small" onclick="coachStudentTab='tracking';render()">Seguimiento</button><button class="btn small" onclick="coachStudentTab='nutrition';render()">Nutrición</button><button class="btn small" onclick="coachStudentTab='agenda';render()">Agenda</button></div></section>${coachTabs()}${coachStudentTab==='summary'?'<div class="v175-360-section v268-cockpit" id="v268CoachCockpit"><div class="empty">Preparando lectura operativa…</div></div>':''}<div id="coachStudentBody"></div>`;if(coachStudentTab==='summary'){(window.renderCoachSummary||renderCoachSummary)();try{window.__fjzRenderCoachCockpitV268?.()}catch(e){console.warn('TEAM FJZ V20.68 Cockpit first frame',e)}}if(coachStudentTab==='routine')renderRoutineEditor();if(coachStudentTab==='progress')renderProgress(true);if(coachStudentTab==='history')renderHistory(true);if(coachStudentTab==='tracking')renderTrackingCoach();try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.5',e)}try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.6',e)}try{window.__fjzApplyProfileUiV268?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach avatar',e)}}"""
 if html.count(core_old)!=1:
     raise RuntimeError("V20.68 canonical renderCoachStudent baseline mismatch: "+str(html.count(core_old)))
 html=html.replace(core_old,core_new,1)
@@ -705,6 +704,7 @@ for marker in [
     "coachDecisionSignals:true",
     "coachDataCoverage:true",
     "premiumCoachShellFirstFrame:true",
+    "cockpitOwnedByCanonicalShell:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
