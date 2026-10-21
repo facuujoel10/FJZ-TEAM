@@ -693,6 +693,9 @@ exec(compile(open("v231_routine_builder_pro.py", encoding="utf-8").read(), "v231
 # V20.32 reconcile any previously pending workout before another can start.
 exec(compile(open("v232_pending_session_recovery.py", encoding="utf-8").read(), "v232_pending_session_recovery.py", "exec"))
 
+# V20.33 static UX states/accessibility; no runtime topology changes.
+exec(compile(open("v233_ux_states_accessibility.py", encoding="utf-8").read(), "v233_ux_states_accessibility.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
