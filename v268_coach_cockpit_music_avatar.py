@@ -705,7 +705,6 @@ for marker in [
     "coachStudentSynchronousAuthority:true",
     "coachDecisionSignals:true",
     "coachDataCoverage:true",
-    "synchronousCoachProfileFrame:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
