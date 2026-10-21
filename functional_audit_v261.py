@@ -43,6 +43,7 @@ required={
     "student_current_plan":'meta name="fjz-student-current-plan" content="20.58"',
     "coach_calendar":'meta name="fjz-coach-action-calendar" content="20.59"',
     "coach_four_week":'meta name="fjz-coach-four-week-snapshot" content="20.60"',
+    "premium_polish":'meta name="fjz-premium-polish" content="20.62"',
     "calendar_review_cadence":"coachReviewCadenceDaysV240",
     "calendar_agenda_source":"athlete_reminders",
     "calendar_checkin_source":"checkin_schedules",
