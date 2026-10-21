@@ -102,6 +102,11 @@ def patch_v146(body):
 
 html=edit_script(html,"v146RenderStabilityRuntime",patch_v146)
 
+# Retire obsolete Spotify columns from athlete SELECT projections. The
+# production columns are left untouched in the database until release review.
+html=html.replace(",spotify_url,spotify_title","")
+html=html.replace("spotify_url,spotify_title,","")
+
 # ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
 # ================================================================
