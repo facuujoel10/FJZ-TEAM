@@ -741,6 +741,9 @@ exec(compile(open("v248_checkin_reply_loop.py", encoding="utf-8").read(), "v248_
 # V20.49 four-week performance/adherence/wellness progress pulse.
 exec(compile(open("v249_progress_pulse.py", encoding="utf-8").read(), "v249_progress_pulse.py", "exec"))
 
+# V20.50 selected-student operational weekly brief in Resumen 360.
+exec(compile(open("v250_coach_weekly_brief.py", encoding="utf-8").read(), "v250_coach_weekly_brief.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
