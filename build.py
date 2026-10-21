@@ -762,6 +762,12 @@ exec(compile(open("v255_mobile_stability_pass.py", encoding="utf-8").read(), "v2
 # V20.56 final consolidation/authority gate; removes obsolete Home DOM pass.
 exec(compile(open("v256_consolidation_gate.py", encoding="utf-8").read(), "v256_consolidation_gate.py", "exec"))
 
+# V20.57 adds a dedicated weekly priority to the professional check-in review.
+exec(compile(open("v257_checkin_weekly_focus.py", encoding="utf-8").read(), "v257_checkin_weekly_focus.py", "exec"))
+
+# V20.58 keeps the latest reviewed coach plan visible on Student Home.
+exec(compile(open("v258_student_current_plan.py", encoding="utf-8").read(), "v258_student_current_plan.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
