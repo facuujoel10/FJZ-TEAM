@@ -711,6 +711,9 @@ exec(compile(open("v238_coach_review_loop.py", encoding="utf-8").read(), "v238_c
 # V20.39 bounded coach decision/review history inside student snapshot.
 exec(compile(open("v239_coach_decision_log.py", encoding="utf-8").read(), "v239_coach_decision_log.py", "exec"))
 
+# V20.40 per-student coach review cadence and overdue-review queue.
+exec(compile(open("v240_coach_review_cadence.py", encoding="utf-8").read(), "v240_coach_review_cadence.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
