@@ -157,9 +157,9 @@ def patch_v175(body):
       1
     )
 
-    marker="""    cacheFirst:true
+    marker="""    coachFourWeekUsesExistingTracking:true
   };"""
-    repl="""    cacheFirst:true,
+    repl="""    coachFourWeekUsesExistingTracking:true,
     coachAthleteWorkspaceV266:true,
     coachWorkspaceQuickActions:true,
     coachProfileCommandCenter:true
