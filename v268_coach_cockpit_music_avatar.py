@@ -85,7 +85,7 @@ def patch_v132(body):
         raise RuntimeError("V20.68 unified realtime music table mismatch")
     return body.replace(old_list,new_list,1)
 
-html=edit_script(html,"v132AssistantRealtimeRuntime",patch_v132)
+html=edit_script(html,"v132CoachAssistantRealtime",patch_v132)
 
 # ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
@@ -212,9 +212,9 @@ def patch_v175(body):
 
     const changes=x.prev&&latest
       ?'<div class="v268-change-grid">'+
-        cockpitMetricV268('Adherencia',deltaV268(latest.adherence_level,x.prev.adherence_level),' pts','')+
-        cockpitMetricV268('Energía',deltaV268(latest.energy_level,x.prev.energy_level),' pts','')+
-        cockpitMetricV268('Recuperación',deltaV268(latest.recovery_level,x.prev.recovery_level),' pts','')+
+        cockpitMetricV268('Adherencia',deltaV268(latest.adherence_level,x.prev.adherence_level,' pts'),'vs anterior')+
+        cockpitMetricV268('Energía',deltaV268(latest.energy_level,x.prev.energy_level,' pts'),'vs anterior')+
+        cockpitMetricV268('Recuperación',deltaV268(latest.recovery_level,x.prev.recovery_level,' pts'),'vs anterior')+
        '</div>'
       :'<div class="v268-empty-note">Todavía no hay dos check-ins comparables.</div>';
 
