@@ -111,6 +111,7 @@ html=html.replace("spotify_url,spotify_title,","")
 # Música button after V6.8 was retired.
 html=html.replace("""      <button class="${coachTab==='music'?'active':''}" onclick="coachTab='music';render()">Música</button>
 ""","")
+html=html.replace("""<button class="'+(coachTab==='music'?'active':'')+'" onclick="coachTab=\\'music\\';render()">Música</button>""","")
 
 # ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
