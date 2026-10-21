@@ -153,7 +153,7 @@ for r in reports:
   if not all(run.get("premium",{}).values()):
    fails.append({"vp":r["viewport"],"type":"missing_premium_frame","v":run})
   if run["scrollY"]!=0:fails.append({"vp":r["viewport"],"type":"scroll_drift","v":run})
-  if max(run["hero"],run["workspace"],run["cockpit"],run["profile"])>4:fails.append({"vp":r["viewport"],"type":"warp","v":run})
+  if max(run["hero"],run["workspace"],run["cockpit"],run["profile"])>4:fails.append({"vp":r["viewport"],"type":"warp","base":r.get("base"),"v":run})
 
 print("TEAM FJZ V20.68 BROWSER STABILITY AUDIT")
 print(json.dumps({"viewports":[r["viewport"] for r in reports],"failures":fails},indent=2,ensure_ascii=False))
