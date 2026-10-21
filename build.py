@@ -696,6 +696,9 @@ exec(compile(open("v232_pending_session_recovery.py", encoding="utf-8").read(), 
 # V20.33 static UX states/accessibility; no runtime topology changes.
 exec(compile(open("v233_ux_states_accessibility.py", encoding="utf-8").read(), "v233_ux_states_accessibility.py", "exec"))
 
+# V20.35 functional coach workflow upgrade using existing dashboard/feed data.
+exec(compile(open("v235_coach_workflow_pro.py", encoding="utf-8").read(), "v235_coach_workflow_pro.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
