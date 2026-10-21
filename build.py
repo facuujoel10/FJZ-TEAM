@@ -732,6 +732,9 @@ exec(compile(open("v245_student_action_hub.py", encoding="utf-8").read(), "v245_
 # V20.46 confirmed check-in success modal after cloud persistence.
 exec(compile(open("v246_confirmed_checkin_success.py", encoding="utf-8").read(), "v246_confirmed_checkin_success.py", "exec"))
 
+# V20.47 professional coach review + student reply for weekly check-ins.
+exec(compile(open("v247_professional_checkin_review.py", encoding="utf-8").read(), "v247_professional_checkin_review.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
