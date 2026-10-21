@@ -26,7 +26,14 @@ audit_js=r"""
      actions:rect(document.querySelector('.v175-coach-profile-actions')),
      avatar:rect(document.querySelector('#v175CoachAvatarSlot')),
      state:rect(document.querySelector('.v266-profile-state')),
-     avatarState:rect(document.querySelector('.v268-avatar-state'))
+     avatarState:rect(document.querySelector('.v268-avatar-state')),
+     appState:{
+       role:currentProfile?.role||null,
+       mode:typeof mode!=='undefined'?mode:null,
+       coachTab:typeof coachTab!=='undefined'?coachTab:null,
+       coachStudentTab:typeof coachStudentTab!=='undefined'?coachStudentTab:null,
+       selected:state?.selectedStudentId||null
+     }
    };
  }
  function dup(id){return document.querySelectorAll('#'+id).length}
@@ -55,7 +62,8 @@ audit_js=r"""
        state:diff(base.state,now.state),
        avatarState:diff(base.avatarState,now.avatarState),
        scrollY:now.scrollY,
-       rects:{hero:now.hero,profile:now.profile,info:now.info,actions:now.actions,avatar:now.avatar,state:now.state,avatarState:now.avatarState}
+       rects:{hero:now.hero,profile:now.profile,info:now.info,actions:now.actions,avatar:now.avatar,state:now.state,avatarState:now.avatarState},
+       appState:now.appState
      });
    }
    out.duplicates={
