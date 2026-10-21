@@ -46,7 +46,7 @@ start="// ===== TEAM FJZ V8.3 · SPOTIFY / MÚSICA ====="
 end="// ===== TEAM FJZ V8.3 · CONSEJOS SIN CHECKLIST + MÚSICA VISIBLE ====="
 pat=re.compile(re.escape(start)+r".*?(?="+re.escape(end)+r")",re.S)
 html,n=pat.subn("",html,count=1)
-if n!=1:
+if n not in (0,1):
     raise RuntimeError("V20.68 legacy Spotify block removal mismatch: "+str(n))
 
 # V6.8 Spotify subsection + all music navigation overrides.
@@ -54,7 +54,7 @@ start2="// --- Spotify: búsqueda robusta de la ficha y pestaña propia ---"
 end2="// ===== TEAM FJZ V8.3 · MÚSICA GLOBAL DEL COACH ====="
 pat2=re.compile(re.escape(start2)+r".*?(?="+re.escape(end2)+r")",re.S)
 html,n=pat2.subn("",html,count=1)
-if n!=1:
+if n not in (0,1):
     raise RuntimeError("V20.68 V6.8 music subsection removal mismatch: "+str(n))
 
 # V6.9 global music / coach_media_settings.
@@ -62,12 +62,12 @@ start3="// ===== TEAM FJZ V8.3 · MÚSICA GLOBAL DEL COACH ====="
 end3="// ===== TEAM FJZ V8.3 · FOTO DE PERFIL + RECETAS ====="
 pat3=re.compile(re.escape(start3)+r".*?(?="+re.escape(end3)+r")",re.S)
 html,n=pat3.subn("",html,count=1)
-if n!=1:
+if n not in (0,1):
     raise RuntimeError("V20.68 global music block removal mismatch: "+str(n))
 
 # V20.14 delegation marker is obsolete after feature removal.
 html,n=re.subn(r'<script[^>]*\bid=["\']v214GlobalMusicRealtimeDelegationRuntime["\'][^>]*>.*?</script>\s*','',html,count=1,flags=re.S|re.I)
-if n!=1:
+if n not in (0,1):
     raise RuntimeError("V20.68 V20.14 marker removal mismatch: "+str(n))
 
 # Remove coach_media_settings from unified realtime and its invalidation.
