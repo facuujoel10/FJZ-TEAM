@@ -302,6 +302,23 @@ def patch_v175(body):
         raise RuntimeError("V20.68 cockpit section mismatch")
     body=body.replace(section_anchor,section_new,1)
 
+    reserve_anchor="""    if(actions)actions.classList.add('v175-coach-profile-actions');
+
+    const old=el('v70CoachStudentAvatar');"""
+    reserve_repl="""    if(actions)actions.classList.add('v175-coach-profile-actions');
+
+    if(info&&!hero.querySelector('.v268-avatar-state')){
+      const avatarMeta=document.createElement('div');
+      avatarMeta.className='v268-avatar-state';
+      avatarMeta.textContent=window.__fjzStagingLocal?.syntheticDataOnly?'Foto demo · staging aislado':'Foto de perfil';
+      info.appendChild(avatarMeta);
+    }
+
+    const old=el('v70CoachStudentAvatar');"""
+    if body.count(reserve_anchor)!=1:
+        raise RuntimeError("V20.68 avatar state reserve anchor mismatch")
+    body=body.replace(reserve_anchor,reserve_repl,1)
+
     marker="""    coachProfileCommandCenter:true,
     coachAvatarDirectLinkedProfile:true,
 """
@@ -394,17 +411,28 @@ runtime=r"""
     const s=student?.(),ath=cloudAthletes?.get?.(s?.id);
     const slot=el('v175CoachAvatarSlot'),hero=el('view')?.querySelector('.hero');
     if(!s||!slot||!hero)return;
-    const result=await avatarResultV268(ath?.user_id,s.name);
-    if(seq!==avatarSeqV268||!(currentProfile?.role==='coach'&&mode==='coach'&&coachTab==='student')||student()?.id!==s.id)return;
-    slot.innerHTML=avatarHtmlV268(result,s.name);
-    slot.dataset.avatarState=result.state;
+
     let meta=hero.querySelector('.v268-avatar-state');
     if(!meta){
       meta=document.createElement('div');
       meta.className='v268-avatar-state';
-      const info=hero.querySelector('.v175-coach-profile-info');
-      info?.appendChild(meta);
+      meta.textContent='Foto de perfil';
+      hero.querySelector('.v175-coach-profile-info')?.appendChild(meta);
     }
+
+    if(window.__fjzStagingLocal?.syntheticDataOnly){
+      const demo={demo:true,url:'',state:'demo'};
+      slot.innerHTML=avatarHtmlV268(demo,s.name);
+      slot.dataset.avatarState='demo';
+      if(meta)meta.textContent=avatarStateLabelV268(demo);
+      return;
+    }
+
+    if(meta)meta.textContent='Cargando foto…';
+    const result=await avatarResultV268(ath?.user_id,s.name);
+    if(seq!==avatarSeqV268||!(currentProfile?.role==='coach'&&mode==='coach'&&coachTab==='student')||student()?.id!==s.id)return;
+    slot.innerHTML=avatarHtmlV268(result,s.name);
+    slot.dataset.avatarState=result.state;
     if(meta)meta.textContent=avatarStateLabelV268(result);
   }
 
@@ -413,11 +441,6 @@ runtime=r"""
     const s=student?.(),hero=el('view')?.querySelector('.hero');
     if(!s||!hero)return;
 
-    const athlete=cloudAthletes?.get?.(s.id);
-    const uid=currentProfile?.role==='student'?currentUser?.id:athlete?.user_id;
-    const result=await avatarResultV268(uid,s.name);
-    if(seq!==avatarSeqV268||!(mode==='student'&&studentTab==='home')||student()?.id!==s.id)return;
-
     let panel=el('v268StudentAvatarPanel');
     if(!panel){
       panel=document.createElement('div');
@@ -425,12 +448,26 @@ runtime=r"""
       panel.className='v268-student-avatar-panel';
       hero.insertAdjacentElement('afterbegin',panel);
     }
-    panel.innerHTML='<div class="v268-student-avatar">'+avatarHtmlV268(result,s.name)+'</div>'+
-      '<div><span>PERFIL</span><strong>'+esc(s.name||'Alumno')+'</strong><small>'+esc(avatarStateLabelV268(result))+'</small></div>';
-    panel.dataset.avatarState=result.state;
 
-    // Retire older duplicate avatar fragments after the canonical V20.68 panel exists.
+    const immediate=window.__fjzStagingLocal?.syntheticDataOnly
+      ?{demo:true,url:'',state:'demo'}
+      :{demo:false,url:'',state:'offline'};
+    panel.innerHTML='<div class="v268-student-avatar">'+avatarHtmlV268(immediate,s.name)+'</div>'+
+      '<div><span>PERFIL</span><strong>'+esc(s.name||'Alumno')+'</strong><small>'+esc(avatarStateLabelV268(immediate))+'</small></div>';
+    panel.dataset.avatarState=immediate.state;
     hero.querySelectorAll('#v70StudentProfile').forEach(x=>x.remove());
+
+    if(window.__fjzStagingLocal?.syntheticDataOnly)return;
+
+    const athlete=cloudAthletes?.get?.(s.id);
+    const uid=currentProfile?.role==='student'?currentUser?.id:athlete?.user_id;
+    const result=await avatarResultV268(uid,s.name);
+    if(seq!==avatarSeqV268||!(mode==='student'&&studentTab==='home')||student()?.id!==s.id)return;
+    const live=el('v268StudentAvatarPanel');
+    if(!live)return;
+    live.innerHTML='<div class="v268-student-avatar">'+avatarHtmlV268(result,s.name)+'</div>'+
+      '<div><span>PERFIL</span><strong>'+esc(s.name||'Alumno')+'</strong><small>'+esc(avatarStateLabelV268(result))+'</small></div>';
+    live.dataset.avatarState=result.state;
   }
 
   window.__fjzApplyProfileUiV268=function(){
@@ -481,7 +518,7 @@ css=r"""
   box-shadow:inset 0 0 24px rgba(255,38,57,.08)
 }
 .v268-avatar-state{
-  margin-top:7px;color:#8e949f;font-size:8px;font-weight:760;line-height:1.35
+  min-height:11px;margin-top:7px;color:#8e949f;font-size:8px;font-weight:760;line-height:1.35
 }
 
 .v268-student-avatar-panel{
