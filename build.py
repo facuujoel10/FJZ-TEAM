@@ -684,6 +684,9 @@ exec(compile(open("v228_tracking_progress_pro.py", encoding="utf-8").read(), "v2
 # V20.29 professional nutrition experience; visual-only.
 exec(compile(open("v229_nutrition_pro.py", encoding="utf-8").read(), "v229_nutrition_pro.py", "exec"))
 
+# V20.30 professional agenda/alerts experience; visual-only, payments untouched.
+exec(compile(open("v230_agenda_alerts_pro.py", encoding="utf-8").read(), "v230_agenda_alerts_pro.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
