@@ -114,6 +114,60 @@ html=html.replace("""      <button class="${coachTab==='music'?'active':''}" onc
 html=html.replace("""<button class="'+(coachTab==='music'?'active':'')+'" onclick="coachTab=\\'music\\';render()">Música</button>""","")
 
 # ================================================================
+# 1.5) COACH DOSSIER FIRST-FRAME GEOMETRY
+# ================================================================
+# V11.4 used a tiny "Cargando..." card and replaced it asynchronously with the
+# full dossier. Render the complete dossier immediately from local/cache data;
+# cloud hydration may update values but not introduce a new layout surface.
+def patch_v114_dossier_first_frame(body):
+    old=r"""  async function injectProfileV114(){
+    if(currentProfile?.role!=='coach'||coachTab!=='student'||coachStudentTab!=='summary')return;
+    const b=el('coachStudentBody');
+    if(!b||el('v114ProfileCard'))return;
+    const holder=document.createElement('div');
+    holder.id='v114ProfileLoading';
+    holder.className='card v114-profile-card';
+    holder.innerHTML='<div class="empty">Cargando datos del alumno…</div>';
+    b.prepend(holder);
+    try{
+      const r=await profileRowV114(false);
+      holder.outerHTML=profileHtmlV114(r);
+    }catch(e){
+      holder.innerHTML='<div class="empty">No se pudieron cargar los datos del perfil.</div>';
+      console.warn('profile V11.4',e);
+    }
+  }"""
+    new=r"""  async function injectProfileV114(){
+    if(currentProfile?.role!=='coach'||coachTab!=='student'||coachStudentTab!=='summary')return;
+    const b=el('coachStudentBody'),s=student?.();
+    if(!b||!s||el('v114ProfileCard'))return;
+
+    const mapRow=cloudAthletes?.get?.(s.id)||{};
+    const immediate={
+      ...mapRow,
+      ...(s.profile||{}),
+      client_id:s.id,
+      name:s.name||mapRow.name||'Alumno',
+      goal:s.goal||mapRow.goal||'Plan personalizado'
+    };
+    b.insertAdjacentHTML('afterbegin',profileHtmlV114(immediate));
+
+    try{
+      const row=await profileRowV114(false);
+      if(!(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='summary'&&student?.()?.id===s.id))return;
+      const card=el('v114ProfileCard');
+      if(card)card.outerHTML=profileHtmlV114(row);
+    }catch(e){
+      console.warn('profile V20.68 hydration',e);
+    }
+  }"""
+    if body.count(old)!=1:
+        raise RuntimeError("V20.68 dossier first-frame anchor mismatch: "+str(body.count(old)))
+    return body.replace(old,new,1)
+
+html=edit_script(html,"v114CoachProfileRuntime",patch_v114_dossier_first_frame)
+
+# ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
 # ================================================================
 def patch_v175(body):
@@ -353,6 +407,7 @@ def patch_v175(body):
     cockpitOwnedByCanonicalShell:true,
     scrollbarSafeTabletBreakpoint:true,
     stableScrollbarGutter:true,
+    dossierFirstFrameGeometry:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -578,6 +633,10 @@ html{scrollbar-gutter:stable}
 .v268-student-avatar-panel strong{display:block;margin-top:4px;color:#fff;font-size:14px;font-weight:920}
 .v268-student-avatar-panel small{display:block;margin-top:5px;color:#9298a3;font-size:8px;line-height:1.35}
 
+@media(min-width:521px) and (max-width:900px){
+  .v267-dossier{min-height:344px}
+}
+
 .v268-cockpit{
   border-color:rgba(255,54,72,.24)!important;
   background:
@@ -750,6 +809,7 @@ for marker in [
     "cockpitOwnedByCanonicalShell:true",
     "scrollbarSafeTabletBreakpoint:true",
     "stableScrollbarGutter:true",
+    "dossierFirstFrameGeometry:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
