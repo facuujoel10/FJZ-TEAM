@@ -117,6 +117,20 @@ html=html.replace("""<button class="'+(coachTab==='music'?'active':'')+'" onclic
 # 2) COACH COCKPIT: more information + action-oriented assistance
 # ================================================================
 def patch_v175(body):
+    # V20.67's cloud avatar loader can add a late "unlinked" note when the
+    # isolated staging fixture has no production user_id. V20.68 owns the
+    # staging avatar surface, so stop the older loader before it mutates DOM.
+    hydrate_anchor="""  async function hydrateCoachAvatarV175(){
+    ensureCoachHeroFrameV175();
+"""
+    hydrate_repl="""  async function hydrateCoachAvatarV175(){
+    ensureCoachHeroFrameV175();
+    if(window.__fjzStagingLocal?.syntheticDataOnly)return;
+"""
+    if body.count(hydrate_anchor)!=1:
+        raise RuntimeError("V20.68 legacy avatar staging guard mismatch")
+    body=body.replace(hydrate_anchor,hydrate_repl,1)
+
     anchor="  async function hydrateSummaryV175(){"
     if body.count(anchor)!=1:
         raise RuntimeError("V20.68 coach cockpit helper anchor mismatch")
