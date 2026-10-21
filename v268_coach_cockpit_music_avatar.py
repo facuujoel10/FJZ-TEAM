@@ -351,6 +351,7 @@ def patch_v175(body):
     coachDataCoverage:true,
     premiumCoachShellFirstFrame:true,
     cockpitOwnedByCanonicalShell:true,
+    scrollbarSafeTabletBreakpoint:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -643,6 +644,44 @@ css=r"""
   .v268-cockpit-grid{grid-template-columns:1fr 1fr}
   .v268-actions{grid-column:1/-1}
 }
+/* Scrollbar-safe tablet breakpoint.
+   768px can expose ~15px less CSS width when a vertical scrollbar appears.
+   Apply the <=760 geometry slightly earlier so the layout cannot oscillate
+   across that old threshold while content hydrates. */
+@media(max-width:780px){
+  body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+  .topbar{
+    min-height:64px;
+    padding-top:calc(10px + env(safe-area-inset-top))!important;
+    gap:8px!important;
+  }
+  .topbar .brand img{width:42px!important;height:42px!important;object-fit:contain}
+  .brand h1{font-size:15px!important}
+  .v175-coach-profile-hero{padding:15px!important}
+  .v175-coach-profile-info h2{font-size:23px!important}
+  #v175CoachAvatarSlot{
+    width:82px!important;height:82px!important;flex-basis:82px!important;border-radius:18px!important
+  }
+  #v175CoachAvatarSlot .v70-avatar.big{
+    width:82px!important;height:82px!important;border-radius:17px!important
+  }
+  #v266CoachWorkspace{padding:8px!important;border-radius:12px!important}
+  .v266-context-main{grid-template-columns:1fr 1fr!important}
+  .v266-quick-actions{grid-template-columns:1fr 1fr!important}
+  .v266-coach-tabs,#coachStudentTabs{
+    overflow-x:auto!important;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    white-space:nowrap
+  }
+  .v266-coach-tabs .tab,#coachStudentTabs .tab{flex:0 0 auto}
+  #v175Coach360>.v175-360-head{padding:14px!important}
+  .v268-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .v268-cockpit-grid{grid-template-columns:1fr}
+  .v268-actions{grid-column:auto}
+  .v268-student-avatar-panel{width:100%;min-width:0}
+}
+
 @media(max-width:760px){
   #v175CoachAvatarSlot{width:82px!important;height:82px!important;flex-basis:82px!important;border-radius:18px!important}
   .v268-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -705,6 +744,7 @@ for marker in [
     "coachDataCoverage:true",
     "premiumCoachShellFirstFrame:true",
     "cockpitOwnedByCanonicalShell:true",
+    "scrollbarSafeTabletBreakpoint:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
