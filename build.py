@@ -729,6 +729,9 @@ exec(compile(open("v244_unified_session_history.py", encoding="utf-8").read(), "
 # V20.45 student smart action hub + coach-response acknowledgement.
 exec(compile(open("v245_student_action_hub.py", encoding="utf-8").read(), "v245_student_action_hub.py", "exec"))
 
+# V20.46 confirmed check-in success modal after cloud persistence.
+exec(compile(open("v246_confirmed_checkin_success.py", encoding="utf-8").read(), "v246_confirmed_checkin_success.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
