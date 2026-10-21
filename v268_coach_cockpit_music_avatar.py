@@ -316,6 +316,15 @@ def patch_v175(body):
         raise RuntimeError("V20.68 cockpit section mismatch")
     body=body.replace(section_anchor,section_new,1)
 
+    old_avatar_note="""      const chip=hero.querySelector('.v266-profile-state');
+      if(chip&&!hero.querySelector('.v267-avatar-note')){
+        chip.insertAdjacentHTML('afterend','<span class="v267-avatar-note">Cuenta sin vincular · sin foto sincronizada</span>');
+      }
+"""
+    if body.count(old_avatar_note)!=1:
+        raise RuntimeError("V20.68 old avatar note cleanup mismatch: "+str(body.count(old_avatar_note)))
+    body=body.replace(old_avatar_note,"",1)
+
     marker="""    coachProfileCommandCenter:true,
     coachAvatarDirectLinkedProfile:true,
 """
@@ -408,6 +417,8 @@ runtime=r"""
     const s=student?.(),ath=cloudAthletes?.get?.(s?.id);
     const slot=el('v175CoachAvatarSlot'),hero=el('view')?.querySelector('.hero');
     if(!s||!slot||!hero)return;
+
+    hero.querySelectorAll('.v267-avatar-note').forEach(x=>x.remove());
 
     let meta=hero.querySelector('.v268-avatar-state');
     if(!meta){
@@ -514,6 +525,7 @@ css=r"""
   position:absolute;inset:11px;border:1px solid rgba(255,65,82,.40);border-radius:18px;
   box-shadow:inset 0 0 24px rgba(255,38,57,.08)
 }
+.v267-avatar-note{display:none!important}
 .v268-avatar-state{
   min-height:11px;margin-top:7px;color:#8e949f;font-size:8px;font-weight:760;line-height:1.35
 }
