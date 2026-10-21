@@ -744,6 +744,9 @@ exec(compile(open("v249_progress_pulse.py", encoding="utf-8").read(), "v249_prog
 # V20.50 selected-student operational weekly brief in Resumen 360.
 exec(compile(open("v250_coach_weekly_brief.py", encoding="utf-8").read(), "v250_coach_weekly_brief.py", "exec"))
 
+# V20.51 populated warm-up / activation / stretching library.
+exec(compile(open("v251_warmup_mobility_library.py", encoding="utf-8").read(), "v251_warmup_mobility_library.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
