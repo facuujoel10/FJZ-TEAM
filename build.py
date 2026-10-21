@@ -768,6 +768,12 @@ exec(compile(open("v257_checkin_weekly_focus.py", encoding="utf-8").read(), "v25
 # V20.58 keeps the latest reviewed coach plan visible on Student Home.
 exec(compile(open("v258_student_current_plan.py", encoding="utf-8").read(), "v258_student_current_plan.py", "exec"))
 
+# V20.59 coach action center 2.0 + operational calendar.
+exec(compile(open("v259_coach_action_calendar.py", encoding="utf-8").read(), "v259_coach_action_calendar.py", "exec"))
+
+# V20.60 fast four-week coach snapshot per athlete.
+exec(compile(open("v260_coach_four_week_snapshot.py", encoding="utf-8").read(), "v260_coach_four_week_snapshot.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
