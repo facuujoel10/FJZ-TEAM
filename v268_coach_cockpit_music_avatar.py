@@ -107,6 +107,11 @@ html=edit_script(html,"v146RenderStabilityRuntime",patch_v146)
 html=html.replace(",spotify_url,spotify_title","")
 html=html.replace("spotify_url,spotify_title,","")
 
+# V8.1 had one later Coach bottom-nav override that could reintroduce the
+# Música button after V6.8 was retired.
+html=html.replace("""      <button class="${coachTab==='music'?'active':''}" onclick="coachTab='music';render()">Música</button>
+""","")
+
 # ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
 # ================================================================
