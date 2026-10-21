@@ -1,0 +1,32 @@
+name: develop-qa
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    env:
+      TEAM_FJZ_ENV: staging-local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build isolated staging
+        run: python build.py
+
+      - name: Preflight
+        run: python preflight.py
+
+      - name: Static smoke test
+        run: python smoke_static.py
+
+      - name: Consolidation audit
+        run: python consolidation_audit.py
