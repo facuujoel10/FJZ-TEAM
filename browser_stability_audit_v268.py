@@ -46,6 +46,14 @@ audit_js=r"""
    await sleep(250);
    const base=snap();
    out.base=base;
+   out.basePremium={
+     info:!!base.info,
+     actions:!!base.actions,
+     avatar:!!base.avatar,
+     workspace:!!base.workspace,
+     cockpit:!!base.cockpit,
+     profile:!!base.profile
+   };
    for(let i=0;i<8;i++){
      render();await sleep(90);
      const now=snap();
@@ -63,7 +71,15 @@ audit_js=r"""
        avatarState:diff(base.avatarState,now.avatarState),
        scrollY:now.scrollY,
        rects:{hero:now.hero,profile:now.profile,info:now.info,actions:now.actions,avatar:now.avatar,state:now.state,avatarState:now.avatarState},
-       appState:now.appState
+       appState:now.appState,
+       premium:{
+         info:!!now.info,
+         actions:!!now.actions,
+         avatar:!!now.avatar,
+         workspace:!!now.workspace,
+         cockpit:!!now.cockpit,
+         profile:!!now.profile
+       }
      });
    }
    out.duplicates={
@@ -106,12 +122,16 @@ finally:
 for r in reports:
  if r["errors"]:fails.append({"vp":r["viewport"],"type":"js","v":r["errors"]})
  if r["musicButtons"]:fails.append({"vp":r["viewport"],"type":"music_button","v":r["musicButtons"]})
+ if not all(r.get("basePremium",{}).values()):
+  fails.append({"vp":r["viewport"],"type":"missing_premium_base","v":r.get("basePremium",{})})
  if any(v>1 for v in r["duplicates"].values()):fails.append({"vp":r["viewport"],"type":"duplicates","v":r["duplicates"]})
  if r.get("studentAvatarCount",0)!=1:fails.append({"vp":r["viewport"],"type":"student_avatar","v":r.get("studentAvatarCount")})
  if r.get("studentOverflow",0)>2:fails.append({"vp":r["viewport"],"type":"student_overflow","v":r["studentOverflow"]})
  if r.get("activeAnimations",0)>3:fails.append({"vp":r["viewport"],"type":"animations","v":r["activeAnimations"]})
  for run in r["runs"]:
   if run["overflow"]>2:fails.append({"vp":r["viewport"],"type":"overflow","v":run})
+  if not all(run.get("premium",{}).values()):
+   fails.append({"vp":r["viewport"],"type":"missing_premium_frame","v":run})
   if run["scrollY"]!=0:fails.append({"vp":r["viewport"],"type":"scroll_drift","v":run})
   if max(run["hero"],run["workspace"],run["cockpit"],run["profile"])>4:fails.append({"vp":r["viewport"],"type":"warp","v":run})
 
