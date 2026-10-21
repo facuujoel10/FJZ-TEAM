@@ -37,6 +37,7 @@ helpers=r"""
 /* ---------- Coach Action Center 2.0 + Calendar V20.59 ---------- */
 let coachCalendarMonthV259=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 let coachCalendarRemindersV259=[];
+let coachCalendarCheckinsV259=[];
 let coachCalendarLoadedAtV259=0;
 let coachCalendarInflightV259=null;
 
@@ -139,10 +140,32 @@ function reminderEventsForMonthV259(month){
   return out;
 }
 
+function checkinScheduleEventsV259(month){
+  const y=month.getFullYear(),m=month.getMonth();
+  const today=startOfDayV259(new Date());
+  return (coachCalendarCheckinsV259||[]).map(row=>{
+    const s=coachStudentByAthleteIdV259(row?.athlete_id);
+    const due=parseDateKeyV259(row?.next_due);
+    if(!s||!due||due.getFullYear()!==y||due.getMonth()!==m||row?.active===false)return null;
+    const cadenceMap={once:'Único',weekly:'Semanal',biweekly:'Quincenal',monthly:'Mensual'};
+    return {
+      date:dateKeyV259(due),
+      rawDate:startOfDayV259(due),
+      student:s,
+      kind:'checkin',
+      title:'Check-in programado · '+(cadenceMap[row?.cadence]||'Programado'),
+      time:row?.remind_time?String(row.remind_time).slice(0,5):'',
+      overdue:startOfDayV259(due)<today,
+      tab:'tracking'
+    };
+  }).filter(Boolean);
+}
+
 function calendarEventsV259(month=coachCalendarMonthV259){
   const reviews=(state.students||[]).map(reviewEventV259);
   const reminders=reminderEventsForMonthV259(month);
-  return [...reviews,...reminders];
+  const checkins=checkinScheduleEventsV259(month);
+  return [...reviews,...checkins,...reminders];
 }
 
 function eventToneV259(e){
@@ -211,10 +234,17 @@ function renderCoachCalendarV259(){
   }
 
   const reviewEvents=(state.students||[]).map(reviewEventV259);
-  const overdue=reviewEvents.filter(x=>x.overdue).length;
   const today=startOfDayV259(new Date()),weekEnd=addDaysV259(today,7);
-  const week=reviewEvents.filter(x=>x.rawDate>=today&&x.rawDate<=weekEnd).length;
-  const upcoming=calendarUpcomingV259([...reviewEvents,...reminderEventsForMonthV259(new Date(today.getFullYear(),today.getMonth(),1))]);
+  const currentMonth=new Date(today.getFullYear(),today.getMonth(),1);
+  const nextMonth=new Date(today.getFullYear(),today.getMonth()+1,1);
+  const checkinCurrent=checkinScheduleEventsV259(currentMonth);
+  const checkinNext=checkinScheduleEventsV259(nextMonth);
+  const reminderCurrent=reminderEventsForMonthV259(currentMonth);
+  const reminderNext=reminderEventsForMonthV259(nextMonth);
+  const dueEvents=[...reviewEvents,...checkinCurrent,...checkinNext];
+  const overdue=dueEvents.filter(x=>x.overdue).length;
+  const week=dueEvents.filter(x=>!x.overdue&&x.rawDate>=today&&x.rawDate<=weekEnd).length;
+  const upcoming=calendarUpcomingV259([...dueEvents,...reminderCurrent,...reminderNext]);
   const days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
   host.innerHTML=
@@ -230,6 +260,7 @@ function renderCoachCalendarV259(){
     '<div class="v259-calendar-stats">'+
       '<div class="'+(overdue?'warn':'')+'"><strong>'+overdue+'</strong><span>Vencidos</span></div>'+
       '<div><strong>'+week+'</strong><span>Próx. 7 días</span></div>'+
+      '<div><strong>'+(coachCalendarCheckinsV259||[]).length+'</strong><span>Check-ins</span></div>'+
       '<div><strong>'+(coachCalendarRemindersV259||[]).length+'</strong><span>Recordatorios</span></div>'+
     '</div>'+
     '<div class="v259-calendar-layout">'+
@@ -268,28 +299,36 @@ window.goTodayCoachCalendarV259=function(){
 async function loadCoachCalendarV259(force=false){
   if(!cloudEnabled||!supabaseClient||window.__fjzStagingLocal?.enabled){
     coachCalendarRemindersV259=Array.isArray(agendaRemindersV81)?agendaRemindersV81.slice():[];
+    coachCalendarCheckinsV259=[];
     renderCoachCalendarV259();
-    return coachCalendarRemindersV259;
+    return {reminders:coachCalendarRemindersV259,checkins:coachCalendarCheckinsV259};
   }
   const fresh=coachCalendarLoadedAtV259&&Date.now()-coachCalendarLoadedAtV259<30000;
   if(!force&&fresh)return coachCalendarRemindersV259;
   if(coachCalendarInflightV259)return coachCalendarInflightV259;
 
   coachCalendarInflightV259=(async()=>{
-    const q=supabaseClient.from('athlete_reminders')
-      .select('id,athlete_id,coach_id,title,body,category,schedule_type,reminder_date,weekday,remind_time,active,created_at')
-      .eq('coach_id',currentUser.id)
-      .eq('active',true);
-    const {data,error}=await q;
-    if(error)throw error;
-    coachCalendarRemindersV259=Array.isArray(data)?data:[];
+    const [reminderRes,checkinRes]=await Promise.all([
+      supabaseClient.from('athlete_reminders')
+        .select('id,athlete_id,coach_id,title,body,category,schedule_type,reminder_date,weekday,remind_time,active,created_at')
+        .eq('coach_id',currentUser.id)
+        .eq('active',true),
+      supabaseClient.from('checkin_schedules')
+        .select('id,athlete_id,coach_id,cadence,next_due,remind_time,active,notes,last_completed_at,updated_at')
+        .eq('coach_id',currentUser.id)
+        .eq('active',true)
+    ]);
+    if(reminderRes.error)throw reminderRes.error;
+    if(checkinRes.error)throw checkinRes.error;
+    coachCalendarRemindersV259=Array.isArray(reminderRes.data)?reminderRes.data:[];
+    coachCalendarCheckinsV259=Array.isArray(checkinRes.data)?checkinRes.data:[];
     coachCalendarLoadedAtV259=Date.now();
     renderCoachCalendarV259();
-    return coachCalendarRemindersV259;
+    return {reminders:coachCalendarRemindersV259,checkins:coachCalendarCheckinsV259};
   })().catch(()=>{
     coachCalendarRemindersV259=Array.isArray(agendaRemindersV81)?agendaRemindersV81.slice():coachCalendarRemindersV259;
     renderCoachCalendarV259();
-    return coachCalendarRemindersV259;
+    return {reminders:coachCalendarRemindersV259,checkins:coachCalendarCheckinsV259};
   }).finally(()=>{coachCalendarInflightV259=null});
 
   return coachCalendarInflightV259;
@@ -298,7 +337,8 @@ window.loadCoachCalendarV259=loadCoachCalendarV259;
 
 function hydrateCoachCalendarV259(){
   const host=el('v259CoachCalendar');if(!host)return;
-  const force=(typeof agendaLoadedV81!=='undefined'&&agendaLoadedV81===false);
+  const force=(typeof agendaLoadedV81!=='undefined'&&agendaLoadedV81===false)||
+    (typeof followupLoadedV122!=='undefined'&&followupLoadedV122===false);
   loadCoachCalendarV259(force);
 }
 window.hydrateCoachCalendarV259=hydrateCoachCalendarV259;
@@ -401,7 +441,7 @@ css=r"""
 .v259-calendar-head p{margin:5px 0 0;color:#959aa4;font-size:9px;line-height:1.45}
 .v259-calendar-nav{display:flex;gap:6px;align-items:center}
 .v259-calendar-stats{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:9px
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:9px
 }
 .v259-calendar-stats>div{
   padding:9px 10px;border:1px solid #2b2f37;border-radius:10px;background:#0d0e12
@@ -461,7 +501,7 @@ css=r"""
   .v259-event.checkin{background:#3bd58a}.v259-event.reminder{background:#9b88ff}.v259-event.overdue{background:#f2bd55}
 }
 @media(max-width:480px){
-  .v259-calendar-stats{grid-template-columns:1fr 1fr 1fr}
+  .v259-calendar-stats{grid-template-columns:1fr 1fr}
   .v259-calendar-stats>div{padding:7px}
   .v259-calendar-stats strong{font-size:14px}
   .v259-day{min-height:54px}
@@ -485,7 +525,8 @@ for marker in [
     'meta name="fjz-coach-action-calendar" content="20.59"',
     "coachPriorityActionV259","renderCoachCalendarV259","loadCoachCalendarV259",
     "CALENDARIO DEL COACH","Chequeos y seguimiento",
-    "coachCalendarRemindersV259","athlete_reminders",
+    "coachCalendarRemindersV259","coachCalendarCheckinsV259",
+    "athlete_reminders","checkin_schedules","next_due",
     "Hacer chequeo","Responder feedback","Revisar check-in"
 ]:
     if marker not in html:
