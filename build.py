@@ -723,6 +723,9 @@ exec(compile(open("v242_coach_session_feedback_response.py", encoding="utf-8").r
 # V20.43 student journey + session-feedback coach priority.
 exec(compile(open("v243_student_journey_feedback_priority.py", encoding="utf-8").read(), "v243_student_journey_feedback_priority.py", "exec"))
 
+# V20.44 unified workout/session feedback/coach response history.
+exec(compile(open("v244_unified_session_history.py", encoding="utf-8").read(), "v244_unified_session_history.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
