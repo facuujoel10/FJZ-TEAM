@@ -87,6 +87,21 @@ def patch_v132(body):
 
 html=edit_script(html,"v132CoachAssistantRealtime",patch_v132)
 
+# Remove obsolete Music routing from the view-scoped realtime guard.
+def patch_v146(body):
+    body,n=re.subn(r"\n\s*'__fjzV69MediaChannel',","",body,count=1)
+    if n not in (0,1):
+        raise RuntimeError("V20.68 V14.6 legacy media channel key mismatch")
+    body,n=re.subn(r"\n\s*music:new Set\(\['coach_media_settings'\]\),","",body,count=1)
+    if n!=1:
+        raise RuntimeError("V20.68 V14.6 student music route mismatch: "+str(n))
+    body,n=re.subn(r"\n\s*if\(coachTab==='music'\)return table==='coach_media_settings';","",body,count=1)
+    if n!=1:
+        raise RuntimeError("V20.68 V14.6 coach music route mismatch: "+str(n))
+    return body
+
+html=edit_script(html,"v146RenderStabilityRuntime",patch_v146)
+
 # ================================================================
 # 2) COACH COCKPIT: more information + action-oriented assistance
 # ================================================================
@@ -584,6 +599,7 @@ for forbidden in [
     "coachTab==='music'",
     "studentTab==='music'",
     "coachStudentTab==='music'",
+    "__fjzV69MediaChannel",
 ]:
     if forbidden in html:
         pos=html.find(forbidden)
