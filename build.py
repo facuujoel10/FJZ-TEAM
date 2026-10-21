@@ -738,6 +738,9 @@ exec(compile(open("v247_professional_checkin_review.py", encoding="utf-8").read(
 # V20.48 Student Home check-in reply + acknowledgement back to Coach.
 exec(compile(open("v248_checkin_reply_loop.py", encoding="utf-8").read(), "v248_checkin_reply_loop.py", "exec"))
 
+# V20.49 four-week performance/adherence/wellness progress pulse.
+exec(compile(open("v249_progress_pulse.py", encoding="utf-8").read(), "v249_progress_pulse.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
