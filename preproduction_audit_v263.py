@@ -48,6 +48,7 @@ required={
     "preproduction_hardening":'meta name="fjz-preproduction-hardening" content="20.63"',
     "confirmed_save_feedback":'meta name="fjz-confirmed-save-feedback" content="20.64"',
     "release_candidate_geometry":'meta name="fjz-release-candidate-geometry" content="20.65"',
+    "coach_athlete_workspace":'meta name="fjz-coach-athlete-workspace" content="20.66"',
     "save_feedback_green":"greenConfirmedSaveFeedback:true",
     "routine_success_after_cloud":"routineSuccessAfterCloudSync:true",
     "no_false_green_pending":"noFalseGreenOnPendingSync:true",
