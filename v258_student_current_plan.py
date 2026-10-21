@@ -95,6 +95,12 @@ def patch_v175(body):
 """
     body=body.replace(anchor,helpers+anchor,1)
 
+    week_start=body.find("  function injectStudentWeekFlowV253(){")
+    week_end=body.find("  /* ---------- Persistent current plan V20.58 ---------- */",week_start)
+    if week_start<0 or week_end<0:
+        raise RuntimeError("V20.58 week-flow function scope missing")
+
+    week_body=body[week_start:week_end]
     week_anchor="""    if(anchor)anchor.insertAdjacentElement('afterend',card);
     else view.prepend(card);
   }
@@ -106,9 +112,10 @@ def patch_v175(body):
   }
 
 """
-    if body.count(week_anchor)!=1:
-        raise RuntimeError("V20.58 week-flow refresh anchor mismatch: "+str(body.count(week_anchor)))
-    body=body.replace(week_anchor,week_repl,1)
+    if week_body.count(week_anchor)!=1:
+        raise RuntimeError("V20.58 scoped week-flow refresh anchor mismatch: "+str(week_body.count(week_anchor)))
+    week_body=week_body.replace(week_anchor,week_repl,1)
+    body=body[:week_start]+week_body+body[week_end:]
 
     return body
 
