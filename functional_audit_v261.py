@@ -44,6 +44,7 @@ required={
     "coach_calendar":'meta name="fjz-coach-action-calendar" content="20.59"',
     "coach_four_week":'meta name="fjz-coach-four-week-snapshot" content="20.60"',
     "premium_polish":'meta name="fjz-premium-polish" content="20.62"',
+    "coach_cockpit_music_removed":'meta name="fjz-coach-cockpit-music-removal" content="20.68"',
     "calendar_review_cadence":"coachReviewCadenceDaysV240",
     "calendar_agenda_source":"athlete_reminders",
     "calendar_checkin_source":"checkin_schedules",
@@ -61,7 +62,8 @@ env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
 
 expected_exact={
     "styles":1,
-    "render_assignments":20,
+    # V20.68 intentionally removes two obsolete Music render wrappers.
+    "render_assignments":18,
     "start_workout_assignments":12,
     "finish_workout_assignments":5,
     "realtime_channels":2,
