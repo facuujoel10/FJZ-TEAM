@@ -586,7 +586,9 @@ for forbidden in [
     "coachStudentTab==='music'",
 ]:
     if forbidden in html:
-        raise RuntimeError("V20.68 music feature still active: "+forbidden)
+        pos=html.find(forbidden)
+        context=html[max(0,pos-500):min(len(html),pos+900)].replace("\n"," ")
+        raise RuntimeError("V20.68 music feature still active: "+forbidden+" CONTEXT: "+context)
 
 for marker in [
     'meta name="fjz-coach-cockpit-music-removal" content="20.68"',
