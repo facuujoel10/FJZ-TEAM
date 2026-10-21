@@ -54,6 +54,13 @@ required={
 
 missing=[k for k,v in required.items() if v not in html]
 
+success_toasts=sorted(set(
+    m.group(2) for m in re.finditer(
+        r"toast(?:\?\.)?\(\s*(['\"])([^'\"]*(?:guardad|actualizad|cread|enviad|registrad|agregad|eliminad|marcad)[^'\"]*)\1\s*\)",
+        html,re.I
+    )
+))
+
 env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
 expected={
     "styles":1,
@@ -81,6 +88,7 @@ print(json.dumps({
     "missing":missing,
     "mismatches":mismatches,
     "legacy":legacy,
+    "remaining_literal_success_toasts":success_toasts,
 },indent=2,ensure_ascii=False))
 
 if missing:
