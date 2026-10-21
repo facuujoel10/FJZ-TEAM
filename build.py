@@ -702,6 +702,9 @@ exec(compile(open("v235_coach_workflow_pro.py", encoding="utf-8").read(), "v235_
 # V20.36 coach work queue: sort + next priority using existing data.
 exec(compile(open("v236_coach_work_queue.py", encoding="utf-8").read(), "v236_coach_work_queue.py", "exec"))
 
+# V20.37 per-student coach review baseline + changes/decisions.
+exec(compile(open("v237_coach_review_hub.py", encoding="utf-8").read(), "v237_coach_review_hub.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
