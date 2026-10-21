@@ -42,9 +42,9 @@ for marker in [
 # 1) REMOVE MUSIC/SPOTIFY FEATURE FROM ACTIVE APP CODE
 # ================================================================
 # V6.7 per-athlete Spotify block.
-start="// ===== TEAM FJZ V8.3 · SPOTIFY / MÚSICA ====="
-end="// ===== TEAM FJZ V8.3 · CONSEJOS SIN CHECKLIST + MÚSICA VISIBLE ====="
-pat=re.compile(re.escape(start)+r".*?(?="+re.escape(end)+r")",re.S)
+start_re=r"// ===== TEAM FJZ [^\n]*SPOTIFY / MÚSICA ====="
+end_re=r"// ===== TEAM FJZ [^\n]*CONSEJOS SIN CHECKLIST \+ MÚSICA VISIBLE ====="
+pat=re.compile(start_re+r".*?(?="+end_re+r")",re.S)
 html,n=pat.subn("",html,count=1)
 if n not in (0,1):
     raise RuntimeError("V20.68 legacy Spotify block removal mismatch: "+str(n))
@@ -58,9 +58,9 @@ if n not in (0,1):
     raise RuntimeError("V20.68 V6.8 music subsection removal mismatch: "+str(n))
 
 # V6.9 global music / coach_media_settings.
-start3="// ===== TEAM FJZ V8.3 · MÚSICA GLOBAL DEL COACH ====="
-end3="// ===== TEAM FJZ V8.3 · FOTO DE PERFIL + RECETAS ====="
-pat3=re.compile(re.escape(start3)+r".*?(?="+re.escape(end3)+r")",re.S)
+start3_re=r"// ===== TEAM FJZ [^\n]*MÚSICA GLOBAL DEL COACH ====="
+end3_re=r"// ===== TEAM FJZ [^\n]*FOTO DE PERFIL \+ RECETAS ====="
+pat3=re.compile(start3_re+r".*?(?="+end3_re+r")",re.S)
 html,n=pat3.subn("",html,count=1)
 if n not in (0,1):
     raise RuntimeError("V20.68 global music block removal mismatch: "+str(n))
