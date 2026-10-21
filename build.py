@@ -783,6 +783,9 @@ exec(compile(open("v263_preproduction_hardening.py", encoding="utf-8").read(), "
 # V20.64 consistent confirmed-save feedback across Coach and Student flows.
 exec(compile(open("v264_confirmed_save_feedback.py", encoding="utf-8").read(), "v264_confirmed_save_feedback.py", "exec"))
 
+# V20.65 release-candidate box alignment + anti-warp geometry hardening.
+exec(compile(open("v265_release_candidate_geometry.py", encoding="utf-8").read(), "v265_release_candidate_geometry.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
