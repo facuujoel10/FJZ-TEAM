@@ -152,9 +152,9 @@ def patch_v175(body):
         raise RuntimeError("V20.60 summary insertion mismatch")
     body=body.replace(brief_section,snapshot_section+brief_section,1)
 
-    marker_old="""    studentFollowupUnified:true
+    marker_old="""    exerciseProgressReadOnly:true
   };"""
-    marker_new="""    studentFollowupUnified:true,
+    marker_new="""    exerciseProgressReadOnly:true,
     coachFourWeekSnapshot:true,
     coachFourWeekUsesExistingTracking:true
   };"""
