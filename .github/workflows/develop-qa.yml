@@ -36,3 +36,6 @@ jobs:
 
       - name: Preproduction audit V20.63
         run: python preproduction_audit_v263.py
+
+      - name: Browser geometry audit V20.65
+        run: python browser_geometry_audit_v265.py
