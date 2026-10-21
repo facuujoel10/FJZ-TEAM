@@ -11,7 +11,7 @@ required={
   "measurement_numeric":"measurementNumericGuard:true",
   "comments_text":"commentsRemainText:true",
   "exact_reps_text":"exactRepsPatternRemainsText:true",
-  "score_pattern":"pattern=\\"[1-9]|10\\"",
+  "score_pattern":'pattern="[1-9]|10"',
   "input_rules":"__fjzApplyInputRulesV267",
 }
 missing=[k for k,v in required.items() if v not in html]
