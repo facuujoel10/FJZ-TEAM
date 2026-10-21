@@ -28,7 +28,7 @@ as $$
 $$;
 
 -- Keep direct anonymous RPC access disabled.
-revoke execute on function public.are_linked(uuid,uuid) from anon;
+revoke execute on function public.are_linked(uuid,uuid) from public, anon;
 grant execute on function public.are_linked(uuid,uuid) to authenticated;
 
 -- Verification query after applying:
