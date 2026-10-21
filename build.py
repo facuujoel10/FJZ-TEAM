@@ -747,6 +747,9 @@ exec(compile(open("v250_coach_weekly_brief.py", encoding="utf-8").read(), "v250_
 # V20.51 populated warm-up / activation / stretching library.
 exec(compile(open("v251_warmup_mobility_library.py", encoding="utf-8").read(), "v251_warmup_mobility_library.py", "exec"))
 
+# V20.52 consolidated coach priority center.
+exec(compile(open("v252_coach_priority_center.py", encoding="utf-8").read(), "v252_coach_priority_center.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
