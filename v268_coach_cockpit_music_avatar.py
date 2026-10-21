@@ -50,9 +50,9 @@ if n not in (0,1):
     raise RuntimeError("V20.68 legacy Spotify block removal mismatch: "+str(n))
 
 # V6.8 Spotify subsection + all music navigation overrides.
-start2="// --- Spotify: búsqueda robusta de la ficha y pestaña propia ---"
-end2="// ===== TEAM FJZ V8.3 · MÚSICA GLOBAL DEL COACH ====="
-pat2=re.compile(re.escape(start2)+r".*?(?="+re.escape(end2)+r")",re.S)
+start2_re=r"// --- Spotify: búsqueda robusta de la ficha y pestaña propia ---"
+end2_re=r"// ===== TEAM FJZ [^\n]*MÚSICA GLOBAL DEL COACH ====="
+pat2=re.compile(start2_re+r".*?(?="+end2_re+r")",re.S)
 html,n=pat2.subn("",html,count=1)
 if n not in (0,1):
     raise RuntimeError("V20.68 V6.8 music subsection removal mismatch: "+str(n))
