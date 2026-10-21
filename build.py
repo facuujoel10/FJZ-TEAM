@@ -759,6 +759,9 @@ exec(compile(open("v254_exercise_performance_progress.py", encoding="utf-8").rea
 # V20.55 mobile geometry/input/modal stability hardening.
 exec(compile(open("v255_mobile_stability_pass.py", encoding="utf-8").read(), "v255_mobile_stability_pass.py", "exec"))
 
+# V20.56 final consolidation/authority gate; removes obsolete Home DOM pass.
+exec(compile(open("v256_consolidation_gate.py", encoding="utf-8").read(), "v256_consolidation_gate.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
