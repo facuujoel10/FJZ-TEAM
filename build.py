@@ -717,6 +717,9 @@ exec(compile(open("v240_coach_review_cadence.py", encoding="utf-8").read(), "v24
 # V20.41 structured student feedback attached to confirmed workout session.
 exec(compile(open("v241_student_session_feedback.py", encoding="utf-8").read(), "v241_student_session_feedback.py", "exec"))
 
+# V20.42 coach response + visible next step for session feedback.
+exec(compile(open("v242_coach_session_feedback_response.py", encoding="utf-8").read(), "v242_coach_session_feedback_response.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
