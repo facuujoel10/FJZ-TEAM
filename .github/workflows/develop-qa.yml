@@ -39,3 +39,6 @@ jobs:
 
       - name: Browser geometry audit V20.65
         run: python browser_geometry_audit_v265.py
+
+      - name: Input contract audit V20.67
+        run: python input_contract_audit_v267.py
