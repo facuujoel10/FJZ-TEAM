@@ -396,6 +396,27 @@ def patch_v175(body):
         raise RuntimeError("V20.68 synchronous avatar meta anchor mismatch: "+str(body.count(sync_meta_anchor)))
     body=body.replace(sync_meta_anchor,sync_meta_repl,1)
 
+    agenda_hero_old="""      const hero=el('view')?.querySelector('.hero');
+      const actions=hero?.querySelector('.pill-row');
+      actions?.querySelector('.v175-agenda-hero-btn')?.remove();
+      if(sum.total&&actions){
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='btn ghost small v175-agenda-hero-btn';
+        b.textContent='Agenda · '+sum.total;
+        b.onclick=()=>{coachStudentTab='agenda';render()};
+        actions.prepend(b);
+      }
+"""
+    agenda_hero_new="""      // V20.68: keep Agenda count in the tab/Cockpit only.
+      // Do not inject a late hero button: its intrinsic width changes the
+      // Coach identity grid after async agenda hydration and causes layout shift.
+      el('view')?.querySelector('.v175-agenda-hero-btn')?.remove();
+"""
+    if body.count(agenda_hero_old)!=1:
+        raise RuntimeError("V20.68 async agenda hero button anchor mismatch: "+str(body.count(agenda_hero_old)))
+    body=body.replace(agenda_hero_old,agenda_hero_new,1)
+
     marker="""    coachProfileCommandCenter:true,
     coachAvatarDirectLinkedProfile:true,
 """
@@ -408,6 +429,7 @@ def patch_v175(body):
     scrollbarSafeTabletBreakpoint:true,
     stableScrollbarGutter:true,
     dossierFirstFrameGeometry:true,
+    stableCoachHeroActions:true,
     coachAvatarDirectLinkedProfile:true,
 """
     if body.count(marker)!=1:
@@ -810,6 +832,7 @@ for marker in [
     "scrollbarSafeTabletBreakpoint:true",
     "stableScrollbarGutter:true",
     "dossierFirstFrameGeometry:true",
+    "stableCoachHeroActions:true",
     "coachAvatarProductionLinkedProfile:true",
     "studentAvatarProductionLinkedProfile:true",
     "stagingAvatarClearlyDemo:true",
