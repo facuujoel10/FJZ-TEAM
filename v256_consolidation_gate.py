@@ -42,6 +42,13 @@ def edit_script(doc,script_id,transform):
 
 before=metrics(html)
 
+submit_scripts=[]
+for m in re.finditer(r'<script([^>]*)>(.*?)</script>',html,re.S|re.I):
+    if re.search(r'window\.submitWeeklyCheckin\s*=\s*async\s+function',m.group(2)):
+        idm=re.search(r'\bid=["\']([^"\']+)["\']',m.group(1),re.I)
+        submit_scripts.append(idm.group(1) if idm else '(script sin id)')
+print("V20.56 submitWeeklyCheckin authorities:",submit_scripts)
+
 for marker in [
     'meta name="fjz-mobile-stability" content="20.55"',
     "studentSmartActionHub:true",
@@ -90,7 +97,9 @@ expected={
 }
 for key,val in expected.items():
     if after.get(key)!=val:
-        raise RuntimeError("V20.56 authority/topology mismatch "+key+": "+repr({"expected":val,"actual":after.get(key)}))
+        extra={"expected":val,"actual":after.get(key)}
+        if key=="submit_checkin": extra["scripts"]=submit_scripts
+        raise RuntimeError("V20.56 authority/topology mismatch "+key+": "+repr(extra))
 
 for key in (
     "styles","render_assignments","start_assignments","finish_assignments",
