@@ -33,3 +33,6 @@ jobs:
 
       - name: Functional audit V20.61
         run: python functional_audit_v261.py
+
+      - name: Preproduction audit V20.63
+        run: python preproduction_audit_v263.py
