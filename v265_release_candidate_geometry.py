@@ -23,7 +23,7 @@ for marker in [
     'meta name="fjz-mobile-stability" content="20.55"',
     'meta name="fjz-premium-polish" content="20.62"',
     "routeScrollAuthority:true",
-    "keyboardResizeWidthOnly:true"
+    "widthOnlyTrackingResize:true"
 ]:
     if marker not in html:
         raise RuntimeError("V20.65 missing prerequisite: "+marker)
