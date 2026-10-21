@@ -61,6 +61,11 @@ success_toasts=sorted(set(
     )
 ))
 
+unexpected_success_toasts=[
+    x for x in success_toasts
+    if "pendiente" not in x.lower()
+]
+
 env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
 expected={
     "styles":1,
@@ -89,6 +94,7 @@ print(json.dumps({
     "mismatches":mismatches,
     "legacy":legacy,
     "remaining_literal_success_toasts":success_toasts,
+    "unexpected_literal_success_toasts":unexpected_success_toasts,
 },indent=2,ensure_ascii=False))
 
 if missing:
@@ -97,6 +103,8 @@ if mismatches:
     raise SystemExit("Authority/topology mismatch: "+json.dumps(mismatches,ensure_ascii=False))
 if any(legacy.values()):
     raise SystemExit("Legacy/security regression: "+json.dumps(legacy,ensure_ascii=False))
+if unexpected_success_toasts:
+    raise SystemExit("Unstyled success toast regression: "+json.dumps(unexpected_success_toasts,ensure_ascii=False))
 if metrics["smooth_scroll_into_view"]>0:
     raise SystemExit("Smooth scrollIntoView regression: "+str(metrics["smooth_scroll_into_view"]))
 
