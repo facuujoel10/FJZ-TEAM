@@ -136,20 +136,16 @@ if html.count(hydrate_anchor)!=1:
     raise RuntimeError("V20.52 hydrate anchor mismatch")
 html=html.replace(hydrate_anchor,hydrate_repl,1)
 
-# Dashboard: insert the new priority center right below KPI cards.
-kpi_end="""  </div>
-
-  <div class="grid v225-dashboard-grid v235-dashboard-grid">"""
-priority_section="""  </div>
-
-  <section class="card v252-priority-card" id="v252PriorityCenter">
+# Dashboard: insert the new priority center immediately before the canonical dashboard grid.
+grid_anchor='  <div class="grid v225-dashboard-grid">'
+priority_section="""  <section class="card v252-priority-card" id="v252PriorityCenter">
     <div class="empty">Preparando prioridades…</div>
   </section>
 
-  <div class="grid v225-dashboard-grid v235-dashboard-grid">"""
-if html.count(kpi_end)!=1:
-    raise RuntimeError("V20.52 dashboard insertion mismatch")
-html=html.replace(kpi_end,priority_section,1)
+  <div class="grid v225-dashboard-grid">"""
+if html.count(grid_anchor)!=1:
+    raise RuntimeError("V20.52 dashboard insertion mismatch: "+str(html.count(grid_anchor)))
+html=html.replace(grid_anchor,priority_section,1)
 
 # Initial render before async feed comes back.
 initial_anchor="""  renderCoachStudentsV235();
