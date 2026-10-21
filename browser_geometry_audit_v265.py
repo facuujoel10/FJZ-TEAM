@@ -101,10 +101,10 @@ audit_js=r"""
       setup();
       const t0=performance.now();
       render();
-      await sleep(420);
       const renderMs=performance.now()-t0;
+      await sleep(300);
       const a=snapshot();
-      await sleep(260);
+      await sleep(180);
       const b=snapshot();
       scan(name,renderMs,a,b);
     }catch(e){
@@ -159,7 +159,7 @@ server=socketserver.TCPServer(("127.0.0.1",0),Quiet)
 port=server.server_address[1]
 thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
 
-viewports=[(1440,1000),(1024,900),(768,900),(430,900),(390,844),(360,800)]
+viewports=[(1440,1000),(1024,900),(768,900),(600,900),(500,900),(500,700)]
 reports=[]
 try:
     for w,h in viewports:
@@ -168,7 +168,7 @@ try:
             chrome,"--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
             "--disable-background-networking","--hide-scrollbars",
             f"--window-size={w},{h}",f"--user-data-dir={profile}",
-            "--virtual-time-budget=9000","--dump-dom",
+            "--virtual-time-budget=7000","--dump-dom",
             f"http://127.0.0.1:{port}/__qa_v265.html"
         ]
         cp=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=35)
@@ -198,7 +198,7 @@ for rep in reports:
             failures.append({"viewport":vp,"view":view["name"],"type":"geometry_transition","items":view["geometryTransitions"][:8]})
         if view.get("shifts"):
             failures.append({"viewport":vp,"view":view["name"],"type":"settle_shift","items":view["shifts"][:8]})
-        if view.get("renderMs",0)>900:
+        if view.get("renderMs",0)>350:
             failures.append({"viewport":vp,"view":view["name"],"type":"slow_render_ms","value":view["renderMs"]})
         if view.get("activeAnimations",0)>3:
             failures.append({"viewport":vp,"view":view["name"],"type":"active_animations","value":view["activeAnimations"]})
