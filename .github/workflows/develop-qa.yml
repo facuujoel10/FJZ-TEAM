@@ -42,3 +42,9 @@ jobs:
 
       - name: Input contract audit V20.67
         run: python input_contract_audit_v267.py
+
+      - name: Coach cockpit and music removal audit V20.68
+        run: python coach_cockpit_audit_v268.py
+
+      - name: Repeated-render stability audit V20.68
+        run: python browser_stability_audit_v268.py
