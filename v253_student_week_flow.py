@@ -170,14 +170,14 @@ def patch_v175(body):
         raise RuntimeError("V20.53 async tracking anchor mismatch")
     body=body.replace(async_old,async_new,1)
 
-    marker_old="""    checkinReplyAcknowledgement:true
+    marker_old="""    coachWeeklyBriefUsesExistingData:true
   };"""
-    marker_new="""    checkinReplyAcknowledgement:true,
+    marker_new="""    coachWeeklyBriefUsesExistingData:true,
     studentWeekFlow:true,
     studentFollowupUnified:true
   };"""
     if body.count(marker_old)!=1:
-        raise RuntimeError("V20.53 marker mismatch")
+        raise RuntimeError("V20.53 marker mismatch: "+str(body.count(marker_old)))
     body=body.replace(marker_old,marker_new,1)
     return body
 
