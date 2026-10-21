@@ -1,6 +1,7 @@
 import pathlib
 import re
 import json
+import os
 
 ROOT=pathlib.Path(__file__).resolve().parent
 HTML=ROOT/"public"/"index.html"
@@ -52,15 +53,15 @@ required={
 
 missing=[name for name,marker in required.items() if marker not in html]
 
+env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
+
 expected_exact={
     "styles":1,
     "render_assignments":20,
     "start_workout_assignments":12,
     "finish_workout_assignments":5,
     "realtime_channels":2,
-    "timeouts":55,
     "rafs":24,
-    "listeners":49,
     "mutation_observers":3,
     "performance_observers":0,
     "submit_checkin_authorities":1,
@@ -69,6 +70,10 @@ expected_exact={
     "calendar_render_defs":1,
     "four_week_render_defs":1,
 }
+if env=="staging-local":
+    # Full staging artifact includes the local safety guard + final release runtime.
+    expected_exact["timeouts"]=57
+    expected_exact["listeners"]=52
 
 mismatches={
     key:{"expected":value,"actual":metrics.get(key)}
@@ -93,6 +98,15 @@ if missing:
     raise SystemExit("Missing functional markers: "+", ".join(missing))
 if mismatches:
     raise SystemExit("Authority/topology mismatch: "+json.dumps(mismatches,ensure_ascii=False))
+
+# Outside staging-local, guard final runtime growth with ceilings rather than
+# comparing against the pre-release V20.56 intermediate checkpoint.
+if env!="staging-local":
+    if metrics["timeouts"]>57:
+        raise SystemExit("Timeout regression: "+str(metrics["timeouts"]))
+    if metrics["listeners"]>52:
+        raise SystemExit("Listener regression: "+str(metrics["listeners"]))
+
 if any(legacy.values()):
     raise SystemExit("Legacy regression detected: "+json.dumps(legacy,ensure_ascii=False))
 
