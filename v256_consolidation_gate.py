@@ -128,7 +128,10 @@ if before["submit_checkin"]!=2 or after["submit_checkin"]!=1:
     raise RuntimeError("V20.56 check-in authority consolidation mismatch: "+repr({"before":before["submit_checkin"],"after":after["submit_checkin"],"scripts":submit_scripts}))
 if "injectStudentNextStepV243();" in html:
     raise RuntimeError("V20.56 obsolete V20.43 post-render call remains")
-if re.search(r'<script[^>]*id=["\']v100CoreRuntime["\'][^>]*>[\s\S]*?window\.submitWeeklyCheckin\s*=\s*async\s+function',html,re.I):
+v100_match=re.search(r'<script[^>]*id=["\']v100CoreRuntime["\'][^>]*>(.*?)</script>',html,re.S|re.I)
+if not v100_match:
+    raise RuntimeError("V20.56 v100CoreRuntime missing after consolidation")
+if re.search(r'window\.submitWeeklyCheckin\s*=\s*async\s+function',v100_match.group(1)):
     raise RuntimeError("V20.56 legacy V100 check-in authority remains")
 
 # Critical feature/authority inventory.
