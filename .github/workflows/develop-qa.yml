@@ -30,3 +30,6 @@ jobs:
 
       - name: Consolidation audit
         run: python consolidation_audit.py
+
+      - name: Functional audit V20.61
+        run: python functional_audit_v261.py
