@@ -43,7 +43,10 @@ audit_js=r"""
      profile:dup('v114ProfileCard'),coachAvatar:dup('v175CoachAvatarSlot')
    };
    out.musicButtons=[...document.querySelectorAll('button,.tab')].map(x=>(x.textContent||'').trim()).filter(x=>/^Música$/i.test(x));
-   mode='student';studentTab='home';render();await sleep(220);
+   currentProfile={id:'qa-student',full_name:'QA Student',role:'student',avatar_url:null};
+   currentUser={id:'qa-student',email:'student@local.invalid'};
+   mode='student';studentTab='home';render();await sleep(420);
+   window.__fjzApplyProfileUiV268?.();await sleep(80);
    out.studentAvatarCount=dup('v268StudentAvatarPanel');
    out.studentOverflow=Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth);
    out.activeAnimations=document.getAnimations().filter(a=>a.playState==='running').length;
