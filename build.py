@@ -789,6 +789,9 @@ exec(compile(open("v265_release_candidate_geometry.py", encoding="utf-8").read()
 # V20.66 Coach athlete workspace redesign.
 exec(compile(open("v266_coach_athlete_workspace.py", encoding="utf-8").read(), "v266_coach_athlete_workspace.py", "exec"))
 
+# V20.67 Coach profile/avatar + strict input contracts.
+exec(compile(open("v267_coach_profile_input_contracts.py", encoding="utf-8").read(), "v267_coach_profile_input_contracts.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
