@@ -20,7 +20,7 @@ metrics={
     "mutation_observers":count(r"new\s+MutationObserver"),
     "performance_observers":count(r"new\s+PerformanceObserver"),
     "scroll_into_view":count(r"scrollIntoView\s*\("),
-    "smooth_scroll_into_view":count(r"scrollIntoView\s*\([^)]*behavior\s*:\s*['\\"]smooth['\\"]",re.I|re.S),
+    "smooth_scroll_into_view":count(r'scrollIntoView\s*\([^)]*behavior\s*:\s*[\'"]smooth[\'"]',re.I|re.S),
 }
 
 required={
