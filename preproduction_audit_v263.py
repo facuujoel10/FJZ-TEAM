@@ -49,6 +49,7 @@ required={
     "confirmed_save_feedback":'meta name="fjz-confirmed-save-feedback" content="20.64"',
     "release_candidate_geometry":'meta name="fjz-release-candidate-geometry" content="20.65"',
     "coach_athlete_workspace":'meta name="fjz-coach-athlete-workspace" content="20.66"',
+    "coach_cockpit_music_removed":'meta name="fjz-coach-cockpit-music-removal" content="20.68"',
     "save_feedback_green":"greenConfirmedSaveFeedback:true",
     "routine_success_after_cloud":"routineSuccessAfterCloudSync:true",
     "no_false_green_pending":"noFalseGreenOnPendingSync:true",
@@ -71,7 +72,8 @@ unexpected_success_toasts=[
 env=os.environ.get("TEAM_FJZ_ENV","production").strip().lower()
 expected={
     "styles":1,
-    "render_assignments":20,
+    # V20.68 removes two obsolete Music render wrappers.
+    "render_assignments":18,
     "start_workout_assignments":12,
     "finish_workout_assignments":5,
     "submit_checkin_authorities":1,
