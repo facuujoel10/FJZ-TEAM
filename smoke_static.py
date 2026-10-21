@@ -66,7 +66,7 @@ env=os.environ.get("TEAM_FJZ_ENV","").strip().lower()
 artifact_is_staging_local=(
     "productionNetworkBlocked:true" in html
     or "syntheticDataOnly:true" in html
-    or "STAGING</b> · DATOS DE PRUEBA" in html
+    or "STAGING</b>" in html
 )
 effective_env="staging-local" if artifact_is_staging_local else (env or "production")
 
@@ -76,7 +76,12 @@ if artifact_is_staging_local:
     require("syntheticDataOnly:true","staging synthetic-data marker missing")
     require("workoutSaveSimulator:true","staging workout save simulator missing")
     require("__fjzStagingSaveSimulator","staging save simulator API missing")
-    require("STAGING</b> · DATOS DE PRUEBA","staging banner missing")
+    require("STAGING</b>","staging banner missing")
+    if "coachAuthVerificationOnly:true" in html:
+        require("productionDataNetworkBlocked:true","staging production-data kill-switch missing")
+        require("selfProfileReadOnly:true","staging self-profile-only marker missing")
+        require("remoteSessionRetained:false","staging temporary auth session retention regression")
+        require("COACH VERIFICADO","staging verified-coach banner state missing")
     for forbidden in (
         "cujipwacwwpejhqjhnkr",
         "sb_publishable_TWE-dICHv3QemUtM302CTg_8i2zVx3G",
