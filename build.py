@@ -672,6 +672,9 @@ exec(compile(open("v224_student_dashboard_pro.py", encoding="utf-8").read(), "v2
 # V20.25 professional coach dashboard preserving V80 attention/feed authority.
 exec(compile(open("v225_coach_dashboard_pro.py", encoding="utf-8").read(), "v225_coach_dashboard_pro.py", "exec"))
 
+# V20.26 professional canonical coach-student profile / Resumen 360.
+exec(compile(open("v226_profile_360_pro.py", encoding="utf-8").read(), "v226_profile_360_pro.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
