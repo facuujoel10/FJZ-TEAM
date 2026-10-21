@@ -777,6 +777,9 @@ exec(compile(open("v260_coach_four_week_snapshot.py", encoding="utf-8").read(), 
 # V20.62 visual-only premium polish and accessibility refinement.
 exec(compile(open("v262_premium_polish.py", encoding="utf-8").read(), "v262_premium_polish.py", "exec"))
 
+# V20.63 preproduction auth/session hardening.
+exec(compile(open("v263_preproduction_hardening.py", encoding="utf-8").read(), "v263_preproduction_hardening.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
