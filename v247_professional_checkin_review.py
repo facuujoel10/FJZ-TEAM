@@ -174,11 +174,16 @@ def patch_v170(body):
 """
     body=body.replace(anchor,helper+anchor,1)
 
-    old_controls="""      '<div class="form-grid" style="margin-top:10px"><textarea id="fb_'+esc(c.id)+'" class="input span2" rows="2" placeholder="Feedback para el alumno">'+esc(c.coach_feedback||'')+'</textarea><button class="btn small" onclick="saveCheckinFeedback(\''+esc(c.id)+'\')">Guardar feedback</button></div></div>'"""
-    new_controls="""      checkinCoachReviewCardV247(c)+'</div>'"""
-    if body.count(old_controls)!=1:
-        raise RuntimeError("V20.47 coach check-in controls mismatch: "+str(body.count(old_controls)))
-    body=body.replace(old_controls,new_controls,1)
+    controls_start='      \'<div class="form-grid" style="margin-top:10px"><textarea id="fb_\'+esc(c.id)+\'"'
+    controls_end='>Guardar feedback</button></div></div>\''
+    start_i=body.find(controls_start)
+    if start_i<0:
+        raise RuntimeError("V20.47 coach check-in controls start missing")
+    end_i=body.find(controls_end,start_i)
+    if end_i<0:
+        raise RuntimeError("V20.47 coach check-in controls end missing")
+    end_i+=len(controls_end)
+    body=body[:start_i]+"      checkinCoachReviewCardV247(c)+'</div>'"+body[end_i:]
 
     old_save="""  window.saveCheckinFeedback=async function(id){
     const value=(el('fb_'+id)?.value||'').trim();
