@@ -360,6 +360,18 @@ def patch_v175(body):
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 
 # ================================================================
+# 2.5) CANONICAL COACH-STUDENT FIRST-FRAME AUTHORITY
+# ================================================================
+# Historical feature wrappers (nutrition, agenda, etc.) capture older
+# renderCoachStudent references. Patch the original core renderer itself so
+# every normal profile path performs the professional DOM pass synchronously.
+core_old="""function renderCoachStudent(){const s=student(),v=el('view');v.innerHTML=`<section class="hero"><div><button class="btn ghost small" onclick="coachTab='dashboard';render()">← Alumnos</button><h2 style="margin-top:10px">${esc(s.name)}</h2><p>${esc(s.goal)} · ${adherence(s)}% adherencia · último entreno ${fmtDate(s.lastWorkout)}</p></div><div class="pill-row">${badge(statusFor(s))}<button class="btn" onclick="mode='student';studentTab='home';render()">Ver como alumno</button></div></section>${coachTabs()}<div id="coachStudentBody"></div>`;if(coachStudentTab==='summary')renderCoachSummary();if(coachStudentTab==='routine')renderRoutineEditor();if(coachStudentTab==='progress')renderProgress(true);if(coachStudentTab==='history')renderHistory(true);if(coachStudentTab==='tracking')renderTrackingCoach()}"""
+core_new="""function renderCoachStudent(){const s=student(),v=el('view');v.innerHTML=`<section class="hero"><div><button class="btn ghost small" onclick="coachTab='dashboard';render()">← Alumnos</button><h2 style="margin-top:10px">${esc(s.name)}</h2><p>${esc(s.goal)} · ${adherence(s)}% adherencia · último entreno ${fmtDate(s.lastWorkout)}</p></div><div class="pill-row">${badge(statusFor(s))}<button class="btn" onclick="mode='student';studentTab='home';render()">Ver como alumno</button></div></section>${coachTabs()}<div id="coachStudentBody"></div>`;if(coachStudentTab==='summary')renderCoachSummary();if(coachStudentTab==='routine')renderRoutineEditor();if(coachStudentTab==='progress')renderProgress(true);if(coachStudentTab==='history')renderHistory(true);if(coachStudentTab==='tracking')renderTrackingCoach();try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.5',e)}try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach V17.6',e)}try{window.__fjzApplyProfileUiV268?.()}catch(e){console.warn('TEAM FJZ V20.68 canonical Coach avatar',e)}}"""
+if html.count(core_old)!=1:
+    raise RuntimeError("V20.68 canonical renderCoachStudent baseline mismatch: "+str(html.count(core_old)))
+html=html.replace(core_old,core_new,1)
+
+# ================================================================
 # 3) ROBUST AVATAR SURFACE: Coach + Student/View-as-student
 # ================================================================
 def patch_v176(body):
@@ -503,20 +515,6 @@ runtime=r"""
     applyStudentAvatarV268(seq);
   };
 
-  // Coach profile is a synchronous view contract: every time the selected
-  // athlete view renders, identity/workspace/cockpit must exist before paint.
-  const baseRenderCoachStudentV268=window.renderCoachStudent;
-  if(typeof baseRenderCoachStudentV268==='function'){
-    window.renderCoachStudent=function(){
-      const out=baseRenderCoachStudentV268.apply(this,arguments);
-      try{window.__fjzPostRenderV175?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach sync V17.5',e)}
-      try{window.__fjzPostRenderV176?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach sync V17.6',e)}
-      try{window.__fjzApplyProfileUiV268?.()}catch(e){console.warn('TEAM FJZ V20.68 Coach avatar sync',e)}
-      return out;
-    };
-    try{renderCoachStudent=window.renderCoachStudent}catch(_e){}
-  }
-
   window.__fjzApplyProfileUiV268();
 
   window.__fjzV268={
@@ -524,7 +522,7 @@ runtime=r"""
     musicFeatureRemoved:true,
     coachMediaRealtimeRemoved:true,
     coachCockpitV268:true,
-    coachStudentSynchronousAuthority:true,
+    canonicalCoachStudentFirstFrame:true,
     coachAvatarProductionLinkedProfile:true,
     studentAvatarProductionLinkedProfile:true,
     stagingAvatarClearlyDemo:true,
@@ -702,7 +700,7 @@ for marker in [
     "musicFeatureRemoved:true",
     "coachMediaRealtimeRemoved:true",
     "coachCockpitV268:true",
-    "coachStudentSynchronousAuthority:true",
+    "canonicalCoachStudentFirstFrame:true",
     "coachDecisionSignals:true",
     "coachDataCoverage:true",
     "coachAvatarProductionLinkedProfile:true",
