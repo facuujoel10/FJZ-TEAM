@@ -705,6 +705,9 @@ exec(compile(open("v236_coach_work_queue.py", encoding="utf-8").read(), "v236_co
 # V20.37 per-student coach review baseline + changes/decisions.
 exec(compile(open("v237_coach_review_hub.py", encoding="utf-8").read(), "v237_coach_review_hub.py", "exec"))
 
+# V20.38 dashboard review loop: new changes / unreviewed / current.
+exec(compile(open("v238_coach_review_loop.py", encoding="utf-8").read(), "v238_coach_review_loop.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
