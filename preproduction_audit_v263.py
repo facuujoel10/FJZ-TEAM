@@ -47,6 +47,7 @@ required={
     "premium_polish":'meta name="fjz-premium-polish" content="20.62"',
     "preproduction_hardening":'meta name="fjz-preproduction-hardening" content="20.63"',
     "confirmed_save_feedback":'meta name="fjz-confirmed-save-feedback" content="20.64"',
+    "release_candidate_geometry":'meta name="fjz-release-candidate-geometry" content="20.65"',
     "save_feedback_green":"greenConfirmedSaveFeedback:true",
     "routine_success_after_cloud":"routineSuccessAfterCloudSync:true",
     "no_false_green_pending":"noFalseGreenOnPendingSync:true",
