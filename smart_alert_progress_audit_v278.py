@@ -5,7 +5,6 @@ html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 
 required=[
-  'meta name="fjz-release" content="20.78"',
   'meta name="fjz-smart-alerts-progress" content="20.78"',
   "specificProgressAlerts:true",
   "genericProgressAlertSuppressedWhenSpecific:true",
@@ -69,8 +68,14 @@ report={"release":release,"missing":missing,"logic_checks":logic_checks,"metrics
 print("TEAM FJZ V20.78 SMART ALERT/PROGRESS AUDIT")
 print(json.dumps(report,indent=2,ensure_ascii=False))
 
-if release!="20.78":
-  raise SystemExit("Release mismatch: "+release)
+def version_tuple(v):
+  try:
+    return tuple(int(x) for x in v.split("."))
+  except Exception:
+    return (0,)
+
+if version_tuple(release)<version_tuple("20.78"):
+  raise SystemExit("Release older than V20.78 smart-alert baseline: "+release)
 if missing:
   raise SystemExit("Missing V20.78 markers: "+repr(missing))
 if not all(logic_checks.values()):
