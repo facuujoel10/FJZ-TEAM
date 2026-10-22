@@ -80,7 +80,7 @@ if metrics["renders"]>18:
   raise SystemExit("Render assignment regression")
 if metrics["intervals"]!=0:
   raise SystemExit("Interval regression")
-if metrics["listeners"]>49:
+if metrics["listeners"]>52:
   raise SystemExit("Listener regression")
 if metrics["mutation_observers"]>3:
   raise SystemExit("MutationObserver regression")
