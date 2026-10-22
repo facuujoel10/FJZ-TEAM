@@ -20,11 +20,11 @@ def edit_script(doc,script_id,transform):
     pat=re.compile(r'(<script[^>]*\bid=["\']'+re.escape(script_id)+r'["\'][^>]*>)(.*?)(</script>)',re.S|re.I)
     m=pat.search(doc)
     if not m:
-        raise RuntimeError("V20.78 missing script "+script_id)
+        raise RuntimeError("V20.79 missing script "+script_id)
     body=m.group(2)
     new=transform(body)
     if new==body:
-        raise RuntimeError("V20.78 no changes in "+script_id)
+        raise RuntimeError("V20.79 no changes in "+script_id)
     return doc[:m.start(2)]+new+doc[m.end(2):]
 
 before=metrics(html)
