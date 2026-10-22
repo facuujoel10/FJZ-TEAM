@@ -795,6 +795,9 @@ exec(compile(open("v267_coach_profile_input_contracts.py", encoding="utf-8").rea
 # V20.68 Remove music + coach cockpit + robust avatar surface.
 exec(compile(open("v268_coach_cockpit_music_avatar.py", encoding="utf-8").read(), "v268_coach_cockpit_music_avatar.py", "exec"))
 
+# V20.69 Routine library / preparation separation + modal geometry.
+exec(compile(open("v269_routine_library_preparation.py", encoding="utf-8").read(), "v269_routine_library_preparation.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
