@@ -69,7 +69,7 @@ runpy.run_path(str(ROOT / 'smoke_static.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'routine_ui_audit_v269.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'mobile_profile_audit_v270.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'coach_preview_audit_v271.py'), run_name='__main__')
-runpy.run_path(str(ROOT / 'release_closure_audit_v271.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'preparation_nutrition_audit_v272.py'), run_name='__main__')
 
 # Canonical authority / wrapper regression audit.
 runpy.run_path(str(ROOT / 'consolidation_audit.py'), run_name='__main__')
