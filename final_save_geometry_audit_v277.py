@@ -47,7 +47,7 @@ metrics={
 
 toast_pat=re.compile(r"toast(?:\?\.)?\(\s*(['\"])(?P<msg>[^'\"]+)\1\s*\)")
 success_rx=re.compile(r"(guardad[oa]s?|finalizad[oa]s?|enviad[oa]s?|registrad[oa]s?|cread[oa]s?|actualizad[oa]s?|publicad[oa]s?|confirmad[oa]s?)",re.I)
-skip_rx=re.compile(r"(guardá el plan|localmente|sincronización pendiente|pendiente|sin guardar|revisá|copiados? al plan)",re.I)
+skip_rx=re.compile(r"(guardá el plan|guardado en curso|localmente|sincronización pendiente|pendiente|sin guardar|revisá|copiados? al plan)",re.I)
 remaining=[
   m.group("msg") for m in toast_pat.finditer(html)
   if success_rx.search(m.group("msg")) and not skip_rx.search(m.group("msg"))
