@@ -3,7 +3,7 @@ import pathlib,json
 html=pathlib.Path("public/index.html").read_text(encoding="utf-8")
 required=[
   'meta name="fjz-coach-student-preview-context" content="20.71"',
-  "coachPreviewSynchronousV271:true",
+  "coachStudentPreviewSynchronousV271:true",
   "coachStudentPreviewContextV271:true",
   "coachStudentPreviewOneTapExitV271:true",
   "currentProfile?.role==='coach'&&mode==='student'",
