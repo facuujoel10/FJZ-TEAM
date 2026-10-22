@@ -819,6 +819,9 @@ exec(compile(open("v275_mobile_hud_progress.py", encoding="utf-8").read(), "v275
 # V20.76 premium Coach mobile HUD + detailed nutrition/macros.
 exec(compile(open("v276_coach_hud_nutrition_detail.py", encoding="utf-8").read(), "v276_coach_hud_nutrition_detail.py", "exec"))
 
+# V20.77 unified save confirmations + final symmetry/geometry pass.
+exec(compile(open("v277_save_confirmation_geometry.py", encoding="utf-8").read(), "v277_save_confirmation_geometry.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
