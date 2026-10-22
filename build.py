@@ -798,6 +798,9 @@ exec(compile(open("v268_coach_cockpit_music_avatar.py", encoding="utf-8").read()
 # V20.69 Routine library / preparation separation + modal geometry.
 exec(compile(open("v269_routine_library_preparation.py", encoding="utf-8").read(), "v269_routine_library_preparation.py", "exec"))
 
+# V20.70 360/390 mobile geometry + resilient profile-avatar loading.
+exec(compile(open("v270_mobile_edge_avatar_resilience.py", encoding="utf-8").read(), "v270_mobile_edge_avatar_resilience.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
