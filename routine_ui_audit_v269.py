@@ -18,5 +18,5 @@ missing=[x for x in required if x not in html]
 print("TEAM FJZ V20.69 ROUTINE UI AUDIT")
 print(json.dumps({"missing":missing,"styles":len(re.findall(r"<style\b",html,re.I))},indent=2))
 if missing: raise SystemExit("V20.69 missing: "+repr(missing))
-if len(re.findall(r"<style\\b",html,re.I))!=1: raise SystemExit("V20.69 stylesheet regression")
+if len(re.findall(r"<style\b",html,re.I))!=1: raise SystemExit("V20.69 stylesheet regression")
 print("TEAM FJZ V20.69 ROUTINE UI AUDIT OK")
