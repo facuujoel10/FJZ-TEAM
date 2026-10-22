@@ -742,8 +742,26 @@ html{scrollbar-gutter:stable}
   }
   .topbar .brand img{width:42px!important;height:42px!important;object-fit:contain}
   .brand h1{font-size:15px!important}
-  .v175-coach-profile-hero{padding:15px!important}
+  .v175-coach-profile-hero{
+    padding:15px!important;
+    grid-template-columns:82px minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:start!important
+  }
+  .v175-coach-profile-info{
+    width:100%!important;
+    min-width:0!important
+  }
   .v175-coach-profile-info h2{font-size:23px!important}
+  .v175-coach-profile-actions{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-width:0!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    min-height:45px!important
+  }
   #v175CoachAvatarSlot{
     width:82px!important;height:82px!important;flex-basis:82px!important;border-radius:18px!important
   }
