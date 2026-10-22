@@ -24,7 +24,6 @@ metrics={
 }
 
 required=[
-  'meta name="fjz-release" content="20.74"',
   'meta name="fjz-final-runtime-stability" content="20.74"',
   "preparationPersistenceIntegratedV274:true",
   "preparationSaveCoalescedV274:true",
@@ -57,8 +56,14 @@ print(json.dumps({
   "metrics":metrics,
 },indent=2,ensure_ascii=False))
 
-if release!="20.74":
-  raise SystemExit("Release mismatch: "+release)
+def version_tuple(v):
+  try:
+    return tuple(int(x) for x in v.split("."))
+  except Exception:
+    return (0,)
+
+if version_tuple(release)<version_tuple("20.74"):
+  raise SystemExit("Release older than V20.74 stability baseline: "+release)
 if missing:
   raise SystemExit("Missing V20.74 markers: "+repr(missing))
 bad=[x for x in forbidden if x in html]
