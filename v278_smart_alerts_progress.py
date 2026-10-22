@@ -1053,8 +1053,12 @@ runtime=r"""
     }
     try{await window.readCoachAlertV96?.(key)}catch(_e){}
     const row=[...cloudAthletes.values()].find(x=>x.id===athleteId);
-    if(!row){toast('No encuentro esa ficha');return}
-    state.selectedStudentId=row.client_id;saveState();coachTab='student';
+    if(row){
+      state.selectedStudentId=row.client_id;
+    }else if(!String(athleteId||'').startsWith('local-')){
+      toast('No encuentro esa ficha');return;
+    }
+    saveState();coachTab='student';
     const parts=String(key).split(':'),type=parts[2];
     if(type==='exercise'){
       try{selectedExerciseV278=decodeURIComponent(parts[4]||'')}catch(_e){selectedExerciseV278=''}
