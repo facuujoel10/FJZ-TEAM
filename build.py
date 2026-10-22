@@ -810,6 +810,9 @@ exec(compile(open("v272_preparation_nutrition_calculator.py", encoding="utf-8").
 # V20.73 persist preparation migration + harden macro calculator.
 exec(compile(open("v273_preparation_nutrition_hardening.py", encoding="utf-8").read(), "v273_preparation_nutrition_hardening.py", "exec"))
 
+# V20.74 final runtime stability consolidation.
+exec(compile(open("v274_final_runtime_stability.py", encoding="utf-8").read(), "v274_final_runtime_stability.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
