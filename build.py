@@ -801,6 +801,9 @@ exec(compile(open("v269_routine_library_preparation.py", encoding="utf-8").read(
 # V20.70 360/390 mobile geometry + resilient profile-avatar loading.
 exec(compile(open("v270_mobile_edge_avatar_resilience.py", encoding="utf-8").read(), "v270_mobile_edge_avatar_resilience.py", "exec"))
 
+# V20.71 Explicit Coach -> Student preview context and one-tap return.
+exec(compile(open("v271_coach_student_preview_context.py", encoding="utf-8").read(), "v271_coach_student_preview_context.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
