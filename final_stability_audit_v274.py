@@ -30,8 +30,8 @@ required=[
   "preparationSaveCoalescedV274:true",
   "keyboardHeightResizeIgnored:true",
   "noSmoothPrimaryScroll:true",
-  "broadClickScrollRemoved:true",
-  "panelClicksPreserveScroll:true",
+  "routeScrollAuthority:true",
+  "noSmoothPrimaryScroll:true",
   "modalRealtimeLock:true",
   "deferredRealtimeFlush:true",
   "productionNetworkBlocked:true",
@@ -46,6 +46,7 @@ forbidden=[
   "studentTab==='music'",
   "coachStudentTab==='music'",
   "new PerformanceObserver",
+  "closest?.('.student-row,[data-client-id]')",
 ]
 
 print("TEAM FJZ V20.74 FINAL STABILITY AUDIT")
