@@ -147,6 +147,35 @@ if v80_filters_old not in html:
     raise RuntimeError("V20.78 V80 filter anchor missing")
 html=html.replace(v80_filters_old,v80_filters_new,1)
 
+# The final Coach surface is V20.52's priority center. Promote it to the
+# canonical smart-alert dashboard and reserve a detailed alert area above
+# Urgent/Today/Seguimiento.
+priority_title_old="'<div><div class=\"v225-section-kicker\">CENTRO DE PRIORIDADES</div><h3>Qué necesita atención ahora</h3>'+"
+priority_title_new="'<div><div class=\"v225-section-kicker\">ALERTAS INTELIGENTES</div><h3>Qué cambió y qué requiere atención</h3>'+"
+if priority_title_old not in html:
+    raise RuntimeError("V20.78 final priority title anchor missing")
+html=html.replace(priority_title_old,priority_title_new,1)
+
+priority_columns_old="""    '</div>'+
+    '<div class="v252-columns">'+"""
+priority_columns_new="""    '</div>'+
+    '<div id="v278DashboardSmartAlerts" class="v278-dashboard-smart"><div class="v278-empty">Analizando cambios específicos…</div></div>'+
+    '<div class="v252-columns">'+"""
+if priority_columns_old not in html:
+    raise RuntimeError("V20.78 final priority columns anchor missing")
+html=html.replace(priority_columns_old,priority_columns_new,1)
+
+priority_tail_old="""      column('Seguimiento','watch',watch,'Sin alumnos en seguimiento')+
+    '</div>';
+}"""
+priority_tail_new="""      column('Seguimiento','watch',watch,'Sin alumnos en seguimiento')+
+    '</div>';
+  window.__fjzRenderPrioritySmartV278?.();
+}"""
+if priority_tail_old not in html:
+    raise RuntimeError("V20.78 final priority hydration anchor missing")
+html=html.replace(priority_tail_old,priority_tail_new,1)
+
 # Reuse the existing post-render authority instead of adding another render
 # wrapper or MutationObserver.
 def patch_v175(body):
@@ -233,6 +262,105 @@ css=r"""
   color:#969da8;
   font-size:8px;
   line-height:1.35;
+}
+
+.v278-dashboard-smart{
+  display:grid;
+  gap:7px;
+  margin:0 0 10px;
+}
+.v278-dashboard-smart-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  padding:0 1px;
+}
+.v278-dashboard-smart-head strong{
+  color:#eef0f3;
+  font-size:9px;
+}
+.v278-dashboard-smart-head span{
+  color:#7d848e;
+  font-size:7px;
+}
+.v278-dashboard-smart-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+}
+.v278-dashboard-alert{
+  appearance:none;
+  min-width:0;
+  display:grid;
+  gap:7px;
+  padding:10px;
+  border:1px solid #2b2f36;
+  border-left:3px solid #67adff;
+  border-radius:11px;
+  background:#0d0e12;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.v278-dashboard-alert.success{border-left-color:#3bd58a}
+.v278-dashboard-alert.warning{border-left-color:#f2bd55}
+.v278-dashboard-alert.critical{border-left-color:#ff5262}
+.v278-dashboard-alert.info{border-left-color:#67adff}
+.v278-dashboard-alert-top{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+.v278-dashboard-alert-top strong{
+  min-width:0;
+  color:#f0f2f4;
+  font-size:9px;
+  line-height:1.3;
+}
+.v278-dashboard-alert-top span{
+  flex:0 0 auto;
+  padding:3px 6px;
+  border:1px solid #30343c;
+  border-radius:999px;
+  color:#9299a4;
+  font-size:6.5px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.v278-dashboard-alert p{
+  margin:0;
+  color:#858d98;
+  font-size:7.5px;
+  line-height:1.4;
+}
+.v278-dashboard-alert-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:5px;
+}
+.v278-dashboard-alert-stats span{
+  min-width:0;
+  padding:5px 6px;
+  border-radius:7px;
+  background:#101218;
+  color:#8a919c;
+  font-size:6.5px;
+  overflow-wrap:anywhere;
+}
+.v278-dashboard-alert-stats b{
+  display:block;
+  margin-top:2px;
+  color:#dfe2e6;
+  font-size:7.5px;
+}
+@media(max-width:760px){
+  .v278-dashboard-smart-list{grid-template-columns:1fr}
+}
+@media(max-width:390px){
+  .v278-dashboard-alert-stats{grid-template-columns:1fr 1fr}
+  .v278-dashboard-alert-stats span:last-child{grid-column:1/-1}
 }
 
 /* Selected-athlete intelligence summary. */
@@ -1155,6 +1283,39 @@ runtime=r"""
     render();
   };
 
+  function dashboardAlertCardV278(x){
+    const sm=x?.smart_meta||{};
+    const stats=(sm.previous!=null||sm.current!=null||sm.delta!=null)
+      ?'<div class="v278-dashboard-alert-stats">'+
+        '<span>Anterior<b>'+esc(sm.previous??'—')+'</b></span>'+
+        '<span>Actual<b>'+esc(sm.current??'—')+'</b></span>'+
+        '<span>Cambio<b>'+esc(sm.delta??'—')+'</b></span>'+
+       '</div>'
+      :'';
+    return '<button class="v278-dashboard-alert '+esc(x.severity||'info')+'" onclick="openAttentionV80(\''+esc(x.athlete_id)+'\',\''+esc(x.event_key)+'\',\''+esc(x.kind)+'\')">'+
+      '<div class="v278-dashboard-alert-top"><strong>'+esc(x.athlete_name||'Alumno')+' · '+esc(x.title||'Señal')+'</strong><span>'+esc(sm.type_label||attentionKindLabelV80(x.kind))+'</span></div>'+
+      '<p>'+esc(x.body||'')+(sm.period?' · '+esc(sm.period):'')+'</p>'+stats+
+      (sm.suggestion?'<p><strong style="color:#aeb5bf">Sugerencia:</strong> '+esc(sm.suggestion)+'</p>':'')+
+    '</button>';
+  }
+
+  window.__fjzRenderPrioritySmartV278=async function(){
+    if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return;
+    const host=el('v278DashboardSmartAlerts');if(!host)return;
+    try{
+      const feed=await window.loadCoachFeed(false);
+      const smart=(feed||[]).filter(x=>x?.smart_meta).slice(0,6);
+      if(!smart.length){
+        host.innerHTML='<div class="v278-dashboard-smart-head"><strong>Señales específicas</strong><span>Sin cambios nuevos con datos suficientes</span></div>';
+        return;
+      }
+      host.innerHTML='<div class="v278-dashboard-smart-head"><strong>Señales específicas</strong><span>'+smart.length+' destacadas · tocá para abrir el contexto</span></div>'+
+        '<div class="v278-dashboard-smart-list">'+smart.map(dashboardAlertCardV278).join('')+'</div>';
+    }catch(e){
+      console.warn('TEAM FJZ V20.78 dashboard smart alerts',e);
+    }
+  };
+
   function trackingWeightRowsV278(){
     const rows=[];
     (trackingCache?.measurements||[]).forEach(x=>rows.push({date:x.measured_on,weight_kg:x.weight_kg,source:'measurement'}));
@@ -1435,6 +1596,10 @@ runtime=r"""
   }
 
   window.__fjzSmartPostRenderV278=function(){
+    if(mode==='coach'&&coachTab==='dashboard'){
+      window.__fjzRenderPrioritySmartV278?.();
+      return;
+    }
     if(mode==='coach'&&coachTab==='student'&&coachStudentTab==='summary'){
       hydrateAthleteIntelV278();
       return;
@@ -1462,6 +1627,7 @@ runtime=r"""
     loadRirCombinedChart:true,
     fourWeekAdherenceChart:true,
     athleteIntelligenceSummary:true,
+    canonicalPriorityCenterSmartAlerts:true,
     noExtraTimers:true,
     noExtraListeners:true,
     noExtraObservers:true
