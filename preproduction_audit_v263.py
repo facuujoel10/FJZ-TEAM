@@ -50,6 +50,7 @@ required={
     "release_candidate_geometry":'meta name="fjz-release-candidate-geometry" content="20.65"',
     "coach_athlete_workspace":'meta name="fjz-coach-athlete-workspace" content="20.66"',
     "coach_cockpit_music_removed":'meta name="fjz-coach-cockpit-music-removal" content="20.68"',
+    "routine_library_preparation":'meta name="fjz-routine-library-preparation" content="20.69"',
     "save_feedback_green":"greenConfirmedSaveFeedback:true",
     "routine_success_after_cloud":"routineSuccessAfterCloudSync:true",
     "no_false_green_pending":"noFalseGreenOnPendingSync:true",
