@@ -45,14 +45,14 @@ missing=[x for x in required if x not in html]
 bad=[x for x in forbidden if x in html]
 
 metrics={
-  "styles":len(re.findall(r"<style\\b",html,re.I)),
-  "render_assignments":len(re.findall(r"(?:window\\.)?render\\s*=",html)),
-  "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
-  "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
-  "rafs":len(re.findall(r"requestAnimationFrame\\s*\\(",html)),
-  "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
-  "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
-  "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",html)),
+  "styles":len(re.findall(r"<style\b",html,re.I)),
+  "render_assignments":len(re.findall(r"(?:window\.)?render\s*=",html)),
+  "channels":len(re.findall(r"\.channel\s*\(",html)),
+  "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
+  "rafs":len(re.findall(r"requestAnimationFrame\s*\(",html)),
+  "listeners":len(re.findall(r"addEventListener\s*\(",html)),
+  "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
+  "performance_observers":len(re.findall(r"new\s+PerformanceObserver",html)),
 }
 
 # Formula sanity check mirrors the documented adult Mifflin + residual-carb model.
