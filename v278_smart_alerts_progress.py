@@ -1660,7 +1660,7 @@ for marker in [
     "loadRirCombinedChart:true",
     "fourWeekAdherenceChart:true",
     "athleteIntelligenceSummary:true",
-    "Alertas inteligentes",
+    "ALERTAS INTELIGENTES",
     "Carga × RIR",
     "v278SmartProgress",
     "v278AthleteIntel",
