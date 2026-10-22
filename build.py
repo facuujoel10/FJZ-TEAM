@@ -816,6 +816,9 @@ exec(compile(open("v274_final_runtime_stability.py", encoding="utf-8").read(), "
 # V20.75 premium student mobile HUD + visual progress overview.
 exec(compile(open("v275_mobile_hud_progress.py", encoding="utf-8").read(), "v275_mobile_hud_progress.py", "exec"))
 
+# V20.76 premium Coach mobile HUD + detailed nutrition/macros.
+exec(compile(open("v276_coach_hud_nutrition_detail.py", encoding="utf-8").read(), "v276_coach_hud_nutrition_detail.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
