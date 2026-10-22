@@ -813,6 +813,9 @@ exec(compile(open("v273_preparation_nutrition_hardening.py", encoding="utf-8").r
 # V20.74 final runtime stability consolidation.
 exec(compile(open("v274_final_runtime_stability.py", encoding="utf-8").read(), "v274_final_runtime_stability.py", "exec"))
 
+# V20.75 premium student mobile HUD + visual progress overview.
+exec(compile(open("v275_mobile_hud_progress.py", encoding="utf-8").read(), "v275_mobile_hud_progress.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
