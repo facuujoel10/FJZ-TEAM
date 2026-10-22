@@ -96,13 +96,10 @@ html=edit_script(html,"v96AlertCenterRuntime",patch_v96)
 
 # The current Coach dashboard uses the newer V8 attention center. Enrich that
 # surface too so the Coach sees the same structured smart alert everywhere.
-v80_pat=re.compile(
-    r"function renderAttentionItemsV80\(feed\)\{.*?\n\}\nasync function hydrateCoachDashboardV80",
-    re.S
-)
-v80_match=v80_pat.search(html)
-if not v80_match:
-    raise RuntimeError("V20.78 V80 attention renderer anchor missing")
+v80_start=html.find("function renderAttentionItemsV80(feed){")
+v80_end=html.find("async function hydrateCoachDashboardV80",v80_start)
+if v80_start<0 or v80_end<0 or v80_end<=v80_start:
+    raise RuntimeError("V20.78 V80 attention renderer bounds missing")
 v80_replacement=r"""function renderAttentionItemsV80(feed){
   const rows=filteredAttentionV80(feed);
   if(!rows.length)return '<div class="feed-empty">No hay elementos en este filtro.</div>';
@@ -133,8 +130,8 @@ v80_replacement=r"""function renderAttentionItemsV80(feed){
       '</div></div>';
   }).join('')+'</div>';
 }
-async function hydrateCoachDashboardV80"""
-html=html[:v80_match.start()]+v80_replacement+html[v80_match.end():]
+"""
+html=html[:v80_start]+v80_replacement+"\n"+html[v80_end:]
 
 html=html.replace(
     "<div><h3>Centro de atención</h3><div class=\"muted tiny\">Ordena lo que requiere una decisión o revisión tuya.</div></div>",
