@@ -56,12 +56,6 @@ def harden_macro_calculator(body):
       '<div class="v276-calc-check '+(Math.abs((r.macroEnergy||0)-r.target)<=2?'ok':'warn')+'"><strong>Chequeo energético</strong><span>Macros = '+fmtV272(r.macroEnergy||0)+' kcal · objetivo = '+fmtV272(r.target)+' kcal · diferencia '+fmtV272(Math.abs((r.macroEnergy||0)-r.target),0)+' kcal</span></div>'+"""
     body=body.replace(anchor,extra,1)
 
-    old="""    macroEnergyReconciled:true"""
-    if old not in body:
-        raise RuntimeError("V20.76 macro audit flag anchor missing")
-    body=body.replace(old,old+""",
-    mealCountUpToEightV276:true,
-    visibleEnergyReconciliationV276:true""",1)
     return body
 
 html=edit_script(html,"v272PreparationNutritionCalculatorRuntime",harden_macro_calculator)
@@ -516,6 +510,8 @@ runtime=r"""
     expandedMealPresets:true,
     calculatorMealsUpToEight:true,
     calculatorEnergyCheckVisible:true,
+    mealCountUpToEightV276:true,
+    visibleEnergyReconciliationV276:true,
     noExtraTimers:true,
     noExtraListeners:true
   };
