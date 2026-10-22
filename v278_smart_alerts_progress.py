@@ -94,6 +94,62 @@ def patch_v96(body):
 
 html=edit_script(html,"v96AlertCenterRuntime",patch_v96)
 
+# The current Coach dashboard uses the newer V8 attention center. Enrich that
+# surface too so the Coach sees the same structured smart alert everywhere.
+v80_pat=re.compile(
+    r"function renderAttentionItemsV80\(feed\)\{.*?\n\}\nasync function hydrateCoachDashboardV80",
+    re.S
+)
+v80_match=v80_pat.search(html)
+if not v80_match:
+    raise RuntimeError("V20.78 V80 attention renderer anchor missing")
+v80_replacement=r"""function renderAttentionItemsV80(feed){
+  const rows=filteredAttentionV80(feed);
+  if(!rows.length)return '<div class="feed-empty">No hay elementos en este filtro.</div>';
+  return '<div class="v80-attention">'+rows.slice(0,18).map(x=>{
+    const sm=x?.smart_meta||null;
+    const detail=sm
+      ?'<div class="v278-alert-detail">'+
+        (sm.exercise?'<div class="v278-alert-exercise">'+esc(sm.exercise)+'</div>':'')+
+        ((sm.previous!=null||sm.current!=null||sm.delta!=null)
+          ?'<div class="v278-alert-delta">'+
+            '<div><span>Anterior</span><strong>'+esc(sm.previous??'—')+'</strong></div>'+
+            '<div><span>Actual</span><strong>'+esc(sm.current??'—')+'</strong></div>'+
+            '<div><span>Cambio</span><strong>'+esc(sm.delta??'—')+'</strong></div>'+
+           '</div>'
+          :'')+
+        (sm.period?'<div class="v278-alert-period">'+esc(sm.period)+'</div>':'')+
+        (sm.suggestion?'<div class="v278-alert-suggestion"><strong>Sugerencia</strong><span>'+esc(sm.suggestion)+'</span></div>':'')+
+       '</div>'
+      :'';
+    return '<div class="v80-attention-item '+esc(x.severity||'info')+' '+(sm?'v278-smart-alert':'')+'">'+
+      '<div class="v80-attention-head"><div><h4>'+esc(x.athlete_name)+' · '+esc(x.title)+'</h4>'+
+      '<p class="muted tiny">'+esc(x.body||'')+'</p>'+detail+'</div>'+
+      '<span class="badge '+(x.severity==='critical'?'red':x.severity==='warning'?'amber':x.severity==='success'?'green':'blue')+'">'+
+      esc(sm?.type_label||attentionKindLabelV80(x.kind))+'</span></div>'+
+      '<div class="v80-attention-actions">'+
+      '<button class="btn small" onclick="openAttentionV80(\''+x.athlete_id+'\',\''+esc(x.event_key)+'\',\''+esc(x.kind)+'\')">'+esc(sm?.action_label||'Revisar')+'</button>'+
+      '<button class="btn ghost small" onclick="dismissFeed(\''+esc(x.event_key)+'\')">Ocultar</button>'+
+      '</div></div>';
+  }).join('')+'</div>';
+}
+async function hydrateCoachDashboardV80"""
+html=html[:v80_match.start()]+v80_replacement+html[v80_match.end():]
+
+html=html.replace(
+    "<div><h3>Centro de atención</h3><div class=\"muted tiny\">Ordena lo que requiere una decisión o revisión tuya.</div></div>",
+    "<div><h3>Alertas inteligentes</h3><div class=\"muted tiny\">Cambios específicos de rendimiento, RIR, peso, adherencia y seguimiento.</div></div>",
+    1
+)
+v80_filters_old="""      ['critical','Prioridad',critical],
+      ['exercise_feedback','Comentarios',comments],"""
+v80_filters_new="""      ['critical','Prioridad',critical],
+      ['progression','Progreso',feed.filter(x=>x.kind==='progression').length],
+      ['exercise_feedback','Comentarios',comments],"""
+if v80_filters_old not in html:
+    raise RuntimeError("V20.78 V80 filter anchor missing")
+html=html.replace(v80_filters_old,v80_filters_new,1)
+
 # Reuse the existing post-render authority instead of adding another render
 # wrapper or MutationObserver.
 def patch_v175(body):
@@ -1052,6 +1108,34 @@ runtime=r"""
       return baseOpenCoachAlertV278?.apply(this,arguments);
     }
     try{await window.readCoachAlertV96?.(key)}catch(_e){}
+    const row=[...cloudAthletes.values()].find(x=>x.id===athleteId);
+    if(row){
+      state.selectedStudentId=row.client_id;
+    }else if(!String(athleteId||'').startsWith('local-')){
+      toast('No encuentro esa ficha');return;
+    }
+    saveState();coachTab='student';
+    const parts=String(key).split(':'),type=parts[2];
+    if(type==='exercise'){
+      try{selectedExerciseV278=decodeURIComponent(parts[4]||'')}catch(_e){selectedExerciseV278=''}
+      selectedMetricV278=['rir-reserve','rir-demand','high-rir','fatigue'].includes(parts[5])?'rir':parts[5]==='volume'||parts[5]==='volume-down'?'volume':parts[5]==='reps'?'reps':'load';
+      coachStudentTab='progress';
+    }else if(type==='weight'){
+      coachStudentTab='progress';
+    }else if(type==='nutrition'){
+      coachStudentTab='nutrition';
+    }else{
+      coachStudentTab='summary';
+    }
+    render();
+  };
+
+  const baseOpenAttentionV278=window.openAttentionV80;
+  window.openAttentionV80=async function(athleteId,key,kind){
+    if(!String(key||'').startsWith('smart:v278:')){
+      return baseOpenAttentionV278?.apply(this,arguments);
+    }
+    try{await markFeedRead?.(key)}catch(_e){}
     const row=[...cloudAthletes.values()].find(x=>x.id===athleteId);
     if(row){
       state.selectedStudentId=row.client_id;
