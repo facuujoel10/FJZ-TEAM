@@ -147,34 +147,9 @@ if v80_filters_old not in html:
     raise RuntimeError("V20.78 V80 filter anchor missing")
 html=html.replace(v80_filters_old,v80_filters_new,1)
 
-# The final Coach surface is V20.52's priority center. Promote it to the
-# canonical smart-alert dashboard and reserve a detailed alert area above
-# Urgent/Today/Seguimiento.
-priority_title_old="'<div><div class=\"v225-section-kicker\">CENTRO DE PRIORIDADES</div><h3>Qué necesita atención ahora</h3>'+"
-priority_title_new="'<div><div class=\"v225-section-kicker\">ALERTAS INTELIGENTES</div><h3>Qué cambió y qué requiere atención</h3>'+"
-if priority_title_old not in html:
-    raise RuntimeError("V20.78 final priority title anchor missing")
-html=html.replace(priority_title_old,priority_title_new,1)
-
-priority_columns_old="""    '</div>'+
-    '<div class="v252-columns">'+"""
-priority_columns_new="""    '</div>'+
-    '<div id="v278DashboardSmartAlerts" class="v278-dashboard-smart"><div class="v278-empty">Analizando cambios específicos…</div></div>'+
-    '<div class="v252-columns">'+"""
-if priority_columns_old not in html:
-    raise RuntimeError("V20.78 final priority columns anchor missing")
-html=html.replace(priority_columns_old,priority_columns_new,1)
-
-priority_tail_old="""      column('Seguimiento','watch',watch,'Sin alumnos en seguimiento')+
-    '</div>';
-}"""
-priority_tail_new="""      column('Seguimiento','watch',watch,'Sin alumnos en seguimiento')+
-    '</div>';
-  window.__fjzRenderPrioritySmartV278?.();
-}"""
-if priority_tail_old not in html:
-    raise RuntimeError("V20.78 final priority hydration anchor missing")
-html=html.replace(priority_tail_old,priority_tail_new,1)
+# V20.78 leaves the existing Urgent/Today/Seguimiento priority authority intact.
+# The smart-alert card is inserted at runtime immediately before that center,
+# avoiding brittle coupling to historical dashboard copy/layout.
 
 # Reuse the existing post-render authority instead of adding another render
 # wrapper or MutationObserver.
@@ -264,6 +239,13 @@ css=r"""
   line-height:1.35;
 }
 
+.v278-dashboard-card{
+  margin:0 0 14px!important;
+  border-color:rgba(103,173,255,.20)!important;
+  background:
+    radial-gradient(circle at 96% 0,rgba(103,173,255,.05),transparent 30%),
+    #101116!important;
+}
 .v278-dashboard-smart{
   display:grid;
   gap:7px;
@@ -1299,9 +1281,26 @@ runtime=r"""
     '</button>';
   }
 
+  function ensureDashboardSmartHostV278(){
+    let host=el('v278DashboardSmartAlerts');
+    if(host)return host;
+    const section=document.createElement('section');
+    section.id='v278DashboardSmartCard';
+    section.className='card v278-dashboard-card';
+    section.innerHTML=
+      '<div class="section-title"><div><div class="v225-section-kicker">ALERTAS INTELIGENTES</div><h3>Qué cambió y qué requiere atención</h3>'+
+      '<div class="muted tiny">Peso, carga, repeticiones, volumen, RIR, adherencia y nutrición con contexto.</div></div><span class="badge blue">Smart</span></div>'+
+      '<div id="v278DashboardSmartAlerts" class="v278-dashboard-smart"><div class="v278-empty">Analizando cambios específicos…</div></div>';
+    const priority=el('v252PriorityCenter');
+    const view=el('view');
+    if(priority?.parentNode)priority.parentNode.insertBefore(section,priority);
+    else if(view)view.prepend(section);
+    return el('v278DashboardSmartAlerts');
+  }
+
   window.__fjzRenderPrioritySmartV278=async function(){
     if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return;
-    const host=el('v278DashboardSmartAlerts');if(!host)return;
+    const host=ensureDashboardSmartHostV278();if(!host)return;
     try{
       const feed=await window.loadCoachFeed(false);
       const smart=(feed||[]).filter(x=>x?.smart_meta).slice(0,6);
@@ -1628,6 +1627,7 @@ runtime=r"""
     fourWeekAdherenceChart:true,
     athleteIntelligenceSummary:true,
     canonicalPriorityCenterSmartAlerts:true,
+    dashboardSmartCardRuntimeInserted:true,
     noExtraTimers:true,
     noExtraListeners:true,
     noExtraObservers:true
