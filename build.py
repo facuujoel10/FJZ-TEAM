@@ -825,6 +825,9 @@ exec(compile(open("v277_save_confirmation_geometry.py", encoding="utf-8").read()
 # V20.78 specific smart alerts + professional progress charts.
 exec(compile(open("v278_smart_alerts_progress.py", encoding="utf-8").read(), "v278_smart_alerts_progress.py", "exec"))
 
+# V20.79 final save/render/lag/mobile stability polish.
+exec(compile(open("v279_final_stability_polish.py", encoding="utf-8").read(), "v279_final_stability_polish.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
