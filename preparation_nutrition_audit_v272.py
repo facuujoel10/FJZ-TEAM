@@ -30,14 +30,14 @@ required=[
 
 missing=[x for x in required if x not in html]
 metrics={
-  "styles":len(re.findall(r"<style\\b",html,re.I)),
-  "render_assignments":len(re.findall(r"(?:window\\.)?render\\s*=",html)),
-  "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
-  "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
-  "rafs":len(re.findall(r"requestAnimationFrame\\s*\\(",html)),
-  "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
-  "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
-  "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",html)),
+  "styles":len(re.findall(r"<style\b",html,re.I)),
+  "render_assignments":len(re.findall(r"(?:window\.)?render\s*=",html)),
+  "channels":len(re.findall(r"\.channel\s*\(",html)),
+  "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
+  "rafs":len(re.findall(r"requestAnimationFrame\s*\(",html)),
+  "listeners":len(re.findall(r"addEventListener\s*\(",html)),
+  "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
+  "performance_observers":len(re.findall(r"new\s+PerformanceObserver",html)),
 }
 report={"release":release,"missing":missing,"metrics":metrics}
 print("TEAM FJZ V20.72 PREPARATION/NUTRITION AUDIT")
