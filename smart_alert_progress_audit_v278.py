@@ -27,7 +27,7 @@ required=[
   "noExtraTimers:true",
   "noExtraListeners:true",
   "noExtraObservers:true",
-  "Alertas inteligentes",
+  "ALERTAS INTELIGENTES",
   "Carga × RIR",
   "RIR alto sostenido",
   "posible fatiga",
