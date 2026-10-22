@@ -48,3 +48,9 @@ jobs:
 
       - name: Repeated-render stability audit V20.68
         run: python browser_stability_audit_v268.py
+
+      - name: Routine UI audit V20.69
+        run: python routine_ui_audit_v269.py
+
+      - name: Routine modal browser audit V20.69
+        run: python browser_routine_modal_audit_v269.py
