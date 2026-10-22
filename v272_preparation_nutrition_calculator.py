@@ -180,7 +180,7 @@ runtime=r"""
   }
   function latestWeightV272(){
     const aid=typeof nutritionAthleteId==='function'?nutritionAthleteId():null;
-    const tc=(typeof trackingCache!=='undefined'&&trackingLoadedFor===aid)?trackingCache:null;
+    const tc=(typeof trackingCache!=='undefined'&&typeof trackingLoadedFor!=='undefined'&&trackingLoadedFor===aid)?trackingCache:null;
     const candidates=[
       tc?.measurements?.[0]?.weight_kg,
       tc?.checkins?.[0]?.weight_kg,
@@ -212,7 +212,7 @@ runtime=r"""
     const workBase={sedentary:1.20,mixed:1.30,active:1.40,physical:1.50}[work]||1.20;
     const steps=Math.max(0,numV272('v272Steps',0));
     const sessions=Math.max(0,numV272('v272Strength',0))+Math.max(0,numV272('v272Cardio',0));
-    const stepAdj=steps<4000?0:steps<7000?.03:steps<10000?.06:steps<13000?.10:.13;
+    const stepAdj=steps<4000?0:steps<7000?0.03:steps<10000?0.06:steps<13000?0.10:0.13;
     const trainAdj=Math.min(.12,sessions*.018);
     return clampV272(workBase+stepAdj+trainAdj,1.20,1.90);
   }
