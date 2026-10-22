@@ -32,36 +32,25 @@ before=metrics(html)
 for marker in [
     'meta name="fjz-mobile-edge-avatar-resilience" content="20.70"',
     "avatarCachedPathFallbackV270:true",
-    "function postRenderV176()",
-    "const baseRenderV176=window.render;",
+    "__fjzRenderBusyV178",
+    "__fjzRunRenderV158",
+    "v178-final-pass",
 ]:
     if marker not in html:
         raise RuntimeError("V20.71 missing prerequisite: "+marker)
 
-def patch_v176(body):
-    old="""    const out=baseRenderV176.apply(this,arguments);
-    lastRouteV176=next;
+def patch_v178(body):
+    old="""        out=window.__fjzRunRenderV158
+          ?window.__fjzRunRenderV158(baseRenderV178,this,arguments)
+          :baseRenderV178.apply(this,arguments);
 """
-    new="""    const out=baseRenderV176.apply(this,arguments);
-    window.__fjzEnsureCoachPreviewV271?.();
-    lastRouteV176=next;
+    new=old+"""        window.__fjzEnsureCoachPreviewV271?.();
 """
     if body.count(old)!=1:
-        raise RuntimeError("V20.71 synchronous preview hook mismatch: "+str(body.count(old)))
-    body=body.replace(old,new,1)
+        raise RuntimeError("V20.71 consolidated render hook mismatch: "+str(body.count(old)))
+    return body.replace(old,new,1)
 
-    marker="""    nowrapActions:true,
-    responsiveAudit:true
-"""
-    repl="""    nowrapActions:true,
-    responsiveAudit:true,
-    coachPreviewSynchronousV271:true
-"""
-    if body.count(marker)!=1:
-        raise RuntimeError("V20.71 V17.6 marker mismatch")
-    return body.replace(marker,repl,1)
-
-html=edit_script(html,"v176MobileTrackingMealsCleanupRuntime",patch_v176)
+html=edit_script(html,"v177MobileStabilityMeasurementRuntime",patch_v178)
 
 def patch_v268(body):
     anchor="""  window.__fjzApplyProfileUiV268=function(){
@@ -113,6 +102,7 @@ def patch_v268(body):
     repl="""    avatarEmptyStateExplicitV270:true,
     coachStudentPreviewContextV271:true,
     coachStudentPreviewOneTapExitV271:true,
+    coachStudentPreviewSynchronousV271:true,
     stagingAvatarClearlyDemo:true,
 """
     if body.count(marker)!=1:
@@ -206,7 +196,7 @@ for key in ("styles","renders","channels","timeouts","rafs","listeners","mutatio
 
 for marker in [
     'meta name="fjz-coach-student-preview-context" content="20.71"',
-    "coachPreviewSynchronousV271:true",
+    "coachStudentPreviewSynchronousV271:true",
     "coachStudentPreviewContextV271:true",
     "coachStudentPreviewOneTapExitV271:true",
     "__fjzEnsureCoachPreviewV271",
