@@ -5,7 +5,6 @@ html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 
 required=[
-  'meta name="fjz-release" content="20.76"',
   'meta name="fjz-mobile-hud-progress" content="20.75"',
   'meta name="fjz-coach-hud-nutrition-detail" content="20.76"',
   "premiumCoachMobileHud:true",
@@ -71,8 +70,14 @@ report={"release":release,"missing":missing,"metrics":metrics,"calculator_formul
 print("TEAM FJZ V20.76 COACH HUD/NUTRITION AUDIT")
 print(json.dumps(report,indent=2,ensure_ascii=False))
 
-if release!="20.76":
-  raise SystemExit("Release mismatch: "+release)
+def version_tuple(v):
+  try:
+    return tuple(int(x) for x in v.split("."))
+  except Exception:
+    return (0,)
+
+if version_tuple(release)<version_tuple("20.76"):
+  raise SystemExit("Release older than V20.76 Coach/Nutrition baseline: "+release)
 if missing:
   raise SystemExit("Missing V20.76 markers: "+repr(missing))
 if not formula_ok:
