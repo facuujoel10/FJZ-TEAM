@@ -843,6 +843,9 @@ exec(compile(open("v283_mobile_legacy_isolation.py", encoding="utf-8").read(), "
 # V20.84 final independent Coach calendar authority.
 exec(compile(open("v284_final_calendar_authority.py", encoding="utf-8").read(), "v284_final_calendar_authority.py", "exec"))
 
+# V20.85 final release-candidate hardening.
+exec(compile(open("v285_final_release_candidate.py", encoding="utf-8").read(), "v285_final_release_candidate.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
