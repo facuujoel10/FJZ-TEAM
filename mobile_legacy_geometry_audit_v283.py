@@ -13,7 +13,6 @@ required=[
  "agendaFinalRouteAuthority:true",
  "calendarHostIndependentFromPriority:true",
  "coachIntegrityRecovery:true",
- "button[onclick*=\\\"Tab='music'\\\"]",
  'input[type="date"]',
  'input[type="time"]',
  "overflow-x:clip",
@@ -66,6 +65,8 @@ if vt(release)<vt("20.83"): raise SystemExit("Release older than V20.83: "+relea
 if missing: raise SystemExit("Missing V20.83 markers: "+repr(missing))
 if not all(logic.values()): raise SystemExit("V20.83 logic audit failed: "+repr(logic))
 if retired["legacy_student_music_array"]!=0: raise SystemExit("Legacy student Music tab array survived")
+if retired["legacy_coach_music_button"]!=0: raise SystemExit("Legacy Coach Music button survived")
+if retired["legacy_student_music_button"]!=0: raise SystemExit("Legacy Student Music button survived")
 if metrics["styles"]!=1: raise SystemExit("Stylesheet regression")
 if metrics["renders"]>18: raise SystemExit("Render assignment regression")
 if metrics["intervals"]!=0: raise SystemExit("Interval regression")
