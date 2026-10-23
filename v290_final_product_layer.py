@@ -232,13 +232,22 @@ def patch_v175(body):
     return {done,total,workoutDone,checkDone,doneHabits,habitTotal:habits.length};
   }
 
+  function numericV291(v){
+    if(typeof v==='number')return Number.isFinite(v)?v:NaN;
+    const s=String(v??'').trim().replace(',','.').replace(/[^0-9.+-]/g,'');
+    const n=Number(s);return Number.isFinite(n)?n:NaN;
+  }
+  function exerciseKeyV291(name){
+    const raw=String(name||'').trim();
+    try{return typeof normalizeTextV70==='function'?normalizeTextV70(raw):raw.toLocaleLowerCase('es-AR')}catch(_e){return raw.toLowerCase()}
+  }
   function setStatsV290(result){
     const raw=Array.isArray(result?.sets)?result.sets:[];
     const sets=raw.map(x=>{
-      if(Array.isArray(x))return {kg:Number(x?.[0]),reps:Number(x?.[1])};
+      if(Array.isArray(x))return {kg:numericV291(x?.[0]),reps:numericV291(x?.[1])};
       if(x&&typeof x==='object'){
-        const kg=Number(x.kg??x.weight??x.load??x.peso??x.value);
-        const reps=Number(x.reps??x.rep??x.repetitions??x.repeticiones);
+        const kg=numericV291(x.kg??x.weight??x.load??x.peso??x.value);
+        const reps=numericV291(x.reps??x.rep??x.repetitions??x.repeticiones);
         return {kg,reps};
       }
       return null;
@@ -260,19 +269,22 @@ def patch_v175(body):
     sessions.forEach(ss=>(ss?.exerciseResults||[]).forEach(r=>{
       const name=String(r?.name||'').trim();if(!name)return;
       const st=setStatsV290(r);if(!st)return;
-      if(!by.has(name))by.set(name,[]);
-      by.get(name).push({date:ss.date,...st});
+      const key=exerciseKeyV291(name);if(!key)return;
+      if(!by.has(key))by.set(key,{name,items:[]});
+      const bucket=by.get(key);bucket.name=name;
+      bucket.items.push({date:ss.date,sessionId:ss.id||'',...st});
     }));
-    by.forEach((items,name)=>{
+    by.forEach((bucket)=>{
+      const name=bucket.name,items=bucket.items;
       if(items.length<2)return;
       const last=items[items.length-1],prev=items.slice(0,-1);
       const prevLoad=Math.max(...prev.map(x=>Number(x.bestLoad)||0));
       const prevVol=Math.max(...prev.map(x=>Number(x.volume)||0));
-      const recent=Date.now()-Date.parse(last.date||0)<=14*86400000;
+      const parsed=Date.parse(last.date||'');const recent=Number.isFinite(parsed)&&Date.now()-parsed>=0&&Date.now()-parsed<=14*86400000;
       if(recent&&Number(last.bestLoad)>prevLoad&&Number(last.bestLoad)>0)
-        out.unshift({tone:'pr',kind:'load',exercise:name,title:'Nuevo PR · '+name,meta:last.bestLoad+' kg',value:last.bestLoad,date:last.date});
+        out.unshift({tone:'pr',kind:'load',exercise:name,title:'Nuevo PR · '+name,meta:last.bestLoad+' kg',value:last.bestLoad,date:last.date,sessionId:last.sessionId});
       else if(recent&&Number(last.volume)>prevVol&&Number(last.volume)>0)
-        out.push({tone:'pr',kind:'volume',exercise:name,title:'Mejor volumen · '+name,meta:Math.round(last.volume)+' kg·rep',value:Math.round(last.volume),date:last.date});
+        out.push({tone:'pr',kind:'volume',exercise:name,title:'Mejor volumen · '+name,meta:Math.round(last.volume)+' kg·rep',value:Math.round(last.volume),date:last.date,sessionId:last.sessionId});
     });
     return out.slice(0,4);
   }
@@ -336,7 +348,7 @@ def patch_v175(body):
   }
 
   function prKeyV291(x){
-    return ['fjz-pr-v291',String(student()?.id||''),String(x?.exercise||x?.title||''),String(x?.date||''),String(x?.kind||''),String(x?.value||'')].join('|');
+    return ['fjz-pr-v291',String(student()?.id||''),String(x?.sessionId||x?.date||''),exerciseKeyV291(x?.exercise||x?.title||''),String(x?.kind||''),String(x?.value||'')].join('|');
   }
   function latestUnseenPrV291(s){
     const rows=achievementsV290(s).filter(x=>x.tone==='pr');
@@ -464,7 +476,7 @@ def patch_v175(body):
     marker="window.__fjzV175={"
     if marker not in body:
         raise RuntimeError("V20.90 V175 marker object missing")
-    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,",1)
+    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,localizedWeightParsingV291:true,normalizedExercisePrKeyV291:true,",1)
     return body
 
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
