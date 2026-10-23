@@ -14,9 +14,7 @@ required=[
  "exerciseKeyV291",
  "sessionId:last.sessionId",
  "v291-pr-banner",
- "v291-finish-head",
- "v291-finish-summary",
- "v291-finish-actions",
+ "meta name=\"fjz-new-feature-hardening\" content=\"20.91\"",
  "NUEVO PESO · NUEVO PR",
  "NUEVO RÉCORD DE VOLUMEN",
  "successModalAfterConfirmedSave:true",
@@ -51,8 +49,8 @@ checks={
  "pr_requires_history":"if(items.length<2)return;" in html,
  "pr_requires_positive_load":"Number(last.bestLoad)>0" in html,
  "pr_recent_guard":"Number.isFinite(parsed)" in html,
- "finish_title_readable":"font-size:20px!important" in html and ".v291-finish-head h3" in html,
- "finish_mobile_buttons":"min-height:48px!important" in html and ".v291-finish-actions>.btn" in html,
+ "finish_title_readable":"font-size:20px!important" in html and ".modal-head h3" in html,
+ "finish_mobile_buttons":"min-height:48px!important" in html and ".modal .pill-row>.btn" in html,
  "save_copy_readable":".v207-save-state .v207-save-copy" in html and "font-size:12.5px!important" in html,
 }
 
