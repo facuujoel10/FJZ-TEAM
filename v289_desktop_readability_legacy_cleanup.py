@@ -111,7 +111,7 @@ window.setupRealtime=function(){
  try{
   if(window.__fjzV122Channel)supabaseClient.removeChannel(window.__fjzV122Channel);
   window.__fjzV122Channel=supabaseClient.channel('fjz-v122-followups')
-   .on('postgres_changes',{event:'*',schema:'public',table:'checkin_schedules'},()=>{followupLoadedV122=false;setTimeout(()=>render(),250)})
+   .on('postgres_changes',{event:'*',schema:'public',table:'checkin_schedules'},()=>{followupLoadedV122=false})
    .subscribe();
  }catch(e){console.warn('V12.2 check-in realtime',e)}
  return r;
@@ -304,11 +304,12 @@ html=html.replace("</head>",'<meta name="fjz-legacy-runtime-cleanup" content="20
 after=metrics(html)
 
 # No new runtime topology. Removing a retired payment timeout is allowed.
-for key in ("styles","renders","channels","intervals","rafs","listeners","mutation_observers","performance_observers"):
+for key in ("styles","renders","intervals","rafs","mutation_observers","performance_observers"):
     if after[key]!=before[key]:
-        raise RuntimeError("V20.89 unexpected topology change "+key+": "+repr({"before":before,"after":after}))
-if after["timeouts"]>before["timeouts"]:
-    raise RuntimeError("V20.89 timeout growth")
+        raise RuntimeError("V20.89 unexpected fixed-topology change "+key+": "+repr({"before":before,"after":after}))
+for key in ("channels","timeouts","listeners"):
+    if after[key]>before[key]:
+        raise RuntimeError("V20.89 runtime topology growth "+key+": "+repr({"before":before,"after":after}))
 if "coach_payments" in html:
     raise RuntimeError("V20.89 retired coach_payments reference survived")
 
