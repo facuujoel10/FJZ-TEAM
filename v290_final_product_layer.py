@@ -167,7 +167,7 @@ def patch_v175(body):
       }
       habitCacheV290.clear();
       await injectFinalProductV290(true);
-      toast?.('Hábito actualizado');
+      window.__fjzQuickSavedV264?.('Hábito actualizado');
     }catch(e){console.error(e);toast?.('No se pudo actualizar el hábito')}
   };
 
@@ -189,7 +189,7 @@ def patch_v175(body):
         if(r.error)throw r.error;
       }
       if(input)input.value='';
-      habitCacheV290.clear();await injectFinalProductV290(true);toast?.('Hábito agregado');
+      habitCacheV290.clear();await injectFinalProductV290(true);window.__fjzQuickSavedV264?.('Hábito agregado');
     }catch(e){console.error(e);toast?.('No se pudo agregar el hábito')}
   };
 
@@ -206,7 +206,7 @@ def patch_v175(body):
           .update({active:false,updated_at:new Date().toISOString()}).eq('id',id).eq('athlete_id',ath.id);
         if(r.error)throw r.error;
       }
-      habitCacheV290.clear();await injectFinalProductV290(true);toast?.('Hábito retirado');
+      habitCacheV290.clear();await injectFinalProductV290(true);window.__fjzQuickSavedV264?.('Hábito retirado');
     }catch(e){console.error(e);toast?.('No se pudo retirar el hábito')}
   };
 
