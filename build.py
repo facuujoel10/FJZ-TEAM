@@ -858,6 +858,9 @@ exec(compile(open("v288_desktop_coach_readability.py", encoding="utf-8").read(),
 # V20.89 increase desktop readability + quarantine retired runtime/payment paths.
 exec(compile(open("v289_desktop_readability_legacy_cleanup.py", encoding="utf-8").read(), "v289_desktop_readability_legacy_cleanup.py", "exec"))
 
+# V20.90 final product layer: Today + habits/streaks + PRs + adherence risk + check-in assistant.
+exec(compile(open("v290_final_product_layer.py", encoding="utf-8").read(), "v290_final_product_layer.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
