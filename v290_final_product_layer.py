@@ -109,14 +109,20 @@ def patch_v175(body):
   function completedHabitSetV290(data,date=isoTodayV290()){
     return new Set((data?.logs||[]).filter(x=>x.completed&&String(x.logged_on)===date).map(x=>String(x.habit_id)));
   }
+  function habitEligibleOnV291(h,day){
+    const created=String(h?.created_at||'').slice(0,10);
+    return !created||created<=day;
+  }
   function habitWeekAdherenceV290(data){
     const active=(data?.assignments||[]).filter(x=>x.active!==false);
     if(!active.length)return null;
-    const keys=new Set(active.map(x=>String(x.id)));
-    let done=0,total=active.length*7;
+    let done=0,total=0;
     for(let i=0;i<7;i++){
       const d=new Date();d.setDate(d.getDate()-i);
       const day=d.toISOString().slice(0,10);
+      const eligible=active.filter(h=>habitEligibleOnV291(h,day));
+      const keys=new Set(eligible.map(x=>String(x.id)));
+      total+=eligible.length;
       done+=(data?.logs||[]).filter(x=>x.completed&&String(x.logged_on)===day&&keys.has(String(x.habit_id))).length;
     }
     return total?Math.round(done/total*100):null;
@@ -124,13 +130,15 @@ def patch_v175(body):
   function habitStreakV290(data){
     const active=(data?.assignments||[]).filter(x=>x.active!==false);
     if(!active.length)return 0;
-    const ids=new Set(active.map(x=>String(x.id)));
     let streak=0;
     for(let i=0;i<42;i++){
       const d=new Date();d.setDate(d.getDate()-i);
       const day=d.toISOString().slice(0,10);
+      const eligible=active.filter(h=>habitEligibleOnV291(h,day));
+      if(!eligible.length)break;
+      const ids=new Set(eligible.map(x=>String(x.id)));
       const done=new Set((data?.logs||[]).filter(x=>x.completed&&String(x.logged_on)===day&&ids.has(String(x.habit_id))).map(x=>String(x.habit_id)));
-      if(done.size===active.length)streak++;
+      if(done.size===eligible.length)streak++;
       else if(i===0)continue;
       else break;
     }
@@ -476,7 +484,7 @@ def patch_v175(body):
     marker="window.__fjzV175={"
     if marker not in body:
         raise RuntimeError("V20.90 V175 marker object missing")
-    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,localizedWeightParsingV291:true,normalizedExercisePrKeyV291:true,",1)
+    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,localizedWeightParsingV291:true,normalizedExercisePrKeyV291:true,habitAssignmentDateAwareV291:true,",1)
     return body
 
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
