@@ -89,22 +89,17 @@ window.openPaymentPickerV122=function(){return null};
     body=body[:old_upcoming.start()]+new_upcoming+body[old_upcoming.end():]
 
     # Old routing wrappers stay in the chain for compatibility but do no routing.
-    old_render="""const baseCoachRenderV122=window.renderCoach;
-window.renderCoach=function(){if(coachTab==='payments')return renderCoachPaymentsV122();return baseCoachRenderV122.apply(this,arguments)};
-const baseBottomV122=window.renderBottomNav;
-window.renderBottomNav=function(){
- if(mode==='coach'){
-  const nav=el('bottomNav');nav.innerHTML='<button class="'+(coachTab==='dashboard'?'active':'')+'" onclick="coachTab=\\'dashboard\\';render()">Alumnos</button><button class="'+(coachTab==='agenda'?'active':'')+'" onclick="coachTab=\\'agenda\\';render()">Agenda</button><button class="'+(coachTab==='payments'?'active':'')+'" onclick="coachTab=\\'payments\\';render()">Pagos</button><button onclick="showTemplates()">Plantillas</button><button class="'+(coachTab==='music'?'active':'')+'" onclick="coachTab=\\'music\\';render()">Música</button><button onclick="newStudent()">+ Alumno</button>';return;
- }
- return baseBottomV122.apply(this,arguments)
-};"""
-    new_render="""const baseCoachRenderV122=window.renderCoach;
+    route_start=body.find("const baseCoachRenderV122=window.renderCoach;")
+    route_end=body.find("const baseSetupV122=window.setupRealtime;",route_start)
+    if route_start<0 or route_end<0:
+        raise RuntimeError("V20.89 V122 route wrapper bounds missing")
+    route_clean="""const baseCoachRenderV122=window.renderCoach;
 window.renderCoach=function(){return baseCoachRenderV122.apply(this,arguments)};
 const baseBottomV122=window.renderBottomNav;
-window.renderBottomNav=function(){return baseBottomV122.apply(this,arguments)};"""
-    if body.count(old_render)!=1:
-        raise RuntimeError("V20.89 V122 route wrapper mismatch")
-    body=body.replace(old_render,new_render,1)
+window.renderBottomNav=function(){return baseBottomV122.apply(this,arguments)};
+
+"""
+    body=body[:route_start]+route_clean+body[route_end:]
 
     old_rt="""const baseSetupV122=window.setupRealtime;
 window.setupRealtime=function(){
