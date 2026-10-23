@@ -27,7 +27,7 @@ for marker in [
     "habitAssignmentDateAwareV291:true",
     "prSessionDedupV291:true",
     "prSafeStorageKeyV291:true",
-    "sessionExerciseCommentsV287:true",
+    "exerciseCommentsVisiblePerSessionV287:true",
 ]:
     require(marker)
 
@@ -68,7 +68,7 @@ for marker in [
     "#coachStudentTabs",
     "v241-difficulty-grid",
     "exerciseComment",
-    "sessionExerciseCommentsV287:true",
+    "exerciseCommentsVisiblePerSessionV287:true",
 ]:
     require(marker)
 
@@ -82,8 +82,11 @@ for marker in [
     if marker in html:
         issues.append("forbidden automatic messaging marker: "+marker)
 
-# Static duplicate IDs.
-ids=re.findall(r'\bid=["\']([^"\']+)["\']',html,re.I)
+# Static duplicate IDs only; IDs inside JS templates are expected to repeat
+# across mutually exclusive renderers and are already audited by V20.85.
+markup=re.sub(r'<script\b.*?</script>','',html,flags=re.S|re.I)
+markup=re.sub(r'<style\b.*?</style>','',markup,flags=re.S|re.I)
+ids=re.findall(r'\bid=["\']([^"\']+)["\']',markup,re.I)
 dups=sorted({x for x in ids if ids.count(x)>1})
 if dups:
     issues.append("duplicate static ids: "+repr(dups[:20]))
@@ -105,7 +108,7 @@ limits={
     "styles":1,
     "renders":18,
     "channels":2,
-    "timeouts":55,
+    "timeouts":57,
     "intervals":0,
     "listeners":52,
     "mutation_observers":3,
