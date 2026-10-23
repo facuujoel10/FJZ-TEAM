@@ -233,8 +233,16 @@ def patch_v175(body):
   }
 
   function setStatsV290(result){
-    const sets=(result?.sets||[]).filter(Array.isArray).map(x=>({kg:Number(x?.[0]),reps:Number(x?.[1])}))
-      .filter(x=>Number.isFinite(x.reps)&&x.reps>0);
+    const raw=Array.isArray(result?.sets)?result.sets:[];
+    const sets=raw.map(x=>{
+      if(Array.isArray(x))return {kg:Number(x?.[0]),reps:Number(x?.[1])};
+      if(x&&typeof x==='object'){
+        const kg=Number(x.kg??x.weight??x.load??x.peso??x.value);
+        const reps=Number(x.reps??x.rep??x.repetitions??x.repeticiones);
+        return {kg,reps};
+      }
+      return null;
+    }).filter(x=>x&&Number.isFinite(x.reps)&&x.reps>0);
     if(!sets.length)return null;
     const weighted=sets.filter(x=>Number.isFinite(x.kg)&&x.kg>0);
     return {
@@ -262,9 +270,9 @@ def patch_v175(body):
       const prevVol=Math.max(...prev.map(x=>Number(x.volume)||0));
       const recent=Date.now()-Date.parse(last.date||0)<=14*86400000;
       if(recent&&Number(last.bestLoad)>prevLoad&&Number(last.bestLoad)>0)
-        out.unshift({tone:'pr',title:'Nuevo PR · '+name,meta:last.bestLoad+' kg'});
+        out.unshift({tone:'pr',kind:'load',exercise:name,title:'Nuevo PR · '+name,meta:last.bestLoad+' kg',value:last.bestLoad,date:last.date});
       else if(recent&&Number(last.volume)>prevVol&&Number(last.volume)>0)
-        out.push({tone:'pr',title:'Mejor volumen · '+name,meta:Math.round(last.volume)+' kg·rep'});
+        out.push({tone:'pr',kind:'volume',exercise:name,title:'Mejor volumen · '+name,meta:Math.round(last.volume)+' kg·rep',value:Math.round(last.volume),date:last.date});
     });
     return out.slice(0,4);
   }
@@ -324,6 +332,35 @@ def patch_v175(body):
         '<button class="v290-action" onclick="studentTab=\\'progress\\';render()"><span>Progreso</span><strong>'+(adh==null?'Sin datos':adh+'% hábitos')+'</strong></button>'+
       '</div>';
     const anchor=el('v253StudentWeekFlow')||el('v245StudentActionHub')||view.querySelector('.hero');
+    if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
+  }
+
+  function prKeyV291(x){
+    return ['fjz-pr-v291',String(student()?.id||''),String(x?.exercise||x?.title||''),String(x?.date||''),String(x?.kind||''),String(x?.value||'')].join('|');
+  }
+  function latestUnseenPrV291(s){
+    const rows=achievementsV290(s).filter(x=>x.tone==='pr');
+    for(const x of rows){
+      const key=prKeyV291(x);
+      try{if(localStorage.getItem(key)!=='1')return {...x,_key:key}}catch(_e){return {...x,_key:key}}
+    }
+    return null;
+  }
+  window.dismissPrBannerV291=function(key){
+    try{localStorage.setItem(String(key||''),'1')}catch(_e){}
+    el('v291PrBanner')?.remove();
+  };
+  function renderPrBannerV291(s){
+    if(!(mode==='student'&&studentTab==='home'))return;
+    el('v291PrBanner')?.remove();
+    const pr=latestUnseenPrV291(s);if(!pr)return;
+    const view=el('view');if(!view)return;
+    const card=document.createElement('section');
+    card.id='v291PrBanner';card.className='v291-pr-banner';
+    const headline=pr.kind==='load'?'NUEVO PESO · NUEVO PR':'NUEVO RÉCORD DE VOLUMEN';
+    card.innerHTML='<button class="v291-pr-close" aria-label="Cerrar" onclick="dismissPrBannerV291(\''+esc(pr._key)+'\')">×</button>'+
+      '<div class="v291-pr-icon">🏆</div><div class="v291-pr-copy"><span>'+headline+'</span><strong>'+esc(pr.exercise||pr.title)+'</strong><b>'+esc(pr.meta)+'</b><small>Tu progreso quedó registrado en Logros.</small></div>';
+    const anchor=el('v290Today')||view.querySelector('.hero');
     if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
   }
 
@@ -408,7 +445,7 @@ def patch_v175(body):
       const same=String(student()?.id||'')===String(s.id||'');if(!same)return;
     }
     if(mode==='student'&&studentTab==='home'){
-      renderStudentTodayV290(s,data);renderStudentHabitsV290(data);renderAchievementsV290(s);
+      renderStudentTodayV290(s,data);renderPrBannerV291(s);renderStudentHabitsV290(data);renderAchievementsV290(s);
     }
     if(mode==='coach'&&coachTab==='student'&&coachStudentTab==='summary'){
       renderCoachHabitManagerV290(data);
@@ -427,7 +464,7 @@ def patch_v175(body):
     marker="window.__fjzV175={"
     if marker not in body:
         raise RuntimeError("V20.90 V175 marker object missing")
-    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,",1)
+    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,",1)
     return body
 
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
@@ -452,6 +489,10 @@ css=r"""
 .v290-coach-habit{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 10px;border:1px solid #2f343c;border-radius:11px;background:#0d0f13}.v290-habit-create{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:7px;margin-top:10px}.v290-habit-create input,.v290-habit-create select{min-width:0}
 .v290-draft{padding:11px;border:1px solid #30343c;border-radius:12px;background:#0d0f13}.v290-draft strong{font-size:10px;text-transform:uppercase;color:#aab0ba}.v290-draft p{font-size:11px;line-height:1.5;color:#e5e7eb}.v290-draft-actions{display:flex;gap:7px;flex-wrap:wrap}
 .v290-risk-row{appearance:none;width:100%;display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;padding:11px;border:1px solid #30343c;border-radius:12px;background:#0d0f13;color:#eef0f3;cursor:pointer}.v290-risk-row.high{border-left:3px solid #ff5261}.v290-risk-row.mid{border-left:3px solid #f2bd55}.v290-risk-row.low{border-left:3px solid #3bd58a}.v290-risk-row strong{display:block;font-size:13px}.v290-risk-row small{display:block;margin-top:4px;color:#8e949e;font-size:10px;line-height:1.4}.v290-risk-row>span{font-size:10px;font-weight:900;white-space:nowrap}
+.v291-pr-banner{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:center;padding:15px 44px 15px 15px;border:1px solid rgba(242,189,85,.42);border-radius:16px;background:linear-gradient(135deg,rgba(242,189,85,.10),rgba(15,17,22,.98));box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.v291-pr-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:rgba(242,189,85,.12);font-size:24px}
+.v291-pr-copy span{display:block;color:#f2bd55;font-size:9px;font-weight:950;letter-spacing:.08em}.v291-pr-copy strong{display:block;margin-top:3px;font-size:16px}.v291-pr-copy b{display:block;margin-top:2px;font-size:20px}.v291-pr-copy small{display:block;margin-top:4px;color:#9aa0aa;font-size:10px}
+.v291-pr-close{position:absolute;top:8px;right:9px;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#a8aeb8;font-size:20px;cursor:pointer}
 .v290-empty{padding:14px;text-align:center;color:#858b95;font-size:10px}
 @media(max-width:760px){.v290-today-grid{grid-template-columns:1fr 1fr}.v290-habit-create{grid-template-columns:1fr 1fr}.v290-habit-create .btn{grid-column:1/-1}.v290-achievement-grid{grid-template-columns:1fr}}
 @media(max-width:430px){.v290-head{align-items:center}.v290-ring{width:56px;height:56px}.v290-today-grid{grid-template-columns:1fr}.v290-risk-row{align-items:flex-start}.v290-risk-row>span{font-size:9px}}
