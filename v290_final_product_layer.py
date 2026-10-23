@@ -16,7 +16,7 @@ def metrics(doc):
     }
 
 def edit_script(doc,script_id,transform):
-    pat=re.compile(r'(<script[^>]*\\bid=["\\']'+re.escape(script_id)+r'["\\'][^>]*>)(.*?)(</script>)',re.S|re.I)
+    pat=re.compile(r"(<script[^>]*\\bid=[\"']"+re.escape(script_id)+r"[\"'][^>]*>)(.*?)(</script>)",re.S|re.I)
     m=pat.search(doc)
     if not m: raise RuntimeError("V20.90 missing script "+script_id)
     body=m.group(2)
