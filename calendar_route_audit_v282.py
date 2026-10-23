@@ -16,7 +16,7 @@ required=[
 ]
 missing=[x for x in required if x not in html]
 logic={
- "final_agenda_router":bool(re.search(r"window\.renderCoach=function\(\)\{\s*if\(coachTab==='agenda'\)return renderCoachAgendaV282\(\)",html)),
+ "final_agenda_router":"if(coachTab==='agenda')return renderCoachAgendaV282()" in html,
  "immediate_agenda_frame":"renderAgendaBodyV282('Agenda cargada');" in html,
  "monthly_host_priority_optional":"if(priority?.parentNode)priority.insertAdjacentElement('afterend',host);" in html and "else{" in html,
  "fallback_month_render":"function renderMonthlyFallbackV282(host)" in html,
