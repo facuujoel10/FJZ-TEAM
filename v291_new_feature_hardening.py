@@ -28,58 +28,40 @@ for marker in [
     if marker not in html:
         raise RuntimeError("V20.91 prerequisite missing "+marker)
 
-old="""'<div class="modal-head"><div><h3>Finalizar entrenamiento</h3><div class="muted tiny">Revisá antes de confirmar.</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+"""
-new="""'<div class="modal-head v291-finish-head"><div><h3>Finalizar entrenamiento</h3><div class="muted tiny">Revisá antes de confirmar.</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+"""
-if html.count(old)!=1:
-    raise RuntimeError("V20.91 final workout modal anchor mismatch: "+str(html.count(old)))
-html=html.replace(old,new,1)
-
-old2="""'<div class="card"><strong>'+escV207(parts.join(' · '))+'</strong><div class="muted tiny" style="margin-top:6px">Se guardarán únicamente las series con datos válidos.</div></div>'+"""
-new2="""'<div class="card v291-finish-summary"><strong>'+escV207(parts.join(' · '))+'</strong><div class="muted tiny" style="margin-top:6px">Se guardarán únicamente las series con datos válidos.</div></div>'+"""
-if html.count(old2)!=1:
-    raise RuntimeError("V20.91 finish summary anchor mismatch")
-html=html.replace(old2,new2,1)
-
-old3="""'<div class="pill-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" onclick="closeModal()">Seguir entrenando</button><button class="btn primary" onclick="confirmPartialSessionV106()">Guardar y finalizar</button></div>'"""
-new3="""'<div class="pill-row v291-finish-actions" style="justify-content:flex-end;margin-top:12px"><button class="btn" onclick="closeModal()">Seguir entrenando</button><button class="btn primary" onclick="confirmPartialSessionV106()">Guardar y finalizar</button></div>'"""
-if html.count(old3)!=1:
-    raise RuntimeError("V20.91 finish actions anchor mismatch")
-html=html.replace(old3,new3,1)
-
 css=r"""
 /* TEAM FJZ · V20.91 NEW FEATURE + FINISH WORKOUT HARDENING */
-.v291-finish-head{
+.modal-head{
   align-items:flex-start!important;
   gap:12px!important;
 }
-.v291-finish-head h3{
+.modal-head h3{
   margin:0!important;
   font-size:20px!important;
   line-height:1.15!important;
   letter-spacing:-.015em!important;
 }
-.v291-finish-head .muted.tiny{
+.modal-head .muted.tiny{
   margin-top:5px!important;
   font-size:12px!important;
   line-height:1.4!important;
 }
-.v291-finish-summary{
+.modal .card{
   margin-top:12px!important;
   padding:14px!important;
 }
-.v291-finish-summary>strong{
+.modal .card>strong{
   display:block!important;
   font-size:14px!important;
   line-height:1.4!important;
 }
-.v291-finish-summary .muted.tiny{
+.modal .card .muted.tiny{
   font-size:12px!important;
   line-height:1.5!important;
 }
-.v291-finish-actions{
+.modal .pill-row{
   gap:9px!important;
 }
-.v291-finish-actions>.btn{
+.modal .pill-row>.btn{
   min-height:46px!important;
   padding:10px 14px!important;
   font-size:12.5px!important;
@@ -110,16 +92,16 @@ css=r"""
   overflow-wrap:anywhere!important;
 }
 @media(max-width:430px){
-  .v291-finish-head h3{font-size:19px!important}
-  .v291-finish-head .muted.tiny,
-  .v291-finish-summary .muted.tiny{font-size:12px!important}
-  .v291-finish-summary>strong{font-size:13px!important}
-  .v291-finish-actions{
+  .modal-head h3{font-size:19px!important}
+  .modal-head .muted.tiny,
+  .modal .card .muted.tiny{font-size:12px!important}
+  .modal .card>strong{font-size:13px!important}
+  .modal .pill-row{
     display:grid!important;
     grid-template-columns:1fr!important;
     width:100%!important;
   }
-  .v291-finish-actions>.btn{
+  .modal .pill-row>.btn{
     width:100%!important;
     min-height:48px!important;
     font-size:13px!important;
