@@ -391,7 +391,7 @@ def patch_v175(body):
     card.innerHTML='<div class="section-title"><div><div class="v225-section-kicker">ADHERENCIA</div><h3>Riesgo de desconexión</h3><div class="muted tiny">Prioriza a quién revisar primero según actividad, adherencia y check-in. Es una señal operativa, no un diagnóstico.</div></div></div>'+
       '<div class="v290-risk-list">'+rows.map(x=>{
         const label=x.r.level==='high'?'Prioridad':x.r.level==='mid'?'Atención':'Bien';
-        return '<button class="v290-risk-row '+x.r.level+'" onclick="selectStudent(\\''+esc(String(x.s.id))+'\\');coachTab=\\'student\\';coachStudentTab=\\'summary\\';render()"><div><strong>'+esc(x.s.name||'Alumno')+'</strong><small>'+esc(x.r.reasons.join(' · ')||'Sin señales principales')+'</small></div><span>'+label+' · '+x.r.score+'</span></button>';
+        return '<button class="v290-risk-row '+x.r.level+'" onclick="openStudent(\\''+esc(String(x.s.id))+'\\');coachStudentTab=\\'summary\\';render()"><div><strong>'+esc(x.s.name||'Alumno')+'</strong><small>'+esc(x.r.reasons.join(' · ')||'Sin señales principales')+'</small></div><span>'+label+' · '+x.r.score+'</span></button>';
       }).join('')+'</div>';
     const anchor=el('v252CoachPriorityCenter')||el('v225CoachDashboard')||view.querySelector('.hero');
     if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
