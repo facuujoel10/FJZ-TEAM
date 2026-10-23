@@ -831,6 +831,9 @@ exec(compile(open("v279_final_stability_polish.py", encoding="utf-8").read(), "v
 # V20.80 recover Coach priorities/calendar in staging.
 exec(compile(open("v280_priority_calendar_recovery.py", encoding="utf-8").read(), "v280_priority_calendar_recovery.py", "exec"))
 
+# V20.81 restore Coach workflow authorities + integrity gate.
+exec(compile(open("v281_coach_integrity_recovery.py", encoding="utf-8").read(), "v281_coach_integrity_recovery.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
