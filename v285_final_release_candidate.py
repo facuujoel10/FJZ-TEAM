@@ -68,20 +68,9 @@ html,payment_assignments_removed=re.subn(
     html
 )
 
-# Mark the existing mobile recovery authority as the final route policy.
-pat=re.compile(r'(<script[^>]*\bid=["\']v283MobileLegacyIsolationRuntime["\'][^>]*>)(.*?)(</script>)',re.S|re.I)
-m=pat.search(html)
-if not m:
-    raise RuntimeError("V20.85 missing V283 runtime")
-body=m.group(2)
-if "legacyPaymentRoutesRemoved:true" not in body:
-    anchor="    productionUntouched:true,"
-    if anchor not in body:
-        raise RuntimeError("V20.85 V283 marker anchor missing")
-    body=body.replace(anchor,"    paymentsDeferred:true,\n    legacyPaymentRoutesRemoved:true,\n"+anchor,1)
-html=html[:m.start(2)]+body+html[m.end(2):]
-
-html=html.replace("</head>",'<meta name="fjz-final-release-candidate" content="20.85">\n</head>',1)
+# Final release markers. Payments remain intentionally deferred; all historical
+# navigation assignments/buttons have been removed or rerouted.
+html=html.replace("</head>",'<meta name="fjz-payments-deferred" content="20.85">\n<meta name="fjz-final-release-candidate" content="20.85">\n</head>',1)
 
 after=metrics(html)
 for key in ("styles","renders","channels","timeouts","intervals","rafs","listeners","mutation_observers","performance_observers"):
@@ -95,8 +84,7 @@ if remaining_payment_assignments:
 
 for marker in [
     'meta name="fjz-final-release-candidate" content="20.85"',
-    "paymentsDeferred:true",
-    "legacyPaymentRoutesRemoved:true",
+    'meta name="fjz-payments-deferred" content="20.85"',
     "finalMonthlyCalendarAuthorityV284:true",
     "duplicateAsyncSaveGuard:true",
     "specificProgressAlerts:true",
