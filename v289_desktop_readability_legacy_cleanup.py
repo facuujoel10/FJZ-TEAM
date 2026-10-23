@@ -101,19 +101,11 @@ window.renderBottomNav=function(){return baseBottomV122.apply(this,arguments)};
 """
     body=body[:route_start]+route_clean+body[route_end:]
 
-    old_rt="""const baseSetupV122=window.setupRealtime;
-window.setupRealtime=function(){
- const r=baseSetupV122.apply(this,arguments);if(!supabaseClient)return r;
- try{
-  if(window.__fjzV122Channel)supabaseClient.removeChannel(window.__fjzV122Channel);
-  window.__fjzV122Channel=supabaseClient.channel('fjz-v122-followups')
-   .on('postgres_changes',{event:'*',schema:'public',table:'checkin_schedules'},()=>{followupLoadedV122=false;setTimeout(()=>render(),250)})
-   .on('postgres_changes',{event:'*',schema:'public',table:'coach_payments'},()=>{followupLoadedV122=false;setTimeout(()=>render(),250)})
-   .subscribe();
- }catch(e){console.warn('V12.2 realtime',e)}
- return r;
-};"""
-    new_rt="""const baseSetupV122=window.setupRealtime;
+    rt_start=body.find("const baseSetupV122=window.setupRealtime;")
+    rt_end=body.find("window.__fjzFollowupsV122=",rt_start)
+    if rt_start<0 or rt_end<0:
+        raise RuntimeError("V20.89 V122 realtime bounds missing")
+    rt_clean="""const baseSetupV122=window.setupRealtime;
 window.setupRealtime=function(){
  const r=baseSetupV122.apply(this,arguments);if(!supabaseClient)return r;
  try{
@@ -123,10 +115,10 @@ window.setupRealtime=function(){
    .subscribe();
  }catch(e){console.warn('V12.2 check-in realtime',e)}
  return r;
-};"""
-    if body.count(old_rt)!=1:
-        raise RuntimeError("V20.89 V122 realtime anchor mismatch")
-    body=body.replace(old_rt,new_rt,1)
+};
+
+"""
+    body=body[:rt_start]+rt_clean+body[rt_end:]
 
     old_marker="window.__fjzFollowupsV122={version:'12.2',checkins:true,payments:true};"
     new_marker="window.__fjzFollowupsV122={version:'12.2',checkins:true,payments:false,paymentsDeferredV289:true};"
