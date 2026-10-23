@@ -213,7 +213,6 @@ runtime=r"""
     saveState?.();
     try{if(typeof renderReviewHubV237==='function'&&typeof reviewCurrentV237!=='undefined'&&reviewCurrentV237)renderReviewHubV237(reviewCurrentV237)}catch(_e){}
     if(typeof showSaveSuccessV264==='function')showSaveSuccessV264('Frecuencia de revisión actualizada');
-    else toast?.('Frecuencia de revisión actualizada');
   };
   window.coachPriorityStateV252=function(s){
     const r=reviewStateV281(s),adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout),critical=criticalV281(s),sf=pendingFeedbackV281(s),feed=pendingV281(s);
