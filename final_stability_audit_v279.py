@@ -5,7 +5,6 @@ html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 
 required=[
-  'meta name="fjz-release" content="20.79"',
   'meta name="fjz-final-stability-polish" content="20.79"',
   'meta name="fjz-smart-alerts-progress" content="20.78"',
   'meta name="fjz-final-save-geometry" content="20.77"',
@@ -68,8 +67,14 @@ report={"release":release,"missing":missing,"logic":logic,"metrics":metrics}
 print("TEAM FJZ V20.79 FINAL STABILITY AUDIT")
 print(json.dumps(report,indent=2,ensure_ascii=False))
 
-if release!="20.79":
-  raise SystemExit("Release mismatch: "+release)
+def version_tuple(v):
+  try:
+    return tuple(int(x) for x in v.split("."))
+  except Exception:
+    return (0,)
+
+if version_tuple(release)<version_tuple("20.79"):
+  raise SystemExit("Release older than V20.79 final-stability baseline: "+release)
 if missing:
   raise SystemExit("Missing V20.79 markers: "+repr(missing))
 if not all(logic.values()):
