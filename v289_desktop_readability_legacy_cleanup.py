@@ -129,6 +129,25 @@ window.setupRealtime=function(){
 
 html=edit_script(html,"v122FollowupPaymentsRuntime",patch_v122)
 
+# V13.2 unified realtime also subscribed to the postponed payment table.
+# Keep checkin_schedules live, remove only coach_payments from invalidation
+# and subscription lists.
+def patch_v132(body):
+    old="if(['checkin_schedules','coach_payments'].includes(table)){"
+    new="if(table==='checkin_schedules'){"
+    if body.count(old)!=1:
+        raise RuntimeError("V20.89 V132 payment invalidation mismatch")
+    body=body.replace(old,new,1)
+
+    old_list="'exercise_feedback','checkin_schedules','coach_payments','student_notices'"
+    new_list="'exercise_feedback','checkin_schedules','student_notices'"
+    if body.count(old_list)!=1:
+        raise RuntimeError("V20.89 V132 payment realtime table mismatch")
+    body=body.replace(old_list,new_list,1)
+    return body
+
+html=edit_script(html,"v132CoachAssistantRealtime",patch_v132)
+
 # ------------------------------------------------------------------
 # 2) V17.3: retain the useful legacy-summary cleanup, retire payment enhancer.
 # ------------------------------------------------------------------
