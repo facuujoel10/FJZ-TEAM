@@ -840,6 +840,9 @@ exec(compile(open("v282_calendar_route_hardening.py", encoding="utf-8").read(), 
 # V20.83 isolate legacy routes + harden mobile geometry/state recovery.
 exec(compile(open("v283_mobile_legacy_isolation.py", encoding="utf-8").read(), "v283_mobile_legacy_isolation.py", "exec"))
 
+# V20.84 final independent Coach calendar authority.
+exec(compile(open("v284_final_calendar_authority.py", encoding="utf-8").read(), "v284_final_calendar_authority.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
