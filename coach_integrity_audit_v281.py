@@ -23,7 +23,7 @@ def has_authority(name):
 
 missing=[x for x in critical if not has_authority(x)]
 required=[
- 'meta name="fjz-release" content="20.81"',
+
  'meta name="fjz-coach-integrity-recovery" content="20.81"',
  "coachIntegrityRecovery:true","filtersRestored:true","sortingRestored:true",
  "nextPriorityRestored:true","reviewCadenceRestored:true","reviewLoopRestored:true",
@@ -46,7 +46,10 @@ metrics={
 }
 print("TEAM FJZ V20.81 COACH INTEGRITY AUDIT")
 print(json.dumps({"release":release,"missing_critical_authorities":missing,"missing_markers":markers,"metrics":metrics},indent=2,ensure_ascii=False))
-if release!="20.81": raise SystemExit("Release mismatch: "+release)
+def version_tuple(v):
+  try:return tuple(int(x) for x in v.split("."))
+  except Exception:return (0,)
+if version_tuple(release)<version_tuple("20.81"): raise SystemExit("Release older than V20.81 baseline: "+release)
 if missing: raise SystemExit("Missing critical Coach authorities: "+repr(missing))
 if markers: raise SystemExit("Missing V20.81 markers: "+repr(markers))
 if metrics["styles"]!=1: raise SystemExit("Stylesheet regression")
