@@ -330,7 +330,10 @@ for key in ("channels","timeouts","listeners"):
     if after[key]>before[key]:
         raise RuntimeError("V20.89 runtime topology growth "+key+": "+repr({"before":before,"after":after}))
 if "coach_payments" in html:
-    raise RuntimeError("V20.89 retired coach_payments reference survived")
+    positions=[m.start() for m in re.finditer("coach_payments",html)]
+    for pos in positions[:12]:
+        print("V20.89 COACH_PAYMENTS CONTEXT:",html[max(0,pos-240):pos+320].replace("\n"," "))
+    raise RuntimeError("V20.89 retired coach_payments reference survived: "+str(len(positions)))
 
 required=[
     'meta name="fjz-legacy-runtime-cleanup" content="20.89"',
