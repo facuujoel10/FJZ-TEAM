@@ -76,6 +76,7 @@ runpy.run_path(str(ROOT / 'final_save_geometry_audit_v277.py'), run_name='__main
 runpy.run_path(str(ROOT / 'smart_alert_progress_audit_v278.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_stability_audit_v279.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'priority_calendar_audit_v280.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'coach_integrity_audit_v281.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_symbol_scan.py'), run_name='__main__')
 
 # Canonical authority / wrapper regression audit.
