@@ -2,44 +2,10 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
-
-required=[
-  'meta name="fjz-release" content="20.80"',
-  'meta name="fjz-priority-calendar-recovery" content="20.80"',
-  "priorityCalendarRecovery:true",
-  "restoredCalendarAuthorityAfterMusicRemoval:true",
-  "staleCalendarCallsRemoved:true",
-  "priorityPerStudentIsolation:true",
-  "calendarIndependentFromPriority:true",
-  "stagingCalendarFallbackSafe:true",
-  "explicitDashboardOperationalHydration:true",
-  "__fjzOperationalDashboardV280",
-  "shiftCoachCalendarV280",
-  "goTodayCoachCalendarV280",
-  "renderCoachPriorityCenterV252",
-  "productionNetworkBlocked:true",
-  "syntheticDataOnly:true",
-  "cloudDisabled:true",
-]
+required=['meta name="fjz-release" content="20.80"','meta name="fjz-priority-calendar-recovery" content="20.80"',"priorityCalendarRecovery:true","restoredPriorityAuthorityAfterMusicRemoval:true","restoredCalendarAuthorityAfterMusicRemoval:true","staleCalendarCallsRemoved:true","priorityPerStudentIsolation:true","calendarIndependentFromPriority:true","stagingCalendarFallbackSafe:true","explicitDashboardOperationalHydration:true","__fjzOperationalDashboardV280","shiftCoachCalendarV280","goTodayCoachCalendarV280","productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing=[x for x in required if x not in html]
-metrics={
-  "styles":len(re.findall(r"<style\b",html,re.I)),
-  "renders":len(re.findall(r"(?:window\.)?render\s*=",html)),
-  "channels":len(re.findall(r"\.channel\s*\(",html)),
-  "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
-  "intervals":len(re.findall(r"setInterval\s*\(",html)),
-  "rafs":len(re.findall(r"requestAnimationFrame\s*\(",html)),
-  "listeners":len(re.findall(r"addEventListener\s*\(",html)),
-  "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
-  "performance_observers":len(re.findall(r"new\s+PerformanceObserver",html)),
-}
-logic={
-  "calendar_authority_restored":"function render(){" in html and "CALENDARIO DEL COACH" in html,
-  "priority_isolated":"priority fallback" in html and "Seguimiento disponible" in html,
-  "stale_nested_call_removed":"renderCoachCalendarV259();\n  hydrateCoachCalendarV259();" not in html,
-  "post_render_hook":"window.__fjzOperationalDashboardV280?.();" in html,
-  "staging_safe":"typeof agendaRemindersV81!=='undefined'" in html,
-}
+metrics={"styles":len(re.findall(r"<style\b",html,re.I)),"renders":len(re.findall(r"(?:window\.)?render\s*=",html)),"channels":len(re.findall(r"\.channel\s*\(",html)),"timeouts":len(re.findall(r"setTimeout\s*\(",html)),"intervals":len(re.findall(r"setInterval\s*\(",html)),"rafs":len(re.findall(r"requestAnimationFrame\s*\(",html)),"listeners":len(re.findall(r"addEventListener\s*\(",html)),"mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),"performance_observers":len(re.findall(r"new\s+PerformanceObserver",html))}
+logic={"priority_authority":"function renderPriority(){" in html and "CENTRO DE PRIORIDADES" in html,"calendar_authority":"function renderCalendar(){" in html and "CALENDARIO DEL COACH" in html,"stale_nested_call_removed":"renderCoachCalendarV259();\n  hydrateCoachCalendarV259();" not in html,"post_render_hook":"window.__fjzOperationalDashboardV280?.();" in html,"staging_safe":"typeof agendaRemindersV81!=='undefined'" in html}
 print("TEAM FJZ V20.80 PRIORITY/CALENDAR AUDIT")
 print(json.dumps({"release":release,"missing":missing,"logic":logic,"metrics":metrics},indent=2,ensure_ascii=False))
 if release!="20.80": raise SystemExit("Release mismatch: "+release)
