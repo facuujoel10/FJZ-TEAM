@@ -32,7 +32,7 @@ for marker in [
     'id="v122FollowupPaymentsRuntime"',
     'id="v173SafeSummaryPaymentsRuntime"',
     'id="v277SaveGeometryRuntime"',
-    "paymentsDeferred:true",
+    'meta name="fjz-payments-deferred" content="20.85"',
     "duplicateAsyncSaveGuard:true",
 ]:
     if marker not in html:
