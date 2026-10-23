@@ -10,6 +10,7 @@ required=[
  "robustPrDetectionV291:true",
  "localizedWeightParsingV291:true",
  "normalizedExercisePrKeyV291:true",
+ "habitAssignmentDateAwareV291:true",
  "numericV291",
  "exerciseKeyV291",
  "sessionId:last.sessionId",
@@ -52,6 +53,8 @@ checks={
  "finish_title_readable":"font-size:20px!important" in html and ".modal-head h3" in html,
  "finish_mobile_buttons":"min-height:48px!important" in html and ".modal .pill-row>.btn" in html,
  "save_copy_readable":".v207-save-state .v207-save-copy" in html and "font-size:12.5px!important" in html,
+ "habit_denominator_date_aware":"habitEligibleOnV291" in html and "total+=eligible.length" in html,
+ "habit_streak_date_aware":"done.size===eligible.length" in html,
 }
 
 print("TEAM FJZ V20.91 NEW FEATURE HARDENING AUDIT")
