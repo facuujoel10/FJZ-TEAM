@@ -846,6 +846,9 @@ exec(compile(open("v284_final_calendar_authority.py", encoding="utf-8").read(), 
 # V20.85 final release-candidate hardening.
 exec(compile(open("v285_final_release_candidate.py", encoding="utf-8").read(), "v285_final_release_candidate.py", "exec"))
 
+# V20.86 desktop typography + single mobile athlete navigation + feedback symmetry.
+exec(compile(open("v286_typography_mobile_nav_feedback.py", encoding="utf-8").read(), "v286_typography_mobile_nav_feedback.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
