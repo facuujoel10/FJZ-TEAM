@@ -66,7 +66,7 @@ missing_onclick=sorted(x for x in called if x not in defined and x not in ignore
 
 required=[
  'meta name="fjz-final-release-candidate" content="20.85"',
- "paymentsDeferred:true","legacyPaymentRoutesRemoved:true",
+ 'meta name="fjz-payments-deferred" content="20.85"',
  "__fjzConfirmSavedV264","__fjzQuickSavedV264",
  "duplicateAsyncSaveGuard:true","buttonBusyState:true",
  "workoutFinishUsesConfirmedState:true","checkinUsesConfirmedState:true","nutritionSaveCloudConfirmed:true",
