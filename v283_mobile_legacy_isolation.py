@@ -134,6 +134,14 @@ html=edit_script(html,"v276CoachHudNutritionRuntime",patch_v276)
 # wrappers. This is intentionally narrow and only targets the retired tab.
 html=html.replace("['music','Música'],","")
 html=html.replace(",['music','Música']","")
+# Remove the surviving V20.25 dashboard Music action and any old
+# bottom-nav Music button variants. The feature is retired, so hiding alone
+# is not enough: no actionable legacy route should survive the final artifact.
+html=html.replace("""      <button class="btn" onclick="coachTab='music';render()">Música</button>
+""","")
+html=html.replace("""<button class="btn" onclick="coachTab='music';render()">Música</button>""","")
+html=html.replace("""<button class="'+(coachTab==='music'?'active':'')+'" onclick="coachTab=\\'music\\';render()">Música</button>""","")
+html=html.replace("""<button class="${coachTab==='music'?'active':''}" onclick="coachTab='music';render()">Música</button>""","")
 
 css=r"""
 /* =========================================================
