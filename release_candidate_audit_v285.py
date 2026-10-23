@@ -8,7 +8,10 @@ def vt(v):
     try:return tuple(int(x) for x in v.split("."))
     except Exception:return (0,)
 
-# Runtime / rendering inventory.
+def script_body(script_id):
+    m=re.search(r'<script[^>]*\bid=["\']'+re.escape(script_id)+r'["\'][^>]*>(.*?)</script>',html,re.S|re.I)
+    return m.group(1) if m else ""
+
 metrics={
  "bytes":len(html.encode("utf-8")),
  "scripts":len(re.findall(r"<script\b",html,re.I)),
@@ -23,28 +26,33 @@ metrics={
  "performance_observers":len(re.findall(r"new\s+PerformanceObserver",html)),
  "smooth_scroll":len(re.findall(r"behavior\s*:\s*['\"]smooth['\"]",html)),
  "transition_all":len(re.findall(r"transition\s*:\s*all\b",html,re.I)),
+ "scroll_into_view":len(re.findall(r"scrollIntoView\s*\(",html)),
 }
 
-# Static duplicate DOM ids are a frequent source of mobile/render bugs.
-ids=re.findall(r'\bid=["\']([^"\']+)["\']',html,re.I)
+# Only count IDs that exist in the static document markup. IDs inside JS
+# templates are expected to repeat across mutually exclusive renderers.
+markup=re.sub(r'<script\b.*?</script>','',html,flags=re.S|re.I)
+markup=re.sub(r'<style\b.*?</style>','',markup,flags=re.S|re.I)
+ids=re.findall(r'\bid=["\']([^"\']+)["\']',markup,re.I)
 id_counts=collections.Counter(ids)
-duplicate_ids={k:v for k,v in id_counts.items() if v>1}
+duplicate_static_ids={k:v for k,v in id_counts.items() if v>1}
 
-# Retired surfaces must not remain actionable.
+# Retired/deferred routes must not be actionable.
 retired={
  "music_buttons":len(re.findall(r'<button[^>]+(?:coachTab|studentTab)[^>]+music[^>]*>',html,re.I)),
  "music_tab_arrays":len(re.findall(r"\['music','Música'\]",html)),
- "payments_buttons":len(re.findall(r'<button[^>]+coachTab[^>]+payments[^>]*>',html,re.I)),
+ "payment_buttons":len(re.findall(r'<button[^>]+onclick="[^"]*coachTab\s*=\s*\\?[\'\"]payments\\?[\'\"][^"]*"[^>]*>',html,re.I)),
+ "payment_assignments":len(re.findall(r"coachTab\s*=\s*\\?(['\"])payments\\?\1",html)),
+ "payment_filter_items":len(re.findall(r"\['payment','Pagos'\]",html)),
 }
 
-# Save-success consistency. Pending/local-only messages are intentionally excluded.
+# Save-success consistency.
 toast_pat=re.compile(r"toast(?:\?\.)?\(\s*(['\"])(?P<msg>[^'\"]+)\1\s*\)")
 success_rx=re.compile(r"(guardad[oa]s?|finalizad[oa]s?|enviad[oa]s?|registrad[oa]s?|cread[oa]s?|actualizad[oa]s?|confirmad[oa]s?)",re.I)
 skip_rx=re.compile(r"(guardá el plan|guardado en curso|localmente|sincronización pendiente|pendiente|sin guardar|revisá|copiados? al plan)",re.I)
 success_toasts=[m.group("msg") for m in toast_pat.finditer(html) if success_rx.search(m.group("msg")) and not skip_rx.search(m.group("msg"))]
 
-# Inline onclick first-call symbol check. Ignore language/built-in/browser helpers
-# and member calls; only bare application symbols are treated as candidates.
+# Inline click symbol integrity.
 handlers=re.findall(r'\bonclick=["\']([^"\']+)["\']',html,re.I)
 called=set()
 for h in handlers:
@@ -56,8 +64,9 @@ defined.update(re.findall(r'(?<![.\w$])([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:
 ignore={"if","for","while","switch","return","confirm","alert","prompt","Number","String","Date","Math","parseInt","parseFloat","setTimeout","clearTimeout","requestAnimationFrame","console","open","close","focus","blur"}
 missing_onclick=sorted(x for x in called if x not in defined and x not in ignore)
 
-# Final authorities and UX invariants.
 required=[
+ 'meta name="fjz-final-release-candidate" content="20.85"',
+ "paymentsDeferred:true","legacyPaymentRoutesRemoved:true",
  "__fjzConfirmSavedV264","__fjzQuickSavedV264",
  "duplicateAsyncSaveGuard:true","buttonBusyState:true",
  "workoutFinishUsesConfirmedState:true","checkinUsesConfirmedState:true","nutritionSaveCloudConfirmed:true",
@@ -71,18 +80,37 @@ required=[
 ]
 missing_markers=[x for x in required if x not in html]
 
-# Save guards for deliberate async actions expected to be protected.
-guarded_expected=[
+# Verify all deliberate async save actions remain in the canonical V20.77
+# guard list. The runtime applies wrapSaveV277 through guarded.filter(...).
+v277=script_body("v277SaveGeometryRuntime")
+guard_match=re.search(r"const guarded=\[(.*?)\];",v277,re.S)
+guarded=set(re.findall(r"['\"]([^'\"]+)['\"]",guard_match.group(1))) if guard_match else set()
+guarded_expected={
  "saveNutritionPlan","submitMeasurement","saveCheckinFeedback",
  "saveStudentScheduleV81","saveReminderV81","saveRecipeV70",
  "saveNutritionTemplateV63","submitExerciseFeedbackV73","submitWeeklyCheckin"
-]
-guarded_missing=[x for x in guarded_expected if x not in html or ("wrapSaveV277('"+x+"')" not in html and 'wrapSaveV277("'+x+'")' not in html)]
+}
+guarded_missing=sorted(guarded_expected-guarded)
 
-# CSS / geometry danger inventory.
-geometry={
+logic={
+ "green_save_feedback":"__fjzConfirmSavedV264" in html and "greenCheckOnConfirmedSaves:true" in html,
+ "duplicate_save_lock":"const active=new Map();" in v277 and "guarded.filter(wrapSaveV277)" in v277,
+ "routine_confirmed":"workoutFinishUsesConfirmedState:true" in html,
+ "checkin_confirmed":"checkinUsesConfirmedState:true" in html,
+ "nutrition_confirmed":"nutritionSaveCloudConfirmed:true" in html,
+ "smart_alerts":"specificProgressAlerts:true" in html and "smartAlertDedupByEventKey:true" in html,
+ "professional_charts":'preserveAspectRatio="xMidYMid meet"' in html,
+ "calendar_final":"finalMonthlyCalendarAuthorityV284:true" in html and "calendarDelegatedToV284:true" in html,
+ "mobile_360":"@media(max-width:360px)" in html,
+ "mobile_430":"@media(max-width:430px)" in html,
+ "mobile_inputs":'input[type="date"]' in html and 'input[type="time"]' in html,
+ "no_horizontal_root":"body,#view,#coachStudentBody,#studentSubBody" in html and "overflow-x:clip" in html,
+ "stale_routes_guarded":"const allowedCoach=new Set(['dashboard','agenda','student'])" in html and "const allowed=new Set(['home','agenda','tracking','nutrition','progress','history','workout','training'])" in html,
+}
+
+geometry_inventory={
  "raw_100vw":len(re.findall(r'(?<!d)100vw',html)),
- "raw_min_width_px":len(re.findall(r'min-width\s*:\s*(?:[4-9]\d\d|\d{4,})px',html,re.I)),
+ "large_min_width_px":len(re.findall(r'min-width\s*:\s*(?:[4-9]\d\d|\d{4,})px',html,re.I)),
  "position_fixed":len(re.findall(r'position\s*:\s*fixed',html,re.I)),
  "overflow_x_auto":len(re.findall(r'overflow-x\s*:\s*auto',html,re.I)),
 }
@@ -90,24 +118,26 @@ geometry={
 report={
  "release":release,
  "metrics":metrics,
- "duplicate_ids":duplicate_ids,
+ "duplicate_static_ids":duplicate_static_ids,
  "retired":retired,
  "success_toasts":success_toasts,
  "missing_onclick_symbols":missing_onclick,
  "missing_markers":missing_markers,
  "guarded_missing":guarded_missing,
- "geometry_inventory":geometry,
+ "logic":logic,
+ "geometry_inventory":geometry_inventory,
 }
 print("TEAM FJZ V20.85 RELEASE CANDIDATE AUDIT")
 print(json.dumps(report,indent=2,ensure_ascii=False))
 
-if vt(release)<vt("20.84"): raise SystemExit("Release older than V20.84 baseline: "+release)
-if duplicate_ids: raise SystemExit("Duplicate static DOM ids: "+repr(duplicate_ids))
-if retired["music_buttons"] or retired["music_tab_arrays"]: raise SystemExit("Retired Music action survived: "+repr(retired))
+if vt(release)<vt("20.85"): raise SystemExit("Release older than V20.85: "+release)
+if duplicate_static_ids: raise SystemExit("Duplicate static DOM ids: "+repr(duplicate_static_ids))
+if any(retired.values()): raise SystemExit("Retired/deferred actionable route survived: "+repr(retired))
 if success_toasts: raise SystemExit("Unstandardized success toasts: "+repr(success_toasts))
 if missing_onclick: raise SystemExit("Inline handlers reference undefined symbols: "+repr(missing_onclick))
 if missing_markers: raise SystemExit("Missing final authority markers: "+repr(missing_markers))
 if guarded_missing: raise SystemExit("Missing async save guards: "+repr(guarded_missing))
+if not all(logic.values()): raise SystemExit("Release candidate logic failure: "+repr(logic))
 if metrics["styles"]!=1: raise SystemExit("Stylesheet regression")
 if metrics["renders"]>18: raise SystemExit("Render assignment regression")
 if metrics["intervals"]!=0: raise SystemExit("Interval regression")
