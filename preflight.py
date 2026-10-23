@@ -85,6 +85,7 @@ runpy.run_path(str(ROOT / 'typography_mobile_nav_feedback_audit_v286.py'), run_n
 runpy.run_path(str(ROOT / 'session_exercise_comment_audit_v287.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'desktop_readability_audit_v288.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'legacy_runtime_save_audit_v289.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'final_product_audit_v290.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_symbol_scan.py'), run_name='__main__')
 
 # Canonical authority / wrapper regression audit.
