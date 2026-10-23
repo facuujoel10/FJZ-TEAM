@@ -274,14 +274,26 @@ def patch_v175(body):
     const count=sessions.length;
     [10,25,50,100].forEach(n=>{if(count>=n)out.push({tone:'milestone',title:n+' entrenamientos registrados',meta:'Hito de constancia'})});
     const by=new Map();
-    sessions.forEach(ss=>(ss?.exerciseResults||[]).forEach(r=>{
-      const name=String(r?.name||'').trim();if(!name)return;
-      const st=setStatsV290(r);if(!st)return;
-      const key=exerciseKeyV291(name);if(!key)return;
-      if(!by.has(key))by.set(key,{name,items:[]});
-      const bucket=by.get(key);bucket.name=name;
-      bucket.items.push({date:ss.date,sessionId:ss.id||'',...st});
-    }));
+    sessions.forEach(ss=>{
+      const perSession=new Map();
+      (ss?.exerciseResults||[]).forEach(r=>{
+        const name=String(r?.name||'').trim();if(!name)return;
+        const st=setStatsV290(r);if(!st)return;
+        const key=exerciseKeyV291(name);if(!key)return;
+        const prev=perSession.get(key);
+        perSession.set(key,{
+          name,
+          bestLoad:Math.max(Number(prev?.bestLoad)||0,Number(st.bestLoad)||0)||null,
+          bestReps:Math.max(Number(prev?.bestReps)||0,Number(st.bestReps)||0),
+          volume:(Number(prev?.volume)||0)+(Number(st.volume)||0)
+        });
+      });
+      perSession.forEach((st,key)=>{
+        if(!by.has(key))by.set(key,{name:st.name,items:[]});
+        const bucket=by.get(key);bucket.name=st.name;
+        bucket.items.push({date:ss.date,sessionId:ss.id||'',bestLoad:st.bestLoad,bestReps:st.bestReps,volume:st.volume});
+      });
+    });
     by.forEach((bucket)=>{
       const name=bucket.name,items=bucket.items;
       if(items.length<2)return;
@@ -356,7 +368,8 @@ def patch_v175(body):
   }
 
   function prKeyV291(x){
-    return ['fjz-pr-v291',String(student()?.id||''),String(x?.sessionId||x?.date||''),exerciseKeyV291(x?.exercise||x?.title||''),String(x?.kind||''),String(x?.value||'')].join('|');
+    const raw=['fjz-pr-v291',String(student()?.id||''),String(x?.sessionId||x?.date||''),exerciseKeyV291(x?.exercise||x?.title||''),String(x?.kind||''),String(x?.value||'')].join('|');
+    return encodeURIComponent(raw);
   }
   function latestUnseenPrV291(s){
     const rows=achievementsV290(s).filter(x=>x.tone==='pr');
@@ -484,7 +497,7 @@ def patch_v175(body):
     marker="window.__fjzV175={"
     if marker not in body:
         raise RuntimeError("V20.90 V175 marker object missing")
-    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,localizedWeightParsingV291:true,normalizedExercisePrKeyV291:true,habitAssignmentDateAwareV291:true,",1)
+    body=body.replace(marker,"window.__fjzV175={finalProductLayerV290:true,todayDashboardV290:true,habitStreaksV290:true,prAchievementsV290:true,engagementRiskV290:true,checkinAssistantV290:true,prBannerV291:true,robustPrDetectionV291:true,localizedWeightParsingV291:true,normalizedExercisePrKeyV291:true,habitAssignmentDateAwareV291:true,prSessionDedupV291:true,prSafeStorageKeyV291:true,",1)
     return body
 
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
