@@ -852,6 +852,9 @@ exec(compile(open("v286_typography_mobile_nav_feedback.py", encoding="utf-8").re
 # V20.87 show exercise comments inside session review + persist snapshot.
 exec(compile(open("v287_session_exercise_comments.py", encoding="utf-8").read(), "v287_session_exercise_comments.py", "exec"))
 
+# V20.88 improve Coach desktop typography/readability.
+exec(compile(open("v288_desktop_coach_readability.py", encoding="utf-8").read(), "v288_desktop_coach_readability.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
