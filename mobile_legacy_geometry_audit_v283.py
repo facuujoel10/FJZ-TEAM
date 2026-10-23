@@ -37,7 +37,7 @@ logic={
  "mobile_inputs_hardened":'input[type="date"]' in html and 'input[type="time"]' in html,
  "modal_viewport_hardened":"100dvw" in html and "100dvh" in html,
  "tabs_local_scroll":"overscroll-behavior-x:contain" in html,
- "legacy_mobile_buttons_hidden":"coachTab='payments'" in html and "Tab='music'" in html,
+ "legacy_mobile_buttons_hidden":("coachTab='payments'" in html or "legacyPaymentRoutesRemoved:true" in html) and "Tab='music'" in html,
 }
 
 metrics={
