@@ -23,15 +23,18 @@ for marker in [
     'meta name="fjz-coach-priority-center" content="20.52"',
     'meta name="fjz-coach-action-calendar" content="20.59"',
     "renderCoachPriorityCenterV252",
-    "renderCoachCalendarV259",
-    "hydrateCoachCalendarV259",
     "coachPriorityRowsV252",
-    "reviewEventV259",
+    'id="v175ProfileAgendaCoachCenterRuntime"',
 ]:
     if marker not in html:
         raise RuntimeError("V20.80 prerequisite missing "+marker)
 
-# 1) A malformed student must never break the entire priority center.
+# The V20.59 priority renderer still calls calendar helpers that were later
+# removed by V20.68's broad music-block cleanup. Remove those stale calls.
+html=html.replace("  renderCoachCalendarV259();\n  hydrateCoachCalendarV259();\n}","}",1)
+html=html.replace("  renderCoachCalendarV259();\n}","}",1)
+
+# Isolate malformed student data so one athlete cannot block all priorities.
 start=html.find("function coachPriorityRowsV252(bucket){")
 end=html.find("\nfunction priorityPersonV252",start)
 if start<0 or end<0:
@@ -41,7 +44,7 @@ priority_rows=r"""function coachPriorityRowsV252(bucket){
     .map(s=>{
       try{return {s,...coachPriorityStateV252(s)}}
       catch(e){
-        console.warn('TEAM FJZ V20.80 priority row fallback',s?.id,e);
+        console.warn('TEAM FJZ V20.80 priority fallback',s?.id,e);
         return {s,bucket:'watch',score:0,label:'Seguimiento disponible'};
       }
     })
@@ -51,70 +54,7 @@ priority_rows=r"""function coachPriorityRowsV252(bucket){
 """
 html=html[:start]+priority_rows+html[end:]
 
-# 2) Calendar review events use a safe cadence fallback.
-start=html.find("function reviewEventV259(s){")
-end=html.find("\nfunction reminderEventsForMonthV259",start)
-if start<0 or end<0:
-    raise RuntimeError("V20.80 review event bounds missing")
-review_fn=r"""function reviewEventV259(s){
-  let days=14;
-  try{
-    const raw=Number(coachReviewCadenceDaysV240(s));
-    if(Number.isFinite(raw)&&raw>0)days=raw;
-  }catch(e){
-    console.warn('TEAM FJZ V20.80 review cadence fallback',s?.id,e);
-  }
-  const reviewed=s?.coachReviewV237?.reviewedAt||null;
-  const today=startOfDayV259(new Date());
-  let due=today;
-  if(reviewed){
-    const base=new Date(reviewed);
-    if(!Number.isNaN(base.getTime()))due=startOfDayV259(addDaysV259(base,days));
-  }
-  return {
-    date:dateKeyV259(due),
-    rawDate:due,
-    student:s,
-    kind:'review',
-    title:reviewed?'Chequeo / revisión':'Primer chequeo',
-    time:'',
-    overdue:due<today,
-    tab:'summary'
-  };
-}
-"""
-html=html[:start]+review_fn+html[end:]
-
-# 3) Staging/local calendar data fallback must never throw.
-old_local="""  if(!cloudEnabled||!supabaseClient||window.__fjzStagingLocal?.enabled){
-    coachCalendarRemindersV259=Array.isArray(agendaRemindersV81)?agendaRemindersV81.slice():[];
-    coachCalendarCheckinsV259=[];
-    renderCoachCalendarV259();
-    return {reminders:coachCalendarRemindersV259,checkins:coachCalendarCheckinsV259};
-  }"""
-new_local="""  if(!cloudEnabled||!supabaseClient||window.__fjzStagingLocal?.enabled){
-    const localReminders=(typeof agendaRemindersV81!=='undefined'&&Array.isArray(agendaRemindersV81))
-      ?agendaRemindersV81.slice():[];
-    coachCalendarRemindersV259=localReminders;
-    coachCalendarCheckinsV259=[];
-    coachCalendarLoadedAtV259=Date.now();
-    try{renderCoachCalendarV259()}catch(e){console.warn('TEAM FJZ V20.80 local calendar render',e)}
-    return {reminders:coachCalendarRemindersV259,checkins:coachCalendarCheckinsV259};
-  }"""
-if old_local not in html:
-    raise RuntimeError("V20.80 staging calendar fallback anchor missing")
-html=html.replace(old_local,new_local,1)
-
-# 4) Remove calendar hydration from inside the priority renderer. They become
-# independent authorities so one can never block the other.
-nested="""  renderCoachCalendarV259();
-  hydrateCoachCalendarV259();
-}"""
-if nested not in html:
-    raise RuntimeError("V20.80 nested calendar anchor missing")
-html=html.replace(nested,"}",1)
-
-# 5) Reuse the canonical V17.5 post-render hook to hydrate both surfaces.
+# Reuse canonical post-render authority; no new observer/listener/timer.
 pat=re.compile(r'(<script[^>]*\bid=["\']v175ProfileAgendaCoachCenterRuntime["\'][^>]*>)(.*?)(</script>)',re.S|re.I)
 m=pat.search(html)
 if not m:
@@ -127,21 +67,139 @@ body=body.replace(anchor,anchor+"\n    window.__fjzOperationalDashboardV280?.();
 html=html[:m.start(2)]+body+html[m.end(2):]
 
 css=r"""
-/* TEAM FJZ · V20.80 PRIORITY/CALENDAR RECOVERY */
-.v280-operational-error{
-  padding:12px;
-  border:1px solid rgba(242,189,85,.22);
-  border-radius:10px;
-  background:rgba(242,189,85,.04);
-  color:#aeb4bd;
-  font-size:9px;
-  line-height:1.45;
+/* =========================================================
+   TEAM FJZ · V20.80 PRIORITY + CALENDAR RECOVERY
+   ========================================================= */
+.v280-calendar-card{
+  margin:0 0 14px;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  border-color:#30343c;
+  background:linear-gradient(145deg,rgba(103,173,255,.035),transparent 46%),var(--card);
 }
-.v280-operational-error strong{
-  display:block;
-  margin-bottom:4px;
-  color:#f1c86f;
-  font-size:10px;
+.v280-calendar-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:10px;
+}
+.v280-calendar-head h3{margin:4px 0 0;font-size:16px;color:#f5f6f8}
+.v280-calendar-head p{margin:5px 0 0;color:#959aa4;font-size:9px;line-height:1.45}
+.v280-calendar-nav{display:flex;align-items:center;gap:6px}
+.v280-calendar-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-bottom:9px;
+}
+.v280-calendar-stats>div{
+  min-width:0;
+  padding:9px 10px;
+  border:1px solid #2b2f37;
+  border-radius:10px;
+  background:#0d0e12;
+}
+.v280-calendar-stats strong{display:block;color:#f5f6f8;font-size:17px}
+.v280-calendar-stats span{display:block;margin-top:3px;color:#858c96;font-size:7px}
+.v280-calendar-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(190px,.65fr);
+  gap:9px;
+  min-width:0;
+}
+.v280-month,.v280-upcoming{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #2c3038;
+  border-radius:11px;
+  background:#0d0e12;
+}
+.v280-weekdays,.v280-days{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+}
+.v280-weekdays{
+  border-bottom:1px solid #252931;
+  background:#101218;
+}
+.v280-weekdays span{
+  padding:7px 3px;
+  color:#7f8791;
+  font-size:6.5px;
+  font-weight:900;
+  text-align:center;
+}
+.v280-day{
+  min-width:0;
+  min-height:67px;
+  padding:6px;
+  border-right:1px solid #23262d;
+  border-bottom:1px solid #23262d;
+}
+.v280-day:nth-child(7n){border-right:0}
+.v280-day.muted{opacity:.22}
+.v280-day.today{box-shadow:inset 0 0 0 1px rgba(103,173,255,.55)}
+.v280-day-num{color:#858c96;font-size:7px;font-weight:900}
+.v280-events{display:grid;gap:3px;margin-top:5px}
+.v280-event{
+  appearance:none;
+  width:100%;
+  min-width:0;
+  padding:4px 5px;
+  border:0;
+  border-left:2px solid #67adff;
+  border-radius:5px;
+  background:#13161c;
+  color:#dfe3e8;
+  font-size:6.5px;
+  text-align:left;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.v280-event.overdue{border-left-color:#ff5262}
+.v280-event.reminder{border-left-color:#f2bd55}
+.v280-upcoming-head{
+  display:flex;justify-content:space-between;gap:8px;
+  padding:9px 10px;border-bottom:1px solid #252931
+}
+.v280-upcoming-head strong{font-size:9px;color:#eef0f3}
+.v280-upcoming-head span{font-size:7px;color:#818893}
+.v280-upcoming-list{display:grid}
+.v280-upcoming-row{
+  appearance:none;
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr) auto;
+  gap:7px;
+  align-items:center;
+  padding:8px 9px;
+  border:0;
+  border-bottom:1px solid #23262d;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+}
+.v280-upcoming-row:last-child{border-bottom:0}
+.v280-upcoming-row>span:first-child{font-size:6.5px;color:#8d949e}
+.v280-upcoming-row strong{display:block;font-size:8px;color:#eceef1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v280-upcoming-row small{display:block;margin-top:2px;font-size:6.5px;color:#818893;overflow-wrap:anywhere}
+.v280-empty{padding:14px;color:#747b86;font-size:8px;text-align:center}
+@media(max-width:760px){
+  .v280-calendar-layout{grid-template-columns:1fr}
+}
+@media(max-width:430px){
+  .v280-calendar-head{display:grid}
+  .v280-calendar-nav{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+  .v280-calendar-nav .btn{min-width:0}
+  .v280-calendar-stats{grid-template-columns:1fr 1fr}
+  .v280-calendar-stats>div:last-child{grid-column:1/-1}
+  .v280-day{min-height:55px;padding:4px}
+  .v280-weekdays span{font-size:6px;padding:6px 1px}
+  .v280-event{font-size:6px;padding:3px}
 }
 """
 
@@ -154,69 +212,180 @@ html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end
 runtime=r"""
 <script id="v280OperationalRecoveryRuntime">
 (function(){
-  let operationalHydrateV280=false;
+  let monthV280=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+  let remindersV280=[];
+  let checkinsV280=[];
+  let loadedAtV280=0;
+  let inflightV280=null;
+  let hydratingV280=false;
 
-  function priorityFallbackV280(e){
-    const host=el('v252PriorityCenter');
-    if(!host)return;
+  const DAY=86400000;
+  const pad=n=>String(n).padStart(2,'0');
+  const key=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const startDay=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+Number(n||0));return x};
+  const parse=v=>{
+    const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(!m)return null;
+    const d=new Date(+m[1],+m[2]-1,+m[3]);
+    return Number.isNaN(d.getTime())?null:d;
+  };
+  const monthTitle=d=>{
+    const s=new Intl.DateTimeFormat('es-AR',{month:'long',year:'numeric'}).format(d);
+    return s.charAt(0).toUpperCase()+s.slice(1);
+  };
+  const students=()=>Array.isArray(state?.students)?state.students:[];
+
+  function cadenceDays(s){
+    try{
+      if(typeof coachReviewCadenceDaysV240==='function'){
+        const n=Number(coachReviewCadenceDaysV240(s));
+        if(Number.isFinite(n)&&n>0)return n;
+      }
+    }catch(_e){}
+    return 14;
+  }
+  function reviewEvent(s){
+    const today=startDay(new Date());
+    const reviewed=s?.coachReviewV237?.reviewedAt||null;
+    let due=today;
+    if(reviewed){
+      const d=new Date(reviewed);
+      if(!Number.isNaN(d.getTime()))due=startDay(addDays(d,cadenceDays(s)));
+    }
+    return {date:key(due),raw:due,student:s,kind:'review',title:reviewed?'Chequeo / revisión':'Primer chequeo',overdue:due<today,tab:'summary'};
+  }
+  function studentByAthlete(aid){
+    try{
+      for(const s of students()){
+        const a=cloudAthletes?.get?.(s.id);
+        if(a&&String(a.id)===String(aid))return s;
+      }
+    }catch(_e){}
+    return null;
+  }
+  function remoteEvents(month){
+    const y=month.getFullYear(),m=month.getMonth(),out=[];
+    remindersV280.forEach(r=>{
+      if(r?.active===false)return;
+      const s=studentByAthlete(r?.athlete_id);if(!s)return;
+      const push=d=>out.push({date:key(d),raw:startDay(d),student:s,kind:'reminder',title:String(r?.title||'Recordatorio'),overdue:false,tab:'agenda'});
+      if(r?.schedule_type==='weekly'){
+        const wd=Number(r.weekday);if(!Number.isInteger(wd))return;
+        const last=new Date(y,m+1,0).getDate();
+        for(let day=1;day<=last;day++){const d=new Date(y,m,day);if(d.getDay()===wd)push(d)}
+      }else{
+        const d=parse(r?.reminder_date);
+        if(d&&d.getFullYear()===y&&d.getMonth()===m)push(d);
+      }
+    });
+    checkinsV280.forEach(r=>{
+      if(r?.active===false)return;
+      const s=studentByAthlete(r?.athlete_id),d=parse(r?.next_due);
+      if(!s||!d||d.getFullYear()!==y||d.getMonth()!==m)return;
+      out.push({date:key(d),raw:startDay(d),student:s,kind:'checkin',title:'Check-in programado',overdue:startDay(d)<startDay(new Date()),tab:'tracking'});
+    });
+    return out;
+  }
+  function events(month=monthV280){
+    return [...students().map(reviewEvent),...remoteEvents(month)];
+  }
+  function ensureHost(){
+    let host=el('v259CoachCalendar');
+    if(host)return host;
+    const priority=el('v252PriorityCenter');
+    if(!priority?.parentNode)return null;
+    host=document.createElement('section');
+    host.id='v259CoachCalendar';
+    host.className='card v280-calendar-card';
+    priority.insertAdjacentElement('afterend',host);
+    return host;
+  }
+  function openEvent(e){
+    if(typeof openCoachStudentTabV235==='function')openCoachStudentTabV235(e.student.id,e.tab||'summary');
+  }
+  function render(){
+    const host=ensureHost();if(!host)return;
+    host.classList.add('v280-calendar-card');
+    const y=monthV280.getFullYear(),m=monthV280.getMonth();
+    const first=new Date(y,m,1),last=new Date(y,m+1,0).getDate();
+    const offset=(first.getDay()+6)%7;
+    const rows=events(monthV280),todayKey=key(new Date());
+    const cells=[];
+    for(let i=0;i<offset;i++)cells.push('<div class="v280-day muted"></div>');
+    for(let day=1;day<=last;day++){
+      const d=new Date(y,m,day),k=key(d),es=rows.filter(x=>x.date===k).slice(0,3);
+      cells.push('<div class="v280-day '+(k===todayKey?'today':'')+'"><div class="v280-day-num">'+day+'</div><div class="v280-events">'+
+        es.map((e,idx)=>'<button class="v280-event '+(e.overdue?'overdue ':e.kind==='reminder'?'reminder ':'')+'" onclick="window.__fjzOpenCalendarEventV280(\''+esc(e.student.id)+'\',\''+esc(e.tab||'summary')+'\')">'+esc((e.student.name||'Alumno').split(' ')[0])+'</button>').join('')+
+        '</div></div>');
+    }
+    const today=startDay(new Date()),limit=addDays(today,14);
+    const allCurrent=[...students().map(reviewEvent),...remoteEvents(new Date(today.getFullYear(),today.getMonth(),1)),...remoteEvents(new Date(today.getFullYear(),today.getMonth()+1,1))];
+    const upcoming=allCurrent.filter(e=>e.kind==='review'?e.raw<=limit:(e.raw>=today&&e.raw<=limit)).sort((a,b)=>(a.overdue===b.overdue?0:a.overdue?-1:1)||a.raw-b.raw).slice(0,8);
+    const overdue=students().map(reviewEvent).filter(e=>e.overdue).length;
+    const week=students().map(reviewEvent).filter(e=>!e.overdue&&e.raw>=today&&e.raw<=addDays(today,7)).length;
     host.innerHTML=
-      '<div class="v280-operational-error"><strong>Prioridades disponibles con datos parciales</strong>'+
-      'No se pudo calcular una señal puntual. El resto del panel sigue operativo.</div>';
-    console.warn('TEAM FJZ V20.80 priority recovery',e);
+      '<div class="v280-calendar-head"><div><div class="v225-section-kicker">CALENDARIO DEL COACH</div><h3>Chequeos y seguimiento</h3><p>Revisiones, check-ins y recordatorios en una sola vista.</p></div>'+
+      '<div class="v280-calendar-nav"><button class="btn small" onclick="shiftCoachCalendarV280(-1)">‹</button><button class="btn small" onclick="goTodayCoachCalendarV280()">'+esc(monthTitle(monthV280))+'</button><button class="btn small" onclick="shiftCoachCalendarV280(1)">›</button></div></div>'+
+      '<div class="v280-calendar-stats"><div><strong>'+overdue+'</strong><span>Vencidos</span></div><div><strong>'+week+'</strong><span>Próx. 7 días</span></div><div><strong>'+students().length+'</strong><span>Alumnos con seguimiento</span></div></div>'+
+      '<div class="v280-calendar-layout"><div class="v280-month"><div class="v280-weekdays">'+['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="v280-days">'+cells.join('')+'</div></div>'+
+      '<aside class="v280-upcoming"><div class="v280-upcoming-head"><strong>Próximo</strong><span>14 días</span></div><div class="v280-upcoming-list">'+
+      (upcoming.length?upcoming.map(e=>'<button class="v280-upcoming-row" onclick="window.__fjzOpenCalendarEventV280(\''+esc(e.student.id)+'\',\''+esc(e.tab||'summary')+'\')"><span>'+(e.overdue?'Vencido':new Intl.DateTimeFormat('es-AR',{day:'2-digit',month:'short'}).format(e.raw))+'</span><span><strong>'+esc(e.student.name||'Alumno')+'</strong><small>'+esc(e.title)+'</small></span><span>›</span></button>').join(''):'<div class="v280-empty">Sin chequeos próximos.</div>')+
+      '</div></aside></div>';
   }
 
-  function calendarFallbackV280(e){
-    const host=el('v259CoachCalendar');
-    if(!host)return;
-    host.innerHTML=
-      '<div class="v280-operational-error"><strong>Calendario disponible sin sincronización remota</strong>'+
-      'Mostrando el panel local de staging. La nube de producción continúa bloqueada.</div>';
-    console.warn('TEAM FJZ V20.80 calendar recovery',e);
+  async function load(force=false){
+    if(!cloudEnabled||!supabaseClient||window.__fjzStagingLocal?.enabled){
+      remindersV280=(typeof agendaRemindersV81!=='undefined'&&Array.isArray(agendaRemindersV81))?agendaRemindersV81.slice():[];
+      checkinsV280=[];
+      loadedAtV280=Date.now();
+      render();
+      return;
+    }
+    if(!force&&loadedAtV280&&Date.now()-loadedAtV280<30000){render();return}
+    if(inflightV280)return inflightV280;
+    inflightV280=(async()=>{
+      const [rr,cr]=await Promise.all([
+        supabaseClient.from('athlete_reminders').select('athlete_id,title,schedule_type,reminder_date,weekday,active').eq('coach_id',currentUser.id).eq('active',true),
+        supabaseClient.from('checkin_schedules').select('athlete_id,next_due,active').eq('coach_id',currentUser.id).eq('active',true)
+      ]);
+      if(!rr.error)remindersV280=rr.data||[];
+      if(!cr.error)checkinsV280=cr.data||[];
+      loadedAtV280=Date.now();
+      render();
+    })().catch(e=>{console.warn('TEAM FJZ V20.80 calendar load',e);render()}).finally(()=>{inflightV280=null});
+    return inflightV280;
   }
+
+  window.__fjzOpenCalendarEventV280=function(id,tab){if(typeof openCoachStudentTabV235==='function')openCoachStudentTabV235(id,tab||'summary')};
+  window.shiftCoachCalendarV280=function(delta){monthV280=new Date(monthV280.getFullYear(),monthV280.getMonth()+Number(delta||0),1);render()};
+  window.goTodayCoachCalendarV280=function(){const d=new Date();monthV280=new Date(d.getFullYear(),d.getMonth(),1);render()};
 
   window.__fjzOperationalDashboardV280=function(){
-    if(operationalHydrateV280)return;
-    if(!(mode==='coach'&&coachTab==='dashboard'))return;
-    const pHost=el('v252PriorityCenter');
-    const cHost=el('v259CoachCalendar');
-    if(!pHost&&!cHost)return;
-
-    operationalHydrateV280=true;
+    if(hydratingV280||!(mode==='coach'&&coachTab==='dashboard'))return;
+    hydratingV280=true;
     try{
-      if(pHost){
-        try{renderCoachPriorityCenterV252()}catch(e){priorityFallbackV280(e)}
-      }
-      if(cHost){
-        try{
-          renderCoachCalendarV259();
-          const out=hydrateCoachCalendarV259();
-          if(out&&typeof out.catch==='function')out.catch(calendarFallbackV280);
-        }catch(e){calendarFallbackV280(e)}
-      }
-    }finally{
-      operationalHydrateV280=false;
-    }
+      try{renderCoachPriorityCenterV252()}catch(e){console.warn('TEAM FJZ V20.80 priorities',e);const h=el('v252PriorityCenter');if(h)h.innerHTML='<div class="empty">No se pudieron calcular todas las prioridades. El resto del panel sigue disponible.</div>'}
+      render();
+      load(false);
+    }finally{hydratingV280=false}
   };
 
   window.refreshCoachOperationalV280=function(){
-    if(!(mode==='coach'&&coachTab==='dashboard'))return;
-    try{renderCoachPriorityCenterV252()}catch(e){priorityFallbackV280(e)}
-    try{
-      coachCalendarLoadedAtV259=0;
-      return Promise.resolve(loadCoachCalendarV259(true)).catch(calendarFallbackV280);
-    }catch(e){
-      calendarFallbackV280(e);
-    }
+    try{renderCoachPriorityCenterV252()}catch(e){console.warn('TEAM FJZ V20.80 priorities refresh',e)}
+    loadedAtV280=0;
+    return load(true);
   };
 
   window.__fjzV280={
     version:'20.80',
     priorityCalendarRecovery:true,
+    restoredCalendarAuthorityAfterMusicRemoval:true,
+    staleCalendarCallsRemoved:true,
     priorityPerStudentIsolation:true,
     calendarIndependentFromPriority:true,
     stagingCalendarFallbackSafe:true,
     explicitDashboardOperationalHydration:true,
-    reviewCadenceFallback:true,
     productionUntouched:true,
     noExtraTimers:true,
     noExtraListeners:true,
@@ -237,13 +406,15 @@ for key in ("styles","renders","channels","timeouts","intervals","rafs","listene
 for marker in [
     'meta name="fjz-priority-calendar-recovery" content="20.80"',
     "priorityCalendarRecovery:true",
+    "restoredCalendarAuthorityAfterMusicRemoval:true",
+    "staleCalendarCallsRemoved:true",
     "priorityPerStudentIsolation:true",
     "calendarIndependentFromPriority:true",
     "stagingCalendarFallbackSafe:true",
     "explicitDashboardOperationalHydration:true",
-    "reviewCadenceFallback:true",
     "__fjzOperationalDashboardV280",
-    "typeof agendaRemindersV81!=='undefined'",
+    "shiftCoachCalendarV280",
+    "goTodayCoachCalendarV280",
 ]:
     if marker not in html:
         raise RuntimeError("V20.80 missing marker "+marker)
@@ -252,4 +423,4 @@ p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V20.80 priority/calendar recovery")
 print("V20.80 BEFORE:",before)
 print("V20.80 AFTER:",after)
-print("V20.80 priorities and calendar decoupled + staging fallback hardened")
+print("V20.80 restored calendar authority after V20.68 removal; priorities decoupled")
