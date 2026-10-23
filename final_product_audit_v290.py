@@ -32,14 +32,14 @@ forbidden=[
 survived=[x for x in forbidden if x in html]
 
 metrics={
- "styles":len(re.findall(r"<style\\b",html,re.I)),
- "renders":len(re.findall(r"(?:window\\.)?render\\s*=",html)),
- "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
- "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
- "intervals":len(re.findall(r"setInterval\\s*\\(",html)),
- "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
- "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
- "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",html)),
+ "styles":len(re.findall(r"<style\b",html,re.I)),
+ "renders":len(re.findall(r"(?:window\.)?render\s*=",html)),
+ "channels":len(re.findall(r"\.channel\s*\(",html)),
+ "timeouts":len(re.findall(r"setTimeout\s*\(",html)),
+ "intervals":len(re.findall(r"setInterval\s*\(",html)),
+ "listeners":len(re.findall(r"addEventListener\s*\(",html)),
+ "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
+ "performance_observers":len(re.findall(r"new\s+PerformanceObserver",html)),
 }
 
 print("TEAM FJZ V20.90 FINAL PRODUCT AUDIT")
