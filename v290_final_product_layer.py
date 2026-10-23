@@ -30,7 +30,6 @@ for marker in [
     'meta name="fjz-legacy-runtime-cleanup" content="20.89"',
     "function postRenderV175(){",
     "trackingCache",
-    "nutrition_habit_logs",
     "specificProgressAlerts:true",
 ]:
     if marker not in html:
