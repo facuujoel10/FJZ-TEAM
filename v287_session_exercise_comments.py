@@ -82,10 +82,12 @@ def patch_v207(body):
 
     old="""    const session=window.__fjzSaveSessionV205?.(pack);
     if(!session)throw new Error('No se pudo preparar la sesión.');
+
     attachMethodHistoryV207(pack,session);
 """
     new="""    const session=window.__fjzSaveSessionV205?.(pack);
     if(!session)throw new Error('No se pudo preparar la sesión.');
+
     sessionExerciseFeedbackSnapshotV287(pack,session);
     attachMethodHistoryV207(pack,session);
 """
