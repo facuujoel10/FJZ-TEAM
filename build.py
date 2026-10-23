@@ -828,6 +828,9 @@ exec(compile(open("v278_smart_alerts_progress.py", encoding="utf-8").read(), "v2
 # V20.79 final save/render/lag/mobile stability polish.
 exec(compile(open("v279_final_stability_polish.py", encoding="utf-8").read(), "v279_final_stability_polish.py", "exec"))
 
+# V20.80 recover Coach priorities/calendar in staging.
+exec(compile(open("v280_priority_calendar_recovery.py", encoding="utf-8").read(), "v280_priority_calendar_recovery.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
