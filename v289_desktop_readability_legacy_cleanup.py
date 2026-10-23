@@ -148,6 +148,30 @@ def patch_v132(body):
 
 html=edit_script(html,"v132CoachAssistantRealtime",patch_v132)
 
+# V14.6 and V19.2 still treated the deferred payment table as a reason to
+# refresh dashboard/agenda views. Remove those stale refresh triggers.
+def patch_v146(body):
+    old="'exercise_feedback','checkin_schedules','coach_payments','weekly_checkins','body_measurements','student_notices','workout_sessions','workout_sets','progression_recommendations'"
+    new="'exercise_feedback','checkin_schedules','weekly_checkins','body_measurements','student_notices','workout_sessions','workout_sets','progression_recommendations'"
+    if body.count(old)!=1:
+        raise RuntimeError("V20.89 V146 deferred payment route mismatch")
+    return body.replace(old,new,1)
+
+html=edit_script(html,"v146RenderStabilityRuntime",patch_v146)
+
+def patch_v192(body):
+    replacements={
+      "has('checkin_schedules','coach_payments')":"has('checkin_schedules')"
+    }
+    for old,new in replacements.items():
+        n=body.count(old)
+        if n!=3:
+            raise RuntimeError("V20.89 V192 deferred payment refresh mismatch: "+str(n))
+        body=body.replace(old,new)
+    return body
+
+html=edit_script(html,"v192GeneralStabilityRuntime",patch_v192)
+
 # ------------------------------------------------------------------
 # 2) V17.3: retain the useful legacy-summary cleanup, retire payment enhancer.
 # ------------------------------------------------------------------
@@ -330,10 +354,7 @@ for key in ("channels","timeouts","listeners"):
     if after[key]>before[key]:
         raise RuntimeError("V20.89 runtime topology growth "+key+": "+repr({"before":before,"after":after}))
 if "coach_payments" in html:
-    positions=[m.start() for m in re.finditer("coach_payments",html)]
-    for pos in positions[:12]:
-        print("V20.89 COACH_PAYMENTS CONTEXT:",html[max(0,pos-240):pos+320].replace("\n"," "))
-    raise RuntimeError("V20.89 retired coach_payments reference survived: "+str(len(positions)))
+    raise RuntimeError("V20.89 retired coach_payments reference survived")
 
 required=[
     'meta name="fjz-legacy-runtime-cleanup" content="20.89"',
