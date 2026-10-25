@@ -94,7 +94,7 @@ runtime=r"""
     if(error){toast?.(cloudErr?.(error)||'No se pudo guardar la revisión');return false}
     const map=new Map((data||[]).map(x=>[String(x.event_key),x]));
     const ok=clean.every(k=>map.get(k)?.read_at&&(mode!=='ok'||map.get(k)?.dismissed_at));
-    if(!ok){toast?.('No pude confirmar el guardado de la revisión');return false}
+    if(!ok){toast?.('No pude confirmar la revisión en la nube');return false}
     return true;
   }
 
@@ -159,7 +159,7 @@ runtime=r"""
   }
   const baseSeen=window.__fjzMarkCoachReviewSeenV299,baseOk=window.__fjzMarkCoachReviewOkV298;
   window.__fjzMarkCoachReviewSeenV299=async id=>{const s=byId(id);if(!s||!(await persistStudent(s,'seen')))return false;const out=await baseSeen?.(id);return out!==false};
-  window.__fjzMarkCoachReviewOkV298=async id=>{const s=byId(id);if(!s||!(await persistStudent(s,'ok')))return false;const out=await baseOk?.(id);if(out===false)return false;renderCenter();window.renderCoachFocusV235?.();window.renderCoachStudentsV235?.();toast?.('✓ Revisión resuelta y guardada');return true};
+  window.__fjzMarkCoachReviewOkV298=async id=>{const s=byId(id);if(!s||!(await persistStudent(s,'ok')))return false;const out=await baseOk?.(id);if(out===false)return false;renderCenter();window.renderCoachFocusV235?.();window.renderCoachStudentsV235?.();showSaveSuccessV264?.('Revisión resuelta');return true};
 
   window.__fjzOpenCenterReviewV301=async id=>{const s=byId(id),d=center.get(String(id))||detail(s);if(!s||!d||await window.__fjzMarkCoachReviewSeenV299?.(id)===false)return false;window.__fjzReviewContextV301={studentId:s.id,tab:d.tab,title:d.title,look:d.look,why:d.why,urgent:d.urgent};openTab(s.id,d.tab);toast?.('Revisión abierta · salió del centro');return true};
   window.__fjzResolveCenterReviewV301=async id=>{const ok=await window.__fjzMarkCoachReviewOkV298?.(id);if(ok===false)return false;if(String(window.__fjzReviewContextV301?.studentId||'')===String(id)){window.__fjzReviewContextV301=null;el('v301GuidedReview')?.remove()}renderCenter();return true};
