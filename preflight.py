@@ -95,6 +95,7 @@ runpy.run_path(str(ROOT / 'password_recovery_audit_v293.py'), run_name='__main__
 runpy.run_path(str(ROOT / 'auth_session_resilience_audit_v294.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'visual_feedback_audit_v295.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'general_audit_hardening_v296.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_symbol_scan.py'), run_name='__main__')
 
