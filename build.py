@@ -888,6 +888,9 @@ exec(compile(open("v298_review_ok_cockpit_fix.py", encoding="utf-8").read(), "v2
 # V20.99 unified Coach alert/review lifecycle: new -> seen -> resolved.
 exec(compile(open("v299_alert_review_system.py", encoding="utf-8").read(), "v299_alert_review_system.py", "exec"))
 
+# V21.01 guided reviews + verified OK persistence + professional review center/focus.
+exec(compile(open("v301_review_workflow_pro.py", encoding="utf-8").read(), "v301_review_workflow_pro.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
