@@ -44,7 +44,7 @@ def patch_v175(body):
     }"""
     new_final=r"""    const summaryState=el('v175SummaryState');
     if(summaryState){
-      summaryState.textContent=failed?'Datos parciales · la ficha sigue disponible':'';
+      summaryState.textContent=failed?'Actualizado · datos parciales · la ficha sigue disponible':'';
       summaryState.classList.toggle('v307-sync-warning',!!failed);
     }"""
     if body.count(old_final)!=1:
@@ -85,7 +85,7 @@ for k in before:
 for marker in [
     'meta name="fjz-coach-profile-sync-ui" content="21.07"',
     'v307-profile-sync-state',
-    "Datos parciales · la ficha sigue disponible",
+    "Actualizado · datos parciales · la ficha sigue disponible",
     "summaryState.textContent=failed?",
 ]:
     if marker not in html:
