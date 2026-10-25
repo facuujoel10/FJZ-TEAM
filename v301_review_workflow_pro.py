@@ -48,6 +48,7 @@ end=body.find("\n\n  async function hydrateSummaryV175(){",start)
 if start<0 or end<0: raise RuntimeError("V21.01 V175 advice bounds missing")
 advice=r"""  function adviceHtmlV175(x,i){
     const key=window.__fjzRegisterReviewItemV301?.(x)||'';
+    if(key&&window.__fjzReviewItemSeenV301?.(key))return '';
     const badge=x.type==='review'?'<span class="badge red">Prioridad '+(i+1)+'</span>':x.type==='good'?'<span class="badge green">Oportunidad</span>':'<span class="badge blue">Revisar</span>';
     const labels={routine:'Entrenamiento',tracking:'Check-in',history:'Historial',progress:'Progreso',nutrition:'Nutrición',agenda:'Agenda'};
     return '<article class="v175-advice '+esc(x.type)+' v301-review-card" data-v301-key="'+esc(key)+'">'+
@@ -60,19 +61,9 @@ advice=r"""  function adviceHtmlV175(x,i){
   }"""
 body=body[:start]+advice+body[end:]
 
-old="""    const a=assistantV175(agenda);
-    if(el('v175Executive'))el('v175Executive').textContent=a.executive;
-    if(el('v175Coverage'))el('v175Coverage').textContent='Cobertura '+a.confidence+' · '+(a.dataPoints.join(' · ')||'pocos datos');
-    if(el('v175Assistant'))el('v175Assistant').innerHTML=a.items.map(adviceHtmlV175).join('');
-    if(el('v175SummaryState'))el('v175SummaryState').textContent='Actualizado';"""
-new="""    const a=assistantV175(agenda);
-    const active=(a.items||[]).filter(x=>{const k=window.__fjzRegisterReviewItemV301?.(x)||'';return !k||!window.__fjzReviewItemSeenV301?.(k)});
-    if(el('v175Executive'))el('v175Executive').textContent=active.length?a.executive:'No hay revisiones pendientes. Si aparece un cambio nuevo, se genera una nueva revisión.';
-    if(el('v175Coverage'))el('v175Coverage').textContent='Cobertura '+a.confidence+' · '+(a.dataPoints.join(' · ')||'pocos datos');
-    if(el('v175Assistant'))el('v175Assistant').innerHTML=active.length?active.map(adviceHtmlV175).join(''):'<div class="v301-empty"><strong>Seguimiento al día</strong><span>No quedan revisiones activas para este alumno.</span></div>';
-    if(el('v175SummaryState'))el('v175SummaryState').textContent=active.length?active.length+' pendiente'+(active.length===1?'':'s'):'Al día';"""
-if body.count(old)!=1: raise RuntimeError("V21.01 V175 summary anchor mismatch")
-body=body.replace(old,new,1)
+# The V20.97 recovery layer wraps the original 360 hydrator. Filtering is
+# intentionally done inside adviceHtmlV175 instead of replacing its final block,
+# so this patch stays compatible with the current canonical recovery authority.
 html=html[:m.start(2)]+body+html[m.end(2):]
 
 runtime=r"""
