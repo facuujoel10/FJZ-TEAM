@@ -40,18 +40,18 @@ for marker in [
     if marker not in html:
         raise RuntimeError("V20.98 prerequisite missing "+marker)
 
-def patch_v175(body):
-    # 1) The exact production placeholder lived outside coachStudentBody and was
-    # therefore untouched by V20.97. Remove that exact infinite-loading copy.
-    old_placeholder='<div class="empty">Preparando lectura operativa…</div>'
-    if body.count(old_placeholder)!=1:
-        raise RuntimeError("V20.98 operational placeholder mismatch: "+str(body.count(old_placeholder)))
-    body=body.replace(
-        old_placeholder,
-        '<div class="v268-empty-note">Actualizando datos del alumno…</div>',
-        1
-    )
+# 1) The exact production placeholder is created by the canonical
+# renderCoachStudent surface, outside v175's script scope.
+old_placeholder='<div class="empty">Preparando lectura operativa…</div>'
+if html.count(old_placeholder)!=1:
+    raise RuntimeError("V20.98 operational placeholder mismatch: "+str(html.count(old_placeholder)))
+html=html.replace(
+    old_placeholder,
+    '<div class="v268-empty-note">Actualizando datos del alumno…</div>',
+    1
+)
 
+def patch_v175(body):
     # 2) Replace the strict V20.68 cockpit launcher. mode==='coach' was an
     # unnecessary extra gate and could leave the sibling cockpit untouched.
     start=body.find("  window.__fjzRenderCoachCockpitV268=function(){")
