@@ -35,6 +35,12 @@ if html.count(old_cdn)!=1:
     raise RuntimeError("V20.94 expected one unpinned Supabase import")
 html=html.replace(old_cdn,new_cdn,1)
 
+storage_old="mod.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})"
+storage_new="mod.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'}})"
+if html.count(storage_old)!=1:
+    raise RuntimeError("V20.94 auth storage anchor mismatch: "+str(html.count(storage_old)))
+html=html.replace(storage_old,storage_new,1)
+
 old_logout="async function logoutCloud(){if(supabaseClient)await supabaseClient.auth.signOut();currentUser=null;currentProfile=null;linkedAthleteId=null;cloudAthletes=new Map();showAuthGate()}"
 new_logout="async function logoutCloud(){window.__fjzIntentionalLogoutV294=true;try{if(supabaseClient)await supabaseClient.auth.signOut({scope:'local'})}catch(e){console.warn('TEAM FJZ local logout error',e)}currentUser=null;currentProfile=null;linkedAthleteId=null;cloudAthletes=new Map();window.__fjzIntentionalLogoutV294=false;showAuthGate()}"
 if html.count(old_logout)!=1:
@@ -49,6 +55,25 @@ html=html.replace(old_signedout,new_signedout,1)
 
 runtime=r"""
 // ===== TEAM FJZ V20.94 · AUTH / SESSION RESILIENCE =====
+
+const FJZ_AUTH_STORAGE_KEY_V298='sb-cujipwacwwpejhqjhnkr-auth-token';
+function isStaleAuthErrorV298(e){
+  const msg=String(e?.message||e?.error_description||e?.code||e||'').toLowerCase();
+  return msg.includes('refresh token not found')||
+    msg.includes('invalid refresh token')||
+    msg.includes('refresh_token_not_found')||
+    msg.includes('session_not_found')||
+    msg.includes('authsessionmissing');
+}
+function clearStaleAuthStorageV298(){
+  try{localStorage.removeItem(FJZ_AUTH_STORAGE_KEY_V298)}catch(_e){}
+  currentUser=null;currentProfile=null;linkedAthleteId=null;
+}
+function showFreshLoginAfterStaleSessionV298(){
+  clearStaleAuthStorageV298();
+  setCloudStatus('','Nube');
+  showAuthGate('login','La sesión de este dispositivo venció o quedó desactualizada. Ingresá nuevamente con tu email y contraseña. Tus datos siguen guardados.')
+}
 function showSessionRecoveryV294(message){
   message=message||'Tu sesión sigue activa, pero hubo un problema temporal al cargar los datos.';
   showGate();
@@ -70,21 +95,26 @@ async function retryActiveSessionV294(){
     showAuthGate('login','Tu sesión terminó. Ingresá nuevamente.')
   }catch(e){
     console.error('TEAM FJZ session retry error',e);
+    if(isStaleAuthErrorV298(e)){showFreshLoginAfterStaleSessionV298();return}
     showSessionRecoveryV294('No pudimos verificar la sesión todavía. Revisá tu conexión y volvé a intentar.')
   }
 }
 async function recoverUnexpectedSignedOutV294(){
   if(window.__fjzRecoveryModeV293)return;
+  let authError=null;
   try{
     const {data,error}=await supabaseClient.auth.getSession();
+    authError=error||null;
     if(!error&&data&&data.session){
       currentUser=data.session.user;
       await handleSessionV294(data.session);
       return
     }
   }catch(e){
+    authError=e;
     console.warn('TEAM FJZ auth state verification error',e)
   }
+  if(isStaleAuthErrorV298(authError)){showFreshLoginAfterStaleSessionV298();return}
   currentUser=null;currentProfile=null;linkedAthleteId=null;
   showAuthGate('login','Tu sesión terminó. Ingresá nuevamente.')
 }
@@ -119,10 +149,13 @@ async function handleSessionV294(session){
     console.error('TEAM FJZ session data load error',coreErr);
     setCloudStatus('error','Conexión inestable');
     let active=null;
+    let probeError=null;
     try{
       const probe=await supabaseClient.auth.getSession();
+      probeError=probe.error||null;
       if(!probe.error)active=probe.data&&probe.data.session?probe.data.session:null
-    }catch(_e){}
+    }catch(_e){probeError=_e}
+    if(isStaleAuthErrorV298(probeError)){showFreshLoginAfterStaleSessionV298();return}
     if(active&&active.user){
       currentUser=active.user;
       showSessionRecoveryV294('La autenticación fue correcta, pero falló una carga de datos. No hace falta volver a escribir la contraseña.');
@@ -169,11 +202,13 @@ bootV4=async function(force){
     else showAuthGate()
   }catch(e){
     console.error('TEAM FJZ boot/session error',e);
+    if(isStaleAuthErrorV298(e)){showFreshLoginAfterStaleSessionV298();return}
     setCloudStatus('error','Conexión inestable');
     showGate();
     authCard().innerHTML='<div class="auth-brand"><img class="auth-logo" src="'+document.querySelector('.brand img').src+'" alt="TEAM FJZ"><div><h2>No pudimos conectar</h2><div class="muted tiny">TEAM FJZ CLOUD</div></div></div>'+
       '<div class="auth-grid"><div class="card v294-session-note"><div class="muted tiny">No borramos tu sesión ni tus datos. Puede ser un problema temporal de conexión.</div></div>'+
-      '<button class="btn primary" onclick="bootV4(true)">Reintentar</button></div>'
+      '<button class="btn primary" onclick="bootV4(true)">Reintentar</button>'+
+      '<button class="btn ghost" onclick="showAuthGate(\'login\',\'Ingresá nuevamente si tu sesión necesita renovarse.\')">Ir al login</button></div>'
   }
 };
 
@@ -215,6 +250,9 @@ for marker in [
     "recoverUnexpectedSignedOutV294",
     "La autenticación fue correcta, pero falló una carga de datos",
     "No borramos tu sesión ni tus datos",
+    "FJZ_AUTH_STORAGE_KEY_V298",
+    "showFreshLoginAfterStaleSessionV298",
+    "refresh_token_not_found",
 ]:
     if marker not in html:
         raise RuntimeError("V20.94 missing marker "+marker)

@@ -93,6 +93,7 @@ runpy.run_path(str(ROOT / 'new_feature_hardening_audit_v291.py'), run_name='__ma
 runpy.run_path(str(ROOT / 'single_coach_nav_audit_v292.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'password_recovery_audit_v293.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'auth_session_resilience_audit_v294.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'auth_reentry_update_safety_audit.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'visual_feedback_audit_v295.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'general_audit_hardening_v296.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
