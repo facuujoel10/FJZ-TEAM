@@ -3,17 +3,14 @@ root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 m175=re.search(r'<script[^>]*id=["\']v175ProfileAgendaCoachCenterRuntime["\'][^>]*>(.*?)</script>',html,re.S|re.I)
-m297=re.search(r'<script[^>]*id=["\']v297CoachSummaryAlertArchiveRuntime["\'][^>]*>(.*?)</script>',html,re.S|re.I)
 v175=m175.group(1) if m175 else ""
-v297=m297.group(1) if m297 else ""
 checks={
  "release":tuple(map(int,release.split("."))) >= (21,7),
  "meta":'meta name="fjz-coach-profile-sync-ui" content="21.07"' in html,
  "v175":bool(v175),
- "v297":bool(v297),
  "no_actualizando":"Actualizando…" not in v175,
  "silent_success":"textContent='';" in v175,
- "failure_only_warning":"Datos parciales · la ficha sigue disponible" in v297,
+ "failure_only_warning":"Datos parciales · la ficha sigue disponible" in v175,
  "instant_profile_retained":"profileHtmlV114(immediate)" in html,
 }
 failed=[k for k,v in checks.items() if not v]
