@@ -100,6 +100,7 @@ runpy.run_path(str(ROOT / 'coach_summary_alert_archive_audit_v297.py'), run_name
 runpy.run_path(str(ROOT / 'review_ok_cockpit_audit_v298.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'alert_review_system_audit_v299.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'review_workflow_audit_v301.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'review_resolution_audit_v302.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
