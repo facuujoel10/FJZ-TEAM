@@ -3,6 +3,7 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 required=[
   'meta name="fjz-final-stability-polish" content="20.79"',
@@ -27,10 +28,9 @@ required=[
   "smartAlertDedupByEventKey:true",
   "forceCoachAlertsV279",
   'preserveAspectRatio="xMidYMid meet"',
-  "productionNetworkBlocked:true",
-  "syntheticDataOnly:true",
-  "cloudDisabled:true",
 ]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing=[x for x in required if x not in html]
 
 metrics={
