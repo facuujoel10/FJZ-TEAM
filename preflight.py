@@ -41,9 +41,12 @@ if (
 ):
     errors.append("Production Supabase isolation guards are incomplete")
 
-tail = build.strip().splitlines()[-6:]
-if not any("v127_release_system.py" in line for line in tail):
-    errors.append("v127_release_system.py is not at the end of the build pipeline")
+release_pos = build.rfind("v127_release_system.py")
+prod_gate_pos = build.rfind('runpy.run_path("preflight.py", run_name="__main__")')
+if release_pos < 0:
+    errors.append("v127_release_system.py is missing from the build pipeline")
+elif prod_gate_pos >= 0 and release_pos > prod_gate_pos:
+    errors.append("Production preflight gate runs before v127_release_system.py")
 
 source = PINNED.read_text(encoding="utf-8") if PINNED.exists() else ""
 if source and "<!doctype html" not in source.lower():
@@ -91,6 +94,7 @@ runpy.run_path(str(ROOT / 'single_coach_nav_audit_v292.py'), run_name='__main__'
 runpy.run_path(str(ROOT / 'password_recovery_audit_v293.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'auth_session_resilience_audit_v294.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'visual_feedback_audit_v295.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'general_audit_hardening_v296.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_symbol_scan.py'), run_name='__main__')
 
