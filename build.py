@@ -867,6 +867,9 @@ exec(compile(open("v291_new_feature_hardening.py", encoding="utf-8").read(), "v2
 # V20.92 single canonical coach-athlete navigation.
 exec(compile(open("v292_single_coach_nav.py", encoding="utf-8").read(), "v292_single_coach_nav.py", "exec"))
 
+# V20.93 password recovery hardening.
+exec(compile(open("v293_password_recovery_hardening.py", encoding="utf-8").read(), "v293_password_recovery_hardening.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
