@@ -119,6 +119,27 @@ runtime=fr"""
   // V14: release constants are normalized at build time. No DOM-wide
   // MutationObserver or full text-tree scan is needed at runtime.
 
+  // V21.00: foreground tabs/PWAs also need to discover new releases.
+  // Keep one lightweight self-rescheduling timeout (no setInterval).
+  let releaseWatchdogTimer=null;
+  function scheduleReleaseWatch(delay=30000){{
+    try{{if(releaseWatchdogTimer)clearTimeout(releaseWatchdogTimer)}}catch(_e){{}}
+    releaseWatchdogTimer=setTimeout(async()=>{{
+      try{{await checkRelease()}}catch(_e){{}}
+      if(!releaseNavigationInProgress)scheduleReleaseWatch(30000);
+    }},Math.max(1000,Number(delay)||30000));
+  }}
+  window.__fjzForceReleaseCheckV300=function(){{
+    lastReleaseCheck=0;
+    return checkRelease();
+  }};
+  window.__fjzReleaseWatchdogV300={{
+    version:'21.00',
+    periodicReleaseCheck:true,
+    cadenceMs:30000,
+    noInterval:true
+  }};
+
   if('serviceWorker' in navigator){{
     window.addEventListener('load',async()=>{{
       try{{
@@ -136,7 +157,6 @@ runtime=fr"""
       }}catch(_e){{}}
       normalizeReleaseLabels();
       checkRelease();
-      setTimeout(()=>checkRelease(),7000);
     }},{{once:true}});
 
     navigator.serviceWorker.addEventListener('controllerchange',()=>{{
@@ -162,6 +182,7 @@ runtime=fr"""
     checkRelease();
   }});
 
+  scheduleReleaseWatch(7000);
   normalizeReleaseLabels();
 }})();
 </script>
@@ -232,6 +253,10 @@ if not release_runtime_match:
 release_runtime_final=release_runtime_match.group(0)
 if "releaseNavigationInProgress" not in release_runtime_final:
     raise RuntimeError("TEAM FJZ single release navigation lock missing")
+if "__fjzReleaseWatchdogV300" not in release_runtime_final or "scheduleReleaseWatch(7000)" not in release_runtime_final:
+    raise RuntimeError("TEAM FJZ periodic release watchdog missing")
+if "setInterval(" in release_runtime_final:
+    raise RuntimeError("TEAM FJZ release watchdog must not use setInterval")
 if "location.reload();" in release_runtime_final:
     raise RuntimeError("TEAM FJZ release runtime still forces controller reload")
 controller_handlers = final_html.count("controllerchange")
