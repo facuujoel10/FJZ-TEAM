@@ -529,10 +529,17 @@ def patch_v280(body):
         raise RuntimeError("V20.99 V280 dashboard guard mismatch")
     body=body.replace(old_guard,new_guard,1)
 
-    render_line="    try{renderPriority();renderCalendar();loadCalendar(false)}finally{hydratingV280=false}"
-    render_new="    try{window.__fjzLoadReviewAcksV299?.(false);renderPriority();renderCalendar();loadCalendar(false)}finally{hydratingV280=false}"
+    render_line="""    try{
+      renderPriority();
+      window.__fjzRenderCoachCalendarV284?.();
+    }finally{hydratingV280=false}"""
+    render_new="""    try{
+      window.__fjzLoadReviewAcksV299?.(false);
+      renderPriority();
+      window.__fjzRenderCoachCalendarV284?.();
+    }finally{hydratingV280=false}"""
     if body.count(render_line)!=1:
-        raise RuntimeError("V20.99 V280 render line mismatch")
+        raise RuntimeError("V20.99 V280 V20.84-delegated render block mismatch")
     body=body.replace(render_line,render_new,1)
     return body
 
