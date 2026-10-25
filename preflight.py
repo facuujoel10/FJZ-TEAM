@@ -104,6 +104,7 @@ runpy.run_path(str(ROOT / 'review_resolution_audit_v302.py'), run_name='__main__
 runpy.run_path(str(ROOT / 'save_integrity_audit_v303.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'global_save_integrity_audit_v304.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'checkin_resubmission_audit_v305.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'checkin_freshness_audit_v306.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')

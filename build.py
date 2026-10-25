@@ -903,6 +903,9 @@ exec(compile(open("v304_global_save_integrity.py", encoding="utf-8").read(), "v3
 # V21.05 check-in resubmission lifecycle: resubmit becomes pending and visible again.
 exec(compile(open("v305_checkin_resubmission_lifecycle.py", encoding="utf-8").read(), "v305_checkin_resubmission_lifecycle.py", "exec"))
 
+# V21.06 check-in freshness and human-readable week/submission labels.
+exec(compile(open("v306_checkin_freshness.py", encoding="utf-8").read(), "v306_checkin_freshness.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))

@@ -1,0 +1,11 @@
+-- TEAM FJZ V21.06
+-- Current check-in feed hygiene and freshness.
+-- Applied to production Supabase on 2026-10-25.
+--
+-- get_coach_feed_legacy_v121 changes:
+-- 1. wellness events are emitted only while weekly_checkins.reviewed_at IS NULL.
+-- 2. new-checkin body includes actual submission date/time in America/Argentina/Buenos_Aires.
+-- 3. stale/unversioned check-in feed state was cleaned from coach_feed_state.
+--
+-- weekly_checkins.week_start remains the Monday anchor by design.
+-- On 2026-10-25, week_start 2026-10-19 represents 19-25 Oct.
