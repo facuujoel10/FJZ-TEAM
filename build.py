@@ -879,6 +879,9 @@ exec(compile(open("v295_visual_feedback_fix.py", encoding="utf-8").read(), "v295
 # V20.96 general audit hardening.
 exec(compile(open("v296_general_audit_hardening.py", encoding="utf-8").read(), "v296_general_audit_hardening.py", "exec"))
 
+# V20.97 fix stuck Coach operational summary + archive reviewed alerts everywhere.
+exec(compile(open("v297_coach_summary_alert_archive.py", encoding="utf-8").read(), "v297_coach_summary_alert_archive.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
