@@ -74,10 +74,10 @@ checks={
 
   # Legacy Coach focus respects the same acknowledged snapshot.
   "legacy_focus_ack_aware":
-    "window.__fjzIsReviewAckedV299?.(s)" in html and
-    "review:!current&&statusFor(s)==='Revisar'" in html and
-    "low:!current&&a<70" in html and
-    "inactive:!current&&days>=7" in html,
+    "const acked=!!window.__fjzIsReviewAckedV299?.(s)" in html and
+    "if(acked&&!feed&&!sf&&!critical)return 0" in html and
+    "if(filterV281==='review')return !acked" in html and
+    "if(acked)return {bucket:'watch',score:0,label:'Revisado'}" in html,
 
   # More specific alert UX
   "alert_metric_detail":
