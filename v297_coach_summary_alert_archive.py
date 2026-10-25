@@ -234,7 +234,7 @@ def patch_v278(body):
     body=body.replace(old_attention,new_attention,1)
     return body
 
-html=edit_script(html,"v278SmartProgressRuntime",patch_v278)
+html=edit_script(html,"v278SmartAlertsProgressRuntime",patch_v278)
 
 def patch_v175(body):
     start=body.find("  async function hydrateSummaryV175(){")
