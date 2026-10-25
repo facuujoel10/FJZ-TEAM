@@ -44,7 +44,9 @@ if body.count(old)!=1: raise RuntimeError("V21.01 V175 load anchor mismatch")
 body=body.replace(old,new,1)
 
 start=body.find("  function adviceHtmlV175(x,i){")
-end=body.find("\n\n  async function hydrateSummaryV175(){",start)
+end=body.find("\n\n  async function hydrateSummaryCoreV297(){",start)
+if end<0:
+    end=body.find("\n\n  async function hydrateSummaryV175(){",start)
 if start<0 or end<0: raise RuntimeError("V21.01 V175 advice bounds missing")
 advice=r"""  function adviceHtmlV175(x,i){
     const key=window.__fjzRegisterReviewItemV301?.(x)||'';
