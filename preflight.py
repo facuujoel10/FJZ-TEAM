@@ -41,9 +41,12 @@ if (
 ):
     errors.append("Production Supabase isolation guards are incomplete")
 
-tail = build.strip().splitlines()[-6:]
-if not any("v127_release_system.py" in line for line in tail):
-    errors.append("v127_release_system.py is not at the end of the build pipeline")
+release_pos = build.rfind("v127_release_system.py")
+prod_gate_pos = build.rfind('runpy.run_path("preflight.py", run_name="__main__")')
+if release_pos < 0:
+    errors.append("v127_release_system.py is missing from the build pipeline")
+elif prod_gate_pos >= 0 and release_pos > prod_gate_pos:
+    errors.append("Production preflight gate runs before v127_release_system.py")
 
 source = PINNED.read_text(encoding="utf-8") if PINNED.exists() else ""
 if source and "<!doctype html" not in source.lower():
