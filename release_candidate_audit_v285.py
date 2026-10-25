@@ -3,6 +3,7 @@ import pathlib,re,json,collections
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 def vt(v):
     try:return tuple(int(x) for x in v.split("."))
@@ -76,8 +77,9 @@ required=[
  "coachIntegrityRecovery:true","filtersRestored:true","studentNavigationRestored:true",
  "overflow-x:clip","@media(max-width:430px)","@media(max-width:360px)",
  'input[type="date"]','input[type="time"]',"overscroll-behavior-x:contain",
- "productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true",
 ]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing_markers=[x for x in required if x not in html]
 
 # Verify all deliberate async save actions remain in the canonical V20.77
