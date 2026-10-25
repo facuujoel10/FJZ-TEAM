@@ -14,7 +14,7 @@ v175=script_body("v175ProfileAgendaCoachCenterRuntime")
 v278=script_body("v278SmartAlertsProgressRuntime")
 
 checks={
-  "release_2097": release=="20.97",
+  "release_2097_or_newer": tuple(map(int,release.split("."))) >= (20,97),
   "patch_meta": 'meta name="fjz-coach-summary-alert-archive" content="20.97"' in html,
   "v96_owns_archive": "canonicalArchiveOwnedByV96:true" in v197,
   "broken_v197_private_mutation_removed":
