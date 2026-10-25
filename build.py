@@ -873,6 +873,9 @@ exec(compile(open("v293_password_recovery_hardening.py", encoding="utf-8").read(
 # V20.94 auth/session resilience.
 exec(compile(open("v294_session_resilience.py", encoding="utf-8").read(), "v294_session_resilience.py", "exec"))
 
+# V20.95 visual/profile/workout geometry + session feedback fix.
+exec(compile(open("v295_visual_feedback_fix.py", encoding="utf-8").read(), "v295_visual_feedback_fix.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
