@@ -897,6 +897,9 @@ exec(compile(open("v302_review_resolution_authority.py", encoding="utf-8").read(
 # V21.03 save integrity: verified check-in read-back + persistent confirmed-save receipt.
 exec(compile(open("v303_save_integrity.py", encoding="utf-8").read(), "v303_save_integrity.py", "exec"))
 
+# V21.04 global save integrity across workout/routine/agenda/nutrition/progress/feedback.
+exec(compile(open("v304_global_save_integrity.py", encoding="utf-8").read(), "v304_global_save_integrity.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
