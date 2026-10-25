@@ -32,8 +32,11 @@ checks={
     "persistCoachKeysV299([key],'ok')" in v96,
   "read_all_clears_active":
     "Alertas vistas · panel limpio" in v96,
-  "no_old_read_button":
-    ">Leído</button>" not in v96,
+  "coach_uses_new_lifecycle_buttons":
+    "coachAlertCardV96" in v96 and
+    "coachActionLabelV299" in v96 and
+    "onclick=\"dismissCoachAlertV96" in v96 and
+    "✓ OK" in v96,
 
   # Review acknowledgement is fresh + cross-device
   "review_ack_fingerprint":"review-ack-v299" in v175 and "__fjzReviewFingerprintV299" in v175,
