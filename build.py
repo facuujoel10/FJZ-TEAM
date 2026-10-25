@@ -864,6 +864,9 @@ exec(compile(open("v290_final_product_layer.py", encoding="utf-8").read(), "v290
 # V20.91 harden PR/new-feature UX + finish-workout readability.
 exec(compile(open("v291_new_feature_hardening.py", encoding="utf-8").read(), "v291_new_feature_hardening.py", "exec"))
 
+# V20.92 single canonical coach-athlete navigation.
+exec(compile(open("v292_single_coach_nav.py", encoding="utf-8").read(), "v292_single_coach_nav.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
