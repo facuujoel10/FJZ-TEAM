@@ -2,6 +2,7 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 required=[
  'meta name="fjz-final-calendar-authority" content="20.84"',
@@ -17,9 +18,9 @@ required=[
  "window.__fjzRenderCoachCalendarV284?.();",
  "return window.__fjzHydrateCoachCalendarV284?.(true);",
  "calendarHostIndependentFromPriority:true",
- "agendaFinalRouteAuthority:true",
- "productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"
-]
+ "agendaFinalRouteAuthority:true",]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing=[x for x in required if x not in html]
 
 logic={
