@@ -67,6 +67,7 @@ runtime=fr"""
   }}
 
   let lastReleaseCheck=0;
+  let releaseNavigationInProgress=false;
   async function checkRelease(){{
     const now=Date.now();
     if(now-lastReleaseCheck<30000)return;
@@ -80,6 +81,8 @@ runtime=fr"""
       const info=await res.json();
       const server=String(info?.release||'');
       if(server&&server!==RELEASE){{
+        if(releaseNavigationInProgress)return;
+        releaseNavigationInProgress=true;
         const key='fjz_release_retry_'+server;
         const retries=Math.min(3,Number(sessionStorage.getItem(key)||'0')+1);
         sessionStorage.setItem(key,String(retries));
@@ -136,14 +139,10 @@ runtime=fr"""
       setTimeout(()=>checkRelease(),7000);
     }},{{once:true}});
 
-    let reloaded=false;
     navigator.serviceWorker.addEventListener('controllerchange',()=>{{
-      if(reloaded)return;
-      reloaded=true;
-      const key='fjz_sw_controller_'+RELEASE;
-      if(sessionStorage.getItem(key)==='1')return;
-      sessionStorage.setItem(key,'1');
-      location.reload();
+      // checkRelease() owns navigation. Never force a second reload here:
+      // two consecutive reloads can race Supabase refresh-token rotation.
+      normalizeReleaseLabels();
     }});
   }}else{{
     window.addEventListener('load',()=>{{
@@ -227,6 +226,14 @@ if f'TEAM FJZ V{release}' not in final_html:
     raise RuntimeError("Current visible release label missing")
 if f"const CACHE='{cache_name}'" not in sw:
     raise RuntimeError("Service Worker cache does not match release")
+release_runtime_match=re.search(r'<script id="fjzReleaseRuntime">.*?</script>',final_html,re.S)
+if not release_runtime_match:
+    raise RuntimeError("TEAM FJZ release runtime missing")
+release_runtime_final=release_runtime_match.group(0)
+if "releaseNavigationInProgress" not in release_runtime_final:
+    raise RuntimeError("TEAM FJZ single release navigation lock missing")
+if "location.reload();" in release_runtime_final:
+    raise RuntimeError("TEAM FJZ release runtime still forces controller reload")
 controller_handlers = final_html.count("controllerchange")
 if controller_handlers != 1:
     raise RuntimeError(f"Expected exactly 1 controllerchange handler, found {controller_handlers}")
