@@ -33,8 +33,8 @@ if label_count<1:
     raise RuntimeError("V21.06 student week labels missing: "+str(label_count))
 html=html.replace(old_label,new_label)
 
-old_week='Semana \${esc(c.week_start)}'
-new_week='\${esc(window.__fjzWeekRangeLabelV306?.(c.week_start)||("Semana "+c.week_start))}'
+old_week='Semana ' + '$' + '{esc(c.week_start)}'
+new_week='$' + '{esc(window.__fjzWeekRangeLabelV306?.(c.week_start)||("Semana "+c.week_start))}'
 week_count=html.count(old_week)
 if week_count<2:
     raise RuntimeError("V21.06 raw week labels missing: "+str(week_count))
@@ -171,6 +171,7 @@ for marker in [
 
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V21.06 check-in freshness + week presentation")
-print("V21.06 student week labels replaced:",label_count)\nprint("V21.06 raw week labels replaced:",week_count)
+print("V21.06 student week labels replaced:",label_count)
+print("V21.06 raw week labels replaced:",week_count)
 print("V21.06 BEFORE:",before)
 print("V21.06 AFTER:",after)
