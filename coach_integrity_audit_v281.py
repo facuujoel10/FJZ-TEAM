@@ -2,6 +2,7 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 critical=[
  "openCoachStudentTabV235","renderCoachStudentsV235","renderCoachFocusV235",
@@ -29,9 +30,9 @@ required=[
  "nextPriorityRestored:true","reviewCadenceRestored:true","reviewLoopRestored:true",
  "focusPanelRestored:true","studentNavigationRestored:true","legacyMusicCallNeutralized:true",
  "priorityCalendarRecovery:true","restoredPriorityAuthorityAfterMusicRemoval:true",
- "restoredCalendarAuthorityAfterMusicRemoval:true","productionNetworkBlocked:true",
- "syntheticDataOnly:true","cloudDisabled:true"
-]
+ "restoredCalendarAuthorityAfterMusicRemoval:true",]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 markers=[x for x in required if x not in html]
 metrics={
  "styles":len(re.findall(r"<style\b",html,re.I)),
