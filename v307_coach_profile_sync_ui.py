@@ -32,8 +32,8 @@ def patch_v175(body):
         '<span id="v175SummaryState" class="muted micro v307-profile-sync-state" aria-live="polite"></span>'
       ),
       (
-        '<div id="v175Status" class="v175-status-row">'+ "chipV175('Cargando datos…')" +'</div>',
-        '<div id="v175Status" class="v175-status-row"></div>'
+        "'<div id=\"v175Status\" class=\"v175-status-row\">'+chipV175('Cargando datos…')+'</div>'",
+        "'<div id=\"v175Status\" class=\"v175-status-row\"></div>'"
       ),
       (
         '<span id="v175Coverage" class="muted micro">Evaluando datos…</span>',
