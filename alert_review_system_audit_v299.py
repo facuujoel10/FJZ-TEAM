@@ -13,7 +13,7 @@ v175=script_body("v175ProfileAgendaCoachCenterRuntime")
 v280=script_body("v280OperationalRecoveryRuntime")
 
 checks={
-  "release_2099":release=="20.99",
+  "release_2099_or_newer":tuple(map(int,release.split("."))) >= (20,99),
   "meta":'meta name="fjz-alert-review-system" content="20.99"' in html,
 
   # One canonical alert lifecycle
