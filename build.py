@@ -906,6 +906,9 @@ exec(compile(open("v305_checkin_resubmission_lifecycle.py", encoding="utf-8").re
 # V21.06 check-in freshness and human-readable week/submission labels.
 exec(compile(open("v306_checkin_freshness.py", encoding="utf-8").read(), "v306_checkin_freshness.py", "exec"))
 
+# V21.07 coach profile sync UI: instant profile, silent background refresh.
+exec(compile(open("v307_coach_profile_sync_ui.py", encoding="utf-8").read(), "v307_coach_profile_sync_ui.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
