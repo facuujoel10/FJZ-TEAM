@@ -21,9 +21,11 @@ checks={
     "coachAlertsV96=coachAlertsV96.filter" not in v197 and
     "studentAlertsV96=studentAlertsV96.filter" not in v197,
   "coach_read_immediate_removal":
-    "coachAlertsV96=coachAlertsV96.filter(a=>a.event_key!==key)" in v96,
+    ("coachAlertsV96=coachAlertsV96.filter(a=>a.event_key!==key)" in v96) or
+    ("syncCoachCopiesV299" in v96 and "persistCoachKeysV299([key],'seen')" in v96),
   "coach_read_all_clears_active":
-    "coachAlertsV96=[];" in v96 and "Alertas revisadas y archivadas" in v96,
+    (("coachAlertsV96=[];" in v96 and "Alertas revisadas y archivadas" in v96) or
+     ("Alertas vistas · panel limpio" in v96 and "persistCoachKeysV299(keys,'seen')" in v96)),
   "student_read_immediate_removal":
     "studentAlertsV96=studentAlertsV96.filter(a=>a.event_key!==key)" in v96,
   "student_read_all_clears_active":

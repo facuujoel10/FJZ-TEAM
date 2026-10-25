@@ -16,7 +16,7 @@ m=re.search(r'window\.__fjzRenderCoachCockpitV268=function\(\)\{.*?\n  \};',v175
 if m: launcher=m.group(0)
 
 checks={
-  "release_2098":release=="20.98",
+  "release_2098_or_newer":tuple(map(int,release.split("."))) >= (20,98),
   "meta":'meta name="fjz-review-ok-cockpit-fix" content="20.98"' in html,
   "stale_exact_placeholder_removed":"Preparando lectura operativa" not in html,
   "cockpit_final_fallback":"fallbackCoachCockpitV298" in v175,
