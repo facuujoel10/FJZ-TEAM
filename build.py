@@ -909,6 +909,9 @@ exec(compile(open("v306_checkin_freshness.py", encoding="utf-8").read(), "v306_c
 # V21.07 coach profile sync UI: instant profile, silent background refresh.
 exec(compile(open("v307_coach_profile_sync_ui.py", encoding="utf-8").read(), "v307_coach_profile_sync_ui.py", "exec"))
 
+# V21.08 stop repeated first-review cards and migrate already-resolved reviews.
+exec(compile(open("v308_review_recurrence_fix.py", encoding="utf-8").read(), "v308_review_recurrence_fix.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
