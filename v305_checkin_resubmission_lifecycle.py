@@ -37,9 +37,15 @@ html=html.replace(old_payload,new_payload,1)
 
 old_cols="id,athlete_id,student_id,week_start,weight_kg,sleep_quality,stress_level,energy_level,adherence_level,mood_level,hunger_level,recovery_level,motivation_level,notes,submitted_at,created_at,updated_at"
 new_cols="id,athlete_id,student_id,week_start,weight_kg,sleep_quality,stress_level,energy_level,adherence_level,mood_level,hunger_level,recovery_level,motivation_level,notes,coach_feedback,reviewed_at,submitted_at,created_at,updated_at"
-if html.count(old_cols)<2:
-    raise RuntimeError("V21.05 check-in select columns anchors missing: "+str(html.count(old_cols)))
-html=html.replace(old_cols,new_cols)
+if html.count(old_cols)!=1:
+    raise RuntimeError("V21.05 primary check-in select columns anchor mismatch: "+str(html.count(old_cols)))
+html=html.replace(old_cols,new_cols,1)
+
+old_verify_cols="id,athlete_id,student_id,week_start,weight_kg,sleep_quality,stress_level,energy_level,adherence_level,mood_level,hunger_level,recovery_level,motivation_level,notes,submitted_at,updated_at"
+new_verify_cols="id,athlete_id,student_id,week_start,weight_kg,sleep_quality,stress_level,energy_level,adherence_level,mood_level,hunger_level,recovery_level,motivation_level,notes,coach_feedback,reviewed_at,submitted_at,updated_at"
+if html.count(old_verify_cols)!=1:
+    raise RuntimeError("V21.05 verify check-in select columns anchor mismatch: "+str(html.count(old_verify_cols)))
+html=html.replace(old_verify_cols,new_verify_cols,1)
 
 runtime=r"""
 <script id="v305CheckinResubmissionLifecycleRuntime">
