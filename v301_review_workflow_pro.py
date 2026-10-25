@@ -43,25 +43,23 @@ new="""    jobs.push(loadAgendaAttentionV175(false));
 if body.count(old)!=1: raise RuntimeError("V21.01 V175 load anchor mismatch")
 body=body.replace(old,new,1)
 
-start=body.find("  function adviceHtmlV175(x,i){")
-end=body.find("\n\n  async function hydrateSummaryCoreV297(){",start)
-if end<0:
-    end=body.find("\n\n  async function hydrateSummaryV175(){",start)
-if start<0 or end<0: raise RuntimeError("V21.01 V175 advice bounds missing")
-advice=r"""  function adviceHtmlV175(x,i){
-    const key=window.__fjzRegisterReviewItemV301?.(x)||'';
-    if(key&&window.__fjzReviewItemSeenV301?.(key))return '';
-    const badge=x.type==='review'?'<span class="badge red">Prioridad '+(i+1)+'</span>':x.type==='good'?'<span class="badge green">Oportunidad</span>':'<span class="badge blue">Revisar</span>';
-    const labels={routine:'Entrenamiento',tracking:'Check-in',history:'Historial',progress:'Progreso',nutrition:'Nutrición',agenda:'Agenda'};
-    return '<article class="v175-advice '+esc(x.type)+' v301-review-card" data-v301-key="'+esc(key)+'">'+
-      '<div class="v175-advice-top"><div><span class="v301-kicker">REVISIÓN GUIADA</span><h5>'+esc(x.title)+'</h5></div>'+badge+'</div>'+
-      '<div class="v301-detail"><span>QUÉ REVISAR</span><p>'+esc(x.action)+'</p></div>'+
-      '<div class="v301-detail"><span>POR QUÉ APARECIÓ</span><p>'+esc(x.evidence)+'</p></div>'+
-      '<div class="v301-actions"><button class="btn small primary" onclick="window.__fjzOpenGuidedReviewV301?.(\''+key+'\')">Revisar ahora · '+esc(labels[x.tab]||'detalle')+'</button>'+
-      '<button class="btn small v299-ok" onclick="window.__fjzResolveGuidedReviewV301?.(\''+key+'\')">✓ OK</button></div>'+
-    '</article>';
+old_advice=r"""  function adviceHtmlV175(x,i){
+    const badge=x.type==='review'
+      ?'<span class="badge red">Prioridad '+(i+1)+'</span>'
+      :x.type==='good'
+        ?'<span class="badge green">Oportunidad</span>'
+        :'<span class="badge blue">Revisar</span>';
+    const labels={routine:'Rutina',tracking:'Seguimiento',history:'Historial',progress:'Progreso',nutrition:'Nutrición',agenda:'Agenda'};
+    return '<div class="v175-advice '+esc(x.type)+'">'+
+      '<div class="v175-advice-top"><h5>'+esc(x.title)+'</h5>'+badge+'</div>'+
+      '<p><strong>Qué haría:</strong> '+esc(x.action)+'</p>'+
+      '<div class="v175-evidence"><strong>Evidencia:</strong> '+esc(x.evidence)+'</div>'+
+      '<div class="v175-advice-actions"><button class="btn small" onclick="coachStudentTab=\''+esc(x.tab)+'\';render()">Abrir '+esc(labels[x.tab]||'sección')+'</button></div>'+
+    '</div>';
   }"""
-body=body[:start]+advice+body[end:]
+body=body.replace(old_advice,advice,1)
+if body.count(old_advice)!=1:
+    raise RuntimeError("V21.01 V175 advice function mismatch: "+str(body.count(old_advice)))
 
 # The V20.97 recovery layer wraps the original 360 hydrator. Filtering is
 # intentionally done inside adviceHtmlV175 instead of replacing its final block,
