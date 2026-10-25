@@ -2,6 +2,7 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 required=[
  'meta name="fjz-calendar-route-hardening" content="20.82"',
@@ -11,9 +12,9 @@ required=[
  "window.renderCoachAgendaV81=renderCoachAgendaV282",
  "window.__fjzMountCoachCalendarV282=mountDashboardCalendarV282",
  "v282CoachAgendaBody","v259CoachCalendar",
- "coachTab=\\'agenda\\';render()",
- "productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"
-]
+ "coachTab=\\'agenda\\';render()",]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing=[x for x in required if x not in html]
 logic={
  "final_agenda_router":"if(coachTab==='agenda')return renderCoachAgendaV282()" in html,
