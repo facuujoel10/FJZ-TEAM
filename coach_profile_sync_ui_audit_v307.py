@@ -10,7 +10,7 @@ checks={
  "v175":bool(v175),
  "no_actualizando":"Actualizando…" not in v175,
  "silent_success":"textContent='';" in v175,
- "failure_only_warning":"Datos parciales · la ficha sigue disponible" in v175,
+ "failure_only_warning":"Actualizado · datos parciales · la ficha sigue disponible" in v175,
  "instant_profile_retained":"profileHtmlV114(immediate)" in html,
 }
 failed=[k for k,v in checks.items() if not v]
