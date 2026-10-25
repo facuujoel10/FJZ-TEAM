@@ -88,7 +88,7 @@ def patch_v175(body):
     try{
       const latest=trackingCache?.checkins?.[0]||null;
       renderCoachCockpitV268(s,latest);
-      if(/Preparando lectura operativa|Actualizando datos del alumno/i.test(host.textContent||'')){
+      if(/Actualizando datos del alumno/i.test(host.textContent||'')){
         fallbackCoachCockpitV298(s,'La lectura quedó disponible con los datos locales de la ficha.');
       }
     }catch(e){
