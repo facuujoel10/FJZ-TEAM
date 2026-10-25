@@ -876,9 +876,18 @@ exec(compile(open("v294_session_resilience.py", encoding="utf-8").read(), "v294_
 # V20.95 visual/profile/workout geometry + session feedback fix.
 exec(compile(open("v295_visual_feedback_fix.py", encoding="utf-8").read(), "v295_visual_feedback_fix.py", "exec"))
 
+# V20.96 general audit hardening.
+exec(compile(open("v296_general_audit_hardening.py", encoding="utf-8").read(), "v296_general_audit_hardening.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
 
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
+
+# Production must pass the same artifact audits as staging before Render can publish it.
+# Staging already runs preflight externally in its build command, so avoid duplicate work there.
+if APP_ENV != "staging-local":
+    import runpy
+    runpy.run_path("preflight.py", run_name="__main__")
