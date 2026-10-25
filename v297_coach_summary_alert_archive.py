@@ -53,14 +53,14 @@ def patch_v96(body):
         raise RuntimeError("V20.97 V96 init anchor mismatch")
     body=body.replace(init_anchor,init_repl,1)
 
-    old_read_coach="""  window.readCoachAlertV96=async function(key){
-    const payload={coach_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};
-    const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});
-    if(error){toast(cloudErr(error));return}
-    const x=coachAlertsV96.find(a=>a.event_key===key);if(x)x.is_read=true;
-    coachFeedLoadedAt=0;renderCoachAlertsV96();updateCoachBellV96();
-  };"""
-    new_read_coach="""  window.readCoachAlertV96=async function(key){
+    def replace_between(src,start_marker,end_marker,replacement,label):
+        start=src.find(start_marker)
+        end=src.find(end_marker,start+len(start_marker))
+        if start<0 or end<0 or end<=start:
+            raise RuntimeError("V20.97 V96 "+label+" bounds mismatch")
+        return src[:start]+replacement+src[end:]
+
+    read_coach="""  window.readCoachAlertV96=async function(key){
     const payload={coach_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};
     const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});
     if(error){toast(cloudErr(error));return false}
@@ -71,18 +71,17 @@ def patch_v96(body):
     renderCoachAlertsV96();
     updateCoachBellV96();
     return true
-  };"""
-    if body.count(old_read_coach)!=1:
-        raise RuntimeError("V20.97 V96 coach read anchor mismatch")
-    body=body.replace(old_read_coach,new_read_coach,1)
+  };
+"""
+    body=replace_between(
+        body,
+        "  window.readCoachAlertV96=async function(key){",
+        "\n  window.dismissCoachAlertV96=async function(key){",
+        read_coach,
+        "coach read"
+    )
 
-    old_dismiss_coach="""  window.dismissCoachAlertV96=async function(key){
-    const payload={coach_id:currentUser.id,event_key:key,dismissed_at:new Date().toISOString()};
-    const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});
-    if(error){toast(cloudErr(error));return}
-    coachAlertsV96=coachAlertsV96.filter(x=>x.event_key!==key);coachFeedLoadedAt=0;renderCoachAlertsV96();updateCoachBellV96();
-  };"""
-    new_dismiss_coach="""  window.dismissCoachAlertV96=async function(key){
+    dismiss_coach="""  window.dismissCoachAlertV96=async function(key){
     const payload={coach_id:currentUser.id,event_key:key,dismissed_at:new Date().toISOString()};
     const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});
     if(error){toast(cloudErr(error));return false}
@@ -93,19 +92,17 @@ def patch_v96(body):
     renderCoachAlertsV96();
     updateCoachBellV96();
     return true
-  };"""
-    if body.count(old_dismiss_coach)!=1:
-        raise RuntimeError("V20.97 V96 coach dismiss anchor mismatch")
-    body=body.replace(old_dismiss_coach,new_dismiss_coach,1)
+  };
+"""
+    body=replace_between(
+        body,
+        "  window.dismissCoachAlertV96=async function(key){",
+        "\n  window.readAllCoachAlertsV96=async function(){",
+        dismiss_coach,
+        "coach dismiss"
+    )
 
-    old_read_all="""  window.readAllCoachAlertsV96=async function(){
-    const rows=coachAlertsV96.filter(x=>!x.is_read).map(x=>({coach_id:currentUser.id,event_key:x.event_key,read_at:new Date().toISOString(),dismissed_at:null}));
-    if(!rows.length)return;
-    const {error}=await supabaseClient.from('coach_feed_state').upsert(rows,{onConflict:'coach_id,event_key'});
-    if(error){toast(cloudErr(error));return}
-    coachAlertsV96.forEach(x=>x.is_read=true);coachFeedLoadedAt=0;renderCoachAlertsV96();updateCoachBellV96();toast('Alertas marcadas como leídas');
-  };"""
-    new_read_all="""  window.readAllCoachAlertsV96=async function(){
+    read_all_coach="""  window.readAllCoachAlertsV96=async function(){
     const rows=(coachAlertsV96||[]).map(x=>({coach_id:currentUser.id,event_key:x.event_key,read_at:new Date().toISOString(),dismissed_at:null}));
     if(!rows.length)return;
     const {error}=await supabaseClient.from('coach_feed_state').upsert(rows,{onConflict:'coach_id,event_key'});
@@ -119,19 +116,17 @@ def patch_v96(body):
     updateCoachBellV96();
     toast('Alertas revisadas y archivadas');
     return true
-  };"""
-    if body.count(old_read_all)!=1:
-        raise RuntimeError("V20.97 V96 coach read-all anchor mismatch")
-    body=body.replace(old_read_all,new_read_all,1)
+  };
+"""
+    body=replace_between(
+        body,
+        "  window.readAllCoachAlertsV96=async function(){",
+        "\n  window.openCoachAlertV96=async function(",
+        read_all_coach,
+        "coach read-all"
+    )
 
-    old_student_read="""  window.readStudentAlertV96=async function(key){
-    const payload={student_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};
-    const {error}=await supabaseClient.from('student_alert_state').upsert(payload,{onConflict:'student_id,event_key'});
-    if(error){toast(cloudErr(error));return}
-    const x=studentAlertsV96.find(a=>a.event_key===key);if(x)x.is_read=true;
-    studentAlertsLoadedAtV96=0;renderStudentAlertModalV96();updateStudentAlertsV96(false);
-  };"""
-    new_student_read="""  window.readStudentAlertV96=async function(key){
+    read_student="""  window.readStudentAlertV96=async function(key){
     const payload={student_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};
     const {error}=await supabaseClient.from('student_alert_state').upsert(payload,{onConflict:'student_id,event_key'});
     if(error){toast(cloudErr(error));return false}
@@ -140,20 +135,17 @@ def patch_v96(body):
     renderStudentAlertModalV96();
     updateStudentAlertsV96(false);
     return true
-  };"""
-    if body.count(old_student_read)!=1:
-        raise RuntimeError("V20.97 V96 student read anchor mismatch")
-    body=body.replace(old_student_read,new_student_read,1)
+  };
+"""
+    body=replace_between(
+        body,
+        "  window.readStudentAlertV96=async function(key){",
+        "\n  window.dismissStudentAlertV96=async function(key){",
+        read_student,
+        "student read"
+    )
 
-    old_student_all="""  window.readAllStudentAlertsV96=async function(){
-    const rows=studentAlertsV96.filter(x=>!x.is_read).map(x=>({student_id:currentUser.id,event_key:x.event_key,read_at:new Date().toISOString(),dismissed_at:null}));
-    if(rows.length){
-      const {error}=await supabaseClient.from('student_alert_state').upsert(rows,{onConflict:'student_id,event_key'});
-      if(error){toast(cloudErr(error));return}
-    }
-    studentAlertsV96.forEach(x=>x.is_read=true);studentAlertsLoadedAtV96=0;renderStudentAlertModalV96();updateStudentAlertsV96(false);toast('Avisos marcados como leídos');
-  };"""
-    new_student_all="""  window.readAllStudentAlertsV96=async function(){
+    read_all_student="""  window.readAllStudentAlertsV96=async function(){
     const rows=(studentAlertsV96||[]).map(x=>({student_id:currentUser.id,event_key:x.event_key,read_at:new Date().toISOString(),dismissed_at:null}));
     if(rows.length){
       const {error}=await supabaseClient.from('student_alert_state').upsert(rows,{onConflict:'student_id,event_key'});
@@ -165,10 +157,15 @@ def patch_v96(body):
     updateStudentAlertsV96(false);
     toast('Avisos revisados y archivados');
     return true
-  };"""
-    if body.count(old_student_all)!=1:
-        raise RuntimeError("V20.97 V96 student read-all anchor mismatch")
-    body=body.replace(old_student_all,new_student_all,1)
+  };
+"""
+    body=replace_between(
+        body,
+        "  window.readAllStudentAlertsV96=async function(){",
+        "\n  window.openStudentAlertActionV96=async function(",
+        read_all_student,
+        "student read-all"
+    )
     return body
 
 html=edit_script(html,"v96AlertCenterRuntime",patch_v96)
