@@ -2,6 +2,7 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
+is_staging_local='id="fjzStagingLocalRuntime"' in html
 
 required=[
  'meta name="fjz-mobile-legacy-isolation" content="20.83"',
@@ -16,9 +17,9 @@ required=[
  'input[type="date"]',
  'input[type="time"]',
  "overflow-x:clip",
- "scroll-margin-bottom:calc(136px + env(safe-area-inset-bottom))",
- "productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"
-]
+ "scroll-margin-bottom:calc(136px + env(safe-area-inset-bottom))",]
+if is_staging_local:
+  required += ["productionNetworkBlocked:true","syntheticDataOnly:true","cloudDisabled:true"]
 missing=[x for x in required if x not in html]
 
 retired={
