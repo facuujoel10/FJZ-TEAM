@@ -2,14 +2,83 @@ import base64
 import pathlib
 import re
 import urllib.request
+import os
 
-SOURCE = "https://cujipwacwwpejhqjhnkr.supabase.co/functions/v1/team-fjz-source"
+PINNED_SOURCE = pathlib.Path("base/team-fjz-source-v20.7.html")
+PRODUCTION_SUPABASE_URL = "https://cujipwacwwpejhqjhnkr.supabase.co"
+APP_ENV = os.environ.get("TEAM_FJZ_ENV", "production").strip().lower()
+
+if APP_ENV not in {"production", "staging", "staging-local", "development", "test"}:
+    raise RuntimeError(f"TEAM FJZ safety guard: unknown TEAM_FJZ_ENV={APP_ENV!r}")
+
+if not PINNED_SOURCE.exists():
+    raise RuntimeError(
+        "TEAM FJZ reproducible-build guard: pinned base source is missing: "
+        f"{PINNED_SOURCE}"
+    )
+
+# Reproducible baseline: builds start from the exact V20.7 base stored in Git.
+# We no longer fetch a mutable Edge Function during the build.
+html = PINNED_SOURCE.read_text(encoding="utf-8")
+
+if APP_ENV == "staging-local":
+    # Safe zero-cost staging: cloud access is deliberately disabled.
+    # The final staging guard patch forces local synthetic/demo state.
+    url_pattern = r"const DEFAULT_SUPABASE_URL='[^']+';"
+    key_pattern = r"const DEFAULT_SUPABASE_KEY='[^']+';"
+    html, url_count = re.subn(
+        url_pattern,
+        "const DEFAULT_SUPABASE_URL='https://staging-local.invalid';",
+        html,
+        count=1,
+    )
+    html, key_count = re.subn(
+        key_pattern,
+        "const DEFAULT_SUPABASE_KEY='staging-local-cloud-disabled';",
+        html,
+        count=1,
+    )
+    if url_count != 1 or key_count != 1:
+        raise RuntimeError(
+            "TEAM FJZ staging-local guard: expected exactly one Supabase URL/key constant."
+        )
+elif APP_ENV != "production":
+    staging_url = os.environ.get("TEAM_FJZ_SUPABASE_URL", "").strip().rstrip("/")
+    staging_key = os.environ.get("TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY", "").strip()
+
+    if not staging_url or not staging_key:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: non-production cloud builds require "
+            "TEAM_FJZ_SUPABASE_URL and TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY."
+        )
+    if staging_url == PRODUCTION_SUPABASE_URL:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: non-production build is pointing at the "
+            "production Supabase URL."
+        )
+
+    url_pattern = r"const DEFAULT_SUPABASE_URL='[^']+';"
+    key_pattern = r"const DEFAULT_SUPABASE_KEY='[^']+';"
+    html, url_count = re.subn(
+        url_pattern,
+        "const DEFAULT_SUPABASE_URL=" + repr(staging_url) + ";",
+        html,
+        count=1,
+    )
+    html, key_count = re.subn(
+        key_pattern,
+        "const DEFAULT_SUPABASE_KEY=" + repr(staging_key) + ";",
+        html,
+        count=1,
+    )
+    if url_count != 1 or key_count != 1:
+        raise RuntimeError(
+            "TEAM FJZ staging guard: expected exactly one Supabase URL/key "
+            "constant in the pinned base."
+        )
+
 OUT = pathlib.Path("public")
 OUT.mkdir(parents=True, exist_ok=True)
-
-req = urllib.request.Request(SOURCE, headers={"User-Agent": "TEAM-FJZ-Render-Build/1.0"})
-with urllib.request.urlopen(req, timeout=60) as response:
-    html = response.read().decode("utf-8")
 
 if "<!doctype html" not in html.lower() or "TEAM FJZ" not in html:
     raise RuntimeError("La fuente de TEAM FJZ no devolvió la aplicación esperada.")
@@ -548,6 +617,265 @@ exec(compile(open("v206_fluidity_runtime_audit.py", encoding="utf-8").read(), "v
 
 # V20.7 confirmed session commit state machine
 exec(compile(open("v207_confirmed_session_commit.py", encoding="utf-8").read(), "v207_confirmed_session_commit.py", "exec"))
+
+# V20.8 consolidate superseded workout completion wrappers.
+exec(compile(open("v208_workout_save_wrapper_consolidation.py", encoding="utf-8").read(), "v208_workout_save_wrapper_consolidation.py", "exec"))
+
+# V20.9 consolidate superseded routine save/reorder authorities.
+exec(compile(open("v209_routine_authority_consolidation.py", encoding="utf-8").read(), "v209_routine_authority_consolidation.py", "exec"))
+
+# V20.10 consolidate duplicate alert realtime into the unified authority.
+exec(compile(open("v210_alert_realtime_consolidation.py", encoding="utf-8").read(), "v210_alert_realtime_consolidation.py", "exec"))
+
+# V20.11 delegate the original core realtime subscription to V13.2.
+exec(compile(open("v211_core_realtime_delegation.py", encoding="utf-8").read(), "v211_core_realtime_delegation.py", "exec"))
+
+# V20.12 delegate exercise feedback realtime to the unified authority.
+exec(compile(open("v212_feedback_realtime_delegation.py", encoding="utf-8").read(), "v212_feedback_realtime_delegation.py", "exec"))
+
+# V20.13 inventory the final realtime surface without behavior changes.
+exec(compile(open("v213_nutrition_habit_realtime_delegation.py", encoding="utf-8").read(), "v213_nutrition_habit_realtime_delegation.py", "exec"))
+
+# V20.14 delegate global music realtime to the unified authority.
+exec(compile(open("v214_global_music_realtime_delegation.py", encoding="utf-8").read(), "v214_global_music_realtime_delegation.py", "exec"))
+
+# V20.15 delegate V80 media/feedback realtime to the unified authority.
+exec(compile(open("v215_v80_realtime_delegation.py", encoding="utf-8").read(), "v215_v80_realtime_delegation.py", "exec"))
+
+# V20.16 delegate core nutrition realtime to the unified authority.
+exec(compile(open("v216_core_nutrition_realtime_delegation.py", encoding="utf-8").read(), "v216_core_nutrition_realtime_delegation.py", "exec"))
+
+# V20.17 delegate nutrition templates/revisions realtime to V13.2.
+exec(compile(open("v217_nutrition_extra_realtime_delegation.py", encoding="utf-8").read(), "v217_nutrition_extra_realtime_delegation.py", "exec"))
+
+# V20.18 delegate agenda realtime to the unified authority.
+exec(compile(open("v218_agenda_realtime_delegation.py", encoding="utf-8").read(), "v218_agenda_realtime_delegation.py", "exec"))
+
+# V20.19 consolidate profile render work into the V14 authority.
+exec(compile(open("v219_profile_render_wrapper_consolidation.py", encoding="utf-8").read(), "v219_profile_render_wrapper_consolidation.py", "exec"))
+
+# V20.20 consolidate V17.7 tracking repair wrappers into V19.2.
+exec(compile(open("v220_tracking_repair_wrapper_consolidation.py", encoding="utf-8").read(), "v220_tracking_repair_wrapper_consolidation.py", "exec"))
+
+# V20.21 remove the duplicate V11.9 profile cleanup render wrapper.
+exec(compile(open("v221_general_repair_render_consolidation.py", encoding="utf-8").read(), "v221_general_repair_render_consolidation.py", "exec"))
+
+# V20.22 integrate the V15.8 fluid render transaction into V17.8.
+exec(compile(open("v222_fluid_render_transaction_consolidation.py", encoding="utf-8").read(), "v222_fluid_render_transaction_consolidation.py", "exec"))
+
+# V20.23 professional visual foundation; CSS-only/runtime-topology neutral.
+exec(compile(open("v223_professional_ui_foundation.py", encoding="utf-8").read(), "v223_professional_ui_foundation.py", "exec"))
+
+# V20.24 professional student home using existing data/actions only.
+exec(compile(open("v224_student_dashboard_pro.py", encoding="utf-8").read(), "v224_student_dashboard_pro.py", "exec"))
+
+# V20.25 professional coach dashboard preserving V80 attention/feed authority.
+exec(compile(open("v225_coach_dashboard_pro.py", encoding="utf-8").read(), "v225_coach_dashboard_pro.py", "exec"))
+
+# V20.26 professional canonical coach-student profile / Resumen 360.
+exec(compile(open("v226_profile_360_pro.py", encoding="utf-8").read(), "v226_profile_360_pro.py", "exec"))
+
+# V20.27 professional workout experience; visual-only.
+exec(compile(open("v227_workout_experience_pro.py", encoding="utf-8").read(), "v227_workout_experience_pro.py", "exec"))
+
+# V20.28 professional tracking/progress experience; visual-only.
+exec(compile(open("v228_tracking_progress_pro.py", encoding="utf-8").read(), "v228_tracking_progress_pro.py", "exec"))
+
+# V20.29 professional nutrition experience; visual-only.
+exec(compile(open("v229_nutrition_pro.py", encoding="utf-8").read(), "v229_nutrition_pro.py", "exec"))
+
+# V20.30 professional agenda/alerts experience; visual-only, payments untouched.
+exec(compile(open("v230_agenda_alerts_pro.py", encoding="utf-8").read(), "v230_agenda_alerts_pro.py", "exec"))
+
+# V20.31 professional routine builder/library experience; visual-only.
+exec(compile(open("v231_routine_builder_pro.py", encoding="utf-8").read(), "v231_routine_builder_pro.py", "exec"))
+
+# V20.32 reconcile any previously pending workout before another can start.
+exec(compile(open("v232_pending_session_recovery.py", encoding="utf-8").read(), "v232_pending_session_recovery.py", "exec"))
+
+# V20.33 static UX states/accessibility; no runtime topology changes.
+exec(compile(open("v233_ux_states_accessibility.py", encoding="utf-8").read(), "v233_ux_states_accessibility.py", "exec"))
+
+# V20.35 functional coach workflow upgrade using existing dashboard/feed data.
+exec(compile(open("v235_coach_workflow_pro.py", encoding="utf-8").read(), "v235_coach_workflow_pro.py", "exec"))
+
+# V20.36 coach work queue: sort + next priority using existing data.
+exec(compile(open("v236_coach_work_queue.py", encoding="utf-8").read(), "v236_coach_work_queue.py", "exec"))
+
+# V20.37 per-student coach review baseline + changes/decisions.
+exec(compile(open("v237_coach_review_hub.py", encoding="utf-8").read(), "v237_coach_review_hub.py", "exec"))
+
+# V20.38 dashboard review loop: new changes / unreviewed / current.
+exec(compile(open("v238_coach_review_loop.py", encoding="utf-8").read(), "v238_coach_review_loop.py", "exec"))
+
+# V20.39 bounded coach decision/review history inside student snapshot.
+exec(compile(open("v239_coach_decision_log.py", encoding="utf-8").read(), "v239_coach_decision_log.py", "exec"))
+
+# V20.40 per-student coach review cadence and overdue-review queue.
+exec(compile(open("v240_coach_review_cadence.py", encoding="utf-8").read(), "v240_coach_review_cadence.py", "exec"))
+
+# V20.41 structured student feedback attached to confirmed workout session.
+exec(compile(open("v241_student_session_feedback.py", encoding="utf-8").read(), "v241_student_session_feedback.py", "exec"))
+
+# V20.42 coach response + visible next step for session feedback.
+exec(compile(open("v242_coach_session_feedback_response.py", encoding="utf-8").read(), "v242_coach_session_feedback_response.py", "exec"))
+
+# V20.43 student journey + session-feedback coach priority.
+exec(compile(open("v243_student_journey_feedback_priority.py", encoding="utf-8").read(), "v243_student_journey_feedback_priority.py", "exec"))
+
+# V20.44 unified workout/session feedback/coach response history.
+exec(compile(open("v244_unified_session_history.py", encoding="utf-8").read(), "v244_unified_session_history.py", "exec"))
+
+# V20.45 student smart action hub + coach-response acknowledgement.
+exec(compile(open("v245_student_action_hub.py", encoding="utf-8").read(), "v245_student_action_hub.py", "exec"))
+
+# V20.46 confirmed check-in success modal after cloud persistence.
+exec(compile(open("v246_confirmed_checkin_success.py", encoding="utf-8").read(), "v246_confirmed_checkin_success.py", "exec"))
+
+# V20.47 professional coach review + student reply for weekly check-ins.
+exec(compile(open("v247_professional_checkin_review.py", encoding="utf-8").read(), "v247_professional_checkin_review.py", "exec"))
+
+# V20.48 Student Home check-in reply + acknowledgement back to Coach.
+exec(compile(open("v248_checkin_reply_loop.py", encoding="utf-8").read(), "v248_checkin_reply_loop.py", "exec"))
+
+# V20.49 four-week performance/adherence/wellness progress pulse.
+exec(compile(open("v249_progress_pulse.py", encoding="utf-8").read(), "v249_progress_pulse.py", "exec"))
+
+# V20.50 selected-student operational weekly brief in Resumen 360.
+exec(compile(open("v250_coach_weekly_brief.py", encoding="utf-8").read(), "v250_coach_weekly_brief.py", "exec"))
+
+# V20.51 populated warm-up / activation / stretching library.
+exec(compile(open("v251_warmup_mobility_library.py", encoding="utf-8").read(), "v251_warmup_mobility_library.py", "exec"))
+
+# V20.52 consolidated coach priority center.
+exec(compile(open("v252_coach_priority_center.py", encoding="utf-8").read(), "v252_coach_priority_center.py", "exec"))
+
+# V20.53 unified Student Home workout/feedback/check-in/coach flow.
+exec(compile(open("v253_student_week_flow.py", encoding="utf-8").read(), "v253_student_week_flow.py", "exec"))
+
+# V20.54 per-exercise strength/hypertrophy performance progress.
+exec(compile(open("v254_exercise_performance_progress.py", encoding="utf-8").read(), "v254_exercise_performance_progress.py", "exec"))
+
+# V20.55 mobile geometry/input/modal stability hardening.
+exec(compile(open("v255_mobile_stability_pass.py", encoding="utf-8").read(), "v255_mobile_stability_pass.py", "exec"))
+
+# V20.56 final consolidation/authority gate; removes obsolete Home DOM pass.
+exec(compile(open("v256_consolidation_gate.py", encoding="utf-8").read(), "v256_consolidation_gate.py", "exec"))
+
+# V20.57 adds a dedicated weekly priority to the professional check-in review.
+exec(compile(open("v257_checkin_weekly_focus.py", encoding="utf-8").read(), "v257_checkin_weekly_focus.py", "exec"))
+
+# V20.58 keeps the latest reviewed coach plan visible on Student Home.
+exec(compile(open("v258_student_current_plan.py", encoding="utf-8").read(), "v258_student_current_plan.py", "exec"))
+
+# V20.59 coach action center 2.0 + operational calendar.
+exec(compile(open("v259_coach_action_calendar.py", encoding="utf-8").read(), "v259_coach_action_calendar.py", "exec"))
+
+# V20.60 fast four-week coach snapshot per athlete.
+exec(compile(open("v260_coach_four_week_snapshot.py", encoding="utf-8").read(), "v260_coach_four_week_snapshot.py", "exec"))
+
+# V20.62 visual-only premium polish and accessibility refinement.
+exec(compile(open("v262_premium_polish.py", encoding="utf-8").read(), "v262_premium_polish.py", "exec"))
+
+# V20.63 preproduction auth/session hardening.
+exec(compile(open("v263_preproduction_hardening.py", encoding="utf-8").read(), "v263_preproduction_hardening.py", "exec"))
+
+# V20.64 consistent confirmed-save feedback across Coach and Student flows.
+exec(compile(open("v264_confirmed_save_feedback.py", encoding="utf-8").read(), "v264_confirmed_save_feedback.py", "exec"))
+
+# V20.65 release-candidate box alignment + anti-warp geometry hardening.
+exec(compile(open("v265_release_candidate_geometry.py", encoding="utf-8").read(), "v265_release_candidate_geometry.py", "exec"))
+
+# V20.66 Coach athlete workspace redesign.
+exec(compile(open("v266_coach_athlete_workspace.py", encoding="utf-8").read(), "v266_coach_athlete_workspace.py", "exec"))
+
+# V20.67 Coach profile/avatar + strict input contracts.
+exec(compile(open("v267_coach_profile_input_contracts.py", encoding="utf-8").read(), "v267_coach_profile_input_contracts.py", "exec"))
+
+# V20.68 Remove music + coach cockpit + robust avatar surface.
+exec(compile(open("v268_coach_cockpit_music_avatar.py", encoding="utf-8").read(), "v268_coach_cockpit_music_avatar.py", "exec"))
+
+# V20.69 Routine library / preparation separation + modal geometry.
+exec(compile(open("v269_routine_library_preparation.py", encoding="utf-8").read(), "v269_routine_library_preparation.py", "exec"))
+
+# V20.70 360/390 mobile geometry + resilient profile-avatar loading.
+exec(compile(open("v270_mobile_edge_avatar_resilience.py", encoding="utf-8").read(), "v270_mobile_edge_avatar_resilience.py", "exec"))
+
+# V20.71 Explicit Coach -> Student preview context and one-tap return.
+exec(compile(open("v271_coach_student_preview_context.py", encoding="utf-8").read(), "v271_coach_student_preview_context.py", "exec"))
+
+# V20.72 single preparation authority + advanced coach macro calculator.
+exec(compile(open("v272_preparation_nutrition_calculator.py", encoding="utf-8").read(), "v272_preparation_nutrition_calculator.py", "exec"))
+
+# V20.73 persist preparation migration + harden macro calculator.
+exec(compile(open("v273_preparation_nutrition_hardening.py", encoding="utf-8").read(), "v273_preparation_nutrition_hardening.py", "exec"))
+
+# V20.74 final runtime stability consolidation.
+exec(compile(open("v274_final_runtime_stability.py", encoding="utf-8").read(), "v274_final_runtime_stability.py", "exec"))
+
+# V20.75 premium student mobile HUD + visual progress overview.
+exec(compile(open("v275_mobile_hud_progress.py", encoding="utf-8").read(), "v275_mobile_hud_progress.py", "exec"))
+
+# V20.76 premium Coach mobile HUD + detailed nutrition/macros.
+exec(compile(open("v276_coach_hud_nutrition_detail.py", encoding="utf-8").read(), "v276_coach_hud_nutrition_detail.py", "exec"))
+
+# V20.77 unified save confirmations + final symmetry/geometry pass.
+exec(compile(open("v277_save_confirmation_geometry.py", encoding="utf-8").read(), "v277_save_confirmation_geometry.py", "exec"))
+
+# V20.78 specific smart alerts + professional progress charts.
+exec(compile(open("v278_smart_alerts_progress.py", encoding="utf-8").read(), "v278_smart_alerts_progress.py", "exec"))
+
+# V20.79 final save/render/lag/mobile stability polish.
+exec(compile(open("v279_final_stability_polish.py", encoding="utf-8").read(), "v279_final_stability_polish.py", "exec"))
+
+# V20.80 recover Coach priorities/calendar in staging.
+exec(compile(open("v280_priority_calendar_recovery.py", encoding="utf-8").read(), "v280_priority_calendar_recovery.py", "exec"))
+
+# V20.81 restore Coach workflow authorities + integrity gate.
+exec(compile(open("v281_coach_integrity_recovery.py", encoding="utf-8").read(), "v281_coach_integrity_recovery.py", "exec"))
+
+# V20.82 harden Coach Agenda route + dashboard calendar host.
+exec(compile(open("v282_calendar_route_hardening.py", encoding="utf-8").read(), "v282_calendar_route_hardening.py", "exec"))
+
+# V20.83 isolate legacy routes + harden mobile geometry/state recovery.
+exec(compile(open("v283_mobile_legacy_isolation.py", encoding="utf-8").read(), "v283_mobile_legacy_isolation.py", "exec"))
+
+# V20.84 final independent Coach calendar authority.
+exec(compile(open("v284_final_calendar_authority.py", encoding="utf-8").read(), "v284_final_calendar_authority.py", "exec"))
+
+# V20.85 final release-candidate hardening.
+exec(compile(open("v285_final_release_candidate.py", encoding="utf-8").read(), "v285_final_release_candidate.py", "exec"))
+
+# V20.86 desktop typography + single mobile athlete navigation + feedback symmetry.
+exec(compile(open("v286_typography_mobile_nav_feedback.py", encoding="utf-8").read(), "v286_typography_mobile_nav_feedback.py", "exec"))
+
+# V20.87 show exercise comments inside session review + persist snapshot.
+exec(compile(open("v287_session_exercise_comments.py", encoding="utf-8").read(), "v287_session_exercise_comments.py", "exec"))
+
+# V20.88 improve Coach desktop typography/readability.
+exec(compile(open("v288_desktop_coach_readability.py", encoding="utf-8").read(), "v288_desktop_coach_readability.py", "exec"))
+
+# V20.89 increase desktop readability + quarantine retired runtime/payment paths.
+exec(compile(open("v289_desktop_readability_legacy_cleanup.py", encoding="utf-8").read(), "v289_desktop_readability_legacy_cleanup.py", "exec"))
+
+# V20.90 final product layer: Today + habits/streaks + PRs + adherence risk + check-in assistant.
+exec(compile(open("v290_final_product_layer.py", encoding="utf-8").read(), "v290_final_product_layer.py", "exec"))
+
+# V20.91 harden PR/new-feature UX + finish-workout readability.
+exec(compile(open("v291_new_feature_hardening.py", encoding="utf-8").read(), "v291_new_feature_hardening.py", "exec"))
+
+# V20.92 single canonical coach-athlete navigation.
+exec(compile(open("v292_single_coach_nav.py", encoding="utf-8").read(), "v292_single_coach_nav.py", "exec"))
+
+# V20.93 password recovery hardening.
+exec(compile(open("v293_password_recovery_hardening.py", encoding="utf-8").read(), "v293_password_recovery_hardening.py", "exec"))
+
+# V20.94 auth/session resilience.
+exec(compile(open("v294_session_resilience.py", encoding="utf-8").read(), "v294_session_resilience.py", "exec"))
+
+# Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
+if APP_ENV == "staging-local":
+    exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
 
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
