@@ -170,6 +170,6 @@ for marker in [
 
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V21.06 check-in freshness + week presentation")
-print("V21.06 raw week labels replaced:",week_count)
+print("V21.06 student week labels replaced:",label_count)\nprint("V21.06 raw week labels replaced:",week_count)
 print("V21.06 BEFORE:",before)
 print("V21.06 AFTER:",after)
