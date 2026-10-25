@@ -894,6 +894,9 @@ exec(compile(open("v301_review_workflow_pro.py", encoding="utf-8").read(), "v301
 # V21.02 authoritative resolved-state lifecycle. Seen != resolved; OK owns removal.
 exec(compile(open("v302_review_resolution_authority.py", encoding="utf-8").read(), "v302_review_resolution_authority.py", "exec"))
 
+# V21.03 save integrity: verified check-in read-back + persistent confirmed-save receipt.
+exec(compile(open("v303_save_integrity.py", encoding="utf-8").read(), "v303_save_integrity.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
