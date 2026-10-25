@@ -912,6 +912,9 @@ exec(compile(open("v307_coach_profile_sync_ui.py", encoding="utf-8").read(), "v3
 # V21.08 stop repeated first-review cards and migrate already-resolved reviews.
 exec(compile(open("v308_review_recurrence_fix.py", encoding="utf-8").read(), "v308_review_recurrence_fix.py", "exec"))
 
+# V21.09 use one general Brazo and one general Muslo in Progress/measurements.
+exec(compile(open("v309_general_body_measurements.py", encoding="utf-8").read(), "v309_general_body_measurements.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
