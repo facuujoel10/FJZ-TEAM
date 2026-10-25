@@ -236,6 +236,20 @@ def patch_v278(body):
 
 html=edit_script(html,"v278SmartAlertsProgressRuntime",patch_v278)
 
+# Base dashboard actions are global and are used by the V80 attention surface.
+# Keep their local cache in sync with the archive record as well.
+old_mark_feed="async function markFeedRead(key){const payload={coach_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});if(error){toast(cloudErr(error));return}coachFeedLoadedAt=0;await refreshCoachFeed()}"
+new_mark_feed="async function markFeedRead(key){const payload={coach_id:currentUser.id,event_key:key,read_at:new Date().toISOString(),dismissed_at:null};const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});if(error){toast(cloudErr(error));return false}window.__fjzReviewedCoachKeysV297?.add(String(key));try{coachFeedCache=(coachFeedCache||[]).filter(x=>x?.event_key!==key)}catch(_e){}coachFeedLoadedAt=0;try{await refreshCoachFeed()}catch(_e){}try{await window.__fjzRenderPrioritySmartV278?.()}catch(_e){}return true}"
+if html.count(old_mark_feed)!=1:
+    raise RuntimeError("V20.97 base markFeedRead anchor mismatch: "+str(html.count(old_mark_feed)))
+html=html.replace(old_mark_feed,new_mark_feed,1)
+
+old_dismiss_feed="async function dismissFeed(key){const payload={coach_id:currentUser.id,event_key:key,dismissed_at:new Date().toISOString()};const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});if(error){toast(cloudErr(error));return}coachFeedLoadedAt=0;await refreshCoachFeed()}"
+new_dismiss_feed="async function dismissFeed(key){const payload={coach_id:currentUser.id,event_key:key,dismissed_at:new Date().toISOString()};const {error}=await supabaseClient.from('coach_feed_state').upsert(payload,{onConflict:'coach_id,event_key'});if(error){toast(cloudErr(error));return false}window.__fjzReviewedCoachKeysV297?.add(String(key));try{coachFeedCache=(coachFeedCache||[]).filter(x=>x?.event_key!==key)}catch(_e){}coachFeedLoadedAt=0;try{await refreshCoachFeed()}catch(_e){}try{await window.__fjzRenderPrioritySmartV278?.()}catch(_e){}return true}"
+if html.count(old_dismiss_feed)!=1:
+    raise RuntimeError("V20.97 base dismissFeed anchor mismatch: "+str(html.count(old_dismiss_feed)))
+html=html.replace(old_dismiss_feed,new_dismiss_feed,1)
+
 def patch_v175(body):
     start=body.find("  async function hydrateSummaryV175(){")
     end=body.find("\n  window.renderCoachSummary=function(){",start)
