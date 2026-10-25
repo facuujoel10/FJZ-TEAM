@@ -37,26 +37,22 @@ def patch_v175(body):
     if body.count(old_success)!=1:
         raise RuntimeError("V21.07 summary-success anchor mismatch: "+str(body.count(old_success)))
     body=body.replace(old_success,new_success,1)
-    return body
 
-html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
-
-# Keep only a useful warning if cloud refresh genuinely fails.
-def patch_v297(body):
-    old=r"""    const summaryState=el('v175SummaryState');
+    old_final=r"""    const summaryState=el('v175SummaryState');
     if(summaryState&&/Actualizando|Preparando|Cargando/i.test(summaryState.textContent||'')){
       summaryState.textContent=failed?'Actualizado · datos parciales':'Actualizado';
     }"""
-    new=r"""    const summaryState=el('v175SummaryState');
+    new_final=r"""    const summaryState=el('v175SummaryState');
     if(summaryState){
       summaryState.textContent=failed?'Datos parciales · la ficha sigue disponible':'';
       summaryState.classList.toggle('v307-sync-warning',!!failed);
     }"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.07 V297 final-state anchor mismatch: "+str(body.count(old)))
-    return body.replace(old,new,1)
+    if body.count(old_final)!=1:
+        raise RuntimeError("V21.07 final-state anchor mismatch: "+str(body.count(old_final)))
+    body=body.replace(old_final,new_final,1)
+    return body
 
-html=edit_script(html,"v297CoachSummaryAlertArchiveRuntime",patch_v297)
+html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 
 css=r"""
 /* TEAM FJZ · V21.07 COACH PROFILE SYNC UI */
