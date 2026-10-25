@@ -22,7 +22,7 @@ checks={
   "auth_guard":"__fjzEnsureFreshAuthV194" in v303,
   "no_realtime_dependency":"noRealtimeDependencyForSaveConfirmation:true" in v303,
   "global_confirm_receipt":"const baseConfirm=window.__fjzConfirmSavedV264" in v303,
-  "session_commit_existing":"confirmedSessionCommit:true" in html or "confirmedSession" in html,
+  "session_commit_existing":'id="v207ConfirmedSessionCommitRuntime"' in html and "__fjzManualSessionCommitV207" in html,
   "confirmed_save_layer_existing":"greenConfirmedSaveFeedback:true" in html and "duplicateAsyncSaveGuard:true" in html,
   "checkin_cloud_confirmation_existing":"checkinSuccessOnlyAfterCloudConfirmation:true" in html,
   "no_timer":"setInterval(" not in v303 and "setTimeout(" not in v303,
