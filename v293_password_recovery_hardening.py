@@ -30,7 +30,7 @@ for marker in [
 
 # Capture recovery in the first auth listener and stop normal session routing.
 old="async function initSupabase(){const c=cloudConfig();if(!c?.url||!c?.key)throw new Error('Falta configurar Supabase.');const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');supabaseClient=mod.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});cloudEnabled=true;supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){currentUser=null;currentProfile=null;showAuthGate()}else if(event==='SIGNED_IN'&&session?.user&&!currentUser){setTimeout(()=>handleSession(session),0)}})}"
-new="async function initSupabase(){const c=cloudConfig();if(!c?.url||!c?.key)throw new Error('Falta configurar Supabase.');let recovery=false,recoveryError='';try{const u=new URL(location.href),h=new URLSearchParams((location.hash||'').replace(/^#/,''));const type=u.searchParams.get('type')||h.get('type')||'';recovery=type==='recovery';recoveryError=u.searchParams.get('error_description')||h.get('error_description')||''}catch(_e){}window.__fjzRecoveryModeV293=recovery;window.__fjzRecoveryUrlErrorV293=recoveryError;const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');supabaseClient=mod.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});cloudEnabled=true;supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){window.__fjzRecoveryModeV293=true;if(session?.user)currentUser=session.user;setTimeout(()=>{try{showPasswordUpdateV81()}catch(_e){}},0);return}if(event==='SIGNED_OUT'){currentUser=null;currentProfile=null;if(!window.__fjzRecoveryModeV293)showAuthGate()}else if(event==='SIGNED_IN'&&session?.user&&!currentUser&&!window.__fjzRecoveryModeV293){setTimeout(()=>handleSession(session),0)}})}"
+new="async function initSupabase(){const c=cloudConfig();if(!c?.url||!c?.key)throw new Error('Falta configurar Supabase.');let recovery=false,recoveryError='';try{const u=new URL(location.href),h=new URLSearchParams((location.hash||'').replace(/^#/,''));const type=u.searchParams.get('type')||h.get('type')||'';recovery=type==='recovery';recoveryError=u.searchParams.get('error_description')||h.get('error_description')||''}catch(_e){}window.__fjzRecoveryModeV293=recovery;window.__fjzRecoveryUrlErrorV293=recoveryError;const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');supabaseClient=mod.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});cloudEnabled=true;supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){window.__fjzRecoveryModeV293=true;if(session?.user)currentUser=session.user;queueMicrotask(()=>{try{showPasswordUpdateV81()}catch(_e){}});return}if(event==='SIGNED_OUT'){currentUser=null;currentProfile=null;if(!window.__fjzRecoveryModeV293)showAuthGate()}else if(event==='SIGNED_IN'&&session?.user&&!currentUser&&!window.__fjzRecoveryModeV293){setTimeout(()=>handleSession(session),0)}})}"
 if html.count(old)!=1:
     raise RuntimeError("V20.93 initSupabase anchor mismatch: "+str(html.count(old)))
 html=html.replace(old,new,1)
@@ -94,8 +94,7 @@ replacement2="""async function saveRecoveredPasswordV81(){
     window.__fjzRecoveryUrlErrorV293='';
     try{history.replaceState(null,'',location.origin+location.pathname)}catch(_e){}
     const {data}=await supabaseClient.auth.getSession();
-    if(data?.session)setTimeout(()=>handleSession(data.session),450);
-    else setTimeout(()=>showAuthGate('login','Contraseña actualizada. Ingresá con tu nueva contraseña.'),450)
+    setTimeout(()=>{if(data?.session)handleSession(data.session);else showAuthGate('login','Contraseña actualizada. Ingresá con tu nueva contraseña.')},450)
   }catch(e){setAuthMsg(cloudErr(e))}
   finally{
     window.__fjzRecoverySaveBusyV293=false;
@@ -118,12 +117,13 @@ initSupabase=async function(){
 new_wrap="""const _initSupabaseV81Base=initSupabase;
 initSupabase=async function(){
   await _initSupabaseV81Base();
+  const defer=fn=>setTimeout(fn,0);
   if(window.__fjzRecoveryUrlErrorV293){
     window.__fjzRecoveryModeV293=false;
-    setTimeout(()=>showAuthGate('login','El enlace de recuperación venció, ya fue usado o no es válido. Pedí uno nuevo.'),0);
+    defer(()=>showAuthGate('login','El enlace de recuperación venció, ya fue usado o no es válido. Pedí uno nuevo.'));
     return
   }
-  if(window.__fjzRecoveryModeV293)setTimeout(showPasswordUpdateV81,0)
+  if(window.__fjzRecoveryModeV293)defer(showPasswordUpdateV81)
 };"""
 if html.count(old_wrap)!=1:
     raise RuntimeError("V20.93 V81 recovery wrapper mismatch: "+str(html.count(old_wrap)))
