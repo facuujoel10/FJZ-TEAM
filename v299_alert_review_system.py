@@ -546,25 +546,84 @@ def patch_v280(body):
 html=edit_script(html,"v280OperationalRecoveryRuntime",patch_v280)
 
 # ------------------------------------------------------------------
-# 5. Old Coach focus/filter logic must respect the same acknowledgement.
+# 5. V20.81 is the active Coach focus/filter authority. Make that restored
+# runtime respect the same current-snapshot acknowledgement.
 # ------------------------------------------------------------------
-old_state="""function coachStateV235(s){
-  const a=Number(adherence(s)||0),days=coachDaysSinceV235(s?.lastWorkout);
-  return {a,days,review:statusFor(s)==='Revisar',low:a<70,inactive:days>=7};
-}"""
-new_state="""function coachStateV235(s){
-  const a=Number(adherence(s)||0),days=coachDaysSinceV235(s?.lastWorkout);
-  let current=false;
-  try{
-    const r=typeof coachReviewLoopStateV238==='function'?(coachReviewLoopStateV238(s)||{}):{};
-    current=!!r.hasBaseline&&!r.changed&&!r.reviewDue;
-  }catch(_e){}
-  try{current=current||!!window.__fjzIsReviewAckedV299?.(s)}catch(_e){}
-  return {a,days,review:!current&&statusFor(s)==='Revisar',low:!current&&a<70,inactive:!current&&days>=7};
-}"""
-if html.count(old_state)!=1:
-    raise RuntimeError("V20.99 coachStateV235 mismatch: "+str(html.count(old_state)))
-html=html.replace(old_state,new_state,1)
+def patch_v281(body):
+    old_score="""function scoreV281(s){
+    const r=reviewStateV281(s),adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout);
+    return criticalV281(s)*8+pendingV281(s)*3+pendingFeedbackV281(s)*7+
+      (statusV281(s)==='Revisar'?5:0)+(adh<70?3:0)+(days>=7?2:0)+
+      (r.changed?4:0)+(r.reviewDue?3:0)+(!r.hasBaseline?2:0);
+  }"""
+    new_score="""function scoreV281(s){
+    const r=reviewStateV281(s),adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout);
+    const feed=pendingV281(s),sf=pendingFeedbackV281(s),critical=criticalV281(s);
+    const acked=!!window.__fjzIsReviewAckedV299?.(s);
+    if(acked&&!feed&&!sf&&!critical)return 0;
+    return critical*8+feed*3+sf*7+
+      (statusV281(s)==='Revisar'?5:0)+(adh<70?3:0)+(days>=7?2:0)+
+      (r.changed?4:0)+(r.reviewDue?3:0)+(!r.hasBaseline?2:0);
+  }"""
+    if body.count(old_score)!=1:
+        raise RuntimeError("V20.99 V281 score mismatch")
+    body=body.replace(old_score,new_score,1)
+
+    old_filter="""      const adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout),r=reviewStateV281(s);
+      if(filterV281==='review')return statusV281(s)==='Revisar';
+      if(filterV281==='low')return adh<70;
+      if(filterV281==='inactive')return days>=7;
+      if(filterV281==='changes')return r.changed;
+      if(filterV281==='unreviewed')return !r.hasBaseline;
+      if(filterV281==='due')return r.reviewDue;
+      if(filterV281==='session_feedback')return pendingFeedbackV281(s)>0;"""
+    new_filter="""      const adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout),r=reviewStateV281(s);
+      const active=pendingV281(s)>0||pendingFeedbackV281(s)>0||criticalV281(s)>0;
+      const acked=!!window.__fjzIsReviewAckedV299?.(s)&&!active;
+      if(filterV281==='review')return !acked&&statusV281(s)==='Revisar';
+      if(filterV281==='low')return !acked&&adh<70;
+      if(filterV281==='inactive')return !acked&&days>=7;
+      if(filterV281==='changes')return !acked&&r.changed;
+      if(filterV281==='unreviewed')return !acked&&!r.hasBaseline;
+      if(filterV281==='due')return !acked&&r.reviewDue;
+      if(filterV281==='session_feedback')return pendingFeedbackV281(s)>0;"""
+    if body.count(old_filter)!=1:
+        raise RuntimeError("V20.99 V281 filter mismatch")
+    body=body.replace(old_filter,new_filter,1)
+
+    old_badge="""      const r=reviewStateV281(s),main=row.querySelector('.student-main');if(!main)return;
+      const cls=!r.hasBaseline?'unreviewed':r.reviewDue?'due':r.changed?'changed':'current';
+      const label=!r.hasBaseline?'Sin revisión':r.reviewDue?'Revisión vencida':r.changed?'Nuevo desde revisión':'Revisado';"""
+    new_badge="""      const r=reviewStateV281(s),main=row.querySelector('.student-main');if(!main)return;
+      const active=pendingV281(s)>0||pendingFeedbackV281(s)>0||criticalV281(s)>0;
+      const acked=!!window.__fjzIsReviewAckedV299?.(s)&&!active;
+      const cls=acked?'current':!r.hasBaseline?'unreviewed':r.reviewDue?'due':r.changed?'changed':'current';
+      const label=acked?'Revisado':!r.hasBaseline?'Sin revisión':r.reviewDue?'Revisión vencida':r.changed?'Nuevo desde revisión':'Revisado';"""
+    if body.count(old_badge)!=1:
+        raise RuntimeError("V20.99 V281 badge mismatch")
+    body=body.replace(old_badge,new_badge,1)
+
+    old_priority="""  window.coachPriorityStateV252=function(s){
+    const r=reviewStateV281(s),adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout),critical=criticalV281(s),sf=pendingFeedbackV281(s),feed=pendingV281(s);
+    if(critical||sf)return {bucket:'urgent',score:100+critical*20+sf*12+feed*2,label:sf?sf+' feedback pendiente':critical+' señal crítica'};
+    if(r.reviewDue||r.changed||statusV281(s)==='Revisar'||adh<70||days>=7||feed)return {bucket:'today',score:50+scoreV281(s),label:r.reviewDue?r.reviewDueLabel:r.changed?r.reason:adh<70?'adherencia '+adh+'%':days>=7&&days<999?days+' días sin entrenar':feed+' pendientes'};
+    return {bucket:'watch',score:scoreV281(s),label:'Seguimiento al día'};
+  };"""
+    new_priority="""  window.coachPriorityStateV252=function(s){
+    const r=reviewStateV281(s),adh=adherenceV281(s),days=daysSinceV281(s?.lastWorkout),critical=criticalV281(s),sf=pendingFeedbackV281(s),feed=pendingV281(s);
+    const acked=!!window.__fjzIsReviewAckedV299?.(s);
+    if(critical||sf)return {bucket:'urgent',score:100+critical*20+sf*12+feed*2,label:sf?sf+' feedback pendiente':critical+' señal crítica'};
+    if(feed)return {bucket:'today',score:50+scoreV281(s),label:feed+' alerta'+(feed===1?'':'s')+' nueva'+(feed===1?'':'s')};
+    if(acked)return {bucket:'watch',score:0,label:'Revisado'};
+    if(r.reviewDue||r.changed||statusV281(s)==='Revisar'||adh<70||days>=7)return {bucket:'today',score:50+scoreV281(s),label:r.reviewDue?r.reviewDueLabel:r.changed?r.reason:adh<70?'adherencia '+adh+'%':days>=7&&days<999?days+' días sin entrenar':'Revisar seguimiento'};
+    return {bucket:'watch',score:0,label:'Seguimiento al día'};
+  };"""
+    if body.count(old_priority)!=1:
+        raise RuntimeError("V20.99 V281 priority state mismatch")
+    body=body.replace(old_priority,new_priority,1)
+    return body
+
+html=edit_script(html,"v281CoachIntegrityRuntime",patch_v281)
 
 # ------------------------------------------------------------------
 # 6. Styling: denser, clearer and mobile-safe.
