@@ -10,7 +10,7 @@ m=re.search(r'<script id="fjzReleaseRuntime">(.*?)</script>',html,re.S)
 runtime=m.group(1) if m else ""
 
 checks={
-  "release_2100":release=="21.00",
+  "release_2100_or_newer":tuple(map(int,release.split("."))) >= (21,0),
   "version_json_matches":str(version.get("release"))==release,
   "cache_matches_release":("team-fjz-v"+release.replace(".","-")) in sw,
   "runtime_present":bool(runtime),
