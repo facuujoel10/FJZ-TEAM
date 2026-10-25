@@ -28,9 +28,10 @@ for marker in [
 
 old_label='<label class="tiny muted">Semana<input id="ciWeek"'
 new_label='<label class="tiny muted">Semana (inicio lunes)<input id="ciWeek"'
-if html.count(old_label)!=1:
-    raise RuntimeError("V21.06 student week label anchor mismatch: "+str(html.count(old_label)))
-html=html.replace(old_label,new_label,1)
+label_count=html.count(old_label)
+if label_count<1:
+    raise RuntimeError("V21.06 student week labels missing: "+str(label_count))
+html=html.replace(old_label,new_label)
 
 old_week='Semana \${esc(c.week_start)}'
 new_week='\${esc(window.__fjzWeekRangeLabelV306?.(c.week_start)||("Semana "+c.week_start))}'
