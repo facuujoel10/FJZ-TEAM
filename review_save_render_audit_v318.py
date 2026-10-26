@@ -40,14 +40,14 @@ checks={
 }
 failed=[k for k,v in checks.items() if not v]
 metrics={
- "styles":len(re.findall(r"<style\\b",html,re.I)),
- "renders":len(re.findall(r"(?:window\\.)?render\\s*=",html)),
- "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
- "timeouts":len(re.findall(r"setTimeout\\s*\\(",html)),
- "intervals":len(re.findall(r"setInterval\\s*\\(",html)),
- "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
- "mutation_observers":len(re.findall(r"new\\s+MutationObserver",html)),
- "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",html)),
+ "styles":len(re.findall(r"<style\b",html,re.I)),
+ "renders":len(re.findall(r"(?:window\.)?render\s*=",html)),
+ "channels":html.count(".channel("),
+ "timeouts":html.count("setTimeout("),
+ "intervals":html.count("setInterval("),
+ "listeners":html.count("addEventListener("),
+ "mutation_observers":html.count("new MutationObserver"),
+ "performance_observers":html.count("new PerformanceObserver"),
 }
 print("TEAM FJZ V21.18 REVIEW / SAVE / RENDER AUDIT")
 print(json.dumps({"release":release,"checks":checks,"failed_checks":failed,"metrics":metrics},indent=2,ensure_ascii=False))
