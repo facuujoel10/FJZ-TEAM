@@ -62,86 +62,10 @@ def patch_v302(body):
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)
 
 # ---------------------------------------------------------
-# 2) Make the legacy V20.38 review loop honor V21.11 cloud state.
-#    This is the layer that was recreating "Sin revisión".
+# 2) Legacy review surfaces are unified at runtime below.
+#    We intentionally do not patch historical function source here because
+#    V20.40/V20.43/V20.81 all evolved that function over time.
 # ---------------------------------------------------------
-pending_anchor="""  const pending=coachPendingV235(s);
-  const sessionPending=pendingSessionFeedbackCountV243(s);
-
-  if(!prev){"""
-pending_repl="""  const pending=coachPendingV235(s);
-  const sessionPending=pendingSessionFeedbackCountV243(s);
-  let athleteIdV312='';
-  try{athleteIdV312=String(coachAthleteV235?.(s)?.id||'')}catch(_e){}
-  const profileReviewedV312=!!athleteIdV312&&!!window.__fjzProfileReviewedAthleteV311?.(athleteIdV312);
-
-  if(!prev){"""
-if html.count(pending_anchor)!=1:
-    raise RuntimeError("V21.12 legacy review pending anchor mismatch: "+str(html.count(pending_anchor)))
-html=html.replace(pending_anchor,pending_repl,1)
-
-no_prev_anchor="""  if(!prev){
-    const due=coachReviewDueV240(s);
-    return {
-      hasBaseline:false,
-      changed:true,
-      reviewDue:true,
-      reviewDueLabel:due.label,
-      reason:'Sin revisión previa',
-      newSessions:sessionsCount,
-      adherenceDelta:null,
-      pending,
-      sessionPending
-    };
-  }"""
-no_prev_repl="""  if(!prev){
-    if(profileReviewedV312){
-      return {
-        hasBaseline:true,
-        changed:false,
-        reviewDue:false,
-        reviewDueLabel:'Perfil 360 revisado',
-        reason:'Perfil 360 revisado',
-        newSessions:0,
-        adherenceDelta:0,
-        pending,
-        sessionPending
-      };
-    }
-    const due=coachReviewDueV240(s);
-    return {
-      hasBaseline:false,
-      changed:true,
-      reviewDue:true,
-      reviewDueLabel:due.label,
-      reason:'Sin revisión previa',
-      newSessions:sessionsCount,
-      adherenceDelta:null,
-      pending,
-      sessionPending
-    };
-  }"""
-if html.count(no_prev_anchor)!=1:
-    raise RuntimeError("V21.12 legacy no-prev anchor mismatch: "+str(html.count(no_prev_anchor)))
-html=html.replace(no_prev_anchor,no_prev_repl,1)
-
-
-# The embedded 360 review hub must also stop saying "Sin revisión previa".
-old_hub="""    const s=student(),prev=s?.coachReviewV237||null;
-    const changes=reviewChangeItemsV237(cur,prev);
-    const decisions=reviewDecisionItemsV237(cur);
-    const stamp=prev?.reviewedAt?reviewDateV237(prev.reviewedAt):'Sin revisión previa';"""
-new_hub="""    const s=student(),prev=s?.coachReviewV237||null;
-    let athleteIdV312='';try{athleteIdV312=String(coachAthleteV235?.(s)?.id||'')}catch(_e){}
-    const profileReviewedV312=!!athleteIdV312&&!!window.__fjzProfileReviewedAthleteV311?.(athleteIdV312);
-    const changes=(!prev&&profileReviewedV312)
-      ?[{tone:'good',title:'Perfil 360 revisado',body:'Este perfil ya fue revisado. Solo aparecerán nuevas señales concretas.',tab:null,label:''}]
-      :reviewChangeItemsV237(cur,prev);
-    const decisions=reviewDecisionItemsV237(cur);
-    const stamp=prev?.reviewedAt?reviewDateV237(prev.reviewedAt):(profileReviewedV312?'Revisado en nube':'Sin revisión previa');"""
-if html.count(old_hub)!=1:
-    raise RuntimeError("V21.12 review hub anchor mismatch: "+str(html.count(old_hub)))
-html=html.replace(old_hub,new_hub,1)
 
 # ---------------------------------------------------------
 # 3) Student appointment card: direct authenticated reads.
@@ -212,6 +136,62 @@ runtime=r"""
 (function(){
   const VERSION='21.12';
   let appointmentCacheV312={userId:null,at:0,data:null,inflight:null};
+
+  function athleteIdForReviewV312(s){
+    try{return String(coachAthleteV235?.(s)?.id||'')}catch(_e){return ''}
+  }
+  function permanentReviewedV312(s){
+    const id=athleteIdForReviewV312(s);
+    return !!id&&!!window.__fjzProfileReviewedAthleteV311?.(id);
+  }
+
+  const baseReviewLoopV312=window.coachReviewLoopStateV238||coachReviewLoopStateV238;
+  window.coachReviewLoopStateV238=function(s){
+    const out=baseReviewLoopV312?.(s)||{};
+    if(permanentReviewedV312(s)&&!s?.coachReviewV237){
+      return {
+        ...out,
+        hasBaseline:true,
+        changed:false,
+        reviewDue:false,
+        reviewDueLabel:'Perfil 360 revisado',
+        reason:'Perfil 360 revisado',
+        newSessions:0,
+        adherenceDelta:0
+      };
+    }
+    return out;
+  };
+  try{coachReviewLoopStateV238=window.coachReviewLoopStateV238}catch(_e){}
+
+  function normalizeLegacyReviewHubV312(){
+    if(!(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='summary'))return;
+    let s=null;try{s=student()}catch(_e){}
+    if(!s||!permanentReviewedV312(s)||s?.coachReviewV237)return;
+    const hub=el('v237ReviewHub');if(!hub)return;
+    const stamp=hub.querySelector('.v237-review-meta strong');
+    if(stamp&&/sin revisi[oó]n/i.test(stamp.textContent||''))stamp.textContent='Revisado en nube';
+    const due=hub.querySelector('.v240-review-due');
+    if(due){due.textContent='Perfil 360 revisado';due.classList.remove('due');due.classList.add('ok')}
+    const changeCol=hub.querySelector('.v237-review-col');
+    if(changeCol){
+      const oldItems=[...changeCol.querySelectorAll('.v237-review-item')];
+      oldItems.forEach(x=>x.remove());
+      changeCol.insertAdjacentHTML('beforeend',
+        '<div class="v237-review-item good"><div><strong>Perfil 360 revisado</strong>'+
+        '<p>Este perfil ya fue revisado. Solo se generarán nuevas revisiones por señales concretas o por una revisión programada real.</p></div></div>');
+    }
+  }
+
+  const baseCoachSummaryV312=window.renderCoachSummary;
+  if(typeof baseCoachSummaryV312==='function'){
+    window.renderCoachSummary=function(){
+      const out=baseCoachSummaryV312.apply(this,arguments);
+      Promise.resolve().then(normalizeLegacyReviewHubV312);
+      return out;
+    };
+    try{renderCoachSummary=window.renderCoachSummary}catch(_e){}
+  }
 
   function localIsoV312(d){
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -338,6 +318,7 @@ runtime=r"""
     try{renderCoachStudentsV235?.()}catch(_e){}
     try{renderCoachFocusV235?.()}catch(_e){}
     try{renderCoachPriorityCenterV252?.()}catch(_e){}
+    try{normalizeLegacyReviewHubV312()}catch(_e){}
   });
 
   window.__fjzV312={
@@ -370,8 +351,10 @@ for marker in [
     'id="v312ReviewAgendaAuthorityRuntime"',
     "__fjzProfileReviewedAthleteV311",
     "Perfil 360 revisado",
-    "Revisado en nube",
     "legacyReviewUsesPermanentCloudState:true",
+    "baseReviewLoopV312",
+    "permanentReviewedV312",
+    "normalizeLegacyReviewHubV312",
     "noDuplicateFirstReviewAfterReload:true",
     "directStudentAppointmentRead:true",
     "appointmentVisibleOnStudentHome:true",
