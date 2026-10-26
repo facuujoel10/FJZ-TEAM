@@ -20,7 +20,7 @@ def edit_script(doc,sid,fn):
     m=pat.search(doc)
     if not m: raise RuntimeError("V21.12 missing script "+sid)
     body=fn(m.group(2))
-    return doc[:m.start(2)]+fn(m.group(2))+doc[m.end(2):]
+    return doc[:m.start(2)]+body+doc[m.end(2):]
 
 before=metrics(html)
 
@@ -73,9 +73,12 @@ old_review="""function coachReviewLoopStateV238(s){
   const pending=coachPendingV235(s);
 
   if(!prev){
+    const due=coachReviewDueV240(s);
     return {
       hasBaseline:false,
       changed:true,
+      reviewDue:true,
+      reviewDueLabel:due.label,
       reason:'Sin revisión previa',
       newSessions:sessionsCount,
       adherenceDelta:null,
@@ -98,15 +101,19 @@ new_review="""function coachReviewLoopStateV238(s){
         hasBaseline:true,
         changed:false,
         reviewDue:false,
+        reviewDueLabel:'Perfil 360 revisado',
         reason:'Perfil 360 revisado',
         newSessions:0,
         adherenceDelta:0,
         pending
       };
     }
+    const due=coachReviewDueV240(s);
     return {
       hasBaseline:false,
       changed:true,
+      reviewDue:true,
+      reviewDueLabel:due.label,
       reason:'Sin revisión previa',
       newSessions:sessionsCount,
       adherenceDelta:null,
