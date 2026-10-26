@@ -116,6 +116,7 @@ runpy.run_path(str(ROOT / 'operational_integrity_ux_audit_v314.py'), run_name='_
 runpy.run_path(str(ROOT / 'decimal_workout_weights_audit_v315.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'session_loss_protection_audit_v316.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'review_save_render_audit_v318.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'first_review_authority_audit_v319.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
