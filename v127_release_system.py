@@ -84,7 +84,17 @@ runtime=fr"""
         if(releaseNavigationInProgress)return;
         releaseNavigationInProgress=true;
         const key='fjz_release_retry_'+server;
-        const retries=Math.min(3,Number(sessionStorage.getItem(key)||'0')+1);
+        const previousRetries=Number(sessionStorage.getItem(key)||'0');
+        if(previousRetries>=2){{
+          window.__fjzReleaseMismatchBlockedV318={{
+            server,
+            current:RELEASE,
+            retries:previousRetries,
+            at:Date.now()
+          }};
+          return;
+        }}
+        const retries=previousRetries+1;
         sessionStorage.setItem(key,String(retries));
 
         try{{
@@ -112,6 +122,7 @@ runtime=fr"""
         return;
       }}else if(server===RELEASE){{
         try{{sessionStorage.removeItem('fjz_release_retry_'+server)}}catch(_e){{}}
+        try{{delete window.__fjzReleaseMismatchBlockedV318}}catch(_e){{}}
       }}
     }}catch(_e){{}}
   }}
