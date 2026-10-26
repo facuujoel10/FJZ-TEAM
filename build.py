@@ -918,6 +918,9 @@ exec(compile(open("v309_general_body_measurements.py", encoding="utf-8").read(),
 # V21.10 shared student agenda + hard general body measurement dedupe.
 exec(compile(open("v310_shared_agenda_measure_fix.py", encoding="utf-8").read(), "v310_shared_agenda_measure_fix.py", "exec"))
 
+# V21.11 permanent per-athlete Profile 360 review acknowledgement.
+exec(compile(open("v311_permanent_profile_review.py", encoding="utf-8").read(), "v311_permanent_profile_review.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
