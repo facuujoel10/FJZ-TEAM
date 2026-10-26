@@ -14,11 +14,13 @@ checks={
  "cloud_review_helper":"cloudProfileReviewedV313" in b280,
  "waits_for_cloud_state":"reviewStateReadyV313" in b280 and "return null" in b280,
  "filters_null_reviews":"reviewEventsV313" in b280 and ".filter(Boolean)" in b280,
- "no_direct_old_map":"students().map(reviewEvent)" not in b280,
+ "single_wrapped_review_map":b280.count("students().map(reviewEvent)")==1,
  "closed_profiles_excluded":"closedProfilesExcludedFromCalendar:true" in b280,
  "no_synthetic_first":"noSyntheticFirstCheckBeforeReviewSync:true" in b280,
  "calendar_refresh_after_sync":"refreshCoachOperationalV280" in b312 and "operationalCalendarRefreshAfterReviewSync:true" in b312,
  "profile_authority_present":"__fjzProfileReviewedAthleteV311" in html,
+ "agenda_dates_in_student_tab":"injectAgendaDatesV313" in b312 and "Fechas agendadas" in b312,
+ "agenda_direct_cloud_read":"loadOwnAppointmentsV312" in b312 and "studentTab==='agenda'" in b312,
 }
 failed=[k for k,v in checks.items() if not v]
 print("TEAM FJZ V21.13 REVIEW CALENDAR AUTHORITY AUDIT")
