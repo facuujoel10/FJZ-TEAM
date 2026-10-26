@@ -927,6 +927,9 @@ exec(compile(open("v312_review_agenda_authority.py", encoding="utf-8").read(), "
 # V21.13 make the recovered coach calendar respect permanent cloud review state.
 exec(compile(open("v313_review_calendar_authority.py", encoding="utf-8").read(), "v313_review_calendar_authority.py", "exec"))
 
+# V21.14 agenda linkage clarity + always-visible student scheduled dates.
+exec(compile(open("v314_operational_integrity_ux.py", encoding="utf-8").read(), "v314_operational_integrity_ux.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
