@@ -25,6 +25,7 @@ checks={
   "no_interval":"setInterval(" not in runtime,
   "one_release_timeout":runtime.count("setTimeout(")==1,
   "single_navigation_lock":"releaseNavigationInProgress" in runtime,
+  "bounded_release_navigation":"previousRetries>=2" in runtime and "previousRetries+1" in runtime and "__fjzReleaseMismatchBlockedV318" in runtime,
   "no_forced_controller_reload":"location.reload();" not in runtime,
   "v299_still_present":'meta name="fjz-alert-review-system" content="20.99"' in html,
 }
