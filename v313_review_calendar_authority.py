@@ -82,11 +82,17 @@ def patch_v280(body):
     if body.count("students().map(reviewEvent)")!=1:
         raise RuntimeError("V21.13 unexpected direct reviewEvent map count: "+str(body.count("students().map(reviewEvent)")))
 
-    old_marker="""  window.__fjzV280={version:'20.80',priorityCalendarRecovery:true,restoredPriorityAuthorityAfterMusicRemoval:true,restoredCalendarAuthorityAfterMusicRemoval:true,staleCalendarCallsRemoved:true,priorityPerStudentIsolation:true,calendarIndependentFromPriority:true,stagingCalendarFallbackSafe:true,explicitDashboardOperationalHydration:true,productionUntouched:true,noExtraTimers:true,noExtraListeners:true,noExtraObservers:true};"""
-    new_marker="""  window.__fjzV280={version:'21.13',priorityCalendarRecovery:true,restoredPriorityAuthorityAfterMusicRemoval:true,restoredCalendarAuthorityAfterMusicRemoval:true,staleCalendarCallsRemoved:true,priorityPerStudentIsolation:true,calendarIndependentFromPriority:true,stagingCalendarFallbackSafe:true,explicitDashboardOperationalHydration:true,cloudReviewAwareCalendar:true,noSyntheticFirstCheckBeforeReviewSync:true,closedProfilesExcludedFromCalendar:true,productionUntouched:true,noExtraTimers:true,noExtraListeners:true,noExtraObservers:true};"""
-    if body.count(old_marker)!=1:
-        raise RuntimeError("V21.13 V280 marker anchor mismatch")
-    body=body.replace(old_marker,new_marker,1)
+    tail="""  window.__fjzV280=Object.assign({},window.__fjzV280||{},{
+    version:'21.13',
+    cloudReviewAwareCalendar:true,
+    noSyntheticFirstCheckBeforeReviewSync:true,
+    closedProfilesExcludedFromCalendar:true
+  });
+"""
+    end=body.rfind("})();")
+    if end<0:
+        raise RuntimeError("V21.13 V280 runtime end missing")
+    body=body[:end]+tail+body[end:]
     return body
 
 html=edit_script(html,"v280OperationalRecoveryRuntime",patch_v280)
