@@ -933,6 +933,9 @@ exec(compile(open("v314_operational_integrity_ux.py", encoding="utf-8").read(), 
 # V21.15 decimal workout weights: accept 17.5 and 17,5 safely on mobile.
 exec(compile(open("v315_decimal_workout_weights.py", encoding="utf-8").read(), "v315_decimal_workout_weights.py", "exec"))
 
+# V21.16 protect confirmed workout sessions from stale snapshot overwrites.
+exec(compile(open("v316_session_loss_protection.py", encoding="utf-8").read(), "v316_session_loss_protection.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
