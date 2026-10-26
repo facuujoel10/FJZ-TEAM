@@ -166,6 +166,33 @@ def patch_v302(body):
         raise RuntimeError("V21.11 resolved profile cache anchor mismatch")
     body=body.replace(old,new,1)
 
+
+    old="""  function renderCenter(){
+    const host=el('v252PriorityCenter');if(!host)return;center.clear();"""
+    new="""  function renderCenter(){
+    const host=el('v252PriorityCenter');if(!host)return;
+    if(!loaded&&cloudEnabled&&supabaseClient&&!window.__fjzStagingLocal?.enabled){
+      host.innerHTML='<div class="v301-empty"><strong>Sincronizando revisiones…</strong><span>Comprobando qué revisiones ya fueron cerradas.</span></div>';
+      loadStates(false).finally(()=>{if(currentProfile?.role==='coach'&&coachTab==='dashboard')renderCenter()});
+      return;
+    }
+    center.clear();"""
+    if body.count(old)!=1:
+        raise RuntimeError("V21.11 center hydration guard anchor mismatch")
+    body=body.replace(old,new,1)
+
+    old="""  function renderFocus(){
+    const host=el('v235CoachFocus');if(!host)return;"""
+    new="""  function renderFocus(){
+    const host=el('v235CoachFocus');if(!host)return;
+    if(!loaded&&cloudEnabled&&supabaseClient&&!window.__fjzStagingLocal?.enabled){
+      host.innerHTML='<div class="v301-empty"><strong>Sincronizando revisiones…</strong><span>Esperando el estado confirmado de cada alumno.</span></div>';
+      return;
+    }"""
+    if body.count(old)!=1:
+        raise RuntimeError("V21.11 focus hydration guard anchor mismatch")
+    body=body.replace(old,new,1)
+
     old="""    version:'21.08',
     resolvedStateAuthoritative:true,
     stableBaselineAuthority:true,
