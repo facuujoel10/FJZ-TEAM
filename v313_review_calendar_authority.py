@@ -79,8 +79,8 @@ def patch_v280(body):
         "all=[...reviewEventsV313(),...remoteEvents(new Date(today.getFullYear(),today.getMonth(),1)),...remoteEvents(new Date(today.getFullYear(),today.getMonth()+1,1))],upcoming=all.filter(e=>e.kind==='review'?e.raw<=limit:(e.raw>=today&&e.raw<=limit)).sort((a,b)=>(a.overdue===b.overdue?0:a.overdue?-1:1)||a.raw-b.raw).slice(0,8),overdue=reviewEventsV313().filter(e=>e.overdue).length,week=reviewEventsV313().filter(e=>!e.overdue&&e.raw>=today&&e.raw<=addDays(today,7)).length;",
         1
     )
-    if "students().map(reviewEvent)" in body:
-        raise RuntimeError("V21.13 stale direct reviewEvent map remains")
+    if body.count("students().map(reviewEvent)")!=1:
+        raise RuntimeError("V21.13 unexpected direct reviewEvent map count: "+str(body.count("students().map(reviewEvent)")))
 
     old_marker="""  window.__fjzV280={version:'20.80',priorityCalendarRecovery:true,restoredPriorityAuthorityAfterMusicRemoval:true,restoredCalendarAuthorityAfterMusicRemoval:true,staleCalendarCallsRemoved:true,priorityPerStudentIsolation:true,calendarIndependentFromPriority:true,stagingCalendarFallbackSafe:true,explicitDashboardOperationalHydration:true,productionUntouched:true,noExtraTimers:true,noExtraListeners:true,noExtraObservers:true};"""
     new_marker="""  window.__fjzV280={version:'21.13',priorityCalendarRecovery:true,restoredPriorityAuthorityAfterMusicRemoval:true,restoredCalendarAuthorityAfterMusicRemoval:true,staleCalendarCallsRemoved:true,priorityPerStudentIsolation:true,calendarIndependentFromPriority:true,stagingCalendarFallbackSafe:true,explicitDashboardOperationalHydration:true,cloudReviewAwareCalendar:true,noSyntheticFirstCheckBeforeReviewSync:true,closedProfilesExcludedFromCalendar:true,productionUntouched:true,noExtraTimers:true,noExtraListeners:true,noExtraObservers:true};"""
@@ -114,6 +114,57 @@ def patch_v312(body):
         raise RuntimeError("V21.13 V312 review-load refresh anchor mismatch")
     body=body.replace(old,new,1)
 
+
+    old_render="""  const baseRenderStudentV312=window.renderStudent||renderStudent;
+  window.renderStudent=function(){
+    const out=baseRenderStudentV312.apply(this,arguments);
+    if(currentProfile?.role==='student'&&mode==='student'&&studentTab==='home'){
+      Promise.resolve().then(()=>injectNextAppointmentV312(true));
+    }
+    return out;
+  };"""
+    new_render="""  async function injectAgendaDatesV313(force=false){
+    if(!(currentProfile?.role==='student'&&mode==='student'&&studentTab==='agenda'))return;
+    let data=null;
+    try{data=await loadOwnAppointmentsV312(force)}catch(e){console.warn('TEAM FJZ V21.13 agenda dates load',e);return}
+    if(!(currentProfile?.role==='student'&&mode==='student'&&studentTab==='agenda'))return;
+    const host=el('studentSubBody')||el('view');if(!host)return;
+    el('v313StudentAgendaDates')?.remove();
+    const items=(data?.items||[]).filter(Boolean).slice(0,8);
+    if(!items.length)return;
+    const rows=items.map(item=>{
+      const d=item.date;
+      return '<div class="v310-agenda-item"><div class="v310-agenda-date">'+esc(String(d.getDate()).padStart(2,'0')+' '+monthV312(d))+'</div>'+
+        '<div class="v310-agenda-copy"><strong>'+esc(item.title||'Fecha agendada')+'</strong>'+
+        '<span>'+esc(item.body||'Agendado por tu coach')+'</span>'+
+        '<small>'+esc((item.time?String(item.time).slice(0,5)+' · ':'')+
+          new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d))+'</small></div></div>';
+    }).join('');
+    const section=document.createElement('section');
+    section.id='v313StudentAgendaDates';
+    section.className='card v310-student-agenda';
+    section.innerHTML='<div class="v310-head"><div><h3>Fechas agendadas</h3>'+
+      '<p class="muted tiny">Tus próximas fechas y avisos cargados por tu coach.</p></div>'+
+      '<span class="v312-next-badge">Agenda activa</span></div><div class="v310-agenda-list">'+rows+'</div>';
+    const weekly=host.querySelector('.v81-agenda-grid,.agenda-grid,.v81-week-grid');
+    if(weekly)weekly.insertAdjacentElement('beforebegin',section);else host.prepend(section);
+  }
+
+  const baseRenderStudentV312=window.renderStudent||renderStudent;
+  window.renderStudent=function(){
+    const out=baseRenderStudentV312.apply(this,arguments);
+    if(currentProfile?.role==='student'&&mode==='student'&&studentTab==='home'){
+      Promise.resolve().then(()=>injectNextAppointmentV312(true));
+    }
+    if(currentProfile?.role==='student'&&mode==='student'&&studentTab==='agenda'){
+      Promise.resolve().then(()=>injectAgendaDatesV313(true));
+    }
+    return out;
+  };"""
+    if body.count(old_render)!=1:
+        raise RuntimeError("V21.13 V312 renderStudent agenda anchor mismatch: "+str(body.count(old_render)))
+    body=body.replace(old_render,new_render,1)
+
     old_marker="""    appointmentScopedByAuthUser:true,
     noSchemaChange:true,"""
     new_marker="""    appointmentScopedByAuthUser:true,
@@ -142,6 +193,8 @@ for marker in [
     "closedProfilesExcludedFromCalendar:true",
     "refreshCoachOperationalV280",
     "operationalCalendarRefreshAfterReviewSync:true",
+    "injectAgendaDatesV313",
+    "Fechas agendadas",
 ]:
     if marker not in html:
         raise RuntimeError("V21.13 missing marker "+marker)
