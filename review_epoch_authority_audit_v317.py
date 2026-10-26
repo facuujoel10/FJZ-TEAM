@@ -2,8 +2,11 @@ import pathlib,re,json
 root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
-m=re.search(r"(<script[^>]*\\bid=[\"']v302ReviewResolutionAuthorityRuntime[\"'][^>]*>)(.*?)(</script>)",html,re.S|re.I)
-body=m.group(2) if m else ""
+marker='id="v302ReviewResolutionAuthorityRuntime"'
+mid=html.find(marker)
+open_end=html.find(">",mid) if mid>=0 else -1
+close=html.find("</script>",open_end) if open_end>=0 else -1
+body=html[open_end+1:close] if mid>=0 and open_end>=0 and close>=0 else ""
 checks={
  "release":tuple(map(int,release.split("."))) >= (21,17),
  "meta":'meta name="fjz-review-epoch-authority" content="21.17"' in html,
