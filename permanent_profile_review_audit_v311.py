@@ -15,6 +15,7 @@ checks={
  "hash_cannot_reopen":"dynamicHashCannotReopenFirstReview:true" in body,
  "resolve_persists_profile":"keys.push(profileKeyV311(s))" in body,
  "profile_prefix_loaded":"PROFILE_PREFIX+'%'" in body,
+ "center_waits_for_cloud_state":"Sincronizando revisiones" in body and "!loaded&&cloudEnabled&&supabaseClient" in body,
 }
 failed=[k for k,v in checks.items() if not v]
 print("TEAM FJZ V21.11 PERMANENT PROFILE REVIEW AUDIT")
