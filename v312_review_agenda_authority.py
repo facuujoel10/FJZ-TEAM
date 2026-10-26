@@ -65,14 +65,22 @@ html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)
 # 2) Make the legacy V20.38 review loop honor V21.11 cloud state.
 #    This is the layer that was recreating "Sin revisión".
 # ---------------------------------------------------------
-old_review="""function coachReviewLoopStateV238(s){
-  const prev=s?.coachReviewV237||null;
-  const currentAdh=Number(adherence(s)||0);
-  const sessionsCount=Array.isArray(s?.sessions)?s.sessions.length:0;
-  const currentStatus=statusFor(s);
-  const pending=coachPendingV235(s);
+pending_anchor="""  const pending=coachPendingV235(s);
+  const sessionPending=pendingSessionFeedbackCountV243(s);
 
-  if(!prev){
+  if(!prev){"""
+pending_repl="""  const pending=coachPendingV235(s);
+  const sessionPending=pendingSessionFeedbackCountV243(s);
+  let athleteIdV312='';
+  try{athleteIdV312=String(coachAthleteV235?.(s)?.id||'')}catch(_e){}
+  const profileReviewedV312=!!athleteIdV312&&!!window.__fjzProfileReviewedAthleteV311?.(athleteIdV312);
+
+  if(!prev){"""
+if html.count(pending_anchor)!=1:
+    raise RuntimeError("V21.12 legacy review pending anchor mismatch: "+str(html.count(pending_anchor)))
+html=html.replace(pending_anchor,pending_repl,1)
+
+no_prev_anchor="""  if(!prev){
     const due=coachReviewDueV240(s);
     return {
       hasBaseline:false,
@@ -82,20 +90,11 @@ old_review="""function coachReviewLoopStateV238(s){
       reason:'Sin revisión previa',
       newSessions:sessionsCount,
       adherenceDelta:null,
-      pending
+      pending,
+      sessionPending
     };
   }"""
-new_review="""function coachReviewLoopStateV238(s){
-  const prev=s?.coachReviewV237||null;
-  const currentAdh=Number(adherence(s)||0);
-  const sessionsCount=Array.isArray(s?.sessions)?s.sessions.length:0;
-  const currentStatus=statusFor(s);
-  const pending=coachPendingV235(s);
-  let athleteIdV312='';
-  try{athleteIdV312=String(coachAthleteV235?.(s)?.id||'')}catch(_e){}
-  const profileReviewedV312=!!athleteIdV312&&!!window.__fjzProfileReviewedAthleteV311?.(athleteIdV312);
-
-  if(!prev){
+no_prev_repl="""  if(!prev){
     if(profileReviewedV312){
       return {
         hasBaseline:true,
@@ -105,7 +104,8 @@ new_review="""function coachReviewLoopStateV238(s){
         reason:'Perfil 360 revisado',
         newSessions:0,
         adherenceDelta:0,
-        pending
+        pending,
+        sessionPending
       };
     }
     const due=coachReviewDueV240(s);
@@ -117,12 +117,14 @@ new_review="""function coachReviewLoopStateV238(s){
       reason:'Sin revisión previa',
       newSessions:sessionsCount,
       adherenceDelta:null,
-      pending
+      pending,
+      sessionPending
     };
   }"""
-if html.count(old_review)!=1:
-    raise RuntimeError("V21.12 legacy review loop anchor mismatch: "+str(html.count(old_review)))
-html=html.replace(old_review,new_review,1)
+if html.count(no_prev_anchor)!=1:
+    raise RuntimeError("V21.12 legacy no-prev anchor mismatch: "+str(html.count(no_prev_anchor)))
+html=html.replace(no_prev_anchor,no_prev_repl,1)
+
 
 # The embedded 360 review hub must also stop saying "Sin revisión previa".
 old_hub="""    const s=student(),prev=s?.coachReviewV237||null;
