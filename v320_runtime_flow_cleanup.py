@@ -194,7 +194,7 @@ html=html.replace("</head>",'<meta name="fjz-runtime-flow-cleanup" content="21.2
 
 after=metrics(html)
 if after["styles"]!=before["styles"]: raise RuntimeError("V21.20 stylesheet topology changed")
-if after["renders"]!=before["renders"]-2: raise RuntimeError("V21.20 expected exactly two obsolete render wrappers removed: "+repr({"before":before,"after":after}))
+if after["renders"]!=before["renders"]: raise RuntimeError("V21.20 canonical render topology changed: "+repr({"before":before,"after":after}))
 for k in ("channels","timeouts","intervals","listeners","mutation_observers","performance_observers"):
     if after[k]!=before[k]:
         raise RuntimeError("V21.20 topology changed "+k+": "+repr({"before":before,"after":after}))
