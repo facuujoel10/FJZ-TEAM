@@ -112,6 +112,7 @@ runpy.run_path(str(ROOT / 'shared_agenda_measure_audit_v310.py'), run_name='__ma
 runpy.run_path(str(ROOT / 'permanent_profile_review_audit_v311.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'review_agenda_authority_audit_v312.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'review_calendar_authority_audit_v313.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'operational_integrity_ux_audit_v314.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
