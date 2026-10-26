@@ -5,14 +5,14 @@ html=p.read_text(encoding="utf-8")
 
 def metrics(doc):
     return {
-        "styles":len(re.findall(r"<style\\b",doc,re.I)),
-        "renders":len(re.findall(r"(?:window\\.)?render\\s*=",doc)),
-        "channels":len(re.findall(r"\\.channel\\s*\\(",doc)),
-        "timeouts":len(re.findall(r"setTimeout\\s*\\(",doc)),
-        "intervals":len(re.findall(r"setInterval\\s*\\(",doc)),
-        "listeners":len(re.findall(r"addEventListener\\s*\\(",doc)),
-        "mutation_observers":len(re.findall(r"new\\s+MutationObserver",doc)),
-        "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",doc)),
+        "styles":len(re.findall(r"<style\b",doc,re.I)),
+        "renders":len(re.findall(r"(?:window\.)?render\s*=",doc)),
+        "channels":doc.count(".channel("),
+        "timeouts":doc.count("setTimeout("),
+        "intervals":doc.count("setInterval("),
+        "listeners":doc.count("addEventListener("),
+        "mutation_observers":doc.count("new MutationObserver"),
+        "performance_observers":doc.count("new PerformanceObserver"),
     }
 
 def edit_script(doc,sid,fn):
