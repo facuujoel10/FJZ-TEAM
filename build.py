@@ -915,6 +915,9 @@ exec(compile(open("v308_review_recurrence_fix.py", encoding="utf-8").read(), "v3
 # V21.09 use one general Brazo and one general Muslo in Progress/measurements.
 exec(compile(open("v309_general_body_measurements.py", encoding="utf-8").read(), "v309_general_body_measurements.py", "exec"))
 
+# V21.10 shared student agenda + hard general body measurement dedupe.
+exec(compile(open("v310_shared_agenda_measure_fix.py", encoding="utf-8").read(), "v310_shared_agenda_measure_fix.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
