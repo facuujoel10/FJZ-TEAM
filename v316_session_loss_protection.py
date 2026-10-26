@@ -319,15 +319,14 @@ runtime=r"""
     }
   }
 
-  const baseRenderV316=window.render||globalThis.render;
-  if(typeof baseRenderV316==='function'){
-    window.render=function(){
-      const out=baseRenderV316.apply(this,arguments);
-      Promise.resolve().then(()=>recoverRecentV316());
-      return out;
-    };
-    try{render=window.render}catch(_e){}
-  }
+  const basePostRenderV316=window.__fjzPostRenderV176;
+  window.__fjzPostRenderV176=function(){
+    const out=typeof basePostRenderV316==='function'
+      ? basePostRenderV316.apply(this,arguments)
+      : undefined;
+    Promise.resolve().then(()=>recoverRecentV316());
+    return out;
+  };
 
   pruneBackupsV316();
   Promise.resolve().then(()=>recoverRecentV316());
