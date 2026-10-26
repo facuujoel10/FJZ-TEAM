@@ -939,6 +939,9 @@ exec(compile(open("v316_session_loss_protection.py", encoding="utf-8").read(), "
 # V21.18 hide derived review cards whose original alert is already resolved.
 exec(compile(open("v318_review_event_archive_authority.py", encoding="utf-8").read(), "v318_review_event_archive_authority.py", "exec"))
 
+# V21.19 make permanent cloud review state the only authority for first-review UI.
+exec(compile(open("v319_first_review_authority.py", encoding="utf-8").read(), "v319_first_review_authority.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
