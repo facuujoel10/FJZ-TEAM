@@ -110,6 +110,7 @@ runpy.run_path(str(ROOT / 'review_recurrence_audit_v308.py'), run_name='__main__
 runpy.run_path(str(ROOT / 'general_body_measurements_audit_v309.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'shared_agenda_measure_audit_v310.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'permanent_profile_review_audit_v311.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'review_agenda_authority_audit_v312.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
