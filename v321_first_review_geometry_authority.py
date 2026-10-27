@@ -5,8 +5,8 @@ html=p.read_text(encoding="utf-8")
 
 def metrics(doc):
     return {
-        "styles":len(re.findall(r"<style\\b",doc,re.I)),
-        "renders":len(re.findall(r"(?:window\\.)?render\\s*=",doc)),
+        "styles":doc.lower().count("<style"),
+        "renders":len(re.findall(r"(?:window\.)?render\s*=",doc)),
         "channels":doc.count(".channel("),
         "timeouts":doc.count("setTimeout("),
         "intervals":doc.count("setInterval("),
@@ -16,12 +16,20 @@ def metrics(doc):
     }
 
 def edit_script(doc,sid,fn):
-    pat=re.compile(r'(<script[^>]*\\bid=["\\']'+re.escape(sid)+r'["\\'][^>]*>)(.*?)(</script>)',re.S|re.I)
-    m=pat.search(doc)
-    if not m:
+    markers=['id="'+sid+'"',"id='"+sid+"'"]
+    mid=-1
+    for marker in markers:
+        mid=doc.find(marker)
+        if mid>=0: break
+    if mid<0:
         raise RuntimeError("V21.21 missing script "+sid)
-    body=fn(m.group(2))
-    return doc[:m.start(2)]+body+doc[m.end(2):]
+    open_end=doc.find(">",mid)
+    close=doc.find("</script>",open_end)
+    if open_end<0 or close<0:
+        raise RuntimeError("V21.21 malformed script "+sid)
+    body=doc[open_end+1:close]
+    new_body=fn(body)
+    return doc[:open_end+1]+new_body+doc[close:]
 
 before=metrics(html)
 
