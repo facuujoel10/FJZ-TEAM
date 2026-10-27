@@ -945,6 +945,9 @@ exec(compile(open("v319_first_review_authority.py", encoding="utf-8").read(), "v
 # V21.20 remove redundant render wrappers, reuse agenda cache and throttle recovery sweeps.
 exec(compile(open("v320_runtime_flow_cleanup.py", encoding="utf-8").read(), "v320_runtime_flow_cleanup.py", "exec"))
 
+# V21.21 make cloud review state authoritative across legacy review surfaces and normalize workout set geometry.
+exec(compile(open("v321_first_review_geometry_authority.py", encoding="utf-8").read(), "v321_first_review_geometry_authority.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
