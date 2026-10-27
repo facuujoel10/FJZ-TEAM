@@ -88,27 +88,11 @@ def patch_v175(body):
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 
 # ------------------------------------------------------------------
-# 2) Old V20.40 cadence must not invent a first review after cloud OK.
+# 2) V21.19 already owns coachReviewLoopStateV238 and converts a
+#    cloud-reviewed profile into hasBaseline=true / reviewDue=false.
+#    V21.21 therefore avoids rewriting the historical V20.40 helper
+#    and hardens the actual visible surfaces below.
 # ------------------------------------------------------------------
-old_due="""function coachReviewDueV240(s){
-  const days=coachReviewCadenceDaysV240(s);
-  const reviewed=s?.coachReviewV237?.reviewedAt||null;
-  if(!reviewed){
-    return {due:true,days,cadenceDays:days,ageDays:999,remaining:0,label:'Sin revisión previa'};
-  }"""
-new_due="""function coachReviewDueV240(s){
-  const days=coachReviewCadenceDaysV240(s);
-  const reviewed=s?.coachReviewV237?.reviewedAt||null;
-  const reviewedInCloudV321=!!window.__fjzProfileReviewedStudentV319?.(s?.id);
-  if(!reviewed&&reviewedInCloudV321){
-    return {due:false,days,cadenceDays:days,ageDays:0,remaining:days,label:'Perfil 360 revisado'};
-  }
-  if(!reviewed){
-    return {due:true,days,cadenceDays:days,ageDays:999,remaining:0,label:'Sin revisión previa'};
-  }"""
-if html.count(old_due)!=1:
-    raise RuntimeError("V21.21 V240 cadence anchor mismatch: "+str(html.count(old_due)))
-html=html.replace(old_due,new_due,1)
 
 # ------------------------------------------------------------------
 # 3) Legacy V301 center cannot label a cloud-reviewed profile as first.
