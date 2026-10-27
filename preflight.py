@@ -118,6 +118,7 @@ runpy.run_path(str(ROOT / 'session_loss_protection_audit_v316.py'), run_name='__
 runpy.run_path(str(ROOT / 'review_save_render_audit_v318.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'first_review_authority_audit_v319.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'runtime_flow_cleanup_audit_v320.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'first_review_geometry_audit_v321.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
