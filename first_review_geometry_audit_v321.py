@@ -4,8 +4,14 @@ html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 
 def body(sid):
-    m=re.search(r'<script[^>]*id=["\\']'+re.escape(sid)+r'["\\'][^>]*>(.*?)</script>',html,re.S|re.I)
-    return m.group(1) if m else ""
+    for marker in ('id="'+sid+'"',"id='"+sid+"'"):
+        mid=html.find(marker)
+        if mid>=0:
+            open_end=html.find(">",mid)
+            close=html.find("</script>",open_end)
+            if open_end>=0 and close>=0:
+                return html[open_end+1:close]
+    return ""
 
 v175=body("v175ProfileAgendaCoachCenterRuntime")
 v301=body("v301ReviewWorkflowProRuntime")
