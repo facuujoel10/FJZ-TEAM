@@ -41,19 +41,29 @@ for marker in [
     if marker not in html:
         raise RuntimeError("V21.22 prerequisite missing "+marker)
 
-# 1) The canonical coach feed is asynchronous. Review surfaces must fail closed
-# until the server has answered, then immediately repaint from that answer.
-feed_anchor="const feed=await loadCoachFeed(true);coachFeedV235=Array.isArray(feed)?feed:[];"
-feed_repl="""window.__fjzCoachFeedReadyV322=false;
-    const feed=await loadCoachFeed(true);
-    coachFeedV235=Array.isArray(feed)?feed:[];
-    window.__fjzCoachFeedReadyV322=true;
-    window.__fjzCoachFeedLoadedAtV322=Date.now();
-    try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
-    try{window.renderCoachFocusV235?.()}catch(_e){}"""
-if html.count(feed_anchor)!=1:
-    raise RuntimeError("V21.22 coach feed hydration anchor mismatch: "+str(html.count(feed_anchor)))
-html=html.replace(feed_anchor,feed_repl,1)
+# 1) The canonical coach feed is asynchronous. V96 owns the final feed
+# refresh used by alerts and mirrors that same result into coachFeedV235.
+# Review surfaces fail closed until that canonical refresh succeeds.
+def patch_v96(body):
+    load_anchor="      const feed=await loadCoachFeed(force);"
+    load_repl="""      window.__fjzCoachFeedReadyV322=false;
+      const feed=await loadCoachFeed(force);"""
+    if body.count(load_anchor)!=1:
+        raise RuntimeError("V21.22 V96 feed load anchor mismatch: "+str(body.count(load_anchor)))
+    body=body.replace(load_anchor,load_repl,1)
+
+    sync_anchor="""      try{if(typeof coachFeedV235!=='undefined')coachFeedV235=normalizeCoachV96(feed)}catch(_e){}"""
+    sync_repl=sync_anchor+"""
+      window.__fjzCoachFeedReadyV322=true;
+      window.__fjzCoachFeedLoadedAtV322=Date.now();
+      try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
+      try{window.renderCoachFocusV235?.()}catch(_e){}"""
+    if body.count(sync_anchor)!=1:
+        raise RuntimeError("V21.22 V96 feed sync anchor mismatch: "+str(body.count(sync_anchor)))
+    body=body.replace(sync_anchor,sync_repl,1)
+    return body
+
+html=edit_script(html,"v96AlertCenterRuntime",patch_v96)
 
 # 2) Legacy V301 defense-in-depth: low adherence/inactivity/statusFor are
 # priorities, not review cards. A review card needs a real server event,
