@@ -36,8 +36,8 @@ checks={
 failed=[k for k,v in checks.items() if not v]
 
 metrics={
- "styles":len(re.findall(r"<style\\b",html,re.I)),
- "renders":len(re.findall(r"(?:window\\.)?render\\s*=",html)),
+ "styles":html.lower().count("<style"),
+ "renders":len(re.findall(r"(?:window\.)?render\s*=",html)),
  "channels":html.count(".channel("),
  "timeouts":html.count("setTimeout("),
  "intervals":html.count("setInterval("),
