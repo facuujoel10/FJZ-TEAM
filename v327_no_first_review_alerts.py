@@ -141,28 +141,6 @@ def patch_v175(body):
 
 html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 
-# ------------------------------------------------------------
-# 4) Missing baseline must not increase priority/focus anywhere.
-# ------------------------------------------------------------
-old="""    (r.reviewDue?3:0)+
-    (!r.hasBaseline?2:0);"""
-new="""    ((r.hasBaseline&&r.reviewDue)?3:0);"""
-if html.count(old)!=1:
-    raise RuntimeError("V21.27 focus-score missing-baseline anchor mismatch: "+str(html.count(old)))
-html=html.replace(old,new,1)
-
-old="""  if(review.reviewDue||o.review||o.low||o.inactive||feed>0){"""
-new="""  if((review.hasBaseline&&review.reviewDue)||o.review||o.low||o.inactive||feed>0){"""
-if html.count(old)!=1:
-    raise RuntimeError("V21.27 priority due anchor mismatch: "+str(html.count(old)))
-html=html.replace(old,new,1)
-
-old="""    if(review.reviewDue)reasons.push('revisión vencida');"""
-new="""    if(review.hasBaseline&&review.reviewDue)reasons.push('revisión vencida');"""
-if html.count(old)!=1:
-    raise RuntimeError("V21.27 priority reason anchor mismatch: "+str(html.count(old)))
-html=html.replace(old,new,1)
-
 html=html.replace("</head>",'<meta name="fjz-no-first-review-alerts" content="21.27">\n</head>',1)
 
 after=metrics(html)
