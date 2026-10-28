@@ -960,6 +960,9 @@ exec(compile(open("v324_review_dashboard_hydration.py", encoding="utf-8").read()
 # V21.25 surface session/exercise comments in the coach dashboard and athlete 360.
 exec(compile(open("v325_training_comments_center.py", encoding="utf-8").read(), "v325_training_comments_center.py", "exec"))
 
+# V21.26 make permanent cloud profile review the final authority for first-review UI and retire automatic V308 baseline promotion.
+exec(compile(open("v326_first_review_final_authority.py", encoding="utf-8").read(), "v326_first_review_final_authority.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
