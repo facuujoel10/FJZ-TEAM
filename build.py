@@ -963,6 +963,9 @@ exec(compile(open("v325_training_comments_center.py", encoding="utf-8").read(), 
 # V21.26 make permanent cloud profile review the final authority for first-review UI and retire automatic V308 baseline promotion.
 exec(compile(open("v326_first_review_final_authority.py", encoding="utf-8").read(), "v326_first_review_final_authority.py", "exec"))
 
+# V21.27 remove first-review/missing-baseline as an alert signal; only real activity changes can create review cards.
+exec(compile(open("v327_no_first_review_alerts.py", encoding="utf-8").read(), "v327_no_first_review_alerts.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
