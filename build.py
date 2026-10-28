@@ -951,6 +951,9 @@ exec(compile(open("v321_first_review_geometry_authority.py", encoding="utf-8").r
 # V21.22 require confirmed server review signals before painting Review Center cards.
 exec(compile(open("v322_review_server_authority.py", encoding="utf-8").read(), "v322_review_server_authority.py", "exec"))
 
+# V21.23 bridge Review Center feed identity through the stable client_id -> athlete_id authority.
+exec(compile(open("v323_review_alert_identity.py", encoding="utf-8").read(), "v323_review_alert_identity.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
