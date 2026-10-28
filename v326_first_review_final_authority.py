@@ -142,44 +142,6 @@ def patch_v175(body):
         raise RuntimeError("V21.26 V237 final first-review guard mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
-    # Cadence helper must also fail closed. Previously a missing legacy
-    # coachReviewV237 snapshot immediately meant "Sin revisión previa".
-    start=body.find("function coachReviewDueV240(s){")
-    end=body.find("\n\nfunction coachReviewCadenceLabelV240",start)
-    if start<0 or end<0:
-        raise RuntimeError("V21.26 coachReviewDueV240 function not found")
-    cadence=r"""function coachReviewDueV240(s){
-  const days=coachReviewCadenceDaysV240(s);
-  const cloudRuntimeV326=!!(cloudEnabled&&supabaseClient&&!window.__fjzStagingLocal?.enabled);
-  const authorityReadyV326=!cloudRuntimeV326||!!window.__fjzFirstReviewAuthorityLoadedV319?.();
-  const cloudReviewedV326=authorityReadyV326&&!!window.__fjzProfileReviewedStudentV319?.(s?.id);
-
-  if(cloudRuntimeV326&&!authorityReadyV326){
-    return {due:false,days,cadenceDays:days,ageDays:0,remaining:days,label:'Sincronizando revisión…'};
-  }
-  if(cloudReviewedV326){
-    return {due:false,days,cadenceDays:days,ageDays:0,remaining:days,label:'Perfil 360 revisado'};
-  }
-
-  const reviewed=s?.coachReviewV237?.reviewedAt||null;
-  if(!reviewed){
-    return {due:true,days,cadenceDays:days,ageDays:999,remaining:0,label:'Sin revisión previa'};
-  }
-  const age=coachDaysSinceV235(reviewed);
-  const remaining=Math.max(0,days-age);
-  return {
-    due:age>=days,
-    days,
-    cadenceDays:days,
-    ageDays:age,
-    remaining,
-    label:age>=days
-      ?'Revisión vencida · '+age+' días'
-      :'Próxima revisión en '+remaining+' días'
-  };
-}"""
-    body=body[:start]+cadence+body[end:]
-
     # Expose diagnostics without adding any timers/listeners.
     end_i=body.rfind("})();")
     if end_i<0:
@@ -187,7 +149,6 @@ def patch_v175(body):
     expose=r"""
   window.__fjzLegacyReviewAuthorityV326={
     finalFirstReviewAuthority:true,
-    cadenceUsesCloudProfileReview:true,
     reviewHubFailsClosedUntilCloudReady:true,
     legacySnapshotCannotCreateFirstReview:true
   };
@@ -214,7 +175,6 @@ for marker in [
     "if(profileReviewedV311(s))return false",
     "historical baseline promotion is retired",
     "reviewHubFailsClosedUntilCloudReady:true",
-    "cadenceUsesCloudProfileReview:true",
     "Sincronizando revisión…",
     "Perfil 360 revisado",
     "globalSaveIntegrity:true",
