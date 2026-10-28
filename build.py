@@ -957,6 +957,9 @@ exec(compile(open("v323_review_alert_identity.py", encoding="utf-8").read(), "v3
 # V21.24 unlock Review Center from the canonical dashboard feed hydration and repaint after it completes.
 exec(compile(open("v324_review_dashboard_hydration.py", encoding="utf-8").read(), "v324_review_dashboard_hydration.py", "exec"))
 
+# V21.25 surface session/exercise comments in the coach dashboard and athlete 360.
+exec(compile(open("v325_training_comments_center.py", encoding="utf-8").read(), "v325_training_comments_center.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
