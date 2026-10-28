@@ -23,7 +23,11 @@ checks={
   "release":tuple(map(int,release.split("."))) >= (21,21),
   "meta":'meta name="fjz-first-review-geometry-authority" content="21.21"' in html,
   "v237_cloud_guard":"reviewedInCloudV321" in v175 and "Revisión al día" in v175,
-  "v301_first_review_guard":"reviewedV321" in v301 and "else if(!reviewedV321&&(r?.reviewDue||!r?.hasBaseline))" in v301,
+  "v301_first_review_guard":(
+    ("Primera revisión" not in v301 and "else if(r?.hasBaseline&&r?.reviewDue)" in v301)
+    if tuple(map(int,release.split("."))) >= (21,27)
+    else ("reviewedV321" in v301 and "else if(!reviewedV321&&(r?.reviewDue||!r?.hasBaseline))" in v301)
+  ),
   "v301_synthetic_priority_guard":("if(!hasFeed&&!feedback&&!r.changed&&!r.reviewDue)return null" in v301 or "if(!genuine)return null" in v301),
   "v302_final_suppression":"suppressLegacyFirstReviewV321" in v302 and "legacyFirstReviewSuppressedEverywhereV321:true" in v302,
   "v319_authority_preserved":"stableClientReviewAuthorityV319:true" in v302 and "firstReviewReadsCloudProfileKeyOnly:true" in v302 and "legacySnapshotCannotOverrideCloudReviewedState:true" in html,

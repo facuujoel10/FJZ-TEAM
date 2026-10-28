@@ -16,7 +16,11 @@ checks={
  "baseline_loaded":"BASE_PREFIX+'%'" in body,
  "baseline_resolves_state":"if(baselineCurrentV308(s))return true" in body,
  "state_ok_writes_baseline":"baselineKeyV308(s)" in body and "d.sourceType==='state'" in body,
- "first_review_stable":"first_review:'+athleteKeyV308(s)" in body,
+ "first_review_stable":(
+   ("firstReviewCardsDisabledV327:true" in body and "first_review:'+athleteKeyV308(s)" not in body)
+   if tuple(map(int,release.split("."))) >= (21,27)
+   else "first_review:'+athleteKeyV308(s)" in body
+ ),
  "new_change_path":"cloudBaseline&&!cloudBaselineCurrent" in body,
  "cloud_verified":".upsert(rows,{onConflict:'coach_id,event_key'})" in body and ".select('event_key,read_at,dismissed_at')" in body,
 }

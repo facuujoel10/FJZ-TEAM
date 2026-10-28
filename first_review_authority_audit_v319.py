@@ -29,7 +29,11 @@ checks={
  "legacy_uses_stable_client":"window.__fjzProfileReviewedStudentV319?.(s?.id)" in legacy,
  "legacy_no_snapshot_override":"legacySnapshotCannotOverrideCloudReviewedState:true" in legacy,
  "hub_waits_for_cloud":"Sincronizando revisión…" in hub and "__fjzFirstReviewAuthorityLoadedV319" in hub,
- "hub_no_false_first_review":"Sin primera revisión pendiente" in hub,
+ "hub_no_false_first_review":(
+   ("Primera revisión" not in hub and "Sin revisiones pendientes" in hub)
+   if tuple(map(int,release.split("."))) >= (21,27)
+   else "Sin primera revisión pendiente" in hub
+ ),
  "calendar_stable_client":"window.__fjzProfileReviewedStudentV319?.(s?.id)" in calendar,
  "event_archive_preserved":"underlyingEventResolutionAuthorityV318:true" in review,
  "global_save_preserved":"globalSaveIntegrity:true" in save and "duplicateCriticalWriteLocks:true" in save,
