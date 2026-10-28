@@ -32,7 +32,11 @@ checks={
  "rowfor_no_preload_writer":"function rowFor(s){\n    const p=active(s);if(!p)return null;" in v302,
  "hub_fail_closed":"reviewHubFailsClosedUntilCloudReady:true" in v175 and "Sincronizando revisión…" in v175,
  "legacy_loop_cloud_authority":"window.__fjzProfileReviewedStudentV319?.(s?.id)" in v312 and "hasBaseline:true" in v312 and "reviewDue:false" in v312,
- "new_profiles_still_supported":"authorityReadyV326&&!reviewedInCloudV321" in v175 and "title:'Primera revisión'" in v175,
+ "new_profiles_still_supported":(
+   ("firstReviewCardsDisabledV327:true" in v302 and "Primera revisión" not in v175)
+   if tuple(map(int,release.split("."))) >= (21,27)
+   else ("authorityReadyV326&&!reviewedInCloudV321" in v175 and "title:'Primera revisión'" in v175)
+ ),
  "v319_preserved":"stableClientReviewAuthorityV319:true" in v302 and "__fjzProfileReviewedStudentV319" in v302,
  "v321_preserved":"legacyFirstReviewSuppressedEverywhereV321:true" in v302,
  "v322_preserved":"serverFeedRequiredForReviewCardsV322:true" in v302,
