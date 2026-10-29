@@ -972,6 +972,9 @@ exec(compile(open("v328_comment_session_deeplink.py", encoding="utf-8").read(), 
 # V21.29 durable OK for training comments + exact exercise/comment focus in session history.
 exec(compile(open("v329_comment_ack_exercise_focus.py", encoding="utf-8").read(), "v329_comment_ack_exercise_focus.py", "exec"))
 
+# V21.30 make the comments center a true pending inbox; reviewed items leave the panel.
+exec(compile(open("v330_comments_pending_inbox.py", encoding="utf-8").read(), "v330_comments_pending_inbox.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
