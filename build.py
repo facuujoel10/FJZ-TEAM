@@ -966,6 +966,9 @@ exec(compile(open("v326_first_review_final_authority.py", encoding="utf-8").read
 # V21.27 remove first-review/missing-baseline as an alert signal; only real activity changes can create review cards.
 exec(compile(open("v327_no_first_review_alerts.py", encoding="utf-8").read(), "v327_no_first_review_alerts.py", "exec"))
 
+# V21.28 route coach training comments directly to the exact workout session/day.
+exec(compile(open("v328_comment_session_deeplink.py", encoding="utf-8").read(), "v328_comment_session_deeplink.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
