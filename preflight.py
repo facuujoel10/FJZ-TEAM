@@ -127,6 +127,7 @@ runpy.run_path(str(ROOT / 'first_review_final_authority_audit_v326.py'), run_nam
 runpy.run_path(str(ROOT / 'no_first_review_alerts_audit_v327.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'comment_session_deeplink_audit_v328.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'comment_ack_exercise_focus_audit_v329.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'comments_pending_inbox_audit_v330.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
