@@ -49,10 +49,10 @@ for marker in [
         raise RuntimeError("V21.28 prerequisite missing "+marker)
 
 def patch_v302(body):
-    old_button="""<button class="btn small primary" onclick="window.__fjzOpenTrainingCommentV325?.(\''+safe(x.studentId)+'\',\''+safe(x.sessionId)+'\')">Abrir alumno</button>"""
-    new_button="""<button class="btn small primary" onclick="window.__fjzOpenTrainingCommentV325?.(\''+safe(x.studentId)+'\',\''+safe(x.sessionId)+'\')">Ver sesión del día</button>"""
+    old_button=">Abrir alumno</button>"
+    new_button=">Ver sesión del día</button>"
     if body.count(old_button)!=1:
-        raise RuntimeError("V21.28 dashboard comment button anchor mismatch: "+str(body.count(old_button)))
+        raise RuntimeError("V21.28 dashboard comment button text mismatch: "+str(body.count(old_button)))
     body=body.replace(old_button,new_button,1)
 
     old_func=re.search(
