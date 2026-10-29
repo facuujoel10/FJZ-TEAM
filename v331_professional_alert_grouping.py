@@ -246,7 +246,7 @@ runtime=r"""
     const n=Date.parse(v||0);return Number.isFinite(n)?n:0;
   }
   function athleteKey(x){
-    return String(x?.athlete_id||x?.client_id||x?.student_id||x?.athlete_name||x?.event_key||Math.random());
+    return String(x?.athlete_id||x?.client_id||x?.student_id||x?.athlete_name||x?.event_key||'unknown-alert');
   }
   function isWeight(x){
     const sm=x?.smart_meta||{};
@@ -266,7 +266,8 @@ runtime=r"""
     if(x?.kind==='nutrition')return 'NUTRICIÓN';
     if(x?.kind==='checkin'||x?.kind==='wellness')return 'CHECK-IN';
     if(x?.kind==='exercise_feedback')return 'COMENTARIO';
-    return String(sm.type_label||attentionKindLabelV80?.(x?.kind)||'ALERTA').toUpperCase();
+    const fallback=(typeof attentionKindLabelV80==='function'?attentionKindLabelV80(x?.kind):'ALERTA');
+    return String(sm.type_label||fallback||'ALERTA').toUpperCase();
   }
   function title(x){
     const sm=x?.smart_meta||{},metric=String(sm.metric||'').toLowerCase();
