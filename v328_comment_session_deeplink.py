@@ -36,7 +36,6 @@ for marker in [
     'meta name="fjz-unified-session-history" content="20.44"',
     'meta name="fjz-session-exercise-comments" content="20.87"',
     'meta name="fjz-training-comments-center" content="21.25"',
-    'id="v175ProfileAgendaCoachCenterRuntime"',
     'id="v244UnifiedSessionHistoryRuntime"',
     'id="v302ReviewResolutionAuthorityRuntime"',
     "exerciseCommentsVisiblePerSessionV287:true",
@@ -115,35 +114,6 @@ def patch_v302(body):
     return body
 
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)
-
-def patch_v175(body):
-    old="""    const canReview=x.kind==='session'&&ss?.sessionFeedback&&typeof window.openSessionFeedbackCoachV242==='function';
-    return '<article class="v325-student-comment '+(pending?'pending':'')+'" data-v325-session="'+esc(ss.id||'')+'">'+"""
-    new="""    const canReview=x.kind==='session'&&ss?.sessionFeedback&&typeof window.openSessionFeedbackCoachV242==='function';
-    const studentIdV328=String(student()?.id||'');
-    return '<article class="v325-student-comment '+(pending?'pending':'')+'" data-v325-session="'+esc(ss.id||'')+'">'+"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.28 student comment id anchor mismatch: "+str(body.count(old)))
-    body=body.replace(old,new,1)
-
-    old_actions="""      (canReview&&pending?'<div class="v325-comment-actions"><button class="btn small primary" onclick="openSessionFeedbackCoachV242(\''+esc(ss.id)+'\')">Revisar y responder</button></div>':'')+"""
-    new_actions="""      '<div class="v325-comment-actions">'+
-        '<button class="btn small" onclick="window.__fjzOpenTrainingCommentV325?.(\''+esc(studentIdV328)+'\',\''+esc(ss.id||'')+'\')">Ver sesión</button>'+
-        (canReview&&pending?'<button class="btn small primary" onclick="openSessionFeedbackCoachV242(\''+esc(ss.id)+'\')">Revisar y responder</button>':'')+
-      '</div>'+"""
-    if body.count(old_actions)!=1:
-        raise RuntimeError("V21.28 student comment actions anchor mismatch: "+str(body.count(old_actions)))
-    body=body.replace(old_actions,new_actions,1)
-
-    flag="""    pendingCommentsFirstV325:true"""
-    if body.count(flag)!=1:
-        raise RuntimeError("V21.28 V175 flag anchor mismatch")
-    body=body.replace(flag,flag+""",
-    commentCardsOpenExactSessionV328:true,
-    commentSessionAccessibleFrom360V328:true""",1)
-    return body
-
-html=edit_script(html,"v175ProfileAgendaCoachCenterRuntime",patch_v175)
 
 def patch_v244(body):
     old="""    const sum=ss.summary||{};
@@ -237,8 +207,6 @@ for marker in [
     "trainingCommentOpensExactSessionV328:true",
     "trainingCommentRoutesToHistoryV328:true",
     "missingCommentSessionFallsBackSafelyV328:true",
-    "commentCardsOpenExactSessionV328:true",
-    "commentSessionAccessibleFrom360V328:true",
     "exactCommentSessionDeeplinkV328:true",
     "linkedCommentSessionBannerV328:true",
     "coachStudentTab='history'",
