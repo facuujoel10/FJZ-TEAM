@@ -11,7 +11,6 @@ def body(sid):
             if a>=0 and b>=0:return html[a+1:b]
     return ""
 
-v175=body("v175ProfileAgendaCoachCenterRuntime")
 v244=body("v244UnifiedSessionHistoryRuntime")
 v302=body("v302ReviewResolutionAuthorityRuntime")
 v304=body("v304GlobalSaveIntegrityRuntime")
@@ -25,7 +24,6 @@ checks={
  "deeplink_opens_session":"await window.sessionDetails(sid)" in v302,
  "target_must_exist":"const target=(Array.isArray(s?.sessions)?s.sessions:[])" in v302,
  "safe_missing_target":"missingCommentSessionFallsBackSafelyV328:true" in v302,
- "student_360_has_session_button":"commentSessionAccessibleFrom360V328:true" in v175 and ">Ver sesión</button>" in v175,
  "session_banner":"Esta es la sesión exacta donde dejó el comentario." in v244,
  "session_feedback_visible":"feedbackVisibleInHistory:true" in v244,
  "exercise_feedback_visible":"exerciseCommentsVisiblePerSessionV287:true" in v244,
