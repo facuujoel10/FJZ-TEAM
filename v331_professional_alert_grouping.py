@@ -257,6 +257,147 @@ css=r"""
     gap:3px;
   }
 }
+
+/* =========================================================
+   TEAM FJZ · V21.34 REVIEW CENTER · ATHLETE FIRST
+   ========================================================= */
+.v331-alert-groups{gap:12px}
+.v331-alert-group{
+  border:1px solid #282d35;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 0 0,rgba(255,255,255,.025),transparent 38%),
+    #0c0e12;
+  box-shadow:0 10px 28px rgba(0,0,0,.12);
+}
+.v331-alert-group.critical,
+.v331-alert-group.warning,
+.v331-alert-group.success,
+.v331-alert-group.info{border-left-width:1px}
+.v331-alert-group-head{
+  align-items:center;
+  padding:14px 15px;
+  border-bottom:0;
+  background:transparent;
+}
+.v331-alert-group.v333-open .v331-alert-group-head{
+  border-bottom:1px solid rgba(255,255,255,.065);
+  background:rgba(255,255,255,.014);
+}
+.v334-student-main{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+.v334-student-avatar{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #343a44;
+  border-radius:12px;
+  background:linear-gradient(180deg,#181b21,#111319);
+  color:#f3f4f6;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.025em;
+}
+.v331-alert-student>strong{
+  font-size:14px;
+  line-height:1.25;
+  letter-spacing:-.01em;
+}
+.v331-alert-student>span{
+  margin-top:3px;
+  color:#929aa5;
+  font-size:10.5px;
+  line-height:1.35;
+}
+.v334-category-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:7px;
+}
+.v334-category-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:2px 7px;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:999px;
+  background:rgba(255,255,255,.025);
+  color:#aeb5bf;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.025em;
+  text-transform:none;
+}
+.v331-alert-group-badges{align-items:center}
+.v331-alert-count,
+.v331-alert-positive,
+.v331-alert-review{
+  min-height:26px;
+  padding:4px 8px;
+  font-size:9px;
+}
+.v333-alert-chevron{
+  width:28px;
+  height:28px;
+  font-size:15px;
+}
+.v331-alert-row{
+  padding:13px 15px;
+  gap:12px;
+}
+.v331-alert-label{
+  font-size:9px;
+  letter-spacing:.045em;
+}
+.v331-alert-main{margin-top:6px}
+.v331-alert-main strong{
+  font-size:13px;
+  line-height:1.35;
+}
+.v331-alert-main b{
+  font-size:13px;
+  line-height:1.35;
+}
+.v331-alert-compare{
+  margin-top:6px;
+  font-size:10.5px;
+  line-height:1.45;
+}
+.v331-alert-note{
+  margin-top:5px;
+  font-size:10px;
+  line-height:1.45;
+}
+.v331-alert-actions .btn{
+  min-width:72px;
+  min-height:34px;
+}
+@media(max-width:640px){
+  .v331-alert-group-head{
+    padding:13px 12px;
+    gap:10px;
+  }
+  .v334-student-avatar{
+    width:36px;
+    height:36px;
+    flex-basis:36px;
+  }
+  .v331-alert-group-badges{
+    padding-left:47px;
+    justify-content:flex-start;
+  }
+  .v331-alert-row{padding:12px}
+  .v331-alert-main strong,
+  .v331-alert-main b{font-size:12.5px}
+}
 """
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
@@ -354,8 +495,16 @@ runtime=r"""
     return parts.join(' · ')||String(x?.body||'');
   }
   function groupRows(rows){
-    const map=new Map();
+    const map=new Map(),seen=new Map();
     (rows||[]).filter(Boolean).forEach(x=>{
+      const athlete=athleteKey(x);
+      const identity=String(x?.event_key||[x?.kind||'',x?.title||'',x?.occurred_at||'',x?.body||''].join('|'));
+      const dedupeKey=athlete+'::'+identity;
+      const previous=seen.get(dedupeKey);
+      if(previous&&ms(previous?.occurred_at)>=ms(x?.occurred_at))return;
+      seen.set(dedupeKey,x);
+    });
+    [...seen.values()].forEach(x=>{
       const key=athleteKey(x);
       if(!map.has(key))map.set(key,{key,name:x.athlete_name||'Alumno',athleteId:x.athlete_id||'',rows:[]});
       map.get(key).rows.push(x);
@@ -366,6 +515,7 @@ runtime=r"""
       g.severity=g.rows.reduce((best,x)=>(rank[x?.severity]||0)>(rank[best]||0)?x.severity:best,'info');
       g.positive=g.rows.filter(x=>x?.severity==='success').length;
       g.review=g.rows.filter(x=>x?.severity==='critical'||x?.severity==='warning').length;
+      g.categories=[...new Set(g.rows.map(x=>category(x)).filter(Boolean))];
       g.latest=Math.max(0,...g.rows.map(x=>ms(x?.occurred_at)));
     });
     groups.sort((a,b)=>(rank[b.severity]||0)-(rank[a.severity]||0)||b.latest-a.latest||a.name.localeCompare(b.name,'es'));
@@ -409,22 +559,36 @@ runtime=r"""
     });
   };
 
-  function groupHtml(g,{dismiss=false,limit=5}={}){
-    const visible=g.rows.slice(0,limit),extra=Math.max(0,g.rows.length-visible.length);
+  function initials(name){
+    const parts=String(name||'Alumno').trim().split(/\s+/).filter(Boolean);
+    return ((parts[0]?.[0]||'A')+(parts.length>1?(parts[parts.length-1]?.[0]||''):'')).toUpperCase().slice(0,2);
+  }
+  function groupHtml(g,{dismiss=false}={}){
     const open=alertGroupsOpenV333.has(String(g.key||''));
+    const cats=(g.categories||[]).slice(0,3);
+    const extraCats=Math.max(0,(g.categories||[]).length-cats.length);
+    const chips=cats.map(c=>'<span class="v334-category-chip">'+safe(String(c).toLowerCase().replace(/(^|\s)\S/g,m=>m.toUpperCase()))+'</span>').join('')+
+      (extraCats?'<span class="v334-category-chip">+'+extraCats+' más</span>':'');
+    const summary=[];
+    if(g.review)summary.push(g.review+' para revisar');
+    if(g.positive)summary.push(g.positive+' mejora'+(g.positive===1?'':'s'));
+    if(!summary.length)summary.push(g.rows.length+' cambio'+(g.rows.length===1?'':'s')+' nuevo'+(g.rows.length===1?'':'s'));
     return '<section class="v331-alert-group '+safe(g.severity)+' '+(open?'v333-open':'')+'" data-v333-key="'+safe(g.key)+'">'+
       '<button type="button" class="v331-alert-group-head v333-alert-group-toggle" aria-expanded="'+(open?'true':'false')+'" onclick="window.__fjzToggleAlertGroupV333(\''+js(g.key)+'\')">'+
-        '<span class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+' · Tocá para '+(open?'cerrar':'ver el detalle')+'</span></span>'+
+        '<span class="v334-student-main">'+
+          '<span class="v334-student-avatar" aria-hidden="true">'+safe(initials(g.name))+'</span>'+
+          '<span class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+safe(summary.join(' · '))+' · '+(open?'Cerrar detalle':'Tocá para ver todas las alertas')+'</span>'+
+            (chips?'<span class="v334-category-strip">'+chips+'</span>':'')+
+          '</span>'+
+        '</span>'+
         '<span class="v331-alert-group-badges">'+
-          '<span class="v331-alert-count">'+g.rows.length+' cambio'+(g.rows.length===1?'':'s')+'</span>'+
-          (g.positive?'<span class="v331-alert-positive">+'+g.positive+' mejora'+(g.positive===1?'':'s')+'</span>':'')+
+          '<span class="v331-alert-count">'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+'</span>'+
           (g.review?'<span class="v331-alert-review">'+g.review+' revisar</span>':'')+
+          (g.positive?'<span class="v331-alert-positive">'+g.positive+' mejora'+(g.positive===1?'':'s')+'</span>':'')+
           '<span class="v333-alert-chevron" aria-hidden="true">⌄</span>'+
         '</span>'+
       '</button>'+
-      '<div class="v331-alert-list" '+(open?'':'hidden')+'>'+visible.map(x=>rowHtml(x,{dismiss})).join('')+
-        (extra?'<div class="v331-alert-row info"><div class="v331-alert-copy"><div class="v331-alert-main"><strong>+'+extra+' señal'+(extra===1?'':'es')+' adicional'+(extra===1?'':'es')+'</strong></div><div class="v331-alert-compare">Abrí el alumno para ver todo el contexto.</div></div></div>':'')+
-      '</div>'+
+      '<div class="v331-alert-list" '+(open?'':'hidden')+'>'+g.rows.map(x=>rowHtml(x,{dismiss})).join('')+'</div>'+
     '</section>';
   }
 
@@ -441,7 +605,7 @@ runtime=r"""
     const rows=typeof filteredAttentionV80==='function'?filteredAttentionV80(feed):(feed||[]);
     if(!rows.length)return '<div class="feed-empty">No hay elementos en este filtro.</div>';
     const groups=groupRows(rows);
-    return '<div class="v331-alert-groups">'+groups.map(g=>groupHtml(g,{dismiss:true,limit:6})).join('')+'</div>';
+    return '<div class="v331-alert-groups">'+groups.map(g=>groupHtml(g,{dismiss:true})).join('')+'</div>';
   };
   window.renderAttentionItemsV80=groupedAttention;
   try{renderAttentionItemsV80=groupedAttention}catch(_e){}
@@ -477,7 +641,7 @@ runtime=r"""
       const total=groups.reduce((n,g)=>n+g.rows.length,0);
       host.classList.add('v331-smart-dashboard');
       host.innerHTML='<div class="v278-dashboard-smart-head"><strong>'+groups.length+' alumno'+(groups.length===1?'':'s')+' con cambios</strong><span>'+total+' señal'+(total===1?'':'es')+' agrupada'+(total===1?'':'s')+'</span></div>'+
-        '<div class="v331-alert-groups">'+groups.map(g=>groupHtml(g,{dismiss:false,limit:5})).join('')+'</div>';
+        '<div class="v331-alert-groups">'+groups.map(g=>groupHtml(g,{dismiss:false})).join('')+'</div>';
     }catch(e){
       console.warn('TEAM FJZ V21.31 grouped smart alerts',e);
     }
@@ -501,14 +665,19 @@ runtime=r"""
     noExtraObservers:true,
     athleteAccordionAlertsV333:true,
     alertsCollapsedByDefaultV333:true,
-    alertGroupToggleWithoutRerenderV333:true
+    alertGroupToggleWithoutRerenderV333:true,
+    reviewCenterAthleteFirstV334:true,
+    groupRowsDedupesEventKeyV334:true,
+    allAthleteAlertsExpandedV334:true,
+    professionalAccordionV334:true,
+    reviewCenterReadableTypographyV334:true
   };
 })();
 </script>
 """
 
 html=html.replace("</body>",runtime+"\n</body>",1)
-html=html.replace("</head>",'<meta name="fjz-professional-grouped-alerts" content="21.31">\n</head>',1)
+html=html.replace("</head>",'<meta name="fjz-professional-grouped-alerts" content="21.31">\n<meta name="fjz-review-center-athlete-accordion" content="21.34">\n</head>',1)
 
 after=metrics(html)
 for key in ("styles","renders","channels","timeouts","intervals","rafs","listeners","mutation_observers","performance_observers"):
