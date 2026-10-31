@@ -258,15 +258,15 @@ def patch_v280(body):
 
     body=body[:start]+replacement+body[end:]
 
-    marker="""    productionUntouched:true,"""
+    marker="""    noExtraTimers:true,"""
     if marker not in body:
         raise RuntimeError("V21.39 V280 marker anchor missing")
-    body=body.replace(marker,"""    productionUntouched:true,
-    reviewCenterCurtainV339:true,
+    body=body.replace(marker,"""    reviewCenterCurtainV339:true,
     reviewCenterAllFeedAlertsV339:true,
     reviewCenterIndividualOkV339:true,
     reviewCenterOpenDoesNotArchiveV339:true,
-    reviewCenterNoPerAthleteSliceV339:true,""",1)
+    reviewCenterNoPerAthleteSliceV339:true,
+    noExtraTimers:true,""",1)
     return body
 
 html=edit_script(html,"v280OperationalRecoveryRuntime",patch_v280)
