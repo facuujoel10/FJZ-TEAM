@@ -990,6 +990,9 @@ exec(compile(open("v336_review_comment_hardening.py", encoding="utf-8").read(), 
 # V21.37 keep load×reps volume internal; coach alerts use real load/reps/sets context.
 exec(compile(open("v337_coach_alert_logic.py", encoding="utf-8").read(), "v337_coach_alert_logic.py", "exec"))
 
+# V21.38 group every active alert under one athlete curtain and resolve the group in one durable action.
+exec(compile(open("v338_athlete_alert_curtain.py", encoding="utf-8").read(), "v338_athlete_alert_curtain.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
