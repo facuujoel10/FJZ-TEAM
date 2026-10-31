@@ -151,6 +151,41 @@ def patch_v302(body):
     ack=r"""
   const trainingCommentAckBusyV329=new Set();
 
+  async function persistSessionCommentAckV333(s,ss,reviewedAt){
+    if(!(cloudEnabled&&supabaseClient))return true;
+    const row=cloudAthletes?.get?.(String(s?.id||''));
+    if(!row?.id)throw new Error('No se encontró la ficha cloud del alumno.');
+
+    const next=typeof clone==='function'?clone(s):JSON.parse(JSON.stringify(s));
+    const target=(Array.isArray(next?.sessions)?next.sessions:[])
+      .find(x=>String(x?.id||'')===String(ss?.id||''));
+    const fb=target?.sessionFeedback;
+    if(!target||!fb)throw new Error('No se encontró el comentario en el snapshot.');
+
+    fb.status='reviewed';
+    fb.reviewedAt=reviewedAt;
+    fb.reviewedBy=currentUser?.id||null;
+
+    try{cloudLastWrite=Date.now()}catch(_e){}
+
+    const {error:upErr}=await supabaseClient.from('athlete_snapshots')
+      .upsert({athlete_id:row.id,data:next,updated_at:reviewedAt},{onConflict:'athlete_id'});
+    if(upErr)throw upErr;
+
+    const {data:confirmed,error:readErr}=await supabaseClient.from('athlete_snapshots')
+      .select('data,updated_at')
+      .eq('athlete_id',row.id)
+      .single();
+    if(readErr)throw readErr;
+
+    const persisted=(Array.isArray(confirmed?.data?.sessions)?confirmed.data.sessions:[])
+      .find(x=>String(x?.id||'')===String(ss?.id||''));
+    if(persisted?.sessionFeedback?.status!=='reviewed'){
+      throw new Error('Supabase no confirmó el OK del comentario.');
+    }
+    return true;
+  }
+
   window.__fjzAckTrainingCommentV329=async function(studentId,sessionId,commentKind,feedbackId,exerciseUid){
     if(currentProfile?.role!=='coach')return false;
     const s=byId(studentId);
@@ -215,6 +250,9 @@ def patch_v302(body):
           try{toast?.('No pude encontrar el comentario de esa sesión.')}catch(_e){}
           return false;
         }
+
+        await persistSessionCommentAckV333(s,ss,reviewedAt);
+
         fb.status='reviewed';
         fb.reviewedAt=reviewedAt;
         fb.reviewedBy=currentUser?.id||null;
@@ -244,7 +282,9 @@ def patch_v302(body):
     trainingCommentOkV329:true,
     trainingCommentOkCloudVerifiedV329:true,
     trainingCommentSnapshotStatusSyncedV329:true,
-    trainingCommentCarriesExerciseIdentityV329:true,""",1)
+    trainingCommentCarriesExerciseIdentityV329:true,
+    sessionCommentAckSnapshotVerifiedV333:true,
+    sessionCommentAckReadbackV333:true,""",1)
     return body
 
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)
