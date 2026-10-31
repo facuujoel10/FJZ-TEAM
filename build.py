@@ -987,6 +987,9 @@ exec(compile(open("v335_professional_progress_alert_copy.py", encoding="utf-8").
 # V21.36 harden grouped review OK persistence and exercise-comment acknowledgement.
 exec(compile(open("v336_review_comment_hardening.py", encoding="utf-8").read(), "v336_review_comment_hardening.py", "exec"))
 
+# V21.37 keep load×reps volume internal; coach alerts use real load/reps/sets context.
+exec(compile(open("v337_coach_alert_logic.py", encoding="utf-8").read(), "v337_coach_alert_logic.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
