@@ -17,15 +17,22 @@ def metrics(doc):
     }
 
 def edit_script(doc,script_id,transform):
-    pat=re.compile(r'(<script[^>]*\\bid=["\\']'+re.escape(script_id)+r'["\\'][^>]*>)(.*?)(</script>)',re.S|re.I)
-    m=pat.search(doc)
-    if not m:
+    mid=-1
+    for marker in ('id="'+script_id+'"',"id='"+script_id+"'"):
+        mid=doc.find(marker)
+        if mid>=0:
+            break
+    if mid<0:
         raise RuntimeError("V21.37 missing script "+script_id)
-    old=m.group(2)
+    a=doc.find(">",mid)
+    b=doc.find("</script>",a)
+    if a<0 or b<0:
+        raise RuntimeError("V21.37 malformed script "+script_id)
+    old=doc[a+1:b]
     new=transform(old)
     if new==old:
         raise RuntimeError("V21.37 no changes in "+script_id)
-    return doc[:m.start(2)]+new+doc[m.end(2):]
+    return doc[:a+1]+new+doc[b:]
 
 before=metrics(html)
 
