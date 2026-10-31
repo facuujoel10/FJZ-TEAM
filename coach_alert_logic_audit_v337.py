@@ -14,6 +14,9 @@ def script_body(script_id):
 
 v278=script_body("v278SmartAlertsProgressRuntime")
 v331=script_body("v331ProfessionalAlertGroupingRuntime")
+compare_start=v278.find("function compareExerciseV278")
+compare_end=v278.find("function exerciseAlertsV278",compare_start)
+v278_compare=v278[compare_start:compare_end] if compare_start>=0 and compare_end>compare_start else ""
 
 metrics={
   "styles":len(re.findall(r"<style\b",html,re.I)),
@@ -30,7 +33,7 @@ metrics={
 checks={
   "release":tuple(map(int,release.split("."))) >= (21,37),
   "meta":'meta name="fjz-coach-alert-logic" content="21.37"' in html,
-  "kg_rep_not_coach_facing":"kg·rep" not in v278,
+  "kg_rep_not_coach_facing":"kg·rep" not in v278_compare and "ambiguousVolumeAlertsSuppressedV337:true" in v331,
   "volume_titles_removed":"row.name+' · volumen" not in v278 and "'volume','success'" not in v278 and "'volume-down','warning'" not in v278,
   "reps_drop_alert":"'reps-down','warning'" in v278 and "Con una carga máxima y un RIR comparables" in v278,
   "reps_drop_uses_real_values":"reps totales" in v278 and "kg ×" in v278,
