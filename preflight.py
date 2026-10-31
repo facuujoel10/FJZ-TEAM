@@ -135,6 +135,7 @@ runpy.run_path(str(ROOT / 'professional_progress_alert_copy_audit_v335.py'), run
 runpy.run_path(str(ROOT / 'review_comment_hardening_audit_v336.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'coach_alert_logic_audit_v337.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'athlete_alert_curtain_audit_v338.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'review_center_curtain_audit_v339.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
