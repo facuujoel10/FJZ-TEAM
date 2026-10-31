@@ -981,6 +981,9 @@ exec(compile(open("v331_professional_alert_grouping.py", encoding="utf-8").read(
 # V21.32 keep nutrition option macros readable on mobile and move option actions below them.
 exec(compile(open("v332_nutrition_mobile_macro_geometry.py", encoding="utf-8").read(), "v332_nutrition_mobile_macro_geometry.py", "exec"))
 
+# V21.35 make progress alerts concrete, coach-readable and free of percentage-only improvement copy.
+exec(compile(open("v335_professional_progress_alert_copy.py", encoding="utf-8").read(), "v335_professional_progress_alert_copy.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
