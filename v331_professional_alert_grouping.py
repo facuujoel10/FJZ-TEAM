@@ -60,6 +60,43 @@ css=r"""
   border-bottom:1px solid rgba(255,255,255,.055);
   background:rgba(255,255,255,.012);
 }
+.v331-alert-group-head.v333-alert-group-toggle{
+  width:100%;
+  margin:0;
+  border-top:0;
+  border-left:0;
+  border-right:0;
+  border-radius:0;
+  font:inherit;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.v331-alert-group-head.v333-alert-group-toggle:hover{
+  background:rgba(255,255,255,.026);
+}
+.v331-alert-group-head.v333-alert-group-toggle:focus-visible{
+  outline:2px solid rgba(103,173,255,.48);
+  outline-offset:-2px;
+}
+.v331-alert-list[hidden]{display:none!important}
+.v333-alert-chevron{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border:1px solid #30353d;
+  border-radius:999px;
+  color:#b8bec7;
+  background:#11141a;
+  font-size:13px;
+  line-height:1;
+  transition:transform .16s ease;
+}
+.v331-alert-group.v333-open .v333-alert-chevron{transform:rotate(180deg)}
 .v331-alert-student{
   min-width:0;
 }
@@ -350,18 +387,42 @@ runtime=r"""
       '</div>'+
     '</div>';
   }
+  const alertGroupsOpenV333=window.__fjzAlertGroupsOpenV333 instanceof Set
+    ?window.__fjzAlertGroupsOpenV333
+    :new Set();
+  window.__fjzAlertGroupsOpenV333=alertGroupsOpenV333;
+
+  window.__fjzToggleAlertGroupV333=function(key){
+    const k=String(key||'');
+    if(!k)return;
+    if(alertGroupsOpenV333.has(k))alertGroupsOpenV333.delete(k);
+    else alertGroupsOpenV333.add(k);
+
+    document.querySelectorAll('.v331-alert-group[data-v333-key]').forEach(node=>{
+      if(String(node.dataset.v333Key||'')!==k)return;
+      const open=alertGroupsOpenV333.has(k);
+      node.classList.toggle('v333-open',open);
+      const list=node.querySelector('.v331-alert-list');
+      if(list)list.hidden=!open;
+      const btn=node.querySelector('.v333-alert-group-toggle');
+      if(btn)btn.setAttribute('aria-expanded',open?'true':'false');
+    });
+  };
+
   function groupHtml(g,{dismiss=false,limit=5}={}){
     const visible=g.rows.slice(0,limit),extra=Math.max(0,g.rows.length-visible.length);
-    return '<section class="v331-alert-group '+safe(g.severity)+'">'+
-      '<div class="v331-alert-group-head">'+
-        '<div class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+g.rows.length+' señal'+(g.rows.length===1?'':'es')+' agrupada'+(g.rows.length===1?'':'s')+' en un solo lugar</span></div>'+
+    const open=alertGroupsOpenV333.has(String(g.key||''));
+    return '<section class="v331-alert-group '+safe(g.severity)+' '+(open?'v333-open':'')+'" data-v333-key="'+safe(g.key)+'">'+
+      '<button type="button" class="v331-alert-group-head v333-alert-group-toggle" aria-expanded="'+(open?'true':'false')+'" onclick="window.__fjzToggleAlertGroupV333(\''+js(g.key)+'\')">'+
+        '<div class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+' · Tocá para '+(open?'cerrar':'ver el detalle')+'</span></div>'+
         '<div class="v331-alert-group-badges">'+
           '<span class="v331-alert-count">'+g.rows.length+' cambio'+(g.rows.length===1?'':'s')+'</span>'+
           (g.positive?'<span class="v331-alert-positive">+'+g.positive+' mejora'+(g.positive===1?'':'s')+'</span>':'')+
           (g.review?'<span class="v331-alert-review">'+g.review+' revisar</span>':'')+
+          '<span class="v333-alert-chevron" aria-hidden="true">⌄</span>'+
         '</div>'+
-      '</div>'+
-      '<div class="v331-alert-list">'+visible.map(x=>rowHtml(x,{dismiss})).join('')+
+      '</button>'+
+      '<div class="v331-alert-list" '+(open?'':'hidden')+'>'+visible.map(x=>rowHtml(x,{dismiss})).join('')+
         (extra?'<div class="v331-alert-row info"><div class="v331-alert-copy"><div class="v331-alert-main"><strong>+'+extra+' señal'+(extra===1?'':'es')+' adicional'+(extra===1?'':'es')+'</strong></div><div class="v331-alert-compare">Abrí el alumno para ver todo el contexto.</div></div></div>':'')+
       '</div>'+
     '</section>';
@@ -437,7 +498,10 @@ runtime=r"""
     groupSeverityPrioritized:true,
     noExtraTimers:true,
     noExtraListeners:true,
-    noExtraObservers:true
+    noExtraObservers:true,
+    athleteAccordionAlertsV333:true,
+    alertsCollapsedByDefaultV333:true,
+    alertGroupToggleWithoutRerenderV333:true
   };
 })();
 </script>
