@@ -254,19 +254,21 @@ def patch_v280(body):
 
   window.__fjzOpenPriorityV280=function(id,tab){
     openStudent(id,tab);
-  };"""
+  };
 
-    body=body[:start]+replacement+body[end:]
-
-    marker="""    noExtraTimers:true,"""
-    if marker not in body:
-        raise RuntimeError("V21.39 V280 marker anchor missing")
-    body=body.replace(marker,"""    reviewCenterCurtainV339:true,
+  window.__fjzV339={
+    version:'21.39',
+    reviewCenterCurtainV339:true,
     reviewCenterAllFeedAlertsV339:true,
     reviewCenterIndividualOkV339:true,
     reviewCenterOpenDoesNotArchiveV339:true,
     reviewCenterNoPerAthleteSliceV339:true,
-    noExtraTimers:true,""",1)
+    noExtraTimers:true,
+    noExtraListeners:true,
+    noExtraObservers:true
+  };"""
+
+    body=body[:start]+replacement+body[end:]
     return body
 
 html=edit_script(html,"v280OperationalRecoveryRuntime",patch_v280)
