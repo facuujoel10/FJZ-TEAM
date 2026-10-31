@@ -5,19 +5,19 @@ html=p.read_text(encoding="utf-8")
 
 def metrics(doc):
     return {
-        "styles":len(re.findall(r"<style\\b",doc,re.I)),
-        "renders":len(re.findall(r"(?:window\\.)?render\\s*=",doc)),
-        "channels":len(re.findall(r"\\.channel\\s*\\(",doc)),
-        "timeouts":len(re.findall(r"setTimeout\\s*\\(",doc)),
-        "intervals":len(re.findall(r"setInterval\\s*\\(",doc)),
-        "rafs":len(re.findall(r"requestAnimationFrame\\s*\\(",doc)),
-        "listeners":len(re.findall(r"addEventListener\\s*\\(",doc)),
-        "mutation_observers":len(re.findall(r"new\\s+MutationObserver",doc)),
-        "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",doc)),
+        "styles":len(re.findall(r"<style\b",doc,re.I)),
+        "renders":len(re.findall(r"(?:window\.)?render\s*=",doc)),
+        "channels":len(re.findall(r"\.channel\s*\(",doc)),
+        "timeouts":len(re.findall(r"setTimeout\s*\(",doc)),
+        "intervals":len(re.findall(r"setInterval\s*\(",doc)),
+        "rafs":len(re.findall(r"requestAnimationFrame\s*\(",doc)),
+        "listeners":len(re.findall(r"addEventListener\s*\(",doc)),
+        "mutation_observers":len(re.findall(r"new\s+MutationObserver",doc)),
+        "performance_observers":len(re.findall(r"new\s+PerformanceObserver",doc)),
     }
 
 def edit_script(doc,script_id,transform):
-    pat=re.compile(r'(<script[^>]*\\bid=["\\']'+re.escape(script_id)+r'["\\'][^>]*>)(.*?)(</script>)',re.S|re.I)
+    pat=re.compile(r'(<script[^>]*\bid=["\']'+re.escape(script_id)+r'["\'][^>]*>)(.*?)(</script>)',re.S|re.I)
     m=pat.search(doc)
     if not m:
         raise RuntimeError("V21.35 missing script "+script_id)
