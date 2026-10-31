@@ -132,6 +132,7 @@ runpy.run_path(str(ROOT / 'professional_alert_grouping_audit_v331.py'), run_name
 runpy.run_path(str(ROOT / 'nutrition_mobile_macro_geometry_audit_v332.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'review_center_accordion_audit_v334.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'professional_progress_alert_copy_audit_v335.py'), run_name='__main__')
+runpy.run_path(str(ROOT / 'review_comment_hardening_audit_v336.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'release_watchdog_audit_v300.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'recent_feature_regression_audit_v297.py'), run_name='__main__')
 runpy.run_path(str(ROOT / 'final_release_gate_v291.py'), run_name='__main__')
