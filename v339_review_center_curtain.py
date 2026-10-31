@@ -276,13 +276,17 @@ html=edit_script(html,"v280OperationalRecoveryRuntime",patch_v280)
 def patch_v331(body):
     # V21.38 used one bulk OK in this secondary grouped surface. Restore
     # the same per-alert semantics requested for the canonical review center.
-    old_ver="""        '<button class="btn small" onclick="window.__fjzOpenGroupedAlertV331(\''+js(x?.athlete_id)+'\',\''+js(x?.event_key)+'\',\''+js(x?.kind)+'\')">Ver</button>'+
-        ''+"""
-    new_ver="""        '<button class="btn small" onclick="window.__fjzOpenGroupedAlertV331(\''+js(x?.athlete_id)+'\',\''+js(x?.event_key)+'\',\''+js(x?.kind)+'\')">Ver</button>'+
-        (dismiss?'<button class="btn small v299-ok v336-alert-ok" data-v336-ok-key="'+safe(x?.event_key||'')+'" onclick="window.__fjzResolveGroupedAlertV336(\''+js(x?.event_key)+'\',this)">✓ OK</button>':'')+"""
-    if body.count(old_ver)!=1:
-        raise RuntimeError("V21.39 V331 individual OK restore anchor mismatch: "+str(body.count(old_ver)))
-    body=body.replace(old_ver,new_ver,1)
+    row_start=body.find("  function rowHtml(")
+    row_end=body.find("\n  const alertGroupsOpenV333",row_start)
+    if row_start<0 or row_end<0:
+        raise RuntimeError("V21.39 V331 rowHtml bounds missing")
+    row_block=body[row_start:row_end]
+    empty_action="""        ''+"""
+    restored_action="""        (dismiss?'<button class="btn small v299-ok v336-alert-ok" data-v336-ok-key="'+safe(x?.event_key||'')+'" onclick="window.__fjzResolveGroupedAlertV336(\''+js(x?.event_key)+'\',this)">✓ OK</button>':'')+"""
+    if row_block.count(empty_action)!=1:
+        raise RuntimeError("V21.39 V331 empty action anchor mismatch: "+str(row_block.count(empty_action)))
+    row_block=row_block.replace(empty_action,restored_action,1)
+    body=body[:row_start]+row_block+body[row_end:]
 
     old_footer="""      '<div class="v331-alert-list" '+(open?'':'hidden')+'>'+g.rows.map(x=>rowHtml(x,{dismiss})).join('')+
         (dismiss?'<div class="v338-athlete-alert-footer"><span>'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+' de '+safe(g.name)+' · se revisan juntas</span><button type="button" class="btn small v299-ok v338-athlete-ok" onclick="window.__fjzResolveAthleteAlertGroupV338(this)">✓ OK todas</button></div>':'')+
