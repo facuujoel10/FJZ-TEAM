@@ -65,14 +65,26 @@ checks={
     "if(acked)return {bucket:'watch'" in v280,
   "new_feed_beats_old_ack":
     "if(feed.length||critical||warning)" in v280,
-  "opening_priority_marks_seen_first":
-    "window.__fjzOpenPriorityV280=async function" in v280 and
-    "await window.__fjzMarkCoachReviewSeenV299?.(id)" in v280,
+  "opening_priority_marks_seen_first_or_superseded":
+    (
+      "window.__fjzOpenPriorityV280=async function" in v280 and
+      "await window.__fjzMarkCoachReviewSeenV299?.(id)" in v280
+    ) or (
+      "reviewCenterOpenDoesNotArchiveV339:true" in v280 and
+      "__fjzToggleReviewCurtainV339" in v280 and
+      "window.__fjzOpenPriorityV280=function(id,tab)" in v280
+    ),
   "active_columns_only":
     "col('Urgente','urgent'" in v280 and
     "col('Revisar','today'" in v280 and
     "col('Seguimiento','watch'" not in v280[v280.find("renderPriority=function()"):],
-  "lifecycle_explained":"Al entrar se archiva como visto" in v280,
+  "lifecycle_explained":
+    ("Al entrar se archiva como visto" in v280) or
+    (
+      "reviewCenterOpenDoesNotArchiveV339:true" in v280 and
+      "Cada alumno aparece una sola vez" in v280 and
+      "resolvelas individualmente con OK" in v280
+    ),
   "dashboard_role_guard":"currentProfile?.role==='coach'&&coachTab==='dashboard'" in v280,
 
   # Legacy Coach focus respects the same acknowledged snapshot.
