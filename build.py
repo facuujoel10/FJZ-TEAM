@@ -993,6 +993,9 @@ exec(compile(open("v337_coach_alert_logic.py", encoding="utf-8").read(), "v337_c
 # V21.38 group every active alert under one athlete curtain and resolve the group in one durable action.
 exec(compile(open("v338_athlete_alert_curtain.py", encoding="utf-8").read(), "v338_athlete_alert_curtain.py", "exec"))
 
+# V21.39 make the canonical Review Center a real athlete curtain with every alert visible and individual OK.
+exec(compile(open("v339_review_center_curtain.py", encoding="utf-8").read(), "v339_review_center_curtain.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
