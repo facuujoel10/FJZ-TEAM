@@ -24,7 +24,10 @@ checks={
   "concrete_copy":"concreteProgressCopyV335:true" in html,
   "percentage_only_generic_suppressed":"percentageOnlyProgressSuppressedV335:true" in html and "percentageOnlyProgress=" in html,
   "load_uses_kg":"loadAlertsUseKgDeltaV335:true" in html and "Progreso de carga consistente" in html,
-  "volume_absolute":"volumeAlertsUseAbsoluteWorkV335:true" in html and "blockDiff" in html and "kg·rep" in html,
+  "volume_absolute_or_superseded":(
+    ("volumeAlertsUseAbsoluteWorkV335:true" in html and "blockDiff" in html and "kg·rep" in html)
+    or ("coachFacingKgRepRemovedV337:true" in html and "volumeKeptInternalOnlyV337:true" in html)
+  ),
   "adherence_counts":"adherenceNutritionUseCountsV335:true" in html and "Frecuencia cumplida" in html,
   "nutrition_counts":"Semana completa" in html and "días con registro" in html,
   "coach_reading":"coachReadingLabelV335:true" in html and "Lectura coach" in html,
