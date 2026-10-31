@@ -4,6 +4,17 @@ root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 
+def script_body(script_id):
+  for marker in ('id="'+script_id+'"',"id='"+script_id+"'"):
+    mid=html.find(marker)
+    if mid>=0:
+      a=html.find(">",mid); b=html.find("</script>",a)
+      if a>=0 and b>=0:
+        return html[a+1:b]
+  return ""
+
+v331=script_body("v331ProfessionalAlertGroupingRuntime")
+
 metrics={
   "styles":len(re.findall(r"<style\b",html,re.I)),
   "renders":len(re.findall(r"(?:window\.)?render\s*=",html)),
@@ -25,7 +36,7 @@ checks={
   "grouped_ok_uses_review_authority":"groupedAlertOkUsesReviewAuthorityV336:true" in html and "dismissCoachAlertV96(key)" in html,
   "grouped_ok_readback":"groupedAlertCloudReadbackV336:true" in html and ".select('event_key,read_at,dismissed_at')" in html,
   "grouped_ok_busy_lock":"groupedAlertOkBusyLockV336:true" in html and "groupedAlertAckBusyV336" in html,
-  "old_grouped_ocultar_removed":">Ocultar</button>" not in html,
+  "old_grouped_ocultar_removed":">Ocultar</button>" not in v331 and "v336-alert-ok" in v331,
   "session_comment_durable":"sessionCommentAckSnapshotVerifiedV333:true" in html and "sessionCommentAckReadbackV333:true" in html,
   "exercise_comment_durable":"exerciseCommentAckSnapshotVerifiedV336:true" in html and "exerciseCommentAckReadbackV336:true" in html,
   "exercise_comment_snapshot_helper":"persistExerciseCommentAckSnapshotV336" in html and "await persistExerciseCommentAckSnapshotV336" in html,
