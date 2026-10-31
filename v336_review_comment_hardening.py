@@ -279,11 +279,20 @@ def patch_v302(body):
               reviewed_at:reviewedAt
             })
             .eq('id',fid)
-            .select('id,status,reviewed_at')
+            .select('id,status')
             .single();
           if(error)throw error;
-          if(String(data?.id||'')!==fid||data?.status!=='reviewed'||!data?.reviewed_at){
+          if(String(data?.id||'')!==fid||data?.status!=='reviewed'){
             throw new Error('No se pudo verificar el OK del comentario.');
+          }
+
+          const {data:confirmedFeedback,error:confirmedFeedbackError}=await supabaseClient.from('exercise_feedback')
+            .select('id,status,reviewed_at')
+            .eq('id',fid)
+            .single();
+          if(confirmedFeedbackError)throw confirmedFeedbackError;
+          if(String(confirmedFeedback?.id||'')!==fid||confirmedFeedback?.status!=='reviewed'||!confirmedFeedback?.reviewed_at){
+            throw new Error('Supabase no confirmó el estado revisado del comentario.');
           }
         }
 
