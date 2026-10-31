@@ -120,8 +120,20 @@ def patch_v331(body):
         if(typeof refreshCoachFeed==='function')await refreshCoachFeed();
       }catch(_e){}
       try{
-        if(typeof render==='function')render();
+        document.querySelectorAll('[data-v336-event-key="'+CSS.escape(key)+'"]').forEach(node=>{
+          const group=node.closest('.v331-alert-group');
+          node.remove();
+          if(!group)return;
+          const remaining=group.querySelectorAll('.v331-alert-row[data-v336-event-key]').length;
+          if(!remaining){
+            group.remove();
+            return;
+          }
+          const count=group.querySelector('.v331-alert-count');
+          if(count)count.textContent=remaining+' alerta'+(remaining===1?'':'s');
+        });
       }catch(_e){}
+      try{renderCoachAlertsV96?.();updateCoachBellV96?.()}catch(_e){}
       try{await window.__fjzRenderPrioritySmartV278?.()}catch(_e){}
       try{toast?.('✓ Alerta revisada')}catch(_e){}
       return true;
@@ -130,7 +142,9 @@ def patch_v331(body):
       try{
         coachFeedLoadedAt=0;
         if(typeof refreshCoachFeed==='function')await refreshCoachFeed();
-        if(typeof render==='function')render();
+        renderCoachAlertsV96?.();
+        updateCoachBellV96?.();
+        await window.__fjzRenderPrioritySmartV278?.();
       }catch(_e){}
       try{toast?.(typeof cloudErr==='function'?cloudErr(e):'No se pudo guardar el OK de la alerta.')}catch(_e){}
       if(button){
