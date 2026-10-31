@@ -414,13 +414,13 @@ runtime=r"""
     const open=alertGroupsOpenV333.has(String(g.key||''));
     return '<section class="v331-alert-group '+safe(g.severity)+' '+(open?'v333-open':'')+'" data-v333-key="'+safe(g.key)+'">'+
       '<button type="button" class="v331-alert-group-head v333-alert-group-toggle" aria-expanded="'+(open?'true':'false')+'" onclick="window.__fjzToggleAlertGroupV333(\''+js(g.key)+'\')">'+
-        '<div class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+' · Tocá para '+(open?'cerrar':'ver el detalle')+'</span></div>'+
-        '<div class="v331-alert-group-badges">'+
+        '<span class="v331-alert-student"><strong>'+safe(g.name)+'</strong><span>'+g.rows.length+' alerta'+(g.rows.length===1?'':'s')+' · Tocá para '+(open?'cerrar':'ver el detalle')+'</span></span>'+
+        '<span class="v331-alert-group-badges">'+
           '<span class="v331-alert-count">'+g.rows.length+' cambio'+(g.rows.length===1?'':'s')+'</span>'+
           (g.positive?'<span class="v331-alert-positive">+'+g.positive+' mejora'+(g.positive===1?'':'s')+'</span>':'')+
           (g.review?'<span class="v331-alert-review">'+g.review+' revisar</span>':'')+
           '<span class="v333-alert-chevron" aria-hidden="true">⌄</span>'+
-        '</div>'+
+        '</span>'+
       '</button>'+
       '<div class="v331-alert-list" '+(open?'':'hidden')+'>'+visible.map(x=>rowHtml(x,{dismiss})).join('')+
         (extra?'<div class="v331-alert-row info"><div class="v331-alert-copy"><div class="v331-alert-main"><strong>+'+extra+' señal'+(extra===1?'':'es')+' adicional'+(extra===1?'':'es')+'</strong></div><div class="v331-alert-compare">Abrí el alumno para ver todo el contexto.</div></div></div>':'')+
