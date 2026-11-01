@@ -238,18 +238,20 @@ def patch_v207(body):
         raise RuntimeError("V21.40 V207 validation anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
-    old="""    failedSaveRemainsRetryable:true
-  };"""
-    new="""    failedSaveRemainsRetryable:true,
+    end=body.rfind("})();")
+    if end<0:
+        raise RuntimeError("V21.40 V207 runtime end missing")
+    markers=r"""
+  window.__fjzV340SessionInput={
+    version:'21.40',
     workoutInputPreflightV340:true,
     repsRangeMatchesDatabaseV340:true,
     rirRangeMatchesDatabaseV340:true,
     invalidSetNeverReachesCloudV340:true,
     resumedWorkoutKeepsOriginalTimeV340:true
-  };"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.40 V207 marker anchor mismatch")
-    body=body.replace(old,new,1)
+  };
+"""
+    body=body[:end]+markers+body[end:]
     return body
 
 html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
@@ -431,18 +433,20 @@ def patch_v316(body):
         raise RuntimeError("V21.40 V316 cleanup anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
-    old="""    noExtraObservers:true
-  };"""
-    new="""    noExtraObservers:true,
+    end=body.rfind("})();")
+    if end<0:
+        raise RuntimeError("V21.40 V316 runtime end missing")
+    markers=r"""
+  window.__fjzV340Recovery={
+    version:'21.40',
     legacyInvalidSetRecoveryV340:true,
     strongSwapEvidenceRequiredV340:true,
     recoveredDraftDateV340:true,
     recoveredDraftCleanupV340:true,
     noBlindAutoCorrectionV340:true
-  };"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.40 V316 marker anchor mismatch")
-    body=body.replace(old,new,1)
+  };
+"""
+    body=body[:end]+markers+body[end:]
     return body
 
 html=edit_script(html,"v316SessionLossProtectionRuntime",patch_v316)
