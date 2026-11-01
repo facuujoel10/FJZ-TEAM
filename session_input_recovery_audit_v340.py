@@ -33,10 +33,10 @@ checks={
   "meta":'meta name="fjz-session-input-recovery" content="21.40"' in html,
 
   "draft_started_at_saved":
-    "let startedAtV340=null" in v145 and
-    "startedAt:startedAtV340||new Date().toISOString()" in v145,
+    "startedAt," in v145 and
+    "const prior=freshestV145(readLocalV145(s,d),readCloudV145(s,d))" in v145,
   "legacy_draft_time_fallback":
-    "p?.startedAt||p?.updatedAt||null" in v145 and
+    "prior?.startedAt||prior?.updatedAt||null" in v145 and
     "72*60*60*1000" in v145,
   "draft_time_exported":"__fjzWorkoutStartedAtV340" in v145,
 
