@@ -212,17 +212,11 @@ def patch_v207(body):
 """
     body=body.replace(anchor,helper+anchor,1)
 
-    old="""    const session=window.__fjzSaveSessionV205?.(pack);
-    if(!session)throw new Error('No se pudo preparar la sesión.');
-
-    attachMethodHistoryV207(pack,session);"""
-    new="""    const session=window.__fjzSaveSessionV205?.(pack);
-    if(!session)throw new Error('No se pudo preparar la sesión.');
-
-    applyWorkoutStartedAtV340(pack,session);
+    old="""    attachMethodHistoryV207(pack,session);"""
+    new="""    applyWorkoutStartedAtV340(pack,session);
     attachMethodHistoryV207(pack,session);"""
     if body.count(old)!=1:
-        raise RuntimeError("V21.40 V207 session stamp anchor mismatch: "+str(body.count(old)))
+        raise RuntimeError("V21.40 V207 method-history anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
     old="""  function beginCommitV207(pack){
