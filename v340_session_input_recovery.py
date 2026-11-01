@@ -50,42 +50,53 @@ for marker in [
 #    becomes the conservative fallback for delayed completion.
 # --------------------------------------------------------------------
 def patch_v145(body):
-    old="  let lastSavedAt=null;"
-    new="""  let lastSavedAt=null;
-  let startedAtV340=null;"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.40 V145 startedAt state anchor mismatch: "+str(body.count(old)))
-    body=body.replace(old,new,1)
-
-    old="""      dayName:d.name,
+    old="""  function currentPackV145(){
+    const s=student?.(),d=s?.days?.[currentDay];
+    if(!s||!d)return null;
+    return {
+      version:VERSION,
+      studentId:s.id,
+      dayId:d.id,
+      dayName:d.name,
       updatedAt:new Date().toISOString(),
-      workoutDraft:safeCloneV145(workoutDraft||{}),"""
-    new="""      dayName:d.name,
-      startedAt:startedAtV340||new Date().toISOString(),
+      workoutDraft:safeCloneV145(workoutDraft||{}),
+      methodDraft:safeCloneV145(window.__fjzMethodDraftV110||{})
+    };
+  }"""
+    new="""  function currentPackV145(){
+    const s=student?.(),d=s?.days?.[currentDay];
+    if(!s||!d)return null;
+    const prior=freshestV145(readLocalV145(s,d),readCloudV145(s,d));
+    const candidate=prior?.startedAt||prior?.updatedAt||null;
+    const candidateMs=Date.parse(candidate||0)||0;
+    const now=Date.now();
+    const startedAt=candidateMs&&now-candidateMs>=0&&now-candidateMs<=72*60*60*1000
+      ?new Date(candidateMs).toISOString()
+      :new Date(now).toISOString();
+    return {
+      version:VERSION,
+      studentId:s.id,
+      dayId:d.id,
+      dayName:d.name,
+      startedAt,
       updatedAt:new Date().toISOString(),
-      workoutDraft:safeCloneV145(workoutDraft||{}),"""
+      workoutDraft:safeCloneV145(workoutDraft||{}),
+      methodDraft:safeCloneV145(window.__fjzMethodDraftV110||{})
+    };
+  }"""
     if body.count(old)!=1:
         raise RuntimeError("V21.40 V145 draft pack anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
-    old="""  startWorkout=function(i){
-    const p=restoreDraftV145(i);
-    currentDay=i;"""
-    new="""  startWorkout=function(i){
-    const p=restoreDraftV145(i);
-    const recoveredStart=p?.startedAt||p?.updatedAt||null;
-    const recoveredMs=Date.parse(recoveredStart||0)||0;
-    startedAtV340=recoveredMs&&Date.now()-recoveredMs>=0&&Date.now()-recoveredMs<=72*60*60*1000
-      ?new Date(recoveredMs).toISOString()
-      :new Date().toISOString();
-    currentDay=i;"""
-    if body.count(old)!=1:
-        raise RuntimeError("V21.40 V145 start workout anchor mismatch: "+str(body.count(old)))
-    body=body.replace(old,new,1)
-
     old="""  window.__fjzWorkoutAutosaveV145={"""
     new="""  window.__fjzWorkoutStartedAtV340=function(){
-    return startedAtV340;
+    const s=student?.(),d=s?.days?.[currentDay];
+    if(!s||!d)return null;
+    const prior=freshestV145(readLocalV145(s,d),readCloudV145(s,d));
+    const candidate=prior?.startedAt||prior?.updatedAt||null;
+    const candidateMs=Date.parse(candidate||0)||0;
+    if(!candidateMs||Date.now()-candidateMs<0||Date.now()-candidateMs>72*60*60*1000)return null;
+    return new Date(candidateMs).toISOString();
   };
   window.__fjzWorkoutAutosaveV145={"""
     if body.count(old)!=1:
