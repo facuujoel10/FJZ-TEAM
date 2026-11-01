@@ -460,7 +460,7 @@ for key in before:
 
 for marker in [
     'meta name="fjz-session-input-recovery" content="21.40"',
-    "startedAt:startedAtV340",
+    "startedAt,",
     "__fjzWorkoutStartedAtV340",
     "workoutInputPreflightV340:true",
     "repsRangeMatchesDatabaseV340:true",
