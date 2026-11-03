@@ -105,6 +105,7 @@ def patch_v112(body):
     old=r"""  const baseSyncStudentStateV112=window.syncStudentState;
   window.syncStudentState=async function(){
     const local=cloneV112(student());
+    const activeV341=activeWorkoutSyncV341();
     if(local&&linkedAthleteId&&supabaseClient){
       try{
         const {data,error}=await supabaseClient
@@ -121,6 +122,7 @@ def patch_v112(body):
         }
       }catch(e){
         console.warn('V11.2 pre-sync alumno',e);
+        if(activeV341)throw e;
       }
     }
     return baseSyncStudentStateV112.apply(this,arguments);
@@ -203,6 +205,7 @@ runtime=r"""
     localWorkoutDraftPreserved:true,
     realtimeWorkoutFreezePreserved:true,
     explicitFinalSaveUntouched:true,
+    activeWorkoutNoUnsafeFallback:true,
     coalescedWorkoutSchedules:0,
     workoutCloudFlushes:0,
     activeWorkoutMergedWrites:0,
@@ -231,6 +234,7 @@ for marker in [
     "localWorkoutDraftPreserved:true",
     "realtimeWorkoutFreezePreserved:true",
     "explicitFinalSaveUntouched:true",
+    "activeWorkoutNoUnsafeFallback:true",
     "activeWorkoutSyncV341",
     "merged.workoutDrafts=cloneV112(local.workoutDrafts)",
     "activeWorkoutFreeze:true",
