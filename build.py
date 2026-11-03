@@ -999,6 +999,9 @@ exec(compile(open("v339_review_center_curtain.py", encoding="utf-8").read(), "v3
 # V21.40 validate workout inputs before cloud commit and recover safe delayed-session backups.
 exec(compile(open("v340_session_input_recovery.py", encoding="utf-8").read(), "v340_session_input_recovery.py", "exec"))
 
+# V21.41 reduce active-workout snapshot churn and block in-memory state replacement during mobile training.
+exec(compile(open("v341_mobile_workout_stability.py", encoding="utf-8").read(), "v341_mobile_workout_stability.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
