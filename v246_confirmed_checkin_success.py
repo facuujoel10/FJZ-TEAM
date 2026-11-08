@@ -52,7 +52,7 @@ def patch_v170(body):
           '. Tu coach ya puede revisarlo.</div>'+
         '<div class="v207-save-actions">'+
           '<button class="btn" onclick="closeModal()">Listo</button>'+
-          '<button class="btn primary" onclick="closeModal();studentTab=\\'progress\\';render()">Ver progreso</button>'+
+          '<button class="btn primary" onclick="closeModal();studentTab=\'progress\';render()">Ver progreso</button>'+
         '</div>'+
       '</div>'
     );
