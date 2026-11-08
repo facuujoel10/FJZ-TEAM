@@ -68,12 +68,24 @@ try {
 
     if (parsed.status !== 0) {
       const raw = String(parsed.stderr || parsed.stdout || '').trim();
+      const firstLine = raw.split('\n')[0] || '';
+      const lineMatch = firstLine.match(/:(\d+)(?::\d+)?$/);
+      const localLine = lineMatch ? Number(lineMatch[1]) : 0;
+      const sourceLines = body.split('\n');
+      const context = localLine
+        ? sourceLines.slice(Math.max(0, localLine - 5), Math.min(sourceLines.length, localLine + 4))
+            .map((line, offset) => {
+              const n = Math.max(1, localLine - 4) + offset;
+              return String(n).padStart(4, ' ') + ' | ' + line;
+            }).join(' || ')
+        : '';
       failures.push({
         id,
         index: found,
         type: isModule ? 'module' : 'classic',
         htmlStartLine,
         error: raw.split('\n').slice(0, 10).join(' | '),
+        context,
       });
     }
   }
