@@ -124,7 +124,6 @@ def main():
 
     print("TEAM FJZ V22 LOCAL FIXTURES READY")
     print("coach@test.local / alumno01@test.local / alumno02@test.local")
-    print("password:",TEST_PASSWORD)
     print("production data copied: 0")
 
 if __name__=="__main__":
