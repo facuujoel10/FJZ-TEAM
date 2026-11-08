@@ -74,7 +74,6 @@ jobs:
 
       - name: Audit generated JavaScript syntax
         id: syntax
-        continue-on-error: true
         run: node scripts/dev_js_syntax_audit.js
 
       - name: Start local app server
