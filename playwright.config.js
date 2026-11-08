@@ -16,6 +16,7 @@ module.exports = defineConfig({
     trace: 'off',
     screenshot: 'off',
     video: 'off',
+    serviceWorkers: 'block',
   },
   projects: [
     { name: 'mobile-390', use: { viewport: { width: 390, height: 844 } } },
