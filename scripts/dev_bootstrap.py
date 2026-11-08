@@ -1,6 +1,6 @@
 from __future__ import annotations
-import json, urllib.parse
-from dev_common import TEST_PASSWORD,http_json,local_status
+import base64, json, urllib.parse
+from dev_common import TEST_PASSWORD,http_bytes,http_json,local_status
 
 USERS=[
   ("coach@test.local","TEST COACH","coach"),
@@ -119,8 +119,134 @@ def main():
        "status":"pending"}
     ],"id")
 
+    # ------------------------------------------------------------
+    # 0C.3 synthetic parity fixtures. These exercise the current
+    # production contracts without copying any production rows.
+    # ------------------------------------------------------------
+    upsert(api,secret,"athlete_schedule",[
+      {"id":"50000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "weekday":1,"workout_day_id":"dev_day_01","workout_day_name":"Día QA A",
+       "start_time":"09:00:00","reminder_enabled":True,"reminder_minutes_before":60,
+       "notes":"Agenda ficticia QA","active":True},
+      {"id":"50000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
+       "weekday":3,"workout_day_id":"dev_day_01","workout_day_name":"Día QA B",
+       "start_time":"18:00:00","reminder_enabled":True,"reminder_minutes_before":30,
+       "notes":"Agenda ficticia QA 2","active":True}
+    ],"id")
+
+    upsert(api,secret,"athlete_reminders",[
+      {"id":"51000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "title":"QA recordatorio 01","body":"Recordatorio completamente ficticio",
+       "category":"custom","schedule_type":"weekly","weekday":1,"remind_time":"08:00:00","active":True},
+      {"id":"51000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
+       "title":"QA recordatorio 02","body":"Recordatorio completamente ficticio",
+       "category":"custom","schedule_type":"once","reminder_date":"2026-01-20","active":True}
+    ],"id")
+
+    upsert(api,secret,"body_measurements",[
+      {"id":"52000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
+       "measured_on":"2026-01-10","weight_kg":72.5,"waist_cm":80,"abdomen_cm":82,
+       "hip_cm":96,"chest_cm":101,"arm_left_cm":35,"arm_right_cm":35,
+       "thigh_left_cm":57,"thigh_right_cm":57,"notes":"Medición QA"},
+      {"id":"52000000-0000-4000-8000-000000000002","athlete_id":a2,"student_id":s2,
+       "measured_on":"2026-01-10","weight_kg":65,"waist_cm":76,"abdomen_cm":78,
+       "hip_cm":92,"chest_cm":94,"arm_left_cm":31,"arm_right_cm":31,
+       "thigh_left_cm":53,"thigh_right_cm":53,"notes":"Medición QA 2"}
+    ],"id")
+
+    upsert(api,secret,"weekly_checkins",[
+      {"id":"53000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
+       "week_start":"2026-01-05","weight_kg":72.5,"sleep_quality":8,"stress_level":3,
+       "energy_level":8,"adherence_level":9,"mood_level":8,"hunger_level":4,
+       "recovery_level":8,"motivation_level":9,"notes":"Check-in QA pendiente"},
+      {"id":"53000000-0000-4000-8000-000000000002","athlete_id":a2,"student_id":s2,
+       "week_start":"2026-01-05","weight_kg":65,"sleep_quality":7,"stress_level":4,
+       "energy_level":7,"adherence_level":8,"mood_level":7,"hunger_level":5,
+       "recovery_level":7,"motivation_level":8,"notes":"Check-in QA alumno 02",
+       "reviewed_at":"2026-01-08T12:00:00Z","coach_feedback":"Feedback QA"}
+    ],"id")
+
+    upsert(api,secret,"coach_media_settings",[
+      {"coach_id":coach,"spotify_url":"https://example.invalid/qa-playlist",
+       "spotify_title":"Playlist QA local"}
+    ],"coach_id")
+
+    upsert(api,secret,"exercise_media",[
+      {"id":"54000000-0000-4000-8000-000000000001","coach_id":coach,
+       "exercise_key":"dev_ex_press","title":"Video QA Press","video_url":None,
+       "storage_path":coach+"/qa-exercise.txt","is_active":True}
+    ],"id")
+
+    upsert(api,secret,"fitness_recipes",[
+      {"id":"55000000-0000-4000-8000-000000000001","coach_id":coach,"is_global":False,
+       "title":"Receta QA local","category":"Dulce","description":"Fixture ficticio",
+       "prep_minutes":5,"servings":1,
+       "ingredients":[{"name":"Ingrediente QA","amount":"100 g"}],
+       "steps":["Paso QA 1"],"kcal":300,"protein_g":20,"carbs_g":35,"fat_g":8,
+       "tags":["qa","local"]}
+    ],"id")
+
+    upsert(api,secret,"nutrition_habit_logs",[
+      {"id":"56000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
+       "habit_id":"qa-water","logged_on":"2026-01-12","completed":True}
+    ],"id")
+
+    upsert(api,secret,"nutrition_plan_revisions",[
+      {"id":"57000000-0000-4000-8000-000000000001",
+       "plan_id":"30000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "revision":1,"title":"PLAN QA A","notes":"Revisión QA sintética",
+       "target_kcal":2200,"target_protein_g":160,"target_carbs_g":250,"target_fat_g":60,
+       "plan":plan1,"student_logging_enabled":True}
+    ],"id")
+
+    upsert(api,secret,"nutrition_templates",[
+      {"id":"58000000-0000-4000-8000-000000000001","coach_id":coach,
+       "name":"Plantilla QA","description":"Plantilla solo QA","title":"Plan QA plantilla",
+       "notes":"No es un plan real","target_kcal":2100,"target_protein_g":150,
+       "target_carbs_g":230,"target_fat_g":60,"plan":plan1}
+    ],"id")
+
+    upsert(api,secret,"checkin_schedules",[
+      {"id":"59000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "cadence":"weekly","next_due":"2026-01-19","remind_time":"09:00:00","active":True,
+       "notes":"Cadencia QA"},
+      {"id":"59000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
+       "cadence":"biweekly","next_due":"2026-01-26","active":True,"notes":"Cadencia QA 2"}
+    ],"id")
+
+    upsert(api,secret,"coach_payments",[
+      {"id":"5a000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "due_date":"2026-01-15","amount":1000,"status":"pending","note":"Cobranza QA"},
+      {"id":"5a000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
+       "due_date":"2026-01-15","amount":1000,"status":"paid","paid_on":"2026-01-14",
+       "payment_method":"transfer","note":"Cobranza QA 2"}
+    ],"id")
+
+    upsert(api,secret,"student_notices",[
+      {"id":"5b000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "title":"Aviso QA","body":"Aviso interno ficticio","priority":"info","active":True}
+    ],"id")
+
     for bucket in ("progress-photos","profile-photos","exercise-videos"):
         ensure_bucket(api,secret,bucket)
+
+    # Real local Storage objects so metadata-driven UI does not point at
+    # nonexistent files. Tiny valid PNG + text video placeholder.
+    png=base64.b64decode(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+    )
+    progress_path=a1+"/2026-01-10/front.png"
+    http_bytes("POST",api+"/storage/v1/object/progress-photos/"+progress_path,
+               secret,secret,png,content_type="image/png",ok=(200,201))
+    http_bytes("POST",api+"/storage/v1/object/exercise-videos/"+coach+"/qa-exercise.txt",
+               secret,secret,b"TEAM FJZ LOCAL QA VIDEO PLACEHOLDER",
+               content_type="text/plain",ok=(200,201))
+
+    upsert(api,secret,"progress_photos",[
+      {"id":"5c000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
+       "taken_on":"2026-01-10","pose":"front","storage_path":progress_path,
+       "notes":"Foto QA local"}
+    ],"id")
 
     print("TEAM FJZ V22 LOCAL FIXTURES READY")
     print("coach@test.local / alumno01@test.local / alumno02@test.local")
