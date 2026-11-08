@@ -3,17 +3,54 @@ const { test, expect } = require('@playwright/test');
 const PASSWORD = 'TEAMFJZ-Local-Only!22';
 const PROD_REF = 'cujipwacwwpejhqjhnkr';
 
-function installSafety(page, testInfo) {
-  const state = { prod: [], http: [], pageErrors: [], consoleErrors: [] };
+function isProductionBackend(url) {
+  try {
+    const u = new URL(url);
+    return u.hostname.endsWith('.supabase.co') || url.includes(PROD_REF);
+  } catch (_) {
+    return String(url || '').includes(PROD_REF);
+  }
+}
+
+async function installSafety(page, testInfo) {
+  const state = { prod: [], http: [], pageErrors: [], consoleErrors: [], websockets: [] };
+
+  // Active HTTP/HTTPS fail-closed barrier. A productive request never leaves Chromium.
+  await page.route('**/*', async route => {
+    const url = route.request().url();
+    if (isProductionBackend(url)) {
+      state.prod.push({ channel: 'http', url });
+      await route.abort('blockedbyclient');
+      return;
+    }
+    await route.continue();
+  });
+
+  // Supabase Realtime uses WebSockets. Route them before navigation and close
+  // any hosted/productive socket instead of merely observing it.
+  await page.routeWebSocket(/.*/, ws => {
+    const url = ws.url();
+    state.websockets.push(url);
+    if (isProductionBackend(url)) {
+      state.prod.push({ channel: 'websocket', url });
+      ws.close();
+      return;
+    }
+    ws.connectToServer();
+  });
 
   page.on('request', req => {
     const url = req.url();
-    try {
-      const u = new URL(url);
-      if (u.hostname.endsWith('.supabase.co') || url.includes(PROD_REF)) {
-        state.prod.push(url);
-      }
-    } catch (_) {}
+    if (isProductionBackend(url)) {
+      state.prod.push({ channel: 'request-observer', url });
+    }
+  });
+
+  page.on('websocket', ws => {
+    const url = ws.url();
+    if (isProductionBackend(url)) {
+      state.prod.push({ channel: 'websocket-observer', url });
+    }
   });
 
   page.on('response', res => {
@@ -76,6 +113,10 @@ async function finishSafety(testInfo) {
   if (s.http.length) console.log('BASELINE_LOCAL_HTTP_FAILURES', JSON.stringify(s.http.slice(0, 30)));
   if (s.consoleErrors.length) console.log('BASELINE_CONSOLE_ERRORS', JSON.stringify(s.consoleErrors.slice(0, 30)));
   expect(s.prod, 'El navegador intentó contactar Supabase productivo.').toEqual([]);
+  expect(
+    s.http.filter(x => x.status === 404),
+    'Se detectaron 404 locales: el entorno QA no tiene paridad suficiente o la app pidió una ruta inexistente.'
+  ).toEqual([]);
   expect(s.pageErrors, 'Se detectaron errores JavaScript no controlados.').toEqual([]);
 }
 
@@ -88,15 +129,18 @@ function localDateArgentina() {
   return `${map.year}-${map.month}-${map.day}`;
 }
 
+test.beforeEach(async ({ page }, testInfo) => {
+  await installSafety(page, testInfo);
+});
+
 test.afterEach(async ({}, testInfo) => {
   await finishSafety(testInfo);
 });
 
 test('Alumno: navegación principal, responsive y acceso a módulos visibles', async ({ page }, testInfo) => {
-  installSafety(page, testInfo);
   await login(page, 'alumno01@test.local');
 
-  await expect(page.getByText('TEST ALUMNO 01', { exact: true }).first()).toBeVisible();
+  await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
   for (const name of ['Inicio', 'Entrenar', 'Nutrición', 'Progreso']) {
     await expect(page.getByRole('button', { name }).first()).toBeVisible();
   }
@@ -137,7 +181,6 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
 });
 
 test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ page }, testInfo) => {
-  installSafety(page, testInfo);
   const comment = `E2E ${testInfo.project.name} · comentario Press QA`;
 
   await login(page, 'alumno01@test.local');
@@ -226,7 +269,6 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 });
 
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
-  installSafety(page, testInfo);
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
 
@@ -292,7 +334,6 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
 });
 
 test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
-  installSafety(page, testInfo);
   await login(page, 'coach@test.local');
 
   await expect(page.getByText('TEST ALUMNO 01', { exact: true }).first()).toBeVisible();
