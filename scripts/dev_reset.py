@@ -17,14 +17,12 @@ def main():
 
     env=os.environ.copy()
     env["SUPABASE_TELEMETRY_DISABLED"]="1"
-    network="team-fjz-v22-local"
-    check=subprocess.run([docker,"network","inspect",network],capture_output=True,text=True)
-    if check.returncode!=0:
-        run([docker,"network","create","-o","com.docker.network.bridge.host_binding_ipv4=127.0.0.1",network])
-
     cli=supabase_cmd()
-    # supabase start prints local keys; capture it so CI logs never expose them.
-    run(cli+["start","--network-id",network],env=env,capture=True)
+    # Supabase manages its own Docker network. A custom --network-id caused
+    # Storage to lose DNS resolution after db reset on GitHub-hosted runners.
+    # The runner is ephemeral; no ports are published by this workflow itself.
+    # supabase start prints local keys, so keep its output captured.
+    run(cli+["start"],env=env,capture=True)
     # Always name the target explicitly even though CLI v3 defaults to local.
     run(cli+["db","reset","--local"],env=env)
     run([sys.executable,"scripts/dev_bootstrap.py"],env=env)
