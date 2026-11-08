@@ -11,12 +11,12 @@ def login(api,pub,email):
 def rest(api,pub,token,method,path,payload=None,prefer=None,ok=(200,201,204)):
     return http_json(method,api+"/rest/v1/"+path,pub,token,payload,prefer,ok)
 
-def expect_forbidden(fn,label):
+def expect_error(fn,label,codes=("401","403","42501")):
     try: fn()
     except RuntimeError as e:
-        if any(x in str(e) for x in ("401","403","42501")): return
+        if any(x in str(e) for x in codes): return
         raise
-    raise RuntimeError("Se esperaba bloqueo RLS: "+label)
+    raise RuntimeError("Se esperaba rechazo: "+label)
 
 def main():
     st=local_status();api=st["api"];pub=st["publishable"];secret=st["secret"]
@@ -43,8 +43,7 @@ def main():
              "exercise_uid":"dev_ex_press","exercise_name":"Press QA","workout_day_id":"dev_day_01",
              "workout_day_name":"Día QA A","feedback_type":"comment","message":"Smoke QA","status":"pending"}
     # Resolve student id from own profile rather than embedding any real identity.
-    me=rest(api,pub,s1,"GET","profiles?select=id,email&id=eq."+urllib.parse.quote("",safe=""))
-    # profiles RLS returns the caller row; use it for student_id.
+    # profiles RLS returns the caller and linked coach; use the test email.
     me=rest(api,pub,s1,"GET","profiles?select=id,email")
     sid=next(x["id"] for x in me if x["email"]=="alumno01@test.local")
     comment["student_id"]=sid
@@ -52,8 +51,8 @@ def main():
     assert row and row[0]["id"]==fid
 
     # Same client-generated id cannot be inserted twice.
-    expect_forbidden(lambda: rest(api,pub,s1,"POST","exercise_feedback",comment,"return=representation"),
-                     "duplicate feedback id")
+    expect_error(lambda: rest(api,pub,s1,"POST","exercise_feedback",comment,"return=representation"),
+                 "duplicate feedback id",codes=("409","23505"))
 
     reviewed=rest(api,pub,coach,"PATCH","exercise_feedback?id=eq."+fid,
                   {"status":"reviewed"},"return=representation")
@@ -73,8 +72,8 @@ def main():
     blocked={"athlete_id":a2[0]["id"],"student_id":sid2,"logged_on":"2026-01-12",
              "meal_label":"Almuerzo","food_name":"QA bloqueado","grams":100,
              "kcal":1,"protein_g":0,"carbs_g":0,"fat_g":0,"source":"custom"}
-    expect_forbidden(lambda: rest(api,pub,s2,"POST","nutrition_logs",blocked,"return=representation"),
-                     "nutrition logging disabled")
+    expect_error(lambda: rest(api,pub,s2,"POST","nutrition_logs",blocked,"return=representation"),
+                 "nutrition logging disabled")
 
     buckets=http_json("GET",api+"/storage/v1/bucket",secret,secret)
     names={x.get("name") or x.get("id") for x in (buckets or [])}
