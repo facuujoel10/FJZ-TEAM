@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts @playwright/test@1.56.1
+          npm install --no-save --ignore-scripts @playwright/test@1.65.0
           npx playwright install --with-deps chromium
 
       - name: Create local stack and build development app
