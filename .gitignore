@@ -1,0 +1,9 @@
+# TEAM FJZ V22 local development
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+supabase/.temp/
+supabase/.branches/
+.dev-local/

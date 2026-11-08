@@ -2,11 +2,31 @@ import base64
 import pathlib
 import re
 import urllib.request
+import urllib.parse
 import os
 
 PINNED_SOURCE = pathlib.Path("base/team-fjz-source-v20.7.html")
 PRODUCTION_SUPABASE_URL = "https://cujipwacwwpejhqjhnkr.supabase.co"
-APP_ENV = os.environ.get("TEAM_FJZ_ENV", "production").strip().lower()
+PRODUCTION_SUPABASE_REF = "cujipwacwwpejhqjhnkr"
+PRODUCTION_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TWE-dICHv3QemUtM302CTg_8i2zVx3G"
+DEV_SENTINEL = pathlib.Path(".team-fjz-development")
+RAW_APP_ENV = os.environ.get("TEAM_FJZ_ENV", "").strip().lower()
+
+# V22 development branch is fail-closed: an explicit non-production
+# environment is mandatory while the branch sentinel exists.
+if DEV_SENTINEL.exists():
+    if not RAW_APP_ENV:
+        raise RuntimeError(
+            "TEAM FJZ V22 dev guard: TEAM_FJZ_ENV must be explicitly set "
+            "to development or test."
+        )
+    if RAW_APP_ENV not in {"development", "test"}:
+        raise RuntimeError(
+            "TEAM FJZ V22 dev guard: this development branch refuses "
+            f"TEAM_FJZ_ENV={RAW_APP_ENV!r}."
+        )
+
+APP_ENV = RAW_APP_ENV or "production"
 
 if APP_ENV not in {"production", "staging", "staging-local", "development", "test"}:
     raise RuntimeError(f"TEAM FJZ safety guard: unknown TEAM_FJZ_ENV={APP_ENV!r}")
@@ -51,11 +71,31 @@ elif APP_ENV != "production":
             "TEAM FJZ staging guard: non-production cloud builds require "
             "TEAM_FJZ_SUPABASE_URL and TEAM_FJZ_SUPABASE_PUBLISHABLE_KEY."
         )
-    if staging_url == PRODUCTION_SUPABASE_URL:
+
+    prod_markers = (
+        PRODUCTION_SUPABASE_URL,
+        PRODUCTION_SUPABASE_REF,
+        PRODUCTION_SUPABASE_PUBLISHABLE_KEY,
+    )
+    candidate = staging_url + "\n" + staging_key
+    if any(marker and marker in candidate for marker in prod_markers):
         raise RuntimeError(
-            "TEAM FJZ staging guard: non-production build is pointing at the "
-            "production Supabase URL."
+            "TEAM FJZ dev guard: production Supabase configuration detected."
         )
+
+    if APP_ENV in {"development", "test"}:
+        parsed = urllib.parse.urlparse(staging_url)
+        if parsed.hostname not in {"127.0.0.1", "localhost"}:
+            raise RuntimeError(
+                "TEAM FJZ V22 dev guard: development/test must use local "
+                "Supabase on 127.0.0.1 or localhost."
+            )
+        if parsed.scheme not in {"http", "https"}:
+            raise RuntimeError("TEAM FJZ V22 dev guard: invalid local Supabase URL.")
+        if ".supabase.co" in staging_url.lower():
+            raise RuntimeError(
+                "TEAM FJZ V22 dev guard: hosted Supabase is forbidden in development."
+            )
 
     url_pattern = r"const DEFAULT_SUPABASE_URL='[^']+';"
     key_pattern = r"const DEFAULT_SUPABASE_KEY='[^']+';"
@@ -124,6 +164,13 @@ if icons:
     (OUT / "icon-v84.webp").write_bytes(icon_bytes)
 else:
     raise RuntimeError("No se encontró el icono TEAM FJZ embebido.")
+
+if APP_ENV in {"development", "test"}:
+    html = html.replace(
+        "</head>",
+        f'<meta name="fjz-environment" content="{APP_ENV}">\n</head>',
+        1,
+    )
 
 (OUT / "index.html").write_text(html, encoding="utf-8")
 
@@ -1008,6 +1055,25 @@ if APP_ENV == "staging-local":
 
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
+
+# V22 development artifact isolation check. This runs after every patch so a
+# late script cannot reintroduce a production backend reference.
+if APP_ENV in {"development", "test"}:
+    dev_artifact = pathlib.Path("public/index.html").read_text(encoding="utf-8")
+    forbidden = (
+        PRODUCTION_SUPABASE_URL,
+        PRODUCTION_SUPABASE_REF,
+        PRODUCTION_SUPABASE_PUBLISHABLE_KEY,
+        ".supabase.co",
+    )
+    leaked = [x for x in forbidden if x and x.lower() in dev_artifact.lower()]
+    if leaked:
+        raise RuntimeError(
+            "TEAM FJZ V22 dev guard: generated artifact contains production "
+            "Supabase markers: " + repr(leaked)
+        )
+    if "fjz-environment" not in dev_artifact:
+        raise RuntimeError("TEAM FJZ V22 dev guard: environment marker missing.")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
 # Staging already runs preflight externally in its build command, so avoid duplicate work there.

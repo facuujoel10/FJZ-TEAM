@@ -1,0 +1,5 @@
+TEAM_FJZ_DEVELOPMENT_BRANCH
+branch=dev/team-fjz-v22
+base_release=21.41
+base_commit=3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807
+production_builds_forbidden=true
