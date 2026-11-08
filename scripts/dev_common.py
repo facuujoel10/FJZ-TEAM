@@ -7,12 +7,15 @@ PROD_KEY="sb_publishable_TWE-dICHv3QemUtM302CTg_8i2zVx3G"
 LOCAL_HOSTS={"127.0.0.1","localhost"}
 TEST_PASSWORD="TEAMFJZ-Local-Only!22"
 
+SUPABASE_CLI_VERSION="3.0.0"
+
 def supabase_cmd():
+    # Exact version: avoids a future CLI major changing local/remote semantics.
+    npx=shutil.which("npx")
+    if npx: return [npx,"--yes","supabase@"+SUPABASE_CLI_VERSION]
     cli=shutil.which("supabase")
     if cli: return [cli]
-    npx=shutil.which("npx")
-    if npx: return [npx,"supabase"]
-    raise RuntimeError("Supabase CLI no disponible. Instalalo antes de continuar.")
+    raise RuntimeError("Supabase CLI/NPM no disponible. Instalalo antes de continuar.")
 
 def run(cmd,*,env=None,capture=False):
     return subprocess.run(cmd,check=True,text=True,env=env,
