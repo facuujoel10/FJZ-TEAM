@@ -182,7 +182,7 @@ def main():
        "title":"Receta QA local","category":"Dulce","description":"Fixture ficticio",
        "prep_minutes":5,"servings":1,
        "ingredients":[{"name":"Ingrediente QA","amount":"100 g"}],
-       "steps":["Paso QA 1"],"kcal":300,"protein_g":20,"carbs_g":35,"fat_g":8,
+       "steps":["Paso QA 1"],"kcal_per_serving":300,"protein_g":20,"carbs_g":35,"fat_g":8,
        "tags":["qa","local"]}
     ],"id")
 
