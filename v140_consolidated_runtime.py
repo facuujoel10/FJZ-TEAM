@@ -18,26 +18,43 @@ html=html.replace("  document.addEventListener('DOMContentLoaded',normalizeVersi
 html=html.replace("  setTimeout(normalizeVersionV124,150);\n","")
 
 # Export the useful admin injection and remove its dedicated render wrapper.
+# Scope this transformation to the V12.4 script itself. The historical
+# whole-document anchor could match an unrelated function tail and place the
+# export outside the IIFE where injectCoachAdminCardV124 is defined.
+v124_pat=re.compile(r'(<script[^>]*\bid=["\']v124CoachAdminRuntime["\'][^>]*>)(.*?)(</script>)',re.S|re.I)
+v124_match=v124_pat.search(html)
+if not v124_match:
+    raise RuntimeError("V14 missing v124CoachAdminRuntime")
+v124_body=v124_match.group(2)
+
 admin_fn_end="""    hero.insertAdjacentElement('afterend',card);
   }
 """
-if admin_fn_end in html and "window.__fjzInjectCoachAdminV124" not in html:
-    html=html.replace(admin_fn_end,admin_fn_end+"\n  window.__fjzInjectCoachAdminV124=injectCoachAdminCardV124;\n",1)
+if "window.__fjzInjectCoachAdminV124" not in v124_body:
+    if v124_body.count(admin_fn_end)!=1:
+        raise RuntimeError("V14 V124 admin function tail mismatch: "+str(v124_body.count(admin_fn_end)))
+    v124_body=v124_body.replace(
+        admin_fn_end,
+        admin_fn_end+"\n  window.__fjzInjectCoachAdminV124=injectCoachAdminCardV124;\n",
+        1
+    )
 
-html,n_admin_wrap=re.subn(
+v124_body,n_admin_wrap=re.subn(
     r"""  const previousRenderV124=render;\n  render=function\(\)\{\n    const out=previousRenderV124\.apply\(this,arguments\);\n    setTimeout\(injectCoachAdminCardV124,60\);\n    return out;\n  \};\n""",
     "",
-    html,count=1
+    v124_body,count=1
 )
 
-# If the historical wrapper still contains normalizeVersion in a slightly
-# different shape, remove it with a broader exact-scope fallback.
 if n_admin_wrap==0:
-    html,n_admin_wrap=re.subn(
+    v124_body,n_admin_wrap=re.subn(
         r"""  const previousRenderV124=render;\s*render=function\(\)\{\s*const out=previousRenderV124\.apply\(this,arguments\);.*?return out;\s*\};\s*""",
         "",
-        html,count=1,flags=re.S
+        v124_body,count=1,flags=re.S
     )
+if n_admin_wrap!=1:
+    raise RuntimeError("V14 V124 render wrapper consolidation mismatch: "+str(n_admin_wrap))
+
+html=html[:v124_match.start(2)]+v124_body+html[v124_match.end(2):]
 
 # Fix the old payments empty-state scope bug while we're consolidating.
 old_payment="""      const body=el('v122PaymentsBody');
