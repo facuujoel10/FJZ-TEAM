@@ -302,7 +302,7 @@ def main():
     assert http_bytes("GET",progress_url,pub,s1)==b"LOCAL PROGRESS QA"
     expect_error(lambda: http_bytes("GET",progress_url,pub,s2),"cross-athlete progress storage read")
 
-    video_path=coach_id+"/qa-exercise.txt"
+    video_path=coach_id+"/qa-smoke-exercise.txt"
     video_url=storage_object_url(api,"exercise-videos",video_path)
     http_bytes("POST",video_url,pub,coach,b"LOCAL VIDEO PLACEHOLDER",content_type="text/plain")
     assert http_bytes("GET",video_url,pub,s1)==b"LOCAL VIDEO PLACEHOLDER"
