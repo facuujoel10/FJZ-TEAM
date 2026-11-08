@@ -189,7 +189,8 @@ def main():
         "athlete_schedule","athlete_reminders","body_measurements","weekly_checkins",
         "coach_media_settings","exercise_media","fitness_recipes",
         "nutrition_habit_logs","nutrition_plan_revisions","nutrition_templates",
-        "progress_photos","checkin_schedules","coach_payments","student_notices"
+        "progress_photos","checkin_schedules","coach_payments","student_notices",
+        "athlete_habits","student_alert_state"
     ]
     for table in parity_tables:
         coach_rows=rest(api,pub,coach,"GET",table+"?select=*&limit=20")
@@ -267,6 +268,36 @@ def main():
     photos_s2_cross=rest(api,pub,s2,"GET","progress_photos?select=id&athlete_id=eq."+a1)
     assert photos_s2_cross==[],photos_s2_cross
 
+    habits_s1=rest(api,pub,s1,"GET","athlete_habits?select=id,athlete_id,name,category&order=sort_order.asc")
+    assert len(habits_s1)==1 and habits_s1[0]["athlete_id"]==a1,habits_s1
+    habits_cross=rest(api,pub,s1,"GET","athlete_habits?select=id&athlete_id=eq."+a2)
+    assert habits_cross==[],habits_cross
+    forbidden_habit={
+        "id":str(uuid.uuid4()),"athlete_id":a1,"coach_id":coach_id,
+        "name":"QA alumno no debe crear hábito","category":"general","active":True,"sort_order":9
+    }
+    expect_error(
+        lambda: rest(api,pub,s1,"POST","athlete_habits",forbidden_habit,"return=representation"),
+        "student cannot create coach habit"
+    )
+
+    student_alerts=rest(api,pub,s1,"POST","rpc/get_student_alerts",{},None,(200,201))
+    assert isinstance(student_alerts,list),student_alerts
+    if student_alerts:
+        alert_keys={"event_key","category","severity","title","body","occurred_at","action_target","action_label","is_read"}
+        assert alert_keys.issubset(student_alerts[0].keys()),student_alerts[0]
+        first_key=student_alerts[0]["event_key"]
+        state_row={
+            "student_id":s1_id,"event_key":first_key,
+            "read_at":"2026-11-08T12:00:00Z","dismissed_at":None
+        }
+        saved_state=rest(api,pub,s1,"POST","student_alert_state",state_row,"return=representation")
+        assert saved_state and saved_state[0]["event_key"]==first_key,saved_state
+        after_alerts=rest(api,pub,s1,"POST","rpc/get_student_alerts",{},None,(200,201))
+        assert all(x["event_key"]!=first_key for x in after_alerts),after_alerts
+        cross_state=rest(api,pub,s2,"GET","student_alert_state?select=event_key&student_id=eq."+s1_id)
+        assert cross_state==[],cross_state
+
     # get_coach_feed has the production return contract and real local sources.
     feed=rest(
         api,pub,coach,"POST","rpc/get_coach_feed",{},
@@ -315,7 +346,7 @@ def main():
     print("Workout RPC + idempotent projection: OK")
     print("Exercise feedback create/review restrictions: OK")
     print("Nutrition create/edit/delete + disabled permission: OK")
-    print("0C schema parity + Coach/Alumno RLS + get_coach_feed: OK")
+    print("0C schema parity + Coach/Alumno RLS + coach/student alert RPCs: OK")
     print("Storage local + access policies: OK")
 
 if __name__=="__main__":
