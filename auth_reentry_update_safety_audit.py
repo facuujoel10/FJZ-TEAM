@@ -4,6 +4,8 @@ root=pathlib.Path(__file__).resolve().parent
 html=(root/"public"/"index.html").read_text(encoding="utf-8")
 release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 is_staging_local='id="fjzStagingLocalRuntime"' in html
+is_v22_dev=('meta name="fjz-environment" content="development"' in html or
+            'meta name="fjz-environment" content="test"' in html)
 v294_source=(root/"v294_session_resilience.py").read_text(encoding="utf-8")
 
 runtime_match=re.search(r'<script id="fjzReleaseRuntime">.*?</script>',html,re.S)
@@ -11,8 +13,15 @@ release_runtime=runtime_match.group(0) if runtime_match else ""
 
 checks={
   "stable_auth_storage_key":
-    ("storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in html if not is_staging_local
-     else "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in v294_source),
+    (
+      "storageKey:'sb-team-fjz-v22-local-auth-token'" in html
+      if is_v22_dev
+      else (
+        "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in html
+        if not is_staging_local
+        else "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in v294_source
+      )
+    ),
   "stale_refresh_detected":
     "function isStaleAuthErrorV298" in html and
     "refresh_token_not_found" in html and
