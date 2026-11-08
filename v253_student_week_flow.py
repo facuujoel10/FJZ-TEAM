@@ -125,9 +125,9 @@ def patch_v175(body):
       '</div>'+
       '<div class="v253-flow-grid">'+rows.map(weekFlowItemV253).join('')+'</div>'+
       '<div class="v253-flow-actions">'+
-        '<button class="btn" onclick="studentTab=\\'history\\';render()">Sesiones</button>'+
-        '<button class="btn" onclick="studentTab=\\'tracking\\';render()">Check-in</button>'+
-        '<button class="btn primary" onclick="studentTab=\\'progress\\';render()">Progreso</button>'+
+        '<button class="btn" onclick="studentTab=\'history\';render()">Sesiones</button>'+
+        '<button class="btn" onclick="studentTab=\'tracking\';render()">Check-in</button>'+
+        '<button class="btn primary" onclick="studentTab=\'progress\';render()">Progreso</button>'+
       '</div>';
 
     const anchor=el('v245StudentActionHub')||
