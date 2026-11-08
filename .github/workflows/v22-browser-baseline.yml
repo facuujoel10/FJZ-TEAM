@@ -99,12 +99,12 @@ jobs:
         run: npx playwright test --project=mobile-390
 
       - name: Reset local data before desktop
-        if: always()
+        if: always() && steps.mobile.outcome != 'skipped'
         run: python scripts/dev_reset.py
 
       - name: Browser baseline — desktop 1440x900
         id: desktop
-        if: always()
+        if: always() && steps.mobile.outcome != 'skipped'
         continue-on-error: true
         run: npx playwright test --project=desktop-1440
 
