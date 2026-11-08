@@ -12,6 +12,7 @@ def main():
     env["SUPABASE_TELEMETRY_DISABLED"]="1"
     subprocess.run([sys.executable,"build.py"],env=env,check=True)
     subprocess.run([sys.executable,"scripts/dev_guard.py","--artifact"],env=env,check=True)
+    subprocess.run(["node","scripts/dev_js_syntax_audit.js"],env=env,check=True)
     print("TEAM FJZ V22 DEVELOPMENT BUILD OK")
     print("Supabase:",st["api"])
     print("Artifact: public/index.html")
