@@ -147,9 +147,10 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
   await assertNoHorizontalOverflow(page);
 
   await page.getByRole('button', { name: 'Entrenar' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Entrenar' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Comenzar entrenamiento' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Día QA A' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Finalizar sesión/i })).toBeVisible();
   await assertNoHorizontalOverflow(page);
+  await page.getByRole('button', { name: /Inicio/i }).first().click();
 
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
   await expect(page.getByText('PLAN QA A', { exact: true })).toBeVisible({ timeout: 10000 });
@@ -185,7 +186,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Entrenar' }).first().click();
-  await page.getByRole('button', { name: 'Comenzar entrenamiento' }).first().click();
+  await expect(page.getByRole('heading', { name: 'Día QA A' })).toBeVisible();
 
   const cards = page.locator('.session-card');
   await expect(cards).toHaveCount(2);
@@ -223,7 +224,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
-  await expect(page.getByText('TEST ALUMNO 01', { exact: true }).first()).toBeVisible();
+  await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
 
   const visibleHistory = page.getByRole('button', { name: /Historial|Ver sesión|Ver historial/i }).first();
   if (await visibleHistory.count()) {
@@ -336,7 +337,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
 test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
   await login(page, 'coach@test.local');
 
-  await expect(page.getByText('TEST ALUMNO 01', { exact: true }).first()).toBeVisible();
+  await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Panel' }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Agenda' }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
