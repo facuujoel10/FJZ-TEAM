@@ -162,6 +162,34 @@ create table if not exists public.coach_feed_state (
   primary key(coach_id,event_key)
 );
 
+
+-- 0C.3 browser-parity contracts discovered by real E2E.
+create table if not exists public.athlete_habits (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references auth.users(id) on delete cascade,
+  name text not null check (char_length(trim(name)) between 1 and 80),
+  category text not null default 'general'
+    check (category in ('general','movement','recovery','nutrition','cardio')),
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists athlete_habits_athlete_active_idx
+  on public.athlete_habits(athlete_id,active,sort_order);
+create index if not exists athlete_habits_coach_idx
+  on public.athlete_habits(coach_id);
+
+create table if not exists public.student_alert_state (
+  student_id uuid not null references auth.users(id) on delete cascade,
+  event_key text not null,
+  read_at timestamptz,
+  dismissed_at timestamptz,
+  created_at timestamptz not null default now(),
+  primary key(student_id,event_key)
+);
+
 create or replace function public.current_profile_role()
 returns text
 language sql
@@ -296,9 +324,134 @@ begin
 end;
 $$;
 
-create or replace function public.sync_snapshot_sessions_dev()
-returns trigger
-language plpgsql
+
+create or replace function public.get_student_alerts()
+returns table(
+  event_key text, category text, severity text, title text, body text,
+  occurred_at timestamptz, action_target text, action_label text, is_read boolean
+)
+language sql
+stable
+set search_path to 'public','pg_temp'
+as $
+with me as (
+  select id athlete_id
+  from public.athletes
+  where user_id=auth.uid()
+  limit 1
+),
+feed as (
+  select
+    ('notice:'||n.id)::text event_key,
+    'coach'::text category,
+    case when n.priority='important' then 'warning' else 'info' end::text severity,
+    n.title::text,
+    n.body::text,
+    n.created_at occurred_at,
+    'home'::text action_target,
+    'Ver aviso'::text action_label,
+    case when n.priority='important' then 70 else 50 end priority
+  from public.student_notices n
+  join me on me.athlete_id=n.athlete_id
+  where n.active=true and (n.expires_at is null or n.expires_at>now())
+
+  union all
+
+  select
+    ('schedule:'||s.id||':'||current_date)::text,
+    'training'::text,'info'::text,'Entrenamiento programado hoy'::text,
+    concat_ws(' · ',nullif(s.workout_day_name,''),
+      case when s.start_time is not null then to_char(s.start_time,'HH24:MI') end,
+      nullif(s.notes,''))::text,
+    (current_date+coalesce(s.start_time,time '09:00'))::timestamptz,
+    'home'::text,'Ver rutina'::text,45
+  from public.athlete_schedule s
+  join me on me.athlete_id=s.athlete_id
+  where s.active=true and s.reminder_enabled=true
+    and s.weekday=(extract(isodow from current_date)::int-1)
+
+  union all
+
+  select
+    ('reminder:'||r.id||':'||current_date)::text,
+    'reminder'::text,
+    case when r.category in ('important','checkin') then 'warning' else 'info' end::text,
+    r.title::text,r.body::text,
+    (current_date+coalesce(r.remind_time,time '09:00'))::timestamptz,
+    case when r.category='checkin' then 'tracking' else 'agenda' end::text,
+    case when r.category='checkin' then 'Ir al check-in' else 'Ver agenda' end::text,
+    case when r.category in ('important','checkin') then 65 else 40 end
+  from public.athlete_reminders r
+  join me on me.athlete_id=r.athlete_id
+  where r.active=true and (
+    (r.schedule_type='once' and r.reminder_date=current_date)
+    or (r.schedule_type<>'once' and r.weekday=(extract(isodow from current_date)::int-1))
+  )
+
+  union all
+
+  select
+    ('checkin-feedback:'||c.id||':'||to_char(c.updated_at,'YYYYMMDDHH24MISS'))::text,
+    'coach'::text,'success'::text,'Tu coach dejó feedback'::text,
+    left(c.coach_feedback,260)::text,c.updated_at,
+    'tracking'::text,'Ver feedback'::text,75
+  from public.weekly_checkins c
+  join me on me.athlete_id=c.athlete_id
+  where nullif(trim(c.coach_feedback),'') is not null
+    and c.updated_at>=now()-interval '21 days'
+
+  union all
+
+  select
+    ('nutrition-plan:'||np.id||':'||np.revision)::text,
+    'nutrition'::text,'info'::text,'Plan nutricional actualizado'::text,
+    'Tu plan nutricional tiene una nueva revisión disponible.'::text,
+    np.updated_at,'nutrition'::text,'Ver nutrición'::text,35
+  from public.nutrition_plans np
+  join me on me.athlete_id=np.athlete_id
+  where np.active=true and np.updated_at>=now()-interval '10 days'
+
+  union all
+
+  select
+    ('feedback-reviewed:'||ef.id||':'||coalesce(to_char(ef.reviewed_at,'YYYYMMDDHH24MISS'),'reviewed'))::text,
+    'training'::text,'success'::text,'Comentario de ejercicio revisado'::text,
+    ('Tu coach revisó el comentario sobre '||ef.exercise_name||'.')::text,
+    coalesce(ef.reviewed_at,ef.updated_at),
+    'home'::text,'Ver rutina'::text,42
+  from public.exercise_feedback ef
+  join me on me.athlete_id=ef.athlete_id
+  where ef.status='reviewed'
+    and coalesce(ef.reviewed_at,ef.updated_at)>=now()-interval '14 days'
+
+  union all
+
+  select
+    ('scheduled-checkin:'||cs.id||':'||cs.next_due)::text,
+    'checkin'::text,'warning'::text,
+    case when cs.next_due<current_date then 'Check-in pendiente' else 'Check-in programado para hoy' end::text,
+    case when cs.next_due<current_date
+      then 'Tu fecha de check-in ya pasó. Completalo para que tu coach pueda revisarlo.'
+      else 'Hoy corresponde tu check-in programado con tu coach.' end::text,
+    (cs.next_due+coalesce(cs.remind_time,time '09:00'))::timestamptz,
+    'tracking'::text,'Completar check-in'::text,80
+  from public.checkin_schedules cs
+  join me on me.athlete_id=cs.athlete_id
+  where cs.active=true and cs.next_due<=current_date
+    and not exists (
+      select 1 from public.weekly_checkins wc
+      where wc.athlete_id=cs.athlete_id and wc.submitted_at::date>=cs.next_due
+    )
+
+  union all
+
+  select
+    ('payment-due:'||p.id)::text,
+    'payment'::text,
+    case when p.due_date<current_date then 'warning' else 'info' end::text,
+    case when p.due_date<current_date then 'Pago pendiente' else 'Fecha de pago' end::text,
+    concat('Fecha: ',to_char(p.due_date,'DD/MM/YYYY'),
+      case when p.amount is not null then ' · language plpgsql
 security definer
 set search_path to 'public','pg_temp'
 as $$
@@ -360,6 +513,8 @@ alter table public.food_library enable row level security;
 alter table public.nutrition_plans enable row level security;
 alter table public.nutrition_logs enable row level security;
 alter table public.coach_feed_state enable row level security;
+alter table public.athlete_habits enable row level security;
+alter table public.student_alert_state enable row level security;
 
 create policy profiles_select_linked on public.profiles for select to authenticated
 using (id=(select auth.uid()) or public.are_linked((select auth.uid()),id));
@@ -471,11 +626,887 @@ with check (coach_id=(select auth.uid()) and public.current_profile_role()='coac
 create policy coach_feed_state_update_self on public.coach_feed_state for update to authenticated
 using (coach_id=(select auth.uid())) with check (coach_id=(select auth.uid()));
 
+
+create policy athlete_habits_select_access on public.athlete_habits for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy athlete_habits_insert_coach on public.athlete_habits for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_habits_update_coach on public.athlete_habits for update to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_habits_delete_coach on public.athlete_habits for delete to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy student_alert_state_select_self on public.student_alert_state for select to authenticated
+using (student_id=(select auth.uid()));
+create policy student_alert_state_insert_self on public.student_alert_state for insert to authenticated
+with check (student_id=(select auth.uid()));
+create policy student_alert_state_update_self on public.student_alert_state for update to authenticated
+using (student_id=(select auth.uid())) with check (student_id=(select auth.uid()));
+create policy student_alert_state_delete_self on public.student_alert_state for delete to authenticated
+using (student_id=(select auth.uid()));
+
 grant usage on schema public to authenticated;
 grant select,insert,update,delete on
   public.profiles,public.coach_students,public.athletes,public.athlete_snapshots,
   public.workout_sessions,public.exercise_feedback,public.food_library,
-  public.nutrition_plans,public.nutrition_logs,public.coach_feed_state
+  public.nutrition_plans,public.nutrition_logs,public.coach_feed_state,
+  public.athlete_habits,public.student_alert_state
+to authenticated;
+grant execute on function public.current_profile_role() to authenticated;
+grant execute on function public.are_linked(uuid,uuid) to authenticated;
+grant execute on function public.is_coach_of(uuid) to authenticated;
+grant execute on function public.can_access_athlete(uuid) to authenticated;
+grant execute on function public.can_edit_athlete_as_coach(uuid) to authenticated;
+grant execute on function public.commit_workout_session_v202(uuid,text,jsonb,jsonb) to authenticated;
+
+-- Local Storage policies mirror TEAM FJZ ownership concepts without using
+-- any production objects.
+create policy profile_photos_insert_self on storage.objects for insert to authenticated
+with check (bucket_id='profile-photos' and (storage.foldername(name))[1]=(select auth.uid())::text);
+create policy profile_photos_select_access on storage.objects for select to authenticated
+using (
+  bucket_id='profile-photos' and (
+    (storage.foldername(name))[1]=(select auth.uid())::text or
+    ((storage.foldername(name))[1] ~* '^[0-9a-f-]{36}$'
+      and public.are_linked((select auth.uid()),((storage.foldername(name))[1])::uuid))
+  )
+);
+create policy progress_photos_insert_access on storage.objects for insert to authenticated
+with check (
+  bucket_id='progress-photos'
+  and coalesce((storage.foldername(name))[1],'') ~* '^[0-9a-f-]{36}$'
+  and public.can_access_athlete(((storage.foldername(name))[1])::uuid)
+);
+create policy progress_photos_select_access on storage.objects for select to authenticated
+using (
+  bucket_id='progress-photos'
+  and coalesce((storage.foldername(name))[1],'') ~* '^[0-9a-f-]{36}$'
+  and public.can_access_athlete(((storage.foldername(name))[1])::uuid)
+);
+create policy exercise_videos_insert_coach on storage.objects for insert to authenticated
+with check (
+  bucket_id='exercise-videos'
+  and (storage.foldername(name))[1]=(select auth.uid())::text
+  and public.current_profile_role()='coach'
+);
+create policy exercise_videos_select_access on storage.objects for select to authenticated
+using (
+  bucket_id='exercise-videos' and (
+    (storage.foldername(name))[1]=(select auth.uid())::text or exists(
+      select 1 from public.coach_students cs
+      where cs.coach_id::text=(storage.foldername(name))[1]
+        and cs.student_id=(select auth.uid()) and cs.status='active'
+    )
+  )
+);
+
+do $$ begin
+  alter publication supabase_realtime add table public.athletes;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.athlete_snapshots;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.exercise_feedback;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.nutrition_plans;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.nutrition_logs;
+exception when duplicate_object then null; end $$;
+
+
+-- ================================================================
+-- TEAM FJZ V22 0C.3 SCHEMA PARITY
+-- Local-only contracts mirrored from production metadata.
+-- No production rows or credentials are used.
+-- ================================================================
+
+create table if not exists public.athlete_schedule (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  weekday smallint not null check (weekday between 0 and 6),
+  workout_day_id text,
+  workout_day_name text,
+  start_time time,
+  reminder_enabled boolean not null default true,
+  reminder_minutes_before integer not null default 60 check (reminder_minutes_before between 0 and 1440),
+  notes text not null default '',
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(athlete_id,weekday)
+);
+
+create table if not exists public.athlete_reminders (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  title text not null,
+  body text not null default '',
+  category text not null default 'custom',
+  schedule_type text not null default 'once' check (schedule_type in ('once','weekly')),
+  reminder_date date,
+  weekday smallint check (weekday between 0 and 6),
+  remind_time time,
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (
+    (schedule_type='once' and reminder_date is not null)
+    or (schedule_type='weekly' and weekday is not null)
+  )
+);
+
+create table if not exists public.body_measurements (
+  id uuid primary key default gen_random_uuid(),
+  student_id uuid references public.profiles(id) on delete cascade,
+  measured_on date not null default current_date,
+  weight_kg numeric check (weight_kg is null or weight_kg between 20 and 400),
+  waist_cm numeric check (waist_cm is null or waist_cm between 20 and 300),
+  abdomen_cm numeric check (abdomen_cm is null or abdomen_cm between 20 and 300),
+  hip_cm numeric check (hip_cm is null or hip_cm between 20 and 300),
+  chest_cm numeric check (chest_cm is null or chest_cm between 20 and 300),
+  arm_left_cm numeric check (arm_left_cm is null or arm_left_cm between 10 and 100),
+  arm_right_cm numeric check (arm_right_cm is null or arm_right_cm between 10 and 100),
+  thigh_left_cm numeric check (thigh_left_cm is null or thigh_left_cm between 15 and 150),
+  thigh_right_cm numeric check (thigh_right_cm is null or thigh_right_cm between 15 and 150),
+  notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  athlete_id uuid references public.athletes(id) on delete cascade,
+  unique(student_id,measured_on),
+  unique(athlete_id,measured_on)
+);
+
+create table if not exists public.weekly_checkins (
+  id uuid primary key default gen_random_uuid(),
+  student_id uuid references public.profiles(id) on delete cascade,
+  week_start date not null default (date_trunc('week',current_date)::date),
+  weight_kg numeric check (weight_kg is null or weight_kg between 20 and 400),
+  sleep_quality smallint not null check (sleep_quality between 1 and 10),
+  stress_level smallint not null check (stress_level between 1 and 10),
+  energy_level smallint not null check (energy_level between 1 and 10),
+  adherence_level smallint not null check (adherence_level between 1 and 10),
+  mood_level smallint not null check (mood_level between 1 and 10),
+  hunger_level smallint check (hunger_level is null or hunger_level between 1 and 10),
+  recovery_level smallint check (recovery_level is null or recovery_level between 1 and 10),
+  motivation_level smallint check (motivation_level is null or motivation_level between 1 and 10),
+  notes text not null default '',
+  coach_feedback text not null default '',
+  submitted_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  athlete_id uuid references public.athletes(id) on delete cascade,
+  unique(student_id,week_start),
+  unique(athlete_id,week_start)
+);
+
+create table if not exists public.coach_media_settings (
+  coach_id uuid primary key references public.profiles(id) on delete cascade,
+  spotify_url text,
+  spotify_title text,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.exercise_media (
+  id uuid primary key default gen_random_uuid(),
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  exercise_key text not null,
+  title text not null default 'Video técnico',
+  video_url text,
+  storage_path text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(coach_id,exercise_key)
+);
+
+create table if not exists public.fitness_recipes (
+  id uuid primary key default gen_random_uuid(),
+  coach_id uuid references public.profiles(id) on delete cascade,
+  is_global boolean not null default false,
+  title text not null,
+  category text not null,
+  description text not null default '',
+  prep_minutes integer,
+  servings integer not null default 1,
+  ingredients jsonb not null default '[]'::jsonb,
+  steps jsonb not null default '[]'::jsonb,
+  kcal_per_serving numeric,
+  protein_g numeric,
+  carbs_g numeric,
+  fat_g numeric,
+  tags text[] not null default '{}'::text[],
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.nutrition_habit_logs (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  student_id uuid references public.profiles(id) on delete set null,
+  habit_id text not null,
+  logged_on date not null default current_date,
+  completed boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(athlete_id,habit_id,logged_on)
+);
+
+create table if not exists public.nutrition_plan_revisions (
+  id uuid primary key default gen_random_uuid(),
+  plan_id uuid not null references public.nutrition_plans(id) on delete cascade,
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  revision integer not null,
+  title text not null,
+  notes text not null default '',
+  target_kcal numeric,
+  target_protein_g numeric,
+  target_carbs_g numeric,
+  target_fat_g numeric,
+  plan jsonb not null,
+  created_at timestamptz not null default now(),
+  student_logging_enabled boolean not null default true,
+  unique(plan_id,revision)
+);
+
+create table if not exists public.nutrition_templates (
+  id uuid primary key default gen_random_uuid(),
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  name text not null,
+  description text not null default '',
+  title text not null default 'Plan nutricional',
+  notes text not null default '',
+  target_kcal numeric,
+  target_protein_g numeric,
+  target_carbs_g numeric,
+  target_fat_g numeric,
+  plan jsonb not null default '{"meals":[]}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(coach_id,name)
+);
+
+create table if not exists public.progress_photos (
+  id uuid primary key default gen_random_uuid(),
+  student_id uuid references public.profiles(id) on delete cascade,
+  taken_on date not null default current_date,
+  pose text not null check (pose in ('front','side','back','other')),
+  storage_path text not null,
+  notes text not null default '',
+  created_at timestamptz not null default now(),
+  athlete_id uuid references public.athletes(id) on delete cascade,
+  unique(student_id,taken_on,pose),
+  unique(athlete_id,taken_on,pose)
+);
+
+create table if not exists public.checkin_schedules (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null unique references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  cadence text not null check (cadence in ('once','weekly','biweekly','monthly')),
+  next_due date not null,
+  remind_time time,
+  active boolean not null default true,
+  notes text not null default '',
+  last_completed_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.coach_payments (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  due_date date not null,
+  amount numeric,
+  status text not null default 'pending' check (status in ('pending','paid','cancelled')),
+  paid_on date,
+  payment_method text check (payment_method is null or payment_method in ('cash','transfer','other')),
+  note text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.student_notices (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  coach_id uuid not null references public.profiles(id) on delete cascade,
+  title text not null,
+  body text not null default '',
+  priority text not null default 'info' check (priority in ('info','important')),
+  active boolean not null default true,
+  expires_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Useful local parity indexes.
+create index if not exists athlete_schedule_athlete_idx on public.athlete_schedule(athlete_id,weekday);
+create index if not exists athlete_reminders_athlete_idx on public.athlete_reminders(athlete_id,active);
+create index if not exists body_measurements_athlete_date_idx on public.body_measurements(athlete_id,measured_on desc);
+create index if not exists weekly_checkins_athlete_week_idx on public.weekly_checkins(athlete_id,week_start desc);
+create index if not exists nutrition_habit_logs_athlete_date_idx on public.nutrition_habit_logs(athlete_id,logged_on desc);
+create index if not exists progress_photos_athlete_date_idx on public.progress_photos(athlete_id,taken_on desc);
+create index if not exists coach_payments_coach_due_idx on public.coach_payments(coach_id,due_date);
+create index if not exists student_notices_athlete_active_idx on public.student_notices(athlete_id,active,created_at desc);
+
+-- RLS parity helpers.
+alter table public.athlete_schedule enable row level security;
+alter table public.athlete_reminders enable row level security;
+alter table public.body_measurements enable row level security;
+alter table public.weekly_checkins enable row level security;
+alter table public.coach_media_settings enable row level security;
+alter table public.exercise_media enable row level security;
+alter table public.fitness_recipes enable row level security;
+alter table public.nutrition_habit_logs enable row level security;
+alter table public.nutrition_plan_revisions enable row level security;
+alter table public.nutrition_templates enable row level security;
+alter table public.progress_photos enable row level security;
+alter table public.checkin_schedules enable row level security;
+alter table public.coach_payments enable row level security;
+alter table public.student_notices enable row level security;
+
+create policy athlete_schedule_select_access on public.athlete_schedule for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy athlete_schedule_insert_coach on public.athlete_schedule for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_schedule_update_coach on public.athlete_schedule for update to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_schedule_delete_coach on public.athlete_schedule for delete to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy athlete_reminders_select_access on public.athlete_reminders for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy athlete_reminders_insert_coach on public.athlete_reminders for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_reminders_update_coach on public.athlete_reminders for update to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_reminders_delete_coach on public.athlete_reminders for delete to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy body_measurements_select_access on public.body_measurements for select to authenticated
+using (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy body_measurements_insert_access on public.body_measurements for insert to authenticated
+with check (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy body_measurements_update_access on public.body_measurements for update to authenticated
+using (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+)
+with check (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy body_measurements_delete_coach on public.body_measurements for delete to authenticated
+using (student_id is not null and public.is_coach_of(student_id));
+
+create policy weekly_checkins_select_access on public.weekly_checkins for select to authenticated
+using (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy weekly_checkins_insert_student on public.weekly_checkins for insert to authenticated
+with check (
+  student_id=(select auth.uid())
+  or (
+    athlete_id is not null
+    and public.can_access_athlete(athlete_id)
+    and (
+      student_id is null
+      or student_id=(select auth.uid())
+      or public.can_edit_athlete_as_coach(athlete_id)
+    )
+  )
+);
+create policy weekly_checkins_update_access on public.weekly_checkins for update to authenticated
+using (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+)
+with check (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy weekly_checkins_delete_coach on public.weekly_checkins for delete to authenticated
+using (student_id is not null and public.is_coach_of(student_id));
+
+create policy coach_media_settings_select_linked on public.coach_media_settings for select to authenticated
+using (
+  coach_id=(select auth.uid())
+  or exists(
+    select 1 from public.coach_students cs
+    where cs.coach_id=coach_media_settings.coach_id
+      and cs.student_id=(select auth.uid()) and cs.status='active'
+  )
+);
+create policy coach_media_settings_write_self on public.coach_media_settings for all to authenticated
+using (coach_id=(select auth.uid()) and public.current_profile_role()='coach')
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+
+create policy exercise_media_select_linked on public.exercise_media for select to authenticated
+using (
+  coach_id=(select auth.uid())
+  or exists(
+    select 1 from public.coach_students cs
+    where cs.coach_id=exercise_media.coach_id
+      and cs.student_id=(select auth.uid()) and cs.status='active'
+  )
+);
+create policy exercise_media_write_coach on public.exercise_media for all to authenticated
+using (coach_id=(select auth.uid()) and public.current_profile_role()='coach')
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+
+create policy fitness_recipes_select_access on public.fitness_recipes for select to authenticated
+using (
+  is_global=true or coach_id=(select auth.uid())
+  or exists(
+    select 1 from public.coach_students cs
+    where cs.coach_id=fitness_recipes.coach_id
+      and cs.student_id=(select auth.uid()) and cs.status='active'
+  )
+);
+create policy fitness_recipes_write_coach on public.fitness_recipes for all to authenticated
+using (coach_id=(select auth.uid()) and is_global=false and public.current_profile_role()='coach')
+with check (coach_id=(select auth.uid()) and is_global=false and public.current_profile_role()='coach');
+
+create policy nutrition_habit_logs_select_access on public.nutrition_habit_logs for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy nutrition_habit_logs_insert_access on public.nutrition_habit_logs for insert to authenticated
+with check (
+  (student_id=(select auth.uid()) and public.can_access_athlete(athlete_id))
+  or public.can_edit_athlete_as_coach(athlete_id)
+);
+create policy nutrition_habit_logs_update_access on public.nutrition_habit_logs for update to authenticated
+using (
+  student_id=(select auth.uid()) or public.can_edit_athlete_as_coach(athlete_id)
+)
+with check (
+  student_id=(select auth.uid()) or public.can_edit_athlete_as_coach(athlete_id)
+);
+create policy nutrition_habit_logs_delete_access on public.nutrition_habit_logs for delete to authenticated
+using (student_id=(select auth.uid()) or public.can_edit_athlete_as_coach(athlete_id));
+
+create policy nutrition_plan_revisions_select_access on public.nutrition_plan_revisions for select to authenticated
+using (public.can_access_athlete(athlete_id));
+
+create policy nutrition_templates_select_coach on public.nutrition_templates for select to authenticated
+using (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+create policy nutrition_templates_write_coach on public.nutrition_templates for all to authenticated
+using (coach_id=(select auth.uid()) and public.current_profile_role()='coach')
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+
+create policy progress_photos_select_access on public.progress_photos for select to authenticated
+using (
+  student_id=(select auth.uid())
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
+);
+create policy progress_photos_insert_access on public.progress_photos for insert to authenticated
+with check (
+  student_id=(select auth.uid())
+  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+);
+create policy progress_photos_update_access on public.progress_photos for update to authenticated
+using (
+  student_id=(select auth.uid())
+  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+)
+with check (
+  student_id=(select auth.uid())
+  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+);
+create policy progress_photos_delete_access on public.progress_photos for delete to authenticated
+using (
+  student_id=(select auth.uid())
+  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+);
+
+create policy checkin_schedules_select_access on public.checkin_schedules for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy checkin_schedules_write_coach on public.checkin_schedules for all to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy coach_payments_select_access on public.coach_payments for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy coach_payments_write_coach on public.coach_payments for all to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy student_notices_select_access on public.student_notices for select to authenticated
+using (
+  coach_id=(select auth.uid())
+  or exists(
+    select 1 from public.athletes a
+    where a.id=student_notices.athlete_id and a.user_id=(select auth.uid())
+  )
+);
+create policy student_notices_write_coach on public.student_notices for all to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+grant select,insert,update,delete on
+  public.athlete_schedule,public.athlete_reminders,public.body_measurements,
+  public.weekly_checkins,public.coach_media_settings,public.exercise_media,
+  public.fitness_recipes,public.nutrition_habit_logs,public.nutrition_plan_revisions,
+  public.nutrition_templates,public.progress_photos,public.checkin_schedules,
+  public.coach_payments,public.student_notices
+to authenticated;
+
+-- Same public RPC contract as production. Local sources are genuine local
+-- tables/fixtures; no hosted project is queried.
+create or replace function public.get_coach_feed()
+returns table(
+  event_key text,
+  athlete_id uuid,
+  athlete_name text,
+  kind text,
+  severity text,
+  title text,
+  body text,
+  occurred_at timestamptz,
+  is_read boolean
+)
+language sql
+stable
+security definer
+set search_path to 'public','pg_temp'
+as $$
+  with me as (
+    select auth.uid() as uid
+  ),
+  allowed as (
+    select a.id,a.name
+    from public.athletes a,me
+    where me.uid is not null and a.coach_id=me.uid
+      and public.current_profile_role()='coach'
+  ),
+  raw as (
+    select
+      'feedback:'||ef.id::text as event_key,
+      ef.athlete_id,
+      a.name as athlete_name,
+      'exercise_feedback'::text as kind,
+      case when ef.feedback_type='discomfort' then 'important' else 'info' end as severity,
+      case when ef.feedback_type='discomfort' then 'Molestia en ejercicio' else 'Comentario de ejercicio' end as title,
+      ef.exercise_name||' · '||ef.message as body,
+      ef.created_at as occurred_at
+    from public.exercise_feedback ef
+    join allowed a on a.id=ef.athlete_id
+    where ef.status='pending'
+
+    union all
+    select
+      'checkin:'||wc.id::text,
+      wc.athlete_id,a.name,'weekly_checkin','info',
+      'Check-in semanal',
+      coalesce(nullif(wc.notes,''),'Nuevo check-in para revisar'),
+      wc.submitted_at
+    from public.weekly_checkins wc
+    join allowed a on a.id=wc.athlete_id
+    where wc.reviewed_at is null
+
+    union all
+    select
+      'reminder:'||ar.id::text,
+      ar.athlete_id,a.name,'reminder','info',
+      ar.title,coalesce(nullif(ar.body,''),'Recordatorio activo'),ar.updated_at
+    from public.athlete_reminders ar
+    join allowed a on a.id=ar.athlete_id
+    where ar.active=true
+
+    union all
+    select
+      'payment:'||cp.id::text,
+      cp.athlete_id,a.name,'payment',
+      case when cp.due_date<current_date then 'important' else 'info' end,
+      'Cobranza',
+      'Vence '||cp.due_date::text||' · '||cp.status,
+      cp.updated_at
+    from public.coach_payments cp
+    join allowed a on a.id=cp.athlete_id
+    where cp.status='pending'
+  )
+  select
+    r.event_key,r.athlete_id,r.athlete_name,r.kind,r.severity,r.title,r.body,r.occurred_at,
+    false as is_read
+  from raw r
+  left join public.coach_feed_state cfs
+    on cfs.coach_id=(select uid from me) and cfs.event_key=r.event_key
+  where cfs.read_at is null and cfs.dismissed_at is null
+  order by
+    case r.severity when 'critical' then 4 when 'warning' then 3 when 'info' then 2 else 1 end desc,
+    r.occurred_at desc
+  limit 100;
+$$;
+
+revoke all on function public.get_coach_feed() from public;
+grant execute on function public.get_coach_feed() to authenticated;
+
+do $$ begin
+  alter publication supabase_realtime add table public.athlete_schedule;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.athlete_reminders;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.weekly_checkins;
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter publication supabase_realtime add table public.body_measurements;
+exception when duplicate_object then null; end $$;
+||trim(to_char(p.amount,'FM999G999G990D00')) else '' end)::text,
+    (p.due_date+time '09:00')::timestamptz,
+    'agenda'::text,'Ver agenda'::text,55
+  from public.coach_payments p
+  join me on me.athlete_id=p.athlete_id
+  where p.status='pending' and p.due_date<=current_date
+),
+filtered as (
+  select f.*
+  from feed f
+  where not exists (
+    select 1 from public.student_alert_state st
+    where st.student_id=auth.uid() and st.event_key=f.event_key
+      and (st.read_at is not null or st.dismissed_at is not null)
+  )
+)
+select f.event_key,f.category,f.severity,f.title,f.body,f.occurred_at,
+       f.action_target,f.action_label,false as is_read
+from filtered f
+order by
+  case f.severity when 'warning' then 3 when 'success' then 2 else 1 end desc,
+  f.priority desc,f.occurred_at desc
+limit 60;
+$;
+
+grant execute on function public.get_student_alerts() to authenticated;
+
+create or replace function public.sync_snapshot_sessions_dev()
+returns trigger
+language plpgsql
+security definer
+set search_path to 'public','pg_temp'
+as $$
+declare
+  a public.athletes%rowtype;
+  sess jsonb;
+  sid text;
+  sdate timestamptz;
+begin
+  select * into a from public.athletes where id=new.athlete_id;
+  if not found or a.user_id is null then return new; end if;
+
+  for sess in select value from jsonb_array_elements(
+    case when jsonb_typeof(coalesce(new.data->'sessions','[]'::jsonb))='array'
+      then coalesce(new.data->'sessions','[]'::jsonb) else '[]'::jsonb end
+  )
+  loop
+    sid:=nullif(sess->>'id','');
+    if sid is null then continue; end if;
+    begin sdate:=coalesce((sess->>'date')::timestamptz,now());
+    exception when others then sdate:=now(); end;
+
+    insert into public.workout_sessions(
+      student_id,started_at,completed_at,status,notes,source_session_id
+    ) values(
+      a.user_id,sdate,sdate,'completed',
+      coalesce(sess->>'dayName','Entrenamiento'),sid
+    )
+    on conflict(student_id,source_session_id) where source_session_id is not null
+    do update set completed_at=excluded.completed_at,status='completed',
+      notes=excluded.notes,updated_at=now();
+  end loop;
+
+  delete from public.workout_sessions ws
+  where ws.student_id=a.user_id and ws.source_session_id is not null
+    and not exists(
+      select 1 from jsonb_array_elements(
+        case when jsonb_typeof(coalesce(new.data->'sessions','[]'::jsonb))='array'
+          then coalesce(new.data->'sessions','[]'::jsonb) else '[]'::jsonb end
+      ) x
+      where nullif(x->>'id','')=ws.source_session_id
+    );
+  return new;
+end;
+$$;
+
+drop trigger if exists athlete_snapshots_sync_sessions_dev on public.athlete_snapshots;
+create trigger athlete_snapshots_sync_sessions_dev
+after insert or update of data on public.athlete_snapshots
+for each row execute function public.sync_snapshot_sessions_dev();
+
+alter table public.profiles enable row level security;
+alter table public.coach_students enable row level security;
+alter table public.athletes enable row level security;
+alter table public.athlete_snapshots enable row level security;
+alter table public.workout_sessions enable row level security;
+alter table public.exercise_feedback enable row level security;
+alter table public.food_library enable row level security;
+alter table public.nutrition_plans enable row level security;
+alter table public.nutrition_logs enable row level security;
+alter table public.coach_feed_state enable row level security;
+alter table public.athlete_habits enable row level security;
+alter table public.student_alert_state enable row level security;
+
+create policy profiles_select_linked on public.profiles for select to authenticated
+using (id=(select auth.uid()) or public.are_linked((select auth.uid()),id));
+create policy profiles_update_self on public.profiles for update to authenticated
+using (id=(select auth.uid())) with check (id=(select auth.uid()));
+
+create policy coach_students_select_self on public.coach_students for select to authenticated
+using (coach_id=(select auth.uid()) or student_id=(select auth.uid()));
+
+create policy athletes_select_access on public.athletes for select to authenticated
+using (coach_id=(select auth.uid()) or user_id=(select auth.uid()));
+create policy athletes_insert_coach on public.athletes for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+create policy athletes_update_coach on public.athletes for update to authenticated
+using (coach_id=(select auth.uid()) and public.current_profile_role()='coach')
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+
+create policy snapshots_select_access on public.athlete_snapshots for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy snapshots_insert_access on public.athlete_snapshots for insert to authenticated
+with check (public.can_access_athlete(athlete_id));
+create policy snapshots_update_access on public.athlete_snapshots for update to authenticated
+using (public.can_access_athlete(athlete_id)) with check (public.can_access_athlete(athlete_id));
+
+create policy workout_sessions_select_access on public.workout_sessions for select to authenticated
+using (student_id=(select auth.uid()) or public.is_coach_of(student_id));
+create policy workout_sessions_insert_access on public.workout_sessions for insert to authenticated
+with check (student_id=(select auth.uid()) or public.is_coach_of(student_id));
+create policy workout_sessions_update_access on public.workout_sessions for update to authenticated
+using (student_id=(select auth.uid()) or public.is_coach_of(student_id))
+with check (student_id=(select auth.uid()) or public.is_coach_of(student_id));
+
+create policy exercise_feedback_select_access on public.exercise_feedback for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy exercise_feedback_insert_student on public.exercise_feedback for insert to authenticated
+with check (
+  student_id=(select auth.uid())
+  and exists(select 1 from public.athletes a where a.id=athlete_id and a.user_id=(select auth.uid()))
+);
+create policy exercise_feedback_update_coach on public.exercise_feedback for update to authenticated
+using (public.can_edit_athlete_as_coach(athlete_id))
+with check (public.can_edit_athlete_as_coach(athlete_id));
+
+create policy food_library_select_access on public.food_library for select to authenticated
+using (
+  is_global=true or created_by=(select auth.uid()) or exists(
+    select 1 from public.coach_students cs
+    where cs.student_id=(select auth.uid())
+      and cs.coach_id=food_library.created_by and cs.status='active'
+  )
+);
+create policy food_library_insert_coach on public.food_library for insert to authenticated
+with check (created_by=(select auth.uid()) and is_global=false and public.current_profile_role()='coach');
+
+create policy nutrition_plans_select_access on public.nutrition_plans for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy nutrition_plans_insert_coach on public.nutrition_plans for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy nutrition_plans_update_coach on public.nutrition_plans for update to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy nutrition_logs_select_access on public.nutrition_logs for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy nutrition_logs_insert_access on public.nutrition_logs for insert to authenticated
+with check (
+  public.can_access_athlete(athlete_id) and (
+    (public.current_profile_role()='student'
+      and student_id=(select auth.uid())
+      and exists(select 1 from public.nutrition_plans np
+        where np.athlete_id=nutrition_logs.athlete_id
+          and np.active=true and np.student_logging_enabled=true))
+    or
+    (public.current_profile_role()='coach' and public.can_edit_athlete_as_coach(athlete_id))
+  )
+);
+create policy nutrition_logs_update_access on public.nutrition_logs for update to authenticated
+using (
+  public.can_access_athlete(athlete_id) and (
+    (student_id=(select auth.uid()) and exists(
+      select 1 from public.nutrition_plans np
+      where np.athlete_id=nutrition_logs.athlete_id
+        and np.active=true and np.student_logging_enabled=true
+    )) or public.can_edit_athlete_as_coach(athlete_id)
+  )
+)
+with check (
+  public.can_access_athlete(athlete_id) and (
+    (student_id=(select auth.uid()) and exists(
+      select 1 from public.nutrition_plans np
+      where np.athlete_id=nutrition_logs.athlete_id
+        and np.active=true and np.student_logging_enabled=true
+    )) or public.can_edit_athlete_as_coach(athlete_id)
+  )
+);
+create policy nutrition_logs_delete_access on public.nutrition_logs for delete to authenticated
+using (
+  (student_id=(select auth.uid()) and exists(
+    select 1 from public.nutrition_plans np
+    where np.athlete_id=nutrition_logs.athlete_id
+      and np.active=true and np.student_logging_enabled=true
+  )) or public.can_edit_athlete_as_coach(athlete_id)
+);
+
+create policy coach_feed_state_select_self on public.coach_feed_state for select to authenticated
+using (coach_id=(select auth.uid()));
+create policy coach_feed_state_insert_self on public.coach_feed_state for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.current_profile_role()='coach');
+create policy coach_feed_state_update_self on public.coach_feed_state for update to authenticated
+using (coach_id=(select auth.uid())) with check (coach_id=(select auth.uid()));
+
+
+create policy athlete_habits_select_access on public.athlete_habits for select to authenticated
+using (public.can_access_athlete(athlete_id));
+create policy athlete_habits_insert_coach on public.athlete_habits for insert to authenticated
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_habits_update_coach on public.athlete_habits for update to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id))
+with check (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+create policy athlete_habits_delete_coach on public.athlete_habits for delete to authenticated
+using (coach_id=(select auth.uid()) and public.can_edit_athlete_as_coach(athlete_id));
+
+create policy student_alert_state_select_self on public.student_alert_state for select to authenticated
+using (student_id=(select auth.uid()));
+create policy student_alert_state_insert_self on public.student_alert_state for insert to authenticated
+with check (student_id=(select auth.uid()));
+create policy student_alert_state_update_self on public.student_alert_state for update to authenticated
+using (student_id=(select auth.uid())) with check (student_id=(select auth.uid()));
+create policy student_alert_state_delete_self on public.student_alert_state for delete to authenticated
+using (student_id=(select auth.uid()));
+
+grant usage on schema public to authenticated;
+grant select,insert,update,delete on
+  public.profiles,public.coach_students,public.athletes,public.athlete_snapshots,
+  public.workout_sessions,public.exercise_feedback,public.food_library,
+  public.nutrition_plans,public.nutrition_logs,public.coach_feed_state,
+  public.athlete_habits,public.student_alert_state
 to authenticated;
 grant execute on function public.current_profile_role() to authenticated;
 grant execute on function public.are_linked(uuid,uuid) to authenticated;
