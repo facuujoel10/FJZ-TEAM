@@ -358,10 +358,10 @@ def patch_v175(body):
       '<div class="v290-head"><div><div class="v225-section-kicker">HOY</div><h3>Tu día en TEAM FJZ</h3><p>'+p.done+' de '+p.total+' áreas completas</p></div>'+
       '<div class="v290-ring"><strong>'+Math.round(p.done/Math.max(1,p.total)*100)+'%</strong><span>hoy</span></div></div>'+
       '<div class="v290-today-grid">'+
-        '<button class="v290-action '+(p.workoutDone?'done':'')+'" onclick="studentTab=\\'workout\\';render()"><span>Entrenamiento</span><strong>'+esc(p.workoutDone?'Completado':todayWorkoutNameV290(s))+'</strong></button>'+
-        '<button class="v290-action '+(p.checkDone?'done':'')+'" onclick="studentTab=\\'tracking\\';render()"><span>Check-in</span><strong>'+esc(p.checkDone?'Al día':'Revisar')+'</strong></button>'+
-        '<button class="v290-action '+(p.habitTotal&&p.doneHabits===p.habitTotal?'done':'')+'" onclick="document.getElementById(\\'v290Habits\\')?.scrollIntoView({block:\\'center\\'})"><span>Hábitos</span><strong>'+p.doneHabits+'/'+p.habitTotal+' · 🔥 '+streak+'</strong></button>'+
-        '<button class="v290-action" onclick="studentTab=\\'progress\\';render()"><span>Progreso</span><strong>'+(adh==null?'Sin datos':adh+'% hábitos')+'</strong></button>'+
+        '<button class="v290-action '+(p.workoutDone?'done':'')+'" onclick="studentTab=\'workout\';render()"><span>Entrenamiento</span><strong>'+esc(p.workoutDone?'Completado':todayWorkoutNameV290(s))+'</strong></button>'+
+        '<button class="v290-action '+(p.checkDone?'done':'')+'" onclick="studentTab=\'tracking\';render()"><span>Check-in</span><strong>'+esc(p.checkDone?'Al día':'Revisar')+'</strong></button>'+
+        '<button class="v290-action '+(p.habitTotal&&p.doneHabits===p.habitTotal?'done':'')+'" onclick="document.getElementById(\'v290Habits\')?.scrollIntoView({block:\'center\'})"><span>Hábitos</span><strong>'+p.doneHabits+'/'+p.habitTotal+' · 🔥 '+streak+'</strong></button>'+
+        '<button class="v290-action" onclick="studentTab=\'progress\';render()"><span>Progreso</span><strong>'+(adh==null?'Sin datos':adh+'% hábitos')+'</strong></button>'+
       '</div>';
     const anchor=el('v253StudentWeekFlow')||el('v245StudentActionHub')||view.querySelector('.hero');
     if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
@@ -407,7 +407,7 @@ def patch_v175(body):
       '<span class="badge blue">🔥 '+habitStreakV290(data)+' días</span></div>'+
       (rows.length?'<div class="v290-habit-list">'+rows.map(h=>{
         const yes=done.has(String(h.id));
-        return '<button class="v290-habit '+(yes?'done':'')+'" onclick="toggleHabitV290(\\''+esc(String(h.id))+'\\')"><span class="v290-check">'+(yes?'✓':'')+'</span><div><strong>'+esc(h.name)+'</strong><small>'+esc(habitCategoryLabelV290(h.category))+'</small></div></button>';
+        return '<button class="v290-habit '+(yes?'done':'')+'" onclick="toggleHabitV290(\''+esc(String(h.id))+'\')"><span class="v290-check">'+(yes?'✓':'')+'</span><div><strong>'+esc(h.name)+'</strong><small>'+esc(habitCategoryLabelV290(h.category))+'</small></div></button>';
       }).join('')+'</div>':'<div class="v290-empty">Tu coach todavía no asignó hábitos.</div>');
     const anchor=el('v290Today')||el('v253StudentWeekFlow')||view.querySelector('.hero');
     if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
@@ -433,7 +433,7 @@ def patch_v175(body):
     const card=document.createElement('section');card.id='v290CoachHabits';card.className='card v290-coach-habits';
     card.innerHTML='<div class="section-title"><div><div class="v225-section-kicker">HÁBITOS</div><h3>Hábitos asignados</h3><div class="muted tiny">Seguimiento simple, sin mensajes automáticos.</div></div>'+
       '<span class="badge blue">'+(habitWeekAdherenceV290(data)??0)+'% · 7 días</span></div>'+
-      '<div class="v290-coach-habit-list">'+(rows.length?rows.map(h=>'<div class="v290-coach-habit"><div><strong>'+esc(h.name)+'</strong><small>'+esc(habitCategoryLabelV290(h.category))+' · '+(done.has(String(h.id))?'Hecho hoy':'Pendiente hoy')+'</small></div><button class="btn ghost small" onclick="removeHabitV290(\\''+esc(String(h.id))+'\\')">Retirar</button></div>').join(''):'<div class="v290-empty">Sin hábitos asignados.</div>')+'</div>'+
+      '<div class="v290-coach-habit-list">'+(rows.length?rows.map(h=>'<div class="v290-coach-habit"><div><strong>'+esc(h.name)+'</strong><small>'+esc(habitCategoryLabelV290(h.category))+' · '+(done.has(String(h.id))?'Hecho hoy':'Pendiente hoy')+'</small></div><button class="btn ghost small" onclick="removeHabitV290(\''+esc(String(h.id))+'\')">Retirar</button></div>').join(''):'<div class="v290-empty">Sin hábitos asignados.</div>')+'</div>'+
       '<div class="v290-habit-create"><input id="v290HabitName" placeholder="Ej: movilidad 10 min" maxlength="80"><select id="v290HabitCategory"><option value="general">General</option><option value="movement">Movimiento</option><option value="recovery">Recuperación</option><option value="nutrition">Nutrición</option><option value="cardio">Cardio</option></select><button class="btn primary" onclick="addHabitV290()">Agregar</button></div>';
     const anchor=el('v175Coach360')||host.firstElementChild;
     if(anchor)anchor.insertAdjacentElement('afterend',card);else host.prepend(card);
@@ -446,7 +446,7 @@ def patch_v175(body):
     const i=checkinInsightV290();
     const card=document.createElement('section');card.id='v290CheckinAssistant';card.className='card v290-checkin-assistant';
     card.innerHTML='<div class="section-title"><div><div class="v225-section-kicker">ASISTENTE DE CHECK-IN</div><h3>'+esc(i.title)+'</h3><div class="muted tiny">'+esc(i.body)+'</div></div><span class="badge blue">Últimos 3</span></div>'+
-      (i.draft?'<div class="v290-draft"><strong>Borrador de devolución</strong><p>'+esc(i.draft)+'</p><div class="v290-draft-actions"><button class="btn small" onclick="copyCheckinDraftV290()">Copiar borrador</button><button class="btn primary small" onclick="coachStudentTab=\\'tracking\\';render()">Abrir seguimiento</button></div></div>':'');
+      (i.draft?'<div class="v290-draft"><strong>Borrador de devolución</strong><p>'+esc(i.draft)+'</p><div class="v290-draft-actions"><button class="btn small" onclick="copyCheckinDraftV290()">Copiar borrador</button><button class="btn primary small" onclick="coachStudentTab=\'tracking\';render()">Abrir seguimiento</button></div></div>':'');
     const anchor=el('v290CoachHabits')||el('v175Coach360')||host.firstElementChild;
     if(anchor)anchor.insertAdjacentElement('afterend',card);else host.prepend(card);
   }
@@ -461,7 +461,7 @@ def patch_v175(body):
     card.innerHTML='<div class="section-title"><div><div class="v225-section-kicker">ADHERENCIA</div><h3>Riesgo de desconexión</h3><div class="muted tiny">Prioriza a quién revisar primero según actividad, adherencia y check-in. Es una señal operativa, no un diagnóstico.</div></div></div>'+
       '<div class="v290-risk-list">'+rows.map(x=>{
         const label=x.r.level==='high'?'Prioridad':x.r.level==='mid'?'Atención':'Bien';
-        return '<button class="v290-risk-row '+x.r.level+'" onclick="openStudent(\\''+esc(String(x.s.id))+'\\');coachStudentTab=\\'summary\\';render()"><div><strong>'+esc(x.s.name||'Alumno')+'</strong><small>'+esc(x.r.reasons.join(' · ')||'Sin señales principales')+'</small></div><span>'+label+' · '+x.r.score+'</span></button>';
+        return '<button class="v290-risk-row '+x.r.level+'" onclick="openStudent(\''+esc(String(x.s.id))+'\');coachStudentTab=\'summary\';render()"><div><strong>'+esc(x.s.name||'Alumno')+'</strong><small>'+esc(x.r.reasons.join(' · ')||'Sin señales principales')+'</small></div><span>'+label+' · '+x.r.score+'</span></button>';
       }).join('')+'</div>';
     const anchor=el('v252CoachPriorityCenter')||el('v225CoachDashboard')||view.querySelector('.hero');
     if(anchor)anchor.insertAdjacentElement('afterend',card);else view.prepend(card);
