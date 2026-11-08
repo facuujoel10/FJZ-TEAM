@@ -282,7 +282,7 @@ def patch_v331(body):
         raise RuntimeError("V21.39 V331 rowHtml bounds missing")
     row_block=body[row_start:row_end]
     empty_action="""        ''+"""
-    restored_action="""        (dismiss?'<button class="btn small v299-ok v336-alert-ok" data-v336-ok-key="'+safe(x?.event_key||'')+'" onclick="window.__fjzResolveGroupedAlertV336(\''+js(x?.event_key)+'\',this)">✓ OK</button>':'')+"""
+    restored_action="""        (dismiss?'<button class="btn small v299-ok v336-alert-ok" data-v336-ok-key="'+safe(x?.event_key||'')+'" onclick="window.__fjzResolveGroupedAlertV336(\\''+js(x?.event_key)+'\\',this)">✓ OK</button>':'')+"""
     if row_block.count(empty_action)!=1:
         raise RuntimeError("V21.39 V331 empty action anchor mismatch: "+str(row_block.count(empty_action)))
     row_block=row_block.replace(empty_action,restored_action,1)
