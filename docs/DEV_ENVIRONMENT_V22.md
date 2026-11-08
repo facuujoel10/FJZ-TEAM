@@ -30,7 +30,7 @@ El stack local usa:
 - Studio: puerto local 54323
 - Mailpit: puerto local 54324
 
-El script crea una red Docker ligada a `127.0.0.1` para evitar exposición pública.
+En GitHub Actions se usa la red Docker administrada por Supabase; el runner es efímero y el workflow no publica servicios ni configura ingress. Para desarrollo personal fuera de CI puede endurecerse el binding local según la guía oficial de Supabase.
 
 ## Datos ficticios
 Cuentas locales:
