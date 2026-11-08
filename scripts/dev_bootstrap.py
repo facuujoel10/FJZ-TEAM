@@ -137,10 +137,12 @@ def main():
     upsert(api,secret,"athlete_reminders",[
       {"id":"51000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
        "title":"QA recordatorio 01","body":"Recordatorio completamente ficticio",
-       "category":"custom","schedule_type":"weekly","weekday":1,"remind_time":"08:00:00","active":True},
+       "category":"custom","schedule_type":"weekly","reminder_date":None,"weekday":1,
+       "remind_time":"08:00:00","active":True},
       {"id":"51000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
        "title":"QA recordatorio 02","body":"Recordatorio completamente ficticio",
-       "category":"custom","schedule_type":"once","reminder_date":"2026-01-20","active":True}
+       "category":"custom","schedule_type":"once","reminder_date":"2026-01-20","weekday":None,
+       "remind_time":None,"active":True}
     ],"id")
 
     upsert(api,secret,"body_measurements",[
@@ -158,7 +160,8 @@ def main():
       {"id":"53000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
        "week_start":"2026-01-05","weight_kg":72.5,"sleep_quality":8,"stress_level":3,
        "energy_level":8,"adherence_level":9,"mood_level":8,"hunger_level":4,
-       "recovery_level":8,"motivation_level":9,"notes":"Check-in QA pendiente"},
+       "recovery_level":8,"motivation_level":9,"notes":"Check-in QA pendiente",
+       "reviewed_at":None,"coach_feedback":""},
       {"id":"53000000-0000-4000-8000-000000000002","athlete_id":a2,"student_id":s2,
        "week_start":"2026-01-05","weight_kg":65,"sleep_quality":7,"stress_level":4,
        "energy_level":7,"adherence_level":8,"mood_level":7,"hunger_level":5,
@@ -209,14 +212,16 @@ def main():
     upsert(api,secret,"checkin_schedules",[
       {"id":"59000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
        "cadence":"weekly","next_due":"2026-01-19","remind_time":"09:00:00","active":True,
-       "notes":"Cadencia QA"},
+       "notes":"Cadencia QA","last_completed_at":None},
       {"id":"59000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
-       "cadence":"biweekly","next_due":"2026-01-26","active":True,"notes":"Cadencia QA 2"}
+       "cadence":"biweekly","next_due":"2026-01-26","remind_time":None,"active":True,
+       "notes":"Cadencia QA 2","last_completed_at":None}
     ],"id")
 
     upsert(api,secret,"coach_payments",[
       {"id":"5a000000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
-       "due_date":"2026-01-15","amount":1000,"status":"pending","note":"Cobranza QA"},
+       "due_date":"2026-01-15","amount":1000,"status":"pending","paid_on":None,
+       "payment_method":None,"note":"Cobranza QA"},
       {"id":"5a000000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
        "due_date":"2026-01-15","amount":1000,"status":"paid","paid_on":"2026-01-14",
        "payment_method":"transfer","note":"Cobranza QA 2"}
