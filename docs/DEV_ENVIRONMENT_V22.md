@@ -22,8 +22,7 @@ No ejecutar en esta rama:
 
 ## Requisitos gratuitos
 Supabase local requiere Supabase CLI y un runtime compatible con Docker.
-En Windows: Docker Desktop + Node 20 o superior permiten usar `npx supabase`.
-También puede instalarse la CLI por Scoop.
+En Windows: Docker Desktop + Node 20 o superior. Los scripts usan `npx --yes supabase@3.0.0` para fijar exactamente la versión de la CLI y evitar cambios de targeting entre versiones. También puede instalarse la CLI por Scoop, pero el flujo automatizado usa la versión fijada por npx.
 
 El stack local usa:
 - API/Auth/Realtime/Storage: `http://127.0.0.1:54321`
