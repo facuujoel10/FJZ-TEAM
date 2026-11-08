@@ -126,13 +126,17 @@ def main():
         "duplicate feedback id",
         codes=("409","23505")
     )
-    expect_error(
-        lambda: rest(
-            api,pub,s1,"PATCH","exercise_feedback?id=eq."+feedback_id,
-            {"status":"reviewed"},"return=representation"
-        ),
-        "student cannot review own exercise feedback"
+    student_review_attempt=rest(
+        api,pub,s1,"PATCH","exercise_feedback?id=eq."+feedback_id,
+        {"status":"reviewed"},"return=representation"
     )
+    assert student_review_attempt==[],student_review_attempt
+    still_pending=rest(
+        api,pub,s1,"GET",
+        "exercise_feedback?select=id,status,reviewed_by,reviewed_at&id=eq."+feedback_id
+    )
+    assert still_pending and still_pending[0]["status"]=="pending",still_pending
+    assert still_pending[0]["reviewed_by"] is None and still_pending[0]["reviewed_at"] is None
 
     reviewed_at=dt.datetime.now(dt.timezone.utc).isoformat()
     reviewed=rest(
