@@ -306,8 +306,8 @@ def patch_v175(body):
         ?'Tu coach puede ver la dificultad y el comentario que dejaste. Cuando lo revise, su devolución va a aparecer acá.'
         :'Podés revisar cómo viene tu progreso o completar el seguimiento para darle más contexto a tu coach.')+'</p>'+
       '<div class="v243-next-actions">'+
-        '<button class="btn" onclick="studentTab=\\'tracking\\';render()">Check-in</button>'+
-        '<button class="btn primary" onclick="studentTab=\\'progress\\';render()">Ver progreso</button>'+
+        '<button class="btn" onclick="studentTab=\'tracking\';render()">Check-in</button>'+
+        '<button class="btn primary" onclick="studentTab=\'progress\';render()">Ver progreso</button>'+
       '</div>';
 
     const anchor=el('v242StudentCoachReply')||
