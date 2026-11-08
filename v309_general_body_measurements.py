@@ -120,7 +120,7 @@ runtime=r"""
       const id=String(input.id||'').toLowerCase();
       const name=String(input.name||'').toLowerCase();
       const key=id+' '+name;
-      if(/(arm|brazo).*(right|derech|der\b)/i.test(key)||(thigh|muslo).*(right|derech|der\b)/i.test(key)){
+      if(/(arm|brazo).*(right|derech|der\b)/i.test(key)||/(thigh|muslo).*(right|derech|der\b)/i.test(key)){
         removeLegacySideNodeV309(input);
       }
     });
