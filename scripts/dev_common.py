@@ -77,3 +77,21 @@ def http_json(method,url,apikey,token=None,payload=None,prefer=None,ok=(200,201,
         if e.code in ok:
             return json.loads(raw) if raw else None
         raise RuntimeError(f"HTTP {e.code}: {raw}") from e
+
+def http_bytes(method,url,apikey,token=None,payload=None,content_type="application/octet-stream",ok=(200,201,204)):
+    assert_local_url(url)
+    headers={"apikey":apikey}
+    if token: headers["Authorization"]="Bearer "+token
+    if payload is not None: headers["Content-Type"]=content_type
+    req=urllib.request.Request(url,data=payload,headers=headers,method=method)
+    try:
+        with urllib.request.urlopen(req,timeout=15) as r:
+            raw=r.read()
+            if r.status not in ok:
+                raise RuntimeError(f"HTTP {r.status}")
+            return raw
+    except urllib.error.HTTPError as e:
+        _=e.read()
+        if e.code in ok:
+            return b""
+        raise RuntimeError(f"HTTP {e.code}") from e
