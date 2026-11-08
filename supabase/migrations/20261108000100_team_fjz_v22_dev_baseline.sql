@@ -661,7 +661,7 @@ create table if not exists public.fitness_recipes (
   servings integer not null default 1,
   ingredients jsonb not null default '[]'::jsonb,
   steps jsonb not null default '[]'::jsonb,
-  kcal numeric,
+  kcal_per_serving numeric,
   protein_g numeric,
   carbs_g numeric,
   fat_g numeric,
@@ -826,19 +826,22 @@ using (
 create policy body_measurements_insert_access on public.body_measurements for insert to authenticated
 with check (
   student_id=(select auth.uid())
-  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
 );
 create policy body_measurements_update_access on public.body_measurements for update to authenticated
 using (
   student_id=(select auth.uid())
-  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
 )
 with check (
   student_id=(select auth.uid())
-  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
 );
 create policy body_measurements_delete_coach on public.body_measurements for delete to authenticated
-using (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id));
+using (student_id is not null and public.is_coach_of(student_id));
 
 create policy weekly_checkins_select_access on public.weekly_checkins for select to authenticated
 using (
@@ -847,16 +850,31 @@ using (
   or (athlete_id is not null and public.can_access_athlete(athlete_id))
 );
 create policy weekly_checkins_insert_student on public.weekly_checkins for insert to authenticated
-with check (student_id=(select auth.uid()) and public.can_access_athlete(athlete_id));
+with check (
+  student_id=(select auth.uid())
+  or (
+    athlete_id is not null
+    and public.can_access_athlete(athlete_id)
+    and (
+      student_id is null
+      or student_id=(select auth.uid())
+      or public.can_edit_athlete_as_coach(athlete_id)
+    )
+  )
+);
 create policy weekly_checkins_update_access on public.weekly_checkins for update to authenticated
 using (
   student_id=(select auth.uid())
-  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
 )
 with check (
   student_id=(select auth.uid())
-  or (athlete_id is not null and public.can_edit_athlete_as_coach(athlete_id))
+  or (student_id is not null and public.is_coach_of(student_id))
+  or (athlete_id is not null and public.can_access_athlete(athlete_id))
 );
+create policy weekly_checkins_delete_coach on public.weekly_checkins for delete to authenticated
+using (student_id is not null and public.is_coach_of(student_id));
 
 create policy coach_media_settings_select_linked on public.coach_media_settings for select to authenticated
 using (
@@ -1057,12 +1075,14 @@ as $$
   )
   select
     r.event_key,r.athlete_id,r.athlete_name,r.kind,r.severity,r.title,r.body,r.occurred_at,
-    (cfs.read_at is not null) as is_read
+    false as is_read
   from raw r
   left join public.coach_feed_state cfs
     on cfs.coach_id=(select uid from me) and cfs.event_key=r.event_key
-  where cfs.dismissed_at is null
-  order by r.occurred_at desc
+  where cfs.read_at is null and cfs.dismissed_at is null
+  order by
+    case r.severity when 'critical' then 4 when 'warning' then 3 when 'info' then 2 else 1 end desc,
+    r.occurred_at desc
   limit 100;
 $$;
 
