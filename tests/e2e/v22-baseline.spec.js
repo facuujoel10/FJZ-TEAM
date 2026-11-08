@@ -29,7 +29,7 @@ function installSafety(page, testInfo) {
     }
   });
 
-  page.on('pageerror', err => state.pageErrors.push(String(err?.message || err)));
+  page.on('pageerror', err => state.pageErrors.push(String(err?.stack || err?.message || err)));
   page.on('console', msg => {
     if (msg.type() === 'error') state.consoleErrors.push(msg.text());
   });
@@ -43,7 +43,8 @@ async function login(page, email) {
   await expect(page.locator('#authEmail')).toBeVisible();
   await page.locator('#authEmail').fill(email);
   await page.locator('#authPass').fill(PASSWORD);
-  await page.getByRole('button', { name: /^Ingresar$/ }).click();
+  const loginForm = page.locator('#authEmail').locator('xpath=ancestor::div[contains(@class,"auth-grid")]');
+  await loginForm.getByRole('button', { name: /^Ingresar$/ }).click();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
   await expect(page.locator('#view')).toBeVisible();
 }
@@ -132,6 +133,7 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
       description: 'El HUD principal del Alumno no ofrece una ruta permanente visible al Historial.'
     });
   }
+  console.log('E2E_FLOW_OK student-navigation '+testInfo.project.name);
 });
 
 test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ page }, testInfo) => {
@@ -220,6 +222,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true })).toHaveCount(0);
+  console.log('E2E_FLOW_OK workout-comment-coach '+testInfo.project.name);
 });
 
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
@@ -285,6 +288,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
   await expect(page.locator('.nutrition-log')).toContainText('QA Arroz cocido');
   await expect(page.locator('.nutrition-log')).not.toContainText('QA E2E personalizado');
+  console.log('E2E_FLOW_OK nutrition '+testInfo.project.name);
 });
 
 test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
@@ -326,4 +330,5 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   await page.getByRole('button', { name: 'Agenda' }).first().click();
   await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
   await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
 });
