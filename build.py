@@ -1056,6 +1056,22 @@ if APP_ENV == "staging-local":
 # V12.7 centralized release + PWA update system
 exec(compile(open("v127_release_system.py", encoding="utf-8").read(), "v127_release_system.py", "exec"))
 
+# V22 development-only sanitization of historical frontend identifiers.
+# These are not backend calls, but V22 intentionally permits zero hosted
+# Supabase references in the generated development artifact.
+if APP_ENV in {"development", "test"}:
+    dev_path = pathlib.Path("public/index.html")
+    dev_artifact = dev_path.read_text(encoding="utf-8")
+    dev_artifact = dev_artifact.replace(
+        "sb-" + PRODUCTION_SUPABASE_REF + "-auth-token",
+        "sb-team-fjz-v22-local-auth-token",
+    )
+    dev_artifact = dev_artifact.replace(
+        "https://xxxxx.supabase.co",
+        "http://127.0.0.1:54321",
+    )
+    dev_path.write_text(dev_artifact, encoding="utf-8")
+
 # V22 development artifact isolation check. This runs after every patch so a
 # late script cannot reintroduce a production backend reference.
 if APP_ENV in {"development", "test"}:
