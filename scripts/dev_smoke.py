@@ -246,6 +246,7 @@ def main():
     forbidden_cross_checkin=dict(new_checkin)
     forbidden_cross_checkin["id"]=str(uuid.uuid4())
     forbidden_cross_checkin["athlete_id"]=a2
+    forbidden_cross_checkin["student_id"]=s2_id
     forbidden_cross_checkin["week_start"]="2026-01-19"
     expect_error(
         lambda: rest(api,pub,s1,"POST","weekly_checkins",forbidden_cross_checkin,"return=representation"),
