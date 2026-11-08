@@ -23,8 +23,10 @@ def main():
         run([docker,"network","create","-o","com.docker.network.bridge.host_binding_ipv4=127.0.0.1",network])
 
     cli=supabase_cmd()
-    run(cli+["start","--network-id",network],env=env)
-    run(cli+["db","reset"],env=env)
+    # supabase start prints local keys; capture it so CI logs never expose them.
+    run(cli+["start","--network-id",network],env=env,capture=True)
+    # Always name the target explicitly even though CLI v3 defaults to local.
+    run(cli+["db","reset","--local"],env=env,capture=True)
     run([sys.executable,"scripts/dev_bootstrap.py"],env=env)
     run([sys.executable,"scripts/dev_smoke.py"],env=env)
     print("TEAM FJZ V22 LOCAL RESET + INTEGRATION OK")
