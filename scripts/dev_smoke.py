@@ -255,8 +255,9 @@ def main():
     # Media/recipes are linked by coach; unrelated student data stays hidden.
     media_s1=rest(api,pub,s1,"GET","exercise_media?select=exercise_key,title,is_active")
     assert media_s1 and media_s1[0]["exercise_key"]=="dev_ex_press",media_s1
-    recipes_s1=rest(api,pub,s1,"GET","fitness_recipes?select=title,category")
-    assert any(x["title"]=="Receta QA local" for x in recipes_s1),recipes_s1
+    recipes_s1=rest(api,pub,s1,"GET","fitness_recipes?select=title,category,kcal_per_serving")
+    recipe_qa=next((x for x in recipes_s1 if x["title"]=="Receta QA local"),None)
+    assert recipe_qa and float(recipe_qa["kcal_per_serving"])==300,recipes_s1
     templates_s1=rest(api,pub,s1,"GET","nutrition_templates?select=id")
     assert templates_s1==[],templates_s1
 
