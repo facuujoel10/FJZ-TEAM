@@ -182,6 +182,102 @@ def main():
     )
 
     # ------------------------------------------------------------
+    # 0C.3 schema parity: current application modules use real local
+    # tables with Coach/Alumno/cross-student RLS, not 404 stubs.
+    # ------------------------------------------------------------
+    parity_tables=[
+        "athlete_schedule","athlete_reminders","body_measurements","weekly_checkins",
+        "coach_media_settings","exercise_media","fitness_recipes",
+        "nutrition_habit_logs","nutrition_plan_revisions","nutrition_templates",
+        "progress_photos","checkin_schedules","coach_payments","student_notices"
+    ]
+    for table in parity_tables:
+        coach_rows=rest(api,pub,coach,"GET",table+"?select=*&limit=20")
+        assert isinstance(coach_rows,list),(table,coach_rows)
+
+    own_schedule=rest(api,pub,s1,"GET","athlete_schedule?select=athlete_id,weekday,workout_day_name")
+    assert len(own_schedule)==1 and own_schedule[0]["athlete_id"]==a1,own_schedule
+    cross_schedule=rest(api,pub,s1,"GET","athlete_schedule?select=athlete_id&athlete_id=eq."+a2)
+    assert cross_schedule==[],cross_schedule
+
+    own_measurements=rest(api,pub,s1,"GET","body_measurements?select=athlete_id,weight_kg")
+    assert len(own_measurements)==1 and own_measurements[0]["athlete_id"]==a1,own_measurements
+    cross_measurements=rest(api,pub,s1,"GET","body_measurements?select=id&athlete_id=eq."+a2)
+    assert cross_measurements==[],cross_measurements
+
+    own_checkins=rest(api,pub,s1,"GET","weekly_checkins?select=id,athlete_id,notes")
+    assert len(own_checkins)==1 and own_checkins[0]["athlete_id"]==a1,own_checkins
+    cross_checkins=rest(api,pub,s1,"GET","weekly_checkins?select=id&athlete_id=eq."+a2)
+    assert cross_checkins==[],cross_checkins
+
+    schedule_attempt=rest(
+        api,pub,s1,"PATCH",
+        "athlete_schedule?athlete_id=eq."+a1,
+        {"notes":"Alumno no debe editar agenda Coach"},"return=representation"
+    )
+    assert schedule_attempt==[],schedule_attempt
+    schedule_after=rest(api,pub,s1,"GET","athlete_schedule?select=notes&athlete_id=eq."+a1)
+    assert schedule_after[0]["notes"]=="Agenda ficticia QA",schedule_after
+
+    coach_schedule_update=rest(
+        api,pub,coach,"PATCH",
+        "athlete_schedule?athlete_id=eq."+a1,
+        {"notes":"Agenda QA verificada"},"return=representation"
+    )
+    assert coach_schedule_update and coach_schedule_update[0]["notes"]=="Agenda QA verificada"
+
+    new_checkin_id=str(uuid.uuid4())
+    new_checkin={
+        "id":new_checkin_id,"athlete_id":a1,"student_id":s1_id,
+        "week_start":"2026-01-12","weight_kg":72.2,
+        "sleep_quality":8,"stress_level":3,"energy_level":8,
+        "adherence_level":9,"mood_level":8,"hunger_level":4,
+        "recovery_level":8,"motivation_level":9,"notes":"Check-in 0C smoke"
+    }
+    created_checkin=rest(api,pub,s1,"POST","weekly_checkins",new_checkin,"return=representation")
+    assert created_checkin and created_checkin[0]["id"]==new_checkin_id
+    reviewed_checkin=rest(
+        api,pub,coach,"PATCH","weekly_checkins?id=eq."+new_checkin_id,
+        {"coach_feedback":"Revisado QA","reviewed_at":"2026-01-13T12:00:00Z"},
+        "return=representation"
+    )
+    assert reviewed_checkin and reviewed_checkin[0]["coach_feedback"]=="Revisado QA"
+
+    forbidden_cross_checkin=dict(new_checkin)
+    forbidden_cross_checkin["id"]=str(uuid.uuid4())
+    forbidden_cross_checkin["athlete_id"]=a2
+    forbidden_cross_checkin["week_start"]="2026-01-19"
+    expect_error(
+        lambda: rest(api,pub,s1,"POST","weekly_checkins",forbidden_cross_checkin,"return=representation"),
+        "student cannot write another athlete checkin"
+    )
+
+    # Media/recipes are linked by coach; unrelated student data stays hidden.
+    media_s1=rest(api,pub,s1,"GET","exercise_media?select=exercise_key,title,is_active")
+    assert media_s1 and media_s1[0]["exercise_key"]=="dev_ex_press",media_s1
+    recipes_s1=rest(api,pub,s1,"GET","fitness_recipes?select=title,category")
+    assert any(x["title"]=="Receta QA local" for x in recipes_s1),recipes_s1
+    templates_s1=rest(api,pub,s1,"GET","nutrition_templates?select=id")
+    assert templates_s1==[],templates_s1
+
+    photos_s1=rest(api,pub,s1,"GET","progress_photos?select=athlete_id,taken_on,pose,storage_path")
+    assert photos_s1 and photos_s1[0]["athlete_id"]==a1,photos_s1
+    photos_s2_cross=rest(api,pub,s2,"GET","progress_photos?select=id&athlete_id=eq."+a1)
+    assert photos_s2_cross==[],photos_s2_cross
+
+    # get_coach_feed has the production return contract and real local sources.
+    feed=rest(
+        api,pub,coach,"POST","rpc/get_coach_feed",{},
+        None,(200,201)
+    )
+    assert isinstance(feed,list) and feed,feed
+    required_feed={"event_key","athlete_id","athlete_name","kind","severity","title","body","occurred_at","is_read"}
+    assert required_feed.issubset(feed[0].keys()),feed[0]
+    assert any(x["kind"]=="exercise_feedback" for x in feed),feed
+    student_feed=rest(api,pub,s1,"POST","rpc/get_coach_feed",{},None,(200,201))
+    assert student_feed==[],student_feed
+
+    # ------------------------------------------------------------
     # Storage: real local Storage service + RLS.
     # Student can upload/read own profile object, sibling student cannot,
     # linked coach can. Progress photo is athlete-scoped. Coach exercise
@@ -217,6 +313,7 @@ def main():
     print("Workout RPC + idempotent projection: OK")
     print("Exercise feedback create/review restrictions: OK")
     print("Nutrition create/edit/delete + disabled permission: OK")
+    print("0C schema parity + Coach/Alumno RLS + get_coach_feed: OK")
     print("Storage local + access policies: OK")
 
 if __name__=="__main__":
