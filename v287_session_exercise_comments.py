@@ -186,7 +186,7 @@ def patch_v244(body):
   }
 
   function studentFeedbackHtmlV244"""
-    body=body[:old_func.start()]+new_func+body[old_func.end()-len("  function studentFeedbackHtmlV244"):]
+    body=body[:old_func.start()]+new_func+body[old_func.end():]
 
     old_session="""  window.sessionDetails=function(id){
     const ss=(student()?.sessions||[]).find(x=>x?.id===id);
