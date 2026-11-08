@@ -1,0 +1,119 @@
+name: V22 browser baseline
+
+on:
+  push:
+    branches:
+      - dev/team-fjz-v22
+
+permissions:
+  contents: read
+
+concurrency:
+  group: team-fjz-v22-browser-baseline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-e2e:
+    if: github.ref == 'refs/heads/dev/team-fjz-v22'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TEAM_FJZ_ENV: development
+      SUPABASE_TELEMETRY_DISABLED: "1"
+      DO_NOT_TRACK: "1"
+
+    steps:
+      - name: Checkout exact V22 commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+
+      - name: Assert isolated branch and unchanged production baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/dev/team-fjz-v22"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          main_sha="$(git ls-remote https://github.com/facuujoel10/FJZ-TEAM.git refs/heads/main | cut -f1)"
+          test "$main_sha" = "3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807"
+          python scripts/dev_guard.py
+          python scripts/dev_negative_guard.py
+          echo "V22 isolation baseline: OK"
+
+      - name: Verify Docker and pinned Supabase CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker info >/dev/null
+          npx --yes supabase@3.0.0 --version >/dev/null
+          echo "Docker + Supabase CLI: OK"
+
+      - name: Install pinned Playwright test runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts @playwright/test@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Create local stack and build development app
+        run: |
+          python scripts/dev_reset.py
+          python scripts/dev_build.py
+          python scripts/dev_guard.py --artifact
+
+      - name: Start local app server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 -d public > /tmp/team-fjz-v22-http.log 2>&1 &
+          echo $! > /tmp/team-fjz-v22-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8000/ >/dev/null; then
+              echo "Local TEAM FJZ server: OK"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/team-fjz-v22-http.log
+          exit 1
+
+      - name: Browser baseline — mobile 390x844
+        id: mobile
+        continue-on-error: true
+        run: npx playwright test --project=mobile-390
+
+      - name: Reset local data before desktop
+        if: always()
+        run: python scripts/dev_reset.py
+
+      - name: Browser baseline — desktop 1440x900
+        id: desktop
+        if: always()
+        continue-on-error: true
+        run: npx playwright test --project=desktop-1440
+
+      - name: Final isolation and QA gate
+        if: always()
+        shell: bash
+        env:
+          MOBILE_OUTCOME: ${{ steps.mobile.outcome }}
+          DESKTOP_OUTCOME: ${{ steps.desktop.outcome }}
+        run: |
+          set -euo pipefail
+          python scripts/dev_guard.py --artifact
+          python preflight.py
+          echo "mobile=$MOBILE_OUTCOME"
+          echo "desktop=$DESKTOP_OUTCOME"
+          test "$MOBILE_OUTCOME" = "success"
+          test "$DESKTOP_OUTCOME" = "success"
