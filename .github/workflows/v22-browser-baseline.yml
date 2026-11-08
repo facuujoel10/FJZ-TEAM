@@ -72,6 +72,11 @@ jobs:
           python scripts/dev_build.py
           python scripts/dev_guard.py --artifact
 
+      - name: Audit generated JavaScript syntax
+        id: syntax
+        continue-on-error: true
+        run: node scripts/dev_js_syntax_audit.js
+
       - name: Start local app server
         shell: bash
         run: |
@@ -109,11 +114,14 @@ jobs:
         env:
           MOBILE_OUTCOME: ${{ steps.mobile.outcome }}
           DESKTOP_OUTCOME: ${{ steps.desktop.outcome }}
+          SYNTAX_OUTCOME: ${{ steps.syntax.outcome }}
         run: |
           set -euo pipefail
           python scripts/dev_guard.py --artifact
           python preflight.py
           echo "mobile=$MOBILE_OUTCOME"
           echo "desktop=$DESKTOP_OUTCOME"
+          echo "syntax=$SYNTAX_OUTCOME"
           test "$MOBILE_OUTCOME" = "success"
           test "$DESKTOP_OUTCOME" = "success"
+          test "$SYNTAX_OUTCOME" = "success"
