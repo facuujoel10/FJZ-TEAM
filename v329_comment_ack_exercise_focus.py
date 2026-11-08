@@ -372,7 +372,7 @@ def patch_v244(body):
   }
 
   function exerciseHtmlV244"""
-    body=body[:old_func.start()]+replacement+body[old_func.end()-len("  function exerciseHtmlV244"):]
+    body=body[:old_func.start()]+replacement+body[old_func.end():]
 
     old="""    const comments=exerciseFeedbackForSessionV287(ss,r,feedbackRows);
 
