@@ -79,8 +79,8 @@ def patch_v175(body):
         ?'<div class="v258-next"><span>CÓMO SEGUIMOS</span><p>'+esc(plan.parsed.nextStep)+'</p></div>'
         :'')+
       '<div class="v258-actions">'+
-        '<button class="btn" onclick="studentTab=\'tracking\';render()">Ver seguimiento</button>'+
-        (!seen?'<button class="btn primary" onclick="acknowledgeCheckinReplyV248(\''+esc(plan.row.id)+'\')">Entendido</button>':'')+
+        '<button class="btn" onclick="studentTab=&quot;tracking&quot;;render()">Ver seguimiento</button>'+
+        (!seen?'<button class="btn primary" onclick="acknowledgeCheckinReplyV248(&quot;'+esc(plan.row.id)+'&quot;)">Entendido</button>':'')+
       '</div>';
 
     const week=el('v253StudentWeekFlow');
