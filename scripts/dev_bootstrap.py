@@ -189,6 +189,13 @@ def main():
        "tags":["qa","local"]}
     ],"id")
 
+    upsert(api,secret,"athlete_habits",[
+      {"id":"55500000-0000-4000-8000-000000000001","athlete_id":a1,"coach_id":coach,
+       "name":"QA movimiento diario","category":"movement","active":True,"sort_order":1},
+      {"id":"55500000-0000-4000-8000-000000000002","athlete_id":a2,"coach_id":coach,
+       "name":"QA hábito nutricional","category":"nutrition","active":True,"sort_order":1}
+    ],"id")
+
     upsert(api,secret,"nutrition_habit_logs",[
       {"id":"56000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
        "habit_id":"qa-water","logged_on":"2026-01-12","completed":True}
