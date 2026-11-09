@@ -4,12 +4,12 @@ html=p.read_text(encoding="utf-8")
 
 def topology(doc):
     return {
-        "renders":len(re.findall(r"(?:window\\.)?render\\s*=",doc)),
-        "channels":len(re.findall(r"\\.channel\\s*\\(",doc)),
-        "timeouts":len(re.findall(r"setTimeout\\s*\\(",doc)),
-        "intervals":len(re.findall(r"setInterval\\s*\\(",doc)),
-        "listeners":len(re.findall(r"addEventListener\\s*\\(",doc)),
-        "mutation_observers":len(re.findall(r"new\\s+MutationObserver",doc)),
+        "renders":len(re.findall(r"(?:window\.)?render\s*=",doc)),
+        "channels":len(re.findall(r"\.channel\s*\(",doc)),
+        "timeouts":len(re.findall(r"setTimeout\s*\(",doc)),
+        "intervals":len(re.findall(r"setInterval\s*\(",doc)),
+        "listeners":len(re.findall(r"addEventListener\s*\(",doc)),
+        "mutation_observers":len(re.findall(r"new\s+MutationObserver",doc)),
     }
 
 def edit_script(doc,script_id,fn):
