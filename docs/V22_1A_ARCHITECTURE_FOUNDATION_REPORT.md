@@ -4,7 +4,17 @@ Fecha: 2026-11-09
 Rama: `dev/team-fjz-v22`  
 Producción: `main`  
 Baseline productivo protegido: `3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807`  
-Commit de implementación 1A certificado antes de este informe: `b42e31e13d4788c470ce592646505350ae98bf77`
+Commit final 1A certificado: `bf534358fe87d740136eb4c7e5dd16eada750202`
+
+GitHub Actions finales del mismo SHA:
+
+- V22 local Supabase integration — run **42562187453** — **SUCCESS**.
+- V22 browser baseline — run **42562187442** — **SUCCESS**.
+- Mobile 390×844 — **PASS**.
+- Desktop 1440×900 — **PASS**.
+- Syntax / Preflight / Architecture Inventory / aislamiento — **PASS**.
+
+Commit de implementación previo al informe: `b42e31e13d4788c470ce592646505350ae98bf77`
 
 ## 1. Certificación final de 0C
 
@@ -50,7 +60,7 @@ Los cuatro recorridos 0C permanecieron verdes tanto en mobile como desktop:
 - nutrition
 - coach-workspace
 
-El commit que contiene este informe es documental. Debe volver a superar la misma línea base antes de declarar 1A cerrada definitivamente.
+El commit documental final `bf534358fe87d740136eb4c7e5dd16eada750202` volvió a superar la misma línea base completa y 1A quedó cerrada definitivamente antes de autorizar 1B.
 
 ## 3. Mapa de arquitectura heredada
 
