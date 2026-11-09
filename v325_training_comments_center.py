@@ -104,7 +104,7 @@ def patch_v302(body):
   }
 
   function ensureTrainingCommentsHostV325(){
-    if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return null;
+    if(!(mode==='coach'&&coachTab==='dashboard'))return null;
     let host=el('v325TrainingCommentsCenter');
     if(host)return host;
     const view=el('view');if(!view)return null;
@@ -198,7 +198,8 @@ def patch_v302(body):
     trainingCommentsPendingFirstV325:true,
     trainingCommentsUsesSessionSnapshotV325:true,
     trainingCommentsGlobalRendererV325:true,
-    trainingCommentsHostIndependentV325:true,""",1)
+    trainingCommentsHostIndependentV325:true,
+    trainingCommentsUsesModeAuthorityV325:true,""",1)
     return body
 
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)

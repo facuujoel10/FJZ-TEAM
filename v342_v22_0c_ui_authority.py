@@ -89,7 +89,7 @@ def patch_v324(body):
     try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
   }"""
     new="""  function ensureCoachAgendaV342(){
-    if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return null;
+    if(!(mode==='coach'&&coachTab==='dashboard'))return null;
     if(Number(window.innerWidth||0)<901)return null;
     const view=el('view');if(!view)return null;
     let button=view.querySelector('.v342-coach-agenda');
@@ -178,6 +178,7 @@ for marker in [
     "trainingCommentsAfterHydrationV325:true",
     "trainingCommentsHostIndependentV325:true",
     "desktopAgendaRuntimeAuthorityV342:true",
+    "trainingCommentsUsesModeAuthorityV325:true",
     "__fjzEnsureCoachAgendaV342",
 ]:
     if marker not in html:
