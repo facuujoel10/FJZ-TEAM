@@ -41,13 +41,13 @@ for sid,path in modules:
     code=pathlib.Path(path).read_text(encoding="utf-8").strip()
     if "</script" in code.lower():
         raise RuntimeError("V22 source module cannot contain closing script markup: "+path)
-    scripts.append('<script id="'+sid+'">\\n'+code+'\\n</script>')
+    scripts.append('<script id="'+sid+'">\n'+code+'\n</script>')
 
 agenda_flag="enabled" if globals().get("APP_ENV") in {"development","test"} else "disabled"
-head_payload="\\n".join(scripts)+(
-    '\\n<meta name="fjz-v22-1a-architecture-foundation" content="date-pilot">'
-    '\\n<meta name="fjz-v22-agenda-repository-read" content="'+agenda_flag+'">'
-    '\\n<meta name="fjz-v22-1b-data-sync-foundation" content="agenda-read-pilot">\\n'
+head_payload="\n".join(scripts)+(
+    '\n<meta name="fjz-v22-1a-architecture-foundation" content="date-pilot">'
+    '\n<meta name="fjz-v22-agenda-repository-read" content="'+agenda_flag+'">'
+    '\n<meta name="fjz-v22-1b-data-sync-foundation" content="agenda-read-pilot">\n'
 )
 if html.count("</head>")!=1:
     raise RuntimeError("V22 foundation head anchor mismatch")
@@ -77,7 +77,7 @@ def patch_v312(body):
     cache_anchor="  let appointmentCacheV312={userId:null,at:0,data:null,inflight:null};"
     if body.count(cache_anchor)!=1:
         raise RuntimeError("V22 1B V312 cache anchor mismatch")
-    body=body.replace(cache_anchor,cache_anchor+"\\n  let agendaRepositoryV22=null;",1)
+    body=body.replace(cache_anchor,cache_anchor+"\n  let agendaRepositoryV22=null;",1)
 
     old="""      const [rr,ss]=await Promise.all([
         supabaseClient.from('athlete_reminders')
