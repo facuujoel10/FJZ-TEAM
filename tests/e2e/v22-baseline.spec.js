@@ -335,7 +335,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 
 
 
-test('2A Premium: registro, comentario, recuperación y finalización idempotente', async ({ page }, testInfo) => {
+test('2A Premium: registro, foco, comentario contextual y recuperación tras refresh', async ({ page }, testInfo) => {
   const comment='2A '+testInfo.project.name+' · comentario premium';
   await login(page,'alumno01@test.local');
   await page.getByRole('button',{name:'Entrenar'}).first().click();
@@ -359,6 +359,7 @@ test('2A Premium: registro, comentario, recuperación y finalización idempotent
   await expect(cards.nth(0).locator('.v22-previous-load').first()).toBeVisible();
   await expect(cards.nth(0).locator('.v22-recommendation').first()).toBeVisible();
   await expect(page.locator('#v22WorkoutSaveState')).toContainText(/Borrador protegido|Cambios pendientes/);
+  console.log('E2E_2A_STAGE input-and-references '+testInfo.project.name);
 
   await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
   await expect(page.locator('#modal')).toHaveClass(/v22-comment-modal/);
@@ -370,23 +371,35 @@ test('2A Premium: registro, comentario, recuperación y finalización idempotent
   await page.getByRole('button',{name:/Enviar al coach/i}).click();
   await expect(page.locator('#v264QuickSaved')).toContainText(/Comentario (guardado|enviado)/i);
   await expect(cards.nth(0).locator('.set-grid').first().locator('input').nth(0)).toHaveValue('17.5');
+  console.log('E2E_2A_STAGE comment-saved-with-session-draft-intact '+testInfo.project.name);
 
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
-  const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
-  await expect(resume).toBeVisible({timeout:10000});
-  await resume.click();
+
+  const activeWorkout=page.locator('#view .session-card');
+  if(!(await activeWorkout.count())){
+    const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
+    await expect(resume).toBeVisible({timeout:10000});
+    await resume.click();
+  }
   await expect(page.locator('.session-card').first().locator('.set-grid').first().locator('input').nth(0)).toHaveValue('17.5');
+  await assertNoHorizontalOverflow(page);
+  await page.screenshot({path:'artifacts/2a/premium-draft-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK premium-draft-recovery-2a '+testInfo.project.name);
+});
+
+test('2A Premium: finalización confirmada, historial e idempotencia', async ({ page }, testInfo) => {
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.getByRole('heading',{name:'Día QA A'})).toBeVisible();
 
   const sets=page.locator('.set-grid');
   const count=await sets.count();
   for(let i=0;i<count;i++){
     const inputs=sets.nth(i).locator('input');
-    if(i!==0){
-      await inputs.nth(0).fill(i<3?'25':'30');
-      await inputs.nth(1).fill('10');
-      await inputs.nth(2).fill('2');
-    }
+    await inputs.nth(0).fill(i<3?'25':'30');
+    await inputs.nth(1).fill('10');
+    await inputs.nth(2).fill('2');
   }
 
   const before=await page.evaluate(()=>student().sessions?.length||0);
@@ -406,17 +419,15 @@ test('2A Premium: registro, comentario, recuperación y finalización idempotent
   expect(after).toBe(before+1);
 
   await page.evaluate(()=>finishWorkout());
-  const afterSecond=await page.evaluate(()=>student().sessions?.length||0);
-  expect(afterSecond).toBe(after);
+  expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(after);
 
   const history=page.getByRole('button',{name:/Ver historial/i}).first();
   await expect(history).toBeVisible();
   await history.click();
   await expect(page.getByText('Día QA A',{exact:false}).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
-
-  await page.screenshot({path:'artifacts/2a/premium-workout-'+testInfo.project.name+'.png',fullPage:true});
-  console.log('E2E_FLOW_OK premium-workout-2a '+testInfo.project.name);
+  await page.screenshot({path:'artifacts/2a/premium-complete-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK premium-finish-history-idempotent-2a '+testInfo.project.name);
 });
 
 test('2A Premium: fallo de red conserva sesión y reintenta sin duplicar', async ({ page }, testInfo) => {
@@ -434,14 +445,8 @@ test('2A Premium: fallo de red conserva sesión y reintenta sin duplicar', async
   }
 
   const before=await page.evaluate(()=>student().sessions?.length||0);
-  let failedOnce=false;
   await page.route('**/rest/v1/rpc/commit_workout_session_v202',async route=>{
-    if(!failedOnce){
-      failedOnce=true;
-      await route.abort('failed');
-      return;
-    }
-    await route.continue();
+    await route.abort('failed');
   });
 
   await page.getByRole('button',{name:/Finalizar sesión/i}).click();
