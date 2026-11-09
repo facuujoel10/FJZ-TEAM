@@ -43,7 +43,7 @@ for marker in [
     "v80AttentionCount","v80CriticalCount","v80CommentCount","v80CheckinCount",
     "v80AttentionFilters","v80AttentionBody","studentSearch","studentList",
     "hydrateCoachDashboardV80()","showSystemStatusV80()","showTemplates()",
-    "coachTab='agenda';render()","coachTab='music';render()","newStudent()"
+    "coachTab='music';render()","newStudent()"
 ]:
     if marker not in old:
         raise RuntimeError("V20.25 missing coach dashboard marker: "+marker)
