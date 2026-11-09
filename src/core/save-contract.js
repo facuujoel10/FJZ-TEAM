@@ -29,4 +29,35 @@ function createSaveReceipt({state=SAVE_STATES.PENDING,operationId=null,serverCon
   if(state===SAVE_STATES.CONFIRMED&&!serverConfirmedAt)throw new Error('Confirmed save requires serverConfirmedAt');
   return Object.freeze({state,operationId,serverConfirmedAt,error});
 }
-module.exports=Object.freeze({SAVE_STATES,SAVE_EVENTS,TRANSITIONS,transitionSaveState,createSaveReceipt});
+function createSaveTracker({operationId=null}={}){
+  let current=createSaveReceipt({state:SAVE_STATES.PENDING,operationId});
+  const receipts=[current];
+
+  function move(event,{serverConfirmedAt=null,error=undefined}={}){
+    const next=transitionSaveState(current.state,event);
+    const nextError=error===undefined
+      ? ([SAVE_STATES.RECOVERABLE_ERROR,SAVE_STATES.RETRY_PENDING,SAVE_STATES.FATAL_ERROR].includes(next)?current.error:null)
+      : error;
+    const receipt=createSaveReceipt({
+      state:next,
+      operationId,
+      serverConfirmedAt:next===SAVE_STATES.CONFIRMED?serverConfirmedAt:null,
+      error:nextError
+    });
+    current=receipt;
+    receipts.push(receipt);
+    return receipt;
+  }
+
+  return Object.freeze({
+    snapshot:()=>current,
+    history:()=>Object.freeze([...receipts]),
+    start:()=>move(SAVE_EVENTS.START,{error:null}),
+    confirm:serverConfirmedAt=>move(SAVE_EVENTS.CONFIRM,{serverConfirmedAt,error:null}),
+    failRecoverable:error=>move(SAVE_EVENTS.FAIL_RECOVERABLE,{error}),
+    queueRetry:()=>move(SAVE_EVENTS.QUEUE_RETRY),
+    retry:()=>move(SAVE_EVENTS.RETRY,{error:null}),
+    failFatal:error=>move(SAVE_EVENTS.FAIL_FATAL,{error})
+  });
+}
+module.exports=Object.freeze({SAVE_STATES,SAVE_EVENTS,TRANSITIONS,transitionSaveState,createSaveReceipt,createSaveTracker});

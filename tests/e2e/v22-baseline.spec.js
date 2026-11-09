@@ -398,6 +398,89 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
   console.log('E2E_FLOW_OK nutrition '+testInfo.project.name);
 });
 
+test('AgendaRepository V22: lectura canónica, integración controlada y aislamiento RLS', async ({ page }, testInfo) => {
+  const A1='10000000-0000-4000-8000-000000000001';
+  const A2='10000000-0000-4000-8000-000000000002';
+  const S1='50000000-0000-4000-8000-000000000001';
+  const S2='50000000-0000-4000-8000-000000000002';
+  const R2='51000000-0000-4000-8000-000000000002';
+  const MISSING='59999999-0000-4000-8000-000000000099';
+
+  await login(page, 'alumno01@test.local');
+
+  const studentResult=await page.evaluate(async ({A1,A2,S1,S2,R2,MISSING})=>{
+    const flag=document.querySelector('meta[name="fjz-v22-agenda-repository-read"]')?.content||'';
+    const integrated=await window.__fjzLoadOwnAppointmentsV312(false);
+    const ownAthlete=await supabaseClient.from('athletes')
+      .select('id').eq('user_id',currentUser.id).maybeSingle();
+    if(ownAthlete.error)throw ownAthlete.error;
+    const repo=window.TeamFJZAgendaRepository.createAgendaRepository({supabase:supabaseClient,ttlMs:30000});
+    const own=await repo.listForAthlete(ownAthlete.data.id);
+    const cross=await repo.listForAthlete(A2);
+    const ownEvent=await repo.getById(S1);
+    const crossEvent=await repo.getById(S2);
+    const crossReminder=await repo.getById(R2);
+    const missing=await repo.getById(MISSING);
+    return {
+      flag,
+      integrationSource:integrated?.source||null,
+      ownAthleteId:ownAthlete.data.id,
+      ownSchedule:own.schedule.map(x=>({id:x.id,athlete_id:x.athlete_id,start_time:x.start_time})),
+      ownReminders:own.reminders.map(x=>({id:x.id,athlete_id:x.athlete_id,remind_time:x.remind_time})),
+      crossSchedule:cross.schedule.length,
+      crossReminders:cross.reminders.length,
+      ownEvent:ownEvent?{kind:ownEvent.kind,athleteId:ownEvent.athleteId,id:ownEvent.row.id}:null,
+      crossEvent,
+      crossReminder,
+      missing,
+      a1:A1
+    };
+  },{A1,A2,S1,S2,R2,MISSING});
+
+  expect(studentResult.flag).toBe('enabled');
+  expect(studentResult.integrationSource).toBe('agenda-repository-v22');
+  expect(studentResult.ownAthleteId).toBe(A1);
+  expect(studentResult.ownSchedule).toHaveLength(1);
+  expect(studentResult.ownSchedule[0]).toEqual({id:S1,athlete_id:A1,start_time:'09:00:00'});
+  expect(studentResult.ownReminders).toHaveLength(1);
+  expect(studentResult.crossSchedule).toBe(0);
+  expect(studentResult.crossReminders).toBe(0);
+  expect(studentResult.ownEvent).toEqual({kind:'schedule',athleteId:A1,id:S1});
+  expect(studentResult.crossEvent).toBeNull();
+  expect(studentResult.crossReminder).toBeNull();
+  expect(studentResult.missing).toBeNull();
+
+  await logout(page);
+  await login(page, 'coach@test.local');
+
+  const coachResult=await page.evaluate(async ({A2,S2,R2})=>{
+    const repo=window.TeamFJZAgendaRepository.createAgendaRepository({supabase:supabaseClient,ttlMs:30000});
+    const rows=await repo.listForAthlete(A2);
+    const schedule=await repo.getById(S2);
+    const reminder=await repo.getById(R2);
+    return {
+      scheduleCount:rows.schedule.length,
+      reminderCount:rows.reminders.length,
+      schedule:schedule?{kind:schedule.kind,athleteId:schedule.athleteId,id:schedule.row.id}:null,
+      reminder:reminder?{
+        kind:reminder.kind,
+        athleteId:reminder.athleteId,
+        id:reminder.row.id,
+        reminder_date:reminder.row.reminder_date
+      }:null
+    };
+  },{A2,S2,R2});
+
+  expect(coachResult.scheduleCount).toBe(1);
+  expect(coachResult.reminderCount).toBe(1);
+  expect(coachResult.schedule).toEqual({kind:'schedule',athleteId:A2,id:S2});
+  expect(coachResult.reminder).toEqual({
+    kind:'reminder',athleteId:A2,id:R2,reminder_date:'2026-01-20'
+  });
+
+  console.log('E2E_FLOW_OK agenda-repository '+testInfo.project.name);
+});
+
 test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
   await login(page, 'coach@test.local');
   await logCoachRuntimeDebug(page, 'workspace-'+testInfo.project.name);
