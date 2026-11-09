@@ -132,10 +132,13 @@ js=r"""
       if(e.methodNote)method+='<div class="v86-method-note">'+esc(e.methodNote)+'</div>';
       method+='</div>';
     }
-    return '<div class="card session-card">'+method+
+    const feedbackAction=currentProfile?.role==='student'&&typeof window.openExerciseFeedbackV73==='function'
+      ? '<div class="pill-row"><span class="badge amber">Objetivo</span><button class="btn small v73-feedback-btn" data-v73-uid="'+esc(e.uid)+'" data-v73-name="'+esc(e.name)+'" onclick="openExerciseFeedbackV73(this.dataset.v73Uid,this.dataset.v73Name)"><span class="plus">+</span> Comentario</button></div>'
+      : '<span class="badge amber">Objetivo</span>';
+    return '<div class="card session-card" data-v73-workout-uid="'+esc(e.uid)+'">'+method+
       '<div class="day-head"><div><strong>'+(i+1)+'. '+esc(e.name)+'</strong><div class="muted tiny">'+header+'</div>'+
       (e.repMode==='exact'?'<div class="v104-target">Objetivo: '+esc(e.repsExact.join('-'))+'</div>':'')+
-      '</div><span class="badge amber">Objetivo</span></div>'+
+      '</div>'+feedbackAction+'</div>'+
       '<p class="muted tiny">'+esc(e.cue||'')+'</p>'+
       (prev.length?'<div class="coach-note tiny"><strong>Última sesión:</strong> '+prev.map((x,j)=>'S'+(j+1)+' '+x[0]+'kg × '+x[1]+' · RIR '+x[2]).join(' · ')+'</div>':'<div class="coach-note tiny"><strong>Primera sesión:</strong> esta carga va a crear tu referencia inicial.</div>')+
       '<div style="height:10px"></div>'+
