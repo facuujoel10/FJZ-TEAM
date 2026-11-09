@@ -13,7 +13,7 @@ def topology(doc):
     }
 
 def edit_script(doc,script_id,fn):
-    pattern=re.compile(r'(<script[^>]*id=["\\']'+re.escape(script_id)+r'["\\'][^>]*>)(.*?)(</script>)',re.S|re.I)
+    pattern=re.compile(r"(<script[^>]*id=[\\\"']"+re.escape(script_id)+r"[\\\"'][^>]*>)(.*?)(</script>)",re.S|re.I)
     matches=list(pattern.finditer(doc))
     if len(matches)!=1:
         raise RuntimeError("V22 foundation script authority mismatch "+script_id+": "+str(len(matches)))
