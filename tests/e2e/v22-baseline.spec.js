@@ -249,6 +249,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   await logout(page);
   await login(page, 'coach@test.local');
 
+  await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true }).first()).toBeVisible({ timeout: 15000 });
   const commentNode = page.getByText(comment, { exact: true }).first();
   const container = commentNode.locator('xpath=ancestor::*[self::article or contains(@class,"card") or contains(@class,"feedback-item")][1]');
@@ -348,7 +349,7 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
 
   await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Panel Coach', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Agenda' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Agenda' }).filter({ visible: true }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
   const row = page.locator('.student-row', { hasText: 'TEST ALUMNO 01' });
