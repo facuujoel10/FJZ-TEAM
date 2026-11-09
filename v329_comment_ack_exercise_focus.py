@@ -368,7 +368,7 @@ def patch_v244(body):
             (pending?'<span class="badge amber">Pendiente</span>':'<span class="badge green">Revisado</span>')+
           '</div>'+
           '<p>'+esc(x.message)+'</p>'+
-          (canAck?'<div class="v325-comment-actions v329-has-ok"><button class="btn small v329-comment-ok" onclick="window.__fjzAckTrainingCommentV329?.(\\''+esc(student()?.id||'')+'\\',\\''+esc(ss?.id||'')+'\\',\\'exercise\\',\\''+esc(x?.id||'')+'\\',\\''+esc(r?.exerciseUid||'')+'\\')">OK</button></div>':'')+
+          (canAck?'<div class="v325-comment-actions v329-has-ok"><button class="btn small v329-comment-ok" onclick="window.__fjzAckTrainingCommentV329?.(\''+esc(student()?.id||'')+'\',\''+esc(ss?.id||'')+'\',\'exercise\',\''+esc(x?.id||'')+'\',\''+esc(r?.exerciseUid||'')+'\')">OK</button></div>':'')+
         '</div>';
       }).join('')+
     '</div>';

@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os, re, shutil, subprocess, sys
+import os, re, shutil, socket, subprocess, sys, time
 from dev_common import run,supabase_cmd
 
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,7 +51,40 @@ def main():
             if stale:
                 subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
 
+    def local_ports_busy():
+        busy=[]
+        for port in (54321,54322,54323,54324,54325,54326,54327,54328,54329):
+            sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            try:
+                sock.bind(("127.0.0.1",port))
+            except OSError:
+                busy.append(port)
+            finally:
+                sock.close()
+        return busy
+
+    def await_local_ports_release():
+        # Docker can return from rm/stop before the host's published-port rule
+        # is fully released. On disposable CI runners, re-clean only Supabase
+        # containers and require all fixed local ports to become bindable
+        # before starting a fresh stack.
+        for _ in range(20):
+            busy=local_ports_busy()
+            if not busy:
+                return
+            if str(env.get("CI","")).lower()=="true":
+                rows=subprocess.run(
+                    [docker,"ps","-a","--format","{{.Names}}"],
+                    env=env,text=True,capture_output=True,check=False
+                ).stdout.splitlines()
+                stale=[n.strip() for n in rows if n.strip().startswith("supabase_")]
+                if stale:
+                    subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
+            time.sleep(0.5)
+        raise RuntimeError("Local Supabase ports still busy after cleanup: "+",".join(map(str,local_ports_busy())))
+
     cleanup_local_stack()
+    await_local_ports_release()
     # supabase start prints local keys, so capture it. Cold hosted runners can
     # occasionally time out a container health check immediately after pulling
     # images. Retry exactly once after a local cleanup; a persistent second
@@ -66,6 +99,7 @@ def main():
             start_exc=exc
             if attempt==1:
                 cleanup_local_stack()
+                await_local_ports_release()
                 continue
     if start_exc is not None:
         raw=((start_exc.stdout or "")+"\n"+(start_exc.stderr or "")).strip()
