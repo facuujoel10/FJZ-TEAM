@@ -33,6 +33,7 @@ before=metrics(html)
 
 for marker in [
     'meta name="fjz-review-dashboard-hydration" content="21.24"',
+    'id="v324ReviewDashboardHydrationRuntime"',
     'id="v302ReviewResolutionAuthorityRuntime"',
     'id="v175ProfileAgendaCoachCenterRuntime"',
     "renderSessionFeedbackCoachV242",
@@ -168,16 +169,45 @@ def patch_v302(body):
         raise RuntimeError("V21.25 V302 center render tail mismatch: "+str(body.count(end_anchor)))
     body=body.replace(end_anchor,repl,1)
 
+    export_anchor="""  window.__fjzOpenTrainingCommentV325=function(studentId,sessionId){"""
+    if body.count(export_anchor)!=1:
+        raise RuntimeError("V21.25 global comments renderer anchor mismatch: "+str(body.count(export_anchor)))
+    body=body.replace(export_anchor,"""  window.__fjzRenderTrainingCommentsV325=renderTrainingCommentsV325;
+
+"""+export_anchor,1)
+
     flag_anchor="""    cloudAuthorityRepaintsReviewCenterV322:true,"""
     if flag_anchor not in body:
         raise RuntimeError("V21.25 V302 flag anchor missing")
     body=body.replace(flag_anchor,flag_anchor+"""
     trainingCommentsCenterV325:true,
     trainingCommentsPendingFirstV325:true,
-    trainingCommentsUsesSessionSnapshotV325:true,""",1)
+    trainingCommentsUsesSessionSnapshotV325:true,
+    trainingCommentsGlobalRendererV325:true,""",1)
     return body
 
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)
+
+def patch_v324(body):
+    old="""  function repaintReviewsV324(){
+    try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
+    try{window.renderCoachFocusV235?.()}catch(_e){}
+  }"""
+    new="""  function repaintReviewsV324(){
+    try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
+    try{window.renderCoachFocusV235?.()}catch(_e){}
+    try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
+  }"""
+    if body.count(old)!=1:
+        raise RuntimeError("V21.25 V324 repaint anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+    marker="""    repaintAfterDashboardHydration:true,"""
+    if body.count(marker)!=1:
+        raise RuntimeError("V21.25 V324 marker anchor mismatch: "+str(body.count(marker)))
+    body=body.replace(marker,marker+"""\n    trainingCommentsAfterHydrationV325:true,""",1)
+    return body
+
+html=edit_script(html,"v324ReviewDashboardHydrationRuntime",patch_v324)
 
 def patch_v175(body):
     anchor="""  function renderSessionFeedbackCoachV242(){"""

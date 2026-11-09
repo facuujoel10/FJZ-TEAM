@@ -38,6 +38,8 @@ for marker in [
     "groupedAlertCloudReadbackV336:true",
     "coachNeverSeesKgRepAsLoadV337:true",
     "athleteCurtainSingleCardV338:true",
+    "trainingCommentsGlobalRendererV325:true",
+    "trainingCommentsAfterHydrationV325:true",
     "firstReviewCardsDisabledV327:true",
     "globalSaveIntegrity:true",
     "sessionSuccessRequiresDoubleVerification:true",
@@ -250,6 +252,7 @@ def patch_v280(body):
         col('Urgente','urgent',urgent,'Sin urgencias pendientes')+
         col('Revisar','today',today,'Nada pendiente para revisar')+
       '</div>';
+    try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
   };
 
   window.__fjzOpenPriorityV280=function(id,tab){
@@ -263,6 +266,7 @@ def patch_v280(body):
     reviewCenterIndividualOkV339:true,
     reviewCenterOpenDoesNotArchiveV339:true,
     reviewCenterNoPerAthleteSliceV339:true,
+    reviewCenterRepaintsTrainingCommentsV339:true,
     noExtraTimers:true,
     noExtraListeners:true,
     noExtraObservers:true

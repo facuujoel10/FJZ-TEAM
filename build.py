@@ -1049,6 +1049,9 @@ exec(compile(open("v340_session_input_recovery.py", encoding="utf-8").read(), "v
 # V21.41 reduce active-workout snapshot churn and block in-memory state replacement during mobile training.
 exec(compile(open("v341_mobile_workout_stability.py", encoding="utf-8").read(), "v341_mobile_workout_stability.py", "exec"))
 
+# V22 Etapa 0C final desktop Agenda + training-comments UI authority.
+exec(compile(open("v342_v22_0c_ui_authority.py", encoding="utf-8").read(), "v342_v22_0c_ui_authority.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
