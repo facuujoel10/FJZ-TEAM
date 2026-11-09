@@ -5,15 +5,15 @@ html=p.read_text(encoding="utf-8")
 
 def metrics(doc):
     return {
-        "styles":len(re.findall(r"<style\\b",doc,re.I)),
-        "renders":len(re.findall(r"(?:window\\.)?render\\s*=",doc)),
-        "channels":len(re.findall(r"\\.channel\\s*\\(",doc)),
-        "timeouts":len(re.findall(r"setTimeout\\s*\\(",doc)),
-        "intervals":len(re.findall(r"setInterval\\s*\\(",doc)),
-        "rafs":len(re.findall(r"requestAnimationFrame\\s*\\(",doc)),
-        "listeners":len(re.findall(r"addEventListener\\s*\\(",doc)),
-        "mutation_observers":len(re.findall(r"new\\s+MutationObserver",doc)),
-        "performance_observers":len(re.findall(r"new\\s+PerformanceObserver",doc)),
+        "styles":len(re.findall(r"<style\b",doc,re.I)),
+        "renders":len(re.findall(r"(?:window\.)?render\s*=",doc)),
+        "channels":len(re.findall(r"\.channel\s*\(",doc)),
+        "timeouts":len(re.findall(r"setTimeout\s*\(",doc)),
+        "intervals":len(re.findall(r"setInterval\s*\(",doc)),
+        "rafs":len(re.findall(r"requestAnimationFrame\s*\(",doc)),
+        "listeners":len(re.findall(r"addEventListener\s*\(",doc)),
+        "mutation_observers":len(re.findall(r"new\s+MutationObserver",doc)),
+        "performance_observers":len(re.findall(r"new\s+PerformanceObserver",doc)),
     }
 
 before=metrics(html)
@@ -42,9 +42,9 @@ if not m:
 actions=m.group(2)
 
 # Final dashboard authority: exactly one visible Agenda route and no retired Music route.
-actions=re.sub(r'\\s*<button[^>]*onclick="coachTab=\\\'agenda\\\';render\\(\\)"[^>]*>\\s*Agenda\\s*</button>','',actions)
-actions=re.sub(r'\\s*<button[^>]*onclick="coachTab=\\\'music\\\';render\\(\\)"[^>]*>\\s*Música\\s*</button>','',actions)
-agenda='\\n      <button class="btn v342-coach-agenda" onclick="coachTab=\\\'agenda\\\';render()">Agenda</button>'
+actions=re.sub(r"""\s*<button[^>]*onclick="coachTab='agenda';render\(\)"[^>]*>\s*Agenda\s*</button>""","",actions)
+actions=re.sub(r"""\s*<button[^>]*onclick="coachTab='music';render\(\)"[^>]*>\s*Música\s*</button>""","",actions)
+agenda="""\n      <button class="btn v342-coach-agenda" onclick="coachTab='agenda';render()">Agenda</button>"""
 status='<button class="btn ghost" onclick="showSystemStatusV80()">Estado</button>'
 if status in actions:
     actions=actions.replace(status,status+agenda,1)
@@ -75,7 +75,7 @@ css=r"""
 """
 sm=styles[0]
 html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end("body"):]
-html=html.replace("</head>",'<meta name="fjz-v22-0c-final-ui-authority" content="0C.10">\\n</head>',1)
+html=html.replace("</head>",'<meta name="fjz-v22-0c-final-ui-authority" content="0C.10">\n</head>',1)
 
 after=metrics(html)
 for key in before:
