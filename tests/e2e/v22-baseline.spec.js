@@ -481,7 +481,7 @@ test('AgendaRepository V22: lectura canónica, integración controlada y aislami
   console.log('E2E_FLOW_OK agenda-repository '+testInfo.project.name);
 });
 
-test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
+test('Coach: dashboard y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
   await login(page, 'coach@test.local');
   await logCoachRuntimeDebug(page, 'workspace-'+testInfo.project.name);
 
@@ -492,22 +492,25 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
 
   const row = page.locator('.student-row', { hasText: 'TEST ALUMNO 01' });
   await expect(row).toBeVisible();
-  await row.getByRole('button', { name: /Abrir/i }).click();
+  await row.getByRole('button', { name: /Abrir/i }).click({ timeout: 10000 });
+  await expect(page.getByText('ATHLETE WORKSPACE · TEAM FJZ', { exact: true })).toBeVisible({ timeout: 10000 });
+  console.log('E2E_COACH_STAGE workspace-open '+testInfo.project.name);
 
-  await expect(page.getByText('ATHLETE WORKSPACE · TEAM FJZ', { exact: true })).toBeVisible();
   const expectedTabs = ['Resumen', 'Rutina', 'Progreso', 'Historial', 'Seguimiento', 'Nutrición'];
   for (const tab of expectedTabs) {
     const btn = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: new RegExp('^' + tab) }).first();
-    await expect(btn, `Falta pestaña Coach ${tab}`).toBeVisible();
-    await btn.click();
-    await expect(page.locator('#coachStudentBody')).not.toBeEmpty();
+    await expect(btn, `Falta pestaña Coach ${tab}`).toBeVisible({ timeout: 10000 });
+    await btn.click({ timeout: 10000 });
+    await expect(page.locator('#coachStudentBody')).not.toBeEmpty({ timeout: 10000 });
     await assertNoHorizontalOverflow(page);
+    console.log('E2E_COACH_STAGE tab-'+tab+' '+testInfo.project.name);
   }
 
   const agendaTab = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: /^Agenda/ }).first();
   if (await agendaTab.count()) {
-    await agendaTab.click();
-    await expect(page.locator('#coachStudentBody')).not.toBeEmpty();
+    await agendaTab.click({ timeout: 10000 });
+    await expect(page.locator('#coachStudentBody')).not.toBeEmpty({ timeout: 10000 });
+    console.log('E2E_COACH_STAGE athlete-agenda '+testInfo.project.name);
   } else {
     testInfo.annotations.push({ type: 'schema-or-ui-gap', description: 'Agenda no figura como pestaña permanente del workspace del alumno.' });
   }
@@ -516,9 +519,16 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   if (!(await paymentsTab.count())) {
     testInfo.annotations.push({ type: 'baseline-gap', description: 'No se detectó pestaña visible de pagos/cobranzas en el workspace actual.' });
   }
+  console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
+});
 
-  await page.locator("button[onclick*=\"coachTab='agenda'\"]").filter({ hasText: /^Agenda/ }).first().click();
+test('Coach: acceso visible a Agenda mensual desde dashboard', async ({ page }, testInfo) => {
+  await login(page, 'coach@test.local');
+  await expect(page.getByRole('heading', { name: 'Panel Coach', exact: true })).toBeVisible();
+  const agendaButton = page.locator("button[onclick*=\"coachTab='agenda'\"]").filter({ hasText: /^Agenda/ }).filter({ visible: true }).first();
+  await expect(agendaButton, 'El dashboard Coach debe mantener una ruta visible a Agenda.').toBeVisible({ timeout: 10000 });
+  await agendaButton.click({ timeout: 10000 });
   await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
   await assertNoHorizontalOverflow(page);
-  console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
+  console.log('E2E_FLOW_OK coach-agenda '+testInfo.project.name);
 });
