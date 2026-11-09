@@ -271,7 +271,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   }
   await ok.click();
 
-  await page.getByRole('button', { name: /^Panel$/i }).first().click();
+  await page.getByRole('button', { name: /Alumnos/i }).filter({ visible: true }).first().click();
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true })).toHaveCount(0);
