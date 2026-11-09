@@ -165,6 +165,20 @@
     updateProgress();
     return true;
   }
+  function decorateSuccessModal(){
+    if(!hasDOM())return false;
+    const host=document.querySelector('#modal .v207-save-actions');
+    if(!host||host.querySelector('.v22-history-after-save'))return false;
+    const button=document.createElement('button');
+    button.className='btn v22-history-after-save';
+    button.textContent='Ver historial';
+    button.onclick=function(){
+      try{closeModal()}catch(_e){}
+      try{studentTab='history';currentDay=-1;render()}catch(_e){}
+    };
+    host.prepend(button);
+    return true;
+  }
   function commentDraft(uid){return commentDrafts.get(String(uid||''))||null}
   function bindCommentDraft(target){
     if(!hasDOM()||!target||!target.uid)return false;
@@ -230,6 +244,7 @@
   return Object.freeze({
     VERSION:VERSION,normalizeDecimal:normalizeDecimal,fieldContract:fieldContract,
     enhanceWorkout:enhanceWorkout,updateProgress:updateProgress,setSaveState:setSaveState,
+    decorateSuccessModal:decorateSuccessModal,
     markDraftChanged:markDraftChanged,draftProtected:draftProtected,commentDraft:commentDraft,
     bindCommentDraft:bindCommentDraft,beginCommentSubmit:beginCommentSubmit,
     endCommentSubmit:endCommentSubmit,clearCommentDraft:clearCommentDraft

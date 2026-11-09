@@ -104,10 +104,10 @@ def patch_v207(body):
         if count<1:
             raise RuntimeError("V22 2A V207 state anchor missing: "+repr(old))
         body=body.replace(old,new)
-    old="""        '<div class="v207-save-actions"><button class="btn primary" onclick="finishConfirmedSessionV207()">Listo</button></div>'+"""
-    new="""        '<div class="v207-save-actions"><button class="btn" onclick="closeModal();studentTab=\\'history\\';currentDay=-1;render()">Ver historial</button><button class="btn primary" onclick="finishConfirmedSessionV207()">Listo</button></div>'+"""
+    old="      modalSuccessV207();"
+    new="      modalSuccessV207();\n      try{globalThis.TeamFJZPremiumWorkout?.decorateSuccessModal()}catch(_e){}"
     if body.count(old)!=1:
-        raise RuntimeError("V22 2A V207 success actions anchor mismatch")
+        raise RuntimeError("V22 2A V207 success modal call anchor mismatch: "+str(body.count(old)))
     return body.replace(old,new,1)
 html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
@@ -184,7 +184,7 @@ for marker in [
     "TeamFJZPremiumWorkout?.bindCommentDraft",
     "beginCommentSubmit(t.uid,message,type)",
     "endCommentSubmit(t.uid,true)",
-    "Ver historial",
+    "decorateSuccessModal",
     "sessionSuccessRequiresDoubleVerification:true",
 ]:
     if marker not in html:
