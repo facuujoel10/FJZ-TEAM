@@ -154,7 +154,7 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
 
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
   await expect(page.getByText('PLAN QA A', { exact: true })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByRole('heading', { name: 'Calculadora de macros' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Calculadora de alimentos y comidas' })).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
   await page.getByRole('button', { name: 'Progreso' }).first().click();
@@ -262,7 +262,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   }
   await ok.click();
 
-  await page.getByRole('button', { name: /Panel/i }).first().click();
+  await page.getByRole('button', { name: /^Alumnos$/i }).first().click();
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true })).toHaveCount(0);
@@ -279,7 +279,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
   const planBefore = (await option.innerText()).replace(/\s+/g, ' ').trim();
 
   await option.getByRole('button', { name: /Registrar hoy/i }).click();
-  await expect(page.locator('#toast')).toContainText(/Opción registrada/i);
+  await expect(page.locator('#v264QuickSaved')).toContainText(/Opción registrada/i);
   const daily = page.locator('.nutrition-log');
   await expect(daily).toContainText('QA Arroz cocido');
   await expect(daily).toContainText('QA Proteína ficticia');
@@ -303,7 +303,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
   await select.selectOption(yogurtValue);
   await page.locator('#macroGrams').fill('180');
   await page.getByRole('button', { name: /Agregar al registro/i }).click();
-  await expect(page.locator('#toast')).toContainText(/Agregado al registro/i);
+  await expect(page.locator('#v264QuickSaved')).toContainText(/Registro guardado/i);
   await expect(page.locator('.nutrition-log')).toContainText('QA Yogur ficticio');
 
   await page.getByRole('button', { name: /Personalizado/i }).click();
@@ -338,7 +338,7 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   await login(page, 'coach@test.local');
 
   await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Panel' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Alumnos$/ }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Agenda' }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
@@ -349,14 +349,14 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   await expect(page.getByText('ATHLETE WORKSPACE · TEAM FJZ', { exact: true })).toBeVisible();
   const expectedTabs = ['Resumen', 'Rutina', 'Progreso', 'Historial', 'Seguimiento', 'Nutrición'];
   for (const tab of expectedTabs) {
-    const btn = page.locator('#coachStudentTabs').getByRole('button', { name: new RegExp('^' + tab) }).first();
+    const btn = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: new RegExp('^' + tab) }).first();
     await expect(btn, `Falta pestaña Coach ${tab}`).toBeVisible();
     await btn.click();
     await expect(page.locator('#coachStudentBody')).not.toBeEmpty();
     await assertNoHorizontalOverflow(page);
   }
 
-  const agendaTab = page.locator('#coachStudentTabs').getByRole('button', { name: /^Agenda/ }).first();
+  const agendaTab = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: /^Agenda/ }).first();
   if (await agendaTab.count()) {
     await agendaTab.click();
     await expect(page.locator('#coachStudentBody')).not.toBeEmpty();
@@ -364,12 +364,12 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
     testInfo.annotations.push({ type: 'schema-or-ui-gap', description: 'Agenda no figura como pestaña permanente del workspace del alumno.' });
   }
 
-  const paymentsTab = page.locator('#coachStudentTabs').getByRole('button', { name: /Pago|Cobranza/i }).first();
+  const paymentsTab = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: /Pago|Cobranza/i }).first();
   if (!(await paymentsTab.count())) {
     testInfo.annotations.push({ type: 'baseline-gap', description: 'No se detectó pestaña visible de pagos/cobranzas en el workspace actual.' });
   }
 
-  await page.getByRole('button', { name: 'Agenda' }).first().click();
+  await page.locator('button[onclick*="coachTab=\\'agenda\\'"]').filter({ hasText: /^Agenda/ }).first().click();
   await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
