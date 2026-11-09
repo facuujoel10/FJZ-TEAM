@@ -310,8 +310,22 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   await ok.click();
   console.log('E2E_COMMENT_STAGE ok-clicked '+testInfo.project.name);
 
+  await expect(
+    reviewContainer.getByText('Revisado', { exact: true }),
+    'El OK debe reflejarse en el comentario exacto sólo después de la confirmación durable.'
+  ).toBeVisible({ timeout: 15000 });
+  await expect(
+    reviewContainer.getByRole('button', { name: /OK|Marcar revisado/i }),
+    'El OK no debe quedar disponible después de una revisión confirmada.'
+  ).toHaveCount(0);
+  console.log('E2E_COMMENT_STAGE durable-review-visible '+testInfo.project.name);
+
   const modalAfterAck = page.locator('#modalWrap');
-  console.log('E2E_COMMENT_STAGE modal-after-ack '+testInfo.project.name+' '+await modalAfterAck.isVisible());
+  await expect(modalAfterAck).toBeVisible();
+  await page.locator('#modal').getByRole('button', { name: 'Cerrar' }).click();
+  await expect(modalAfterAck).toBeHidden();
+  console.log('E2E_COMMENT_STAGE modal-closed '+testInfo.project.name);
+
   await page.getByRole('button', { name: /Alumnos/i }).filter({ visible: true }).first().click();
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
