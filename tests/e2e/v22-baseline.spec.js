@@ -290,20 +290,28 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   }
 
   await openAction.click();
+  console.log('E2E_COMMENT_STAGE opened-session '+testInfo.project.name);
   await expect(page.getByText('Press QA', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+  console.log('E2E_COMMENT_STAGE exercise-visible '+testInfo.project.name);
 
   const commentAgain = page.getByText(comment, { exact: true }).first();
   await expect(commentAgain).toBeVisible();
+  console.log('E2E_COMMENT_STAGE comment-visible '+testInfo.project.name);
 
   const reviewContainer = commentAgain.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " v287-exercise-comment ")][1]');
   await expect(reviewContainer, 'El comentario abierto debe conservar su contenedor exacto de revisión.').toBeVisible();
+  console.log('E2E_COMMENT_STAGE exact-container-visible '+testInfo.project.name);
   const ok = reviewContainer.getByRole('button', { name: /OK|Marcar revisado/i }).first();
   if (!(await ok.count())) {
     throw new Error('No existe botón OK/revisado dentro del comentario exacto abierto.');
   }
   await expect(ok, 'El OK del comentario exacto debe ser visible antes de confirmar la revisión.').toBeVisible();
+  console.log('E2E_COMMENT_STAGE ok-visible '+testInfo.project.name);
   await ok.click();
+  console.log('E2E_COMMENT_STAGE ok-clicked '+testInfo.project.name);
 
+  const modalAfterAck = page.locator('#modalWrap');
+  console.log('E2E_COMMENT_STAGE modal-after-ack '+testInfo.project.name+' '+await modalAfterAck.isVisible());
   await page.getByRole('button', { name: /Alumnos/i }).filter({ visible: true }).first().click();
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
