@@ -128,6 +128,32 @@ def patch_v324(body):
 
 html=edit_script(html,"v324ReviewDashboardHydrationRuntime",patch_v324)
 
+# Guarantee the Coach fallback after every coalesced post-render batch. This
+# reuses the existing V125 RAF scheduler: no new timer, listener, observer or
+# render wrapper is introduced.
+def patch_v125(body):
+    old="""      for(const task of batch){
+        try{task()}catch(e){console.warn('TEAM FJZ post-render',e)}
+      }
+    });"""
+    new="""      for(const task of batch){
+        try{task()}catch(e){console.warn('TEAM FJZ post-render',e)}
+      }
+      try{
+        if(typeof mode!=='undefined'&&mode==='coach'&&typeof coachTab!=='undefined'&&coachTab==='dashboard'){
+          const commentsHost=document.getElementById('v325TrainingCommentsCenter');
+          if(!commentsHost||!commentsHost.querySelector('h3'))window.__fjzRenderTrainingCommentsV325?.();
+          if(Number(window.innerWidth||0)>=901&&!document.querySelector('.v342-coach-agenda'))window.__fjzEnsureCoachAgendaV342?.();
+        }
+      }catch(e){console.warn('TEAM FJZ V22 final Coach post-render',e)}
+      /* v342FinalCoachPostRender:true */
+    });"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 0C V125 post-render batch anchor mismatch: "+str(body.count(old)))
+    return body.replace(old,new,1)
+
+html=edit_script(html,"v125RenderSchedulerHead",patch_v125)
+
 # The certified browser diagnostics proved the visible Coach dashboard is still
 # rendered by V170. Finalize that active authority directly instead of relying
 # on V80 hydration hooks that are not part of this dashboard path.
@@ -136,6 +162,21 @@ v170_end=html.find("\n  const baseRenderCoachV170=window.renderCoach;",v170_star
 if v170_start<0 or v170_end<0 or v170_end<=v170_start:
     raise RuntimeError("V22 0C active V170 dashboard bounds missing")
 v170_block=html[v170_start:v170_end]
+
+v170_actions_anchor="""      '<div class="v170-coach-actions"><button class="btn" onclick="showTemplates()">Plantillas</button>'+"""
+v170_actions_repl="""      '<div class="v170-coach-actions"><button class="btn" onclick="showTemplates()">Plantillas</button>'+
+      '<button class="btn v342-coach-agenda" onclick="coachTab=\\'agenda\\';render()">Agenda</button>'+"""
+if v170_block.count(v170_actions_anchor)!=1:
+    raise RuntimeError("V22 0C active V170 actions anchor mismatch: "+str(v170_block.count(v170_actions_anchor)))
+v170_block=v170_block.replace(v170_actions_anchor,v170_actions_repl,1)
+
+v170_dashboard_anchor="""      '<div class="v170-dashboard"><div id="v96CoachAlerts" class="card v170-alert-card">'+"""
+v170_dashboard_repl="""      '<section class="card v325-training-comments-center" id="v325TrainingCommentsCenter"><div class="empty">Cargando comentarios…</div></section>'+
+      '<div class="v170-dashboard"><div id="v96CoachAlerts" class="card v170-alert-card">'+"""
+if v170_block.count(v170_dashboard_anchor)!=1:
+    raise RuntimeError("V22 0C active V170 comments host anchor mismatch: "+str(v170_block.count(v170_dashboard_anchor)))
+v170_block=v170_block.replace(v170_dashboard_anchor,v170_dashboard_repl,1)
+
 v170_anchor="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(el('v170AlertTotal'))el('v170AlertTotal').textContent='—'});
   }"""
 v170_repl="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(el('v170AlertTotal'))el('v170AlertTotal').textContent='—'});
@@ -145,6 +186,7 @@ v170_repl="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(
 if v170_block.count(v170_anchor)!=1:
     raise RuntimeError("V22 0C active V170 finalize anchor mismatch: "+str(v170_block.count(v170_anchor)))
 v170_block=v170_block.replace(v170_anchor,v170_repl,1)
+v170_block=v170_block.replace("  function renderCoachDashboardV170(){","  function renderCoachDashboardV170(){\n    /* v170DashboardStaticAuthorityV342:true */",1)
 html=html[:v170_start]+v170_block+html[v170_end:]
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
@@ -197,6 +239,9 @@ active_v170_block=html[active_v170_start:active_v170_end]
 for marker in [
     "window.__fjzRenderTrainingCommentsV325?.()",
     "window.__fjzEnsureCoachAgendaV342?.()",
+    "v170DashboardStaticAuthorityV342:true",
+    "v342-coach-agenda",
+    "v325TrainingCommentsCenter",
     ".v170-coach-actions",
 ]:
     if marker not in active_v170_block and marker!=".v170-coach-actions":
@@ -212,6 +257,8 @@ for marker in [
     "trainingCommentsHostIndependentV325:true",
     "desktopAgendaRuntimeAuthorityV342:true",
     "trainingCommentsUsesModeAuthorityV325:true",
+    "v342FinalCoachPostRender:true",
+    "v170DashboardStaticAuthorityV342:true",
     "__fjzEnsureCoachAgendaV342",
 ]:
     if marker not in html:
