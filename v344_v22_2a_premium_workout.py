@@ -100,9 +100,10 @@ def patch_v207(body):
       ("      stateV207='idle';\n      pendingV207=null;","      stateV207='idle';\n      try{globalThis.TeamFJZPremiumWorkout?.setSaveState('idle')}catch(_e){}\n      pendingV207=null;"),
     ]
     for old,new in pairs:
-        if body.count(old)!=1:
-            raise RuntimeError("V22 2A V207 state anchor mismatch: "+str(body.count(old)))
-        body=body.replace(old,new,1)
+        count=body.count(old)
+        if count<1:
+            raise RuntimeError("V22 2A V207 state anchor missing: "+repr(old))
+        body=body.replace(old,new)
     old="""        '<div class="v207-save-actions"><button class="btn primary" onclick="finishConfirmedSessionV207()">Listo</button></div>'+"""
     new="""        '<div class="v207-save-actions"><button class="btn" onclick="closeModal();studentTab=\\'history\\';currentDay=-1;render()">Ver historial</button><button class="btn primary" onclick="finishConfirmedSessionV207()">Listo</button></div>'+"""
     if body.count(old)!=1:
