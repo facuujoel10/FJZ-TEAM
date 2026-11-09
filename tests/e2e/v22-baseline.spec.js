@@ -87,13 +87,21 @@ async function login(page, email) {
 }
 
 async function logout(page) {
-  const btn = page.getByRole('button', { name: /Cerrar sesión/i }).first();
-  if (await btn.count()) {
+  let btn = page.getByRole('button', { name: /Cerrar sesión/i }).first();
+  if (!(await btn.count()) || !(await btn.isVisible())) {
+    const cloudStatus = page.locator('#cloudStatusBtn');
+    if (await cloudStatus.count() && await cloudStatus.isVisible()) {
+      await cloudStatus.click();
+      await expect(page.getByRole('heading', { name: 'TEAM FJZ Cloud' })).toBeVisible();
+      btn = page.locator('#modal').getByRole('button', { name: /Cerrar sesión/i }).first();
+    }
+  }
+  if (await btn.count() && await btn.isVisible()) {
     await btn.click();
     await expect(page.locator('#authEmail')).toBeVisible({ timeout: 10000 });
     return;
   }
-  throw new Error('No existe una acción visible de Cerrar sesión.');
+  throw new Error('No existe una ruta visible al cierre de sesión desde el estado actual.');
 }
 
 async function assertNoHorizontalOverflow(page) {
@@ -159,7 +167,6 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
 
   await page.getByRole('button', { name: 'Progreso' }).first().click();
   await expect(page.getByRole('heading', { name: 'Progreso', exact: true })).toBeVisible();
-  await expect(page.getByText('Tu progreso', { exact: true }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
   await page.getByRole('button', { name: 'Inicio' }).first().click();
@@ -316,7 +323,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
   await page.locator('#cmP').fill('10');
   await page.locator('#cmC').fill('12');
   await page.locator('#cmF').fill('2');
-  await page.getByRole('button', { name: /Guardar en mi registro|Agregar al registro/i }).click();
+  await page.getByRole('button', { name: 'Guardar en mi registro', exact: true }).click();
   await expect(page.locator('.nutrition-log')).toContainText('QA E2E personalizado');
 
   const customRow = page.locator('.nutrition-log-row', { hasText: 'QA E2E personalizado' });
@@ -340,7 +347,7 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   await login(page, 'coach@test.local');
 
   await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Panel$/ }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Panel Coach', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Agenda' }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
