@@ -369,7 +369,7 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
     testInfo.annotations.push({ type: 'baseline-gap', description: 'No se detectó pestaña visible de pagos/cobranzas en el workspace actual.' });
   }
 
-  await page.locator('button[onclick*="coachTab=\\'agenda\\'"]').filter({ hasText: /^Agenda/ }).first().click();
+  await page.locator("button[onclick*=\"coachTab='agenda'\"]").filter({ hasText: /^Agenda/ }).first().click();
   await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
