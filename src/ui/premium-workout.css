@@ -61,3 +61,9 @@
 }
 
 .v22-comment-close{display:block!important;margin:0 0 10px auto!important;min-height:40px!important;padding:8px 12px!important}
+
+#view.v22-premium-workout .v22-premium-set .v22-set-field .input{
+  height:48px!important;
+  min-height:48px!important;
+  max-height:none!important;
+}

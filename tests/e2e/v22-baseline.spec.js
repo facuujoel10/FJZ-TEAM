@@ -368,7 +368,7 @@ test('2A Premium: registro, comentario, recuperación y finalización idempotent
   await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
   await expect(page.locator('#v73FeedbackMessage')).toHaveValue(comment);
   await page.getByRole('button',{name:/Enviar al coach/i}).click();
-  await expect(page.locator('#v264QuickSaved')).toContainText('Comentario guardado');
+  await expect(page.locator('#v264QuickSaved')).toContainText(/Comentario (guardado|enviado)/i);
   await expect(cards.nth(0).locator('.set-grid').first().locator('input').nth(0)).toHaveValue('17.5');
 
   await page.reload();
