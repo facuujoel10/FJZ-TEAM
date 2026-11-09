@@ -89,16 +89,19 @@ def patch_v324(body):
     try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
   }"""
     new="""  function ensureCoachAgendaV342(){
-    if(!(mode==='coach'&&coachTab==='dashboard'))return null;
+    if(mode!=='coach'||!['dashboard','student'].includes(coachTab))return null;
     if(Number(window.innerWidth||0)<901)return null;
     const view=el('view');if(!view)return null;
     let button=view.querySelector('.v342-coach-agenda');
     if(button)return button;
-    let actions=view.querySelector('.v225-hero-actions,.v170-coach-actions,.hero .pill-row');
+    const studentWorkspace=coachTab==='student';
+    let actions=studentWorkspace
+      ?view.querySelector('.v175-coach-profile-actions,.v175-coach-profile-hero .pill-row,.hero .pill-row')
+      :view.querySelector('.v225-hero-actions,.v170-coach-actions,.hero .pill-row');
     if(!actions){
       const hero=view.querySelector('.hero');if(!hero)return null;
       actions=document.createElement('div');
-      actions.className='v225-hero-actions v342-runtime-actions';
+      actions.className=(studentWorkspace?'pill-row v175-coach-profile-actions ':'v225-hero-actions ')+'v342-runtime-actions';
       hero.appendChild(actions);
     }
     button=document.createElement('button');
@@ -140,10 +143,14 @@ def patch_v125(body):
         try{task()}catch(e){console.warn('TEAM FJZ post-render',e)}
       }
       try{
-        if(typeof mode!=='undefined'&&mode==='coach'&&typeof coachTab!=='undefined'&&coachTab==='dashboard'){
-          const commentsHost=document.getElementById('v325TrainingCommentsCenter');
-          if(!commentsHost||!commentsHost.querySelector('h3'))window.__fjzRenderTrainingCommentsV325?.();
-          if(Number(window.innerWidth||0)>=901&&!document.querySelector('.v342-coach-agenda'))window.__fjzEnsureCoachAgendaV342?.();
+        if(typeof mode!=='undefined'&&mode==='coach'&&typeof coachTab!=='undefined'){
+          if(coachTab==='dashboard'){
+            const commentsHost=document.getElementById('v325TrainingCommentsCenter');
+            if(!commentsHost||!commentsHost.querySelector('h3'))window.__fjzRenderTrainingCommentsV325?.();
+          }
+          if(['dashboard','student'].includes(coachTab)&&Number(window.innerWidth||0)>=901&&!document.querySelector('.v342-coach-agenda')){
+            window.__fjzEnsureCoachAgendaV342?.();
+          }
         }
       }catch(e){console.warn('TEAM FJZ V22 final Coach post-render',e)}
       /* v342FinalCoachPostRender:true */

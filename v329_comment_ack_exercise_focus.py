@@ -360,15 +360,19 @@ def patch_v244(body):
     return '<div class="v287-exercise-comments">'+
       rows.map(x=>{
         const focused=commentFocusMatchesV329(ss,r,x);
+        const pending=x?.status!=='reviewed';
+        const canAck=currentProfile?.role==='coach'&&pending;
         return '<div class="v287-exercise-comment '+(x.type==='discomfort'?'discomfort ':'')+(focused?'v329-comment-target':'')+'">'+
           '<div class="v287-exercise-comment-head">'+
             '<strong>'+feedbackTypeLabelV287(x.type)+'</strong>'+
-            (x.status==='reviewed'?'<span class="badge green">Revisado</span>':'<span class="badge amber">Pendiente</span>')+
+            (pending?'<span class="badge amber">Pendiente</span>':'<span class="badge green">Revisado</span>')+
           '</div>'+
           '<p>'+esc(x.message)+'</p>'+
+          (canAck?'<div class="v325-comment-actions v329-has-ok"><button class="btn small v329-comment-ok" onclick="window.__fjzAckTrainingCommentV329?.(\\''+esc(student()?.id||'')+'\\',\\''+esc(ss?.id||'')+'\\',\\'exercise\\',\\''+esc(x?.id||'')+'\\',\\''+esc(r?.exerciseUid||'')+'\\')">OK</button></div>':'')+
         '</div>';
       }).join('')+
     '</div>';
+    /* historyExerciseCommentOkV329:true */
   }
 
   function exerciseHtmlV244"""
@@ -480,6 +484,7 @@ required=[
     "exerciseCommentHtmlV287(comments,ss,r)",
     "exactExerciseCommentHighlightV329:true",
     "exactExerciseCommentAutoScrollV329:true",
+    "historyExerciseCommentOkV329:true",
     ".select('id,status')",
     "firstReviewCardsDisabledV327:true",
     "globalSaveIntegrity:true",
