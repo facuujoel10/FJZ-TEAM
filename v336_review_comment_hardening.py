@@ -186,6 +186,26 @@ def patch_v302(body):
         raise RuntimeError("V21.36 exercise snapshot helper anchor mismatch")
 
     helper=r"""
+  function reflectExerciseCommentAckUiV336(feedbackId){
+    const modal=document.getElementById('modal');
+    if(!modal)return false;
+    const fid=String(feedbackId||'');
+    const buttons=[...modal.querySelectorAll('.v329-comment-ok')];
+    const button=buttons.find(b=>fid&&(b.getAttribute('onclick')||'').includes(fid))
+      ||(buttons.length===1?buttons[0]:null);
+    const box=button?.closest?.('.v287-exercise-comment');
+    if(!box)return false;
+    const badge=box.querySelector('.badge');
+    if(badge){
+      badge.className='badge green';
+      badge.textContent='Revisado';
+    }
+    button.closest('.v325-comment-actions')?.remove();
+    box.classList.remove('v329-comment-target');
+    box.dataset.v336Reviewed='true';
+    return true;
+  }
+
   async function persistExerciseCommentAckSnapshotV336(s,ss,feedbackId,exerciseUid,reviewedAt){
     if(!(cloudEnabled&&supabaseClient))return true;
     const cloudRow=cloudAthletes?.get?.(String(s?.id||''));
@@ -298,7 +318,8 @@ def patch_v302(body):
 
         await persistExerciseCommentAckSnapshotV336(s,ss,fid,euid,reviewedAt);
 
-        row.status='reviewed';"""
+        row.status='reviewed';
+        try{reflectExerciseCommentAckUiV336(fid)}catch(_e){}"""
     if body.count(old_table)!=1:
         raise RuntimeError("V21.36 exercise durable OK anchor mismatch: "+str(body.count(old_table)))
     body=body.replace(old_table,new_table,1)
@@ -355,6 +376,7 @@ for marker in [
     "exerciseCommentAckReadbackV336:true",
     "exerciseCommentOkRequiresDurableSnapshotV336:true",
     "persistExerciseCommentAckSnapshotV336",
+    "reflectExerciseCommentAckUiV336",
     "sessionCommentAckSnapshotVerifiedV333:true",
     "trainingCommentsInboxPendingOnlyV330:true",
     "reviewCenterAthleteFirstV334:true",
