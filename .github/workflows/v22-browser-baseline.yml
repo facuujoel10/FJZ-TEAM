@@ -103,6 +103,12 @@ jobs:
         continue-on-error: true
         run: npx playwright test --project=mobile-390
 
+      - name: Premium responsive — mobile 360x800
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive"
+
+      - name: Premium responsive — mobile 430x932
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive"
+
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
         run: python scripts/dev_reset.py
@@ -112,6 +118,15 @@ jobs:
         if: always() && steps.mobile.outcome != 'skipped'
         continue-on-error: true
         run: npx playwright test --project=desktop-1440
+
+      - name: Upload Premium workout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-2a-premium-workout-screens
+          path: artifacts/2a
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Final isolation and QA gate
         if: always()

@@ -333,6 +333,161 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   console.log('E2E_FLOW_OK workout-comment-coach '+testInfo.project.name);
 });
 
+
+
+test('2A Premium: registro, comentario, recuperación y finalización idempotente', async ({ page }, testInfo) => {
+  const comment='2A '+testInfo.project.name+' · comentario premium';
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.getByRole('heading',{name:'Día QA A'})).toBeVisible();
+  await expect(page.locator('#view')).toHaveClass(/v22-premium-workout/);
+  await expect(page.locator('#v22WorkoutSaveState')).toContainText(/Entrenamiento en curso|Borrador protegido/);
+
+  const cards=page.locator('.session-card.v22-premium-exercise');
+  await expect(cards).toHaveCount(2);
+  const firstInputs=cards.nth(0).locator('.set-grid').first().locator('input');
+
+  await firstInputs.nth(0).fill('17.5');
+  await expect(firstInputs.nth(0)).toBeFocused();
+  await expect(firstInputs.nth(0)).toHaveValue('17.5');
+  await firstInputs.nth(1).fill('10');
+  await expect(firstInputs.nth(1)).toBeFocused();
+  await firstInputs.nth(2).fill('1.5');
+  await expect(firstInputs.nth(2)).toBeFocused();
+  await expect(firstInputs.nth(2)).toHaveValue('1.5');
+
+  await expect(cards.nth(0).locator('.v22-previous-load').first()).toBeVisible();
+  await expect(cards.nth(0).locator('.v22-recommendation').first()).toBeVisible();
+  await expect(page.locator('#v22WorkoutSaveState')).toContainText(/Borrador protegido|Cambios pendientes/);
+
+  await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
+  await expect(page.locator('#modal')).toHaveClass(/v22-comment-modal/);
+  await page.locator('#v73FeedbackMessage').fill(comment);
+  await page.locator('#modal').getByRole('button',{name:'✕'}).click();
+
+  await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
+  await expect(page.locator('#v73FeedbackMessage')).toHaveValue(comment);
+  await page.getByRole('button',{name:/Enviar al coach/i}).click();
+  await expect(page.locator('#v264QuickSaved')).toContainText('Comentario guardado');
+  await expect(cards.nth(0).locator('.set-grid').first().locator('input').nth(0)).toHaveValue('17.5');
+
+  await page.reload();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
+  const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
+  await expect(resume).toBeVisible({timeout:10000});
+  await resume.click();
+  await expect(page.locator('.session-card').first().locator('.set-grid').first().locator('input').nth(0)).toHaveValue('17.5');
+
+  const sets=page.locator('.set-grid');
+  const count=await sets.count();
+  for(let i=0;i<count;i++){
+    const inputs=sets.nth(i).locator('input');
+    if(i!==0){
+      await inputs.nth(0).fill(i<3?'25':'30');
+      await inputs.nth(1).fill('10');
+      await inputs.nth(2).fill('2');
+    }
+  }
+
+  const before=await page.evaluate(()=>student().sessions?.length||0);
+  await page.getByRole('button',{name:/Finalizar sesión/i}).click();
+  const sessionFeedback=page.getByRole('heading',{name:/¿Cómo salió la sesión\?/i});
+  if(await sessionFeedback.count()){
+    await expect(sessionFeedback).toBeVisible();
+    await page.getByRole('button',{name:/Todo bien · finalizar/i}).click();
+  }
+
+  await expect(page.locator('#modal')).toContainText(/Sesión guardada con éxito|Sesión guardada|Entrenamiento completado/i,{timeout:20000});
+  const saveState=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
+  expect(saveState?.state).toBe('success');
+  expect(saveState?.cloudConfirmed).toBeTruthy();
+
+  const after=await page.evaluate(()=>student().sessions?.length||0);
+  expect(after).toBe(before+1);
+
+  await page.evaluate(()=>finishWorkout());
+  const afterSecond=await page.evaluate(()=>student().sessions?.length||0);
+  expect(afterSecond).toBe(after);
+
+  const history=page.getByRole('button',{name:/Ver historial/i}).first();
+  await expect(history).toBeVisible();
+  await history.click();
+  await expect(page.getByText('Día QA A',{exact:false}).first()).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+
+  await page.screenshot({path:'artifacts/2a/premium-workout-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK premium-workout-2a '+testInfo.project.name);
+});
+
+test('2A Premium: fallo de red conserva sesión y reintenta sin duplicar', async ({ page }, testInfo) => {
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.getByRole('heading',{name:'Día QA A'})).toBeVisible();
+
+  const sets=page.locator('.set-grid');
+  const count=await sets.count();
+  for(let i=0;i<count;i++){
+    const inputs=sets.nth(i).locator('input');
+    await inputs.nth(0).fill(i<3?'22.5':'27.5');
+    await inputs.nth(1).fill('9');
+    await inputs.nth(2).fill('2');
+  }
+
+  const before=await page.evaluate(()=>student().sessions?.length||0);
+  let failedOnce=false;
+  await page.route('**/rest/v1/rpc/commit_workout_session_v202',async route=>{
+    if(!failedOnce){
+      failedOnce=true;
+      await route.abort('failed');
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.getByRole('button',{name:/Finalizar sesión/i}).click();
+  const sessionFeedback=page.getByRole('heading',{name:/¿Cómo salió la sesión\?/i});
+  if(await sessionFeedback.count()){
+    await page.getByRole('button',{name:/Todo bien · finalizar/i}).click();
+  }
+
+  await expect(page.locator('#modal')).toContainText(/No se pudo confirmar el guardado/i,{timeout:20000});
+  const failed=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
+  expect(failed?.state).toBe('failed');
+  expect(failed?.cloudConfirmed).toBeFalsy();
+
+  const pendingCount=await page.evaluate(()=>student().sessions?.length||0);
+  expect(pendingCount).toBe(before+1);
+  const pendingId=failed.sessionId;
+
+  await page.unroute('**/rest/v1/rpc/commit_workout_session_v202');
+  await page.getByRole('button',{name:/Reintentar/i}).click();
+  await expect(page.locator('#modal')).toContainText(/Sesión guardada con éxito/i,{timeout:20000});
+
+  const success=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
+  expect(success?.state).toBe('success');
+  expect(success?.cloudConfirmed).toBeTruthy();
+  expect(success?.sessionId).toBe(pendingId);
+  expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(pendingCount);
+
+  console.log('E2E_FLOW_OK premium-workout-retry-2a '+testInfo.project.name);
+});
+
+test('2A Premium responsive: controles táctiles sin overflow', async ({ page }, testInfo) => {
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.locator('#view')).toHaveClass(/v22-premium-workout/);
+  await assertNoHorizontalOverflow(page);
+
+  const input=page.locator('.v22-premium-set input').first();
+  const finish=page.getByRole('button',{name:/Finalizar sesión/i}).first();
+  const [ibox,bbox]=await Promise.all([input.boundingBox(),finish.boundingBox()]);
+  expect(ibox?.height||0).toBeGreaterThanOrEqual(44);
+  expect(bbox?.height||0).toBeGreaterThanOrEqual(44);
+
+  await page.screenshot({path:'artifacts/2a/responsive-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK premium-responsive-2a '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
