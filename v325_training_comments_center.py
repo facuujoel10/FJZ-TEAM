@@ -107,12 +107,26 @@ def patch_v302(body):
     if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return null;
     let host=el('v325TrainingCommentsCenter');
     if(host)return host;
-    const review=el('v252PriorityCenter');
-    if(!review)return null;
+    const view=el('view');if(!view)return null;
     host=document.createElement('section');
     host.id='v325TrainingCommentsCenter';
     host.className='card v325-training-comments-center';
-    review.insertAdjacentElement('afterend',host);
+    const review=el('v252PriorityCenter');
+    if(review?.parentNode){
+      review.insertAdjacentElement('afterend',host);
+      return host;
+    }
+    const grid=view.querySelector('.v225-dashboard-grid,.v80-dashboard-grid,.grid.two');
+    if(grid?.parentNode){
+      grid.insertAdjacentElement('beforebegin',host);
+      return host;
+    }
+    const hero=view.querySelector('.hero');
+    if(hero){
+      hero.insertAdjacentElement('afterend',host);
+      return host;
+    }
+    view.prepend(host);
     return host;
   }
 
@@ -183,7 +197,8 @@ def patch_v302(body):
     trainingCommentsCenterV325:true,
     trainingCommentsPendingFirstV325:true,
     trainingCommentsUsesSessionSnapshotV325:true,
-    trainingCommentsGlobalRendererV325:true,""",1)
+    trainingCommentsGlobalRendererV325:true,
+    trainingCommentsHostIndependentV325:true,""",1)
     return body
 
 html=edit_script(html,"v302ReviewResolutionAuthorityRuntime",patch_v302)

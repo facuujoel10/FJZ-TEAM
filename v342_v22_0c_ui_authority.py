@@ -16,6 +16,22 @@ def metrics(doc):
         "performance_observers":len(re.findall(r"new\s+PerformanceObserver",doc)),
     }
 
+def edit_script(doc,script_id,transform):
+    mid=-1
+    for marker in ('id="'+script_id+'"',"id='"+script_id+"'"):
+        mid=doc.find(marker)
+        if mid>=0: break
+    if mid<0:
+        raise RuntimeError("V22 0C missing script "+script_id)
+    a=doc.find(">",mid); b=doc.find("</script>",a)
+    if a<0 or b<0:
+        raise RuntimeError("V22 0C malformed script "+script_id)
+    old=doc[a+1:b]
+    new=transform(old)
+    if new==old:
+        raise RuntimeError("V22 0C no changes in "+script_id)
+    return doc[:a+1]+new+doc[b:]
+
 before=metrics(html)
 
 for marker in [
@@ -24,6 +40,7 @@ for marker in [
     "function renderCoachDashboardV80()",
     "trainingCommentsGlobalRendererV325:true",
     "trainingCommentsAfterHydrationV325:true",
+    "trainingCommentsHostIndependentV325:true",
     "reviewCenterRepaintsTrainingCommentsV339:true",
 ]:
     if marker not in html:
@@ -52,7 +69,64 @@ else:
     actions=agenda+actions
 new_hero=m.group(1)+actions+m.group(3)
 block=block[:m.start()]+new_hero+block[m.end():]
+
+if 'id="v325TrainingCommentsCenter"' not in block:
+    grid_anchor='  <div class="grid v225-dashboard-grid">'
+    if block.count(grid_anchor)!=1:
+        raise RuntimeError("V22 0C dashboard comments host anchor mismatch: "+str(block.count(grid_anchor)))
+    comments_host='  <section class="card v325-training-comments-center" id="v325TrainingCommentsCenter"><div class="empty">Cargando comentarios…</div></section>\n\n'+grid_anchor
+    block=block.replace(grid_anchor,comments_host,1)
+
 html=html[:start]+block+html[end:]
+
+# Runtime guarantee: later dashboard wrappers may rebuild the DOM after the
+# canonical source rendered. Reuse V324's existing hydration repaint instead
+# of adding timers/listeners/observers or another render wrapper.
+def patch_v324(body):
+    old="""  function repaintReviewsV324(){
+    try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
+    try{window.renderCoachFocusV235?.()}catch(_e){}
+    try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
+  }"""
+    new="""  function ensureCoachAgendaV342(){
+    if(!(currentProfile?.role==='coach'&&coachTab==='dashboard'))return null;
+    if(Number(window.innerWidth||0)<901)return null;
+    const view=el('view');if(!view)return null;
+    let button=view.querySelector('.v342-coach-agenda');
+    if(button)return button;
+    let actions=view.querySelector('.v225-hero-actions,.hero .pill-row');
+    if(!actions){
+      const hero=view.querySelector('.hero');if(!hero)return null;
+      actions=document.createElement('div');
+      actions.className='v225-hero-actions v342-runtime-actions';
+      hero.appendChild(actions);
+    }
+    button=document.createElement('button');
+    button.type='button';
+    button.className='btn v342-coach-agenda';
+    button.textContent='Agenda';
+    button.setAttribute('onclick',"coachTab='agenda';render()");
+    actions.appendChild(button);
+    return button;
+  }
+  window.__fjzEnsureCoachAgendaV342=ensureCoachAgendaV342;
+
+  function repaintReviewsV324(){
+    try{window.renderCoachPriorityCenterV252?.()}catch(_e){}
+    try{window.renderCoachFocusV235?.()}catch(_e){}
+    try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
+    try{ensureCoachAgendaV342()}catch(_e){}
+  }"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 0C V324 runtime dashboard anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+    marker="""    trainingCommentsAfterHydrationV325:true,"""
+    if body.count(marker)!=1:
+        raise RuntimeError("V22 0C V324 marker anchor mismatch: "+str(body.count(marker)))
+    body=body.replace(marker,marker+"""\n    desktopAgendaRuntimeAuthorityV342:true,""",1)
+    return body
+
+html=edit_script(html,"v324ReviewDashboardHydrationRuntime",patch_v324)
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
 if len(styles)!=1:
@@ -65,11 +139,19 @@ css=r"""
     visibility:visible!important;
     opacity:1!important;
   }
-  .v225-coach-hero .v225-hero-actions .v342-coach-agenda{
+  .v225-coach-hero .v225-hero-actions .v342-coach-agenda,
+  #view .v342-coach-agenda{
     display:inline-flex!important;
     visibility:visible!important;
     opacity:1!important;
     pointer-events:auto!important;
+  }
+  #view .v342-runtime-actions{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    gap:8px;
+    flex-wrap:wrap;
   }
 }
 """
@@ -94,6 +176,9 @@ for marker in [
     'class="btn v342-coach-agenda"',
     "reviewCenterRepaintsTrainingCommentsV339:true",
     "trainingCommentsAfterHydrationV325:true",
+    "trainingCommentsHostIndependentV325:true",
+    "desktopAgendaRuntimeAuthorityV342:true",
+    "__fjzEnsureCoachAgendaV342",
 ]:
     if marker not in html:
         raise RuntimeError("V22 0C final UI marker missing "+marker)
