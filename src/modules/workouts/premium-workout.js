@@ -158,7 +158,7 @@
     const finish=view&&view.querySelector('button[onclick*="finishWorkout"]');
     if(finish){
       finish.classList.add('v22-finish-workout');
-      finish.setAttribute('aria-label','Finalizar entrenamiento y guardar sesión');
+      finish.setAttribute('aria-label','Finalizar sesión y guardar entrenamiento');
     }
     Array.from(view.querySelectorAll('.session-card')).forEach(decorateCard);
     renderSaveState();
@@ -205,7 +205,19 @@
       };
     });
     const modal=document.getElementById('modal');
-    if(modal)modal.classList.add('v22-comment-modal');
+    if(modal){
+      modal.classList.add('v22-comment-modal');
+      if(!modal.querySelector('#v22CommentClose')){
+        const close=document.createElement('button');
+        close.id='v22CommentClose';
+        close.type='button';
+        close.className='btn ghost small v22-comment-close';
+        close.textContent='Cerrar';
+        close.setAttribute('aria-label','Cerrar comentario');
+        close.onclick=function(){try{closeModal()}catch(_e){}};
+        modal.prepend(close);
+      }
+    }
     return true;
   }
   function beginCommentSubmit(uid,message,type){

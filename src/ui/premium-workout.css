@@ -59,3 +59,5 @@
   .v22-premium-set{grid-template-columns:52px repeat(3,minmax(150px,220px));justify-content:start}
   .v22-workout-save-state{max-width:680px}
 }
+
+.v22-comment-close{display:block!important;margin:0 0 10px auto!important;min-height:40px!important;padding:8px 12px!important}

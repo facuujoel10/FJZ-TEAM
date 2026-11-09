@@ -363,7 +363,7 @@ test('2A Premium: registro, comentario, recuperación y finalización idempotent
   await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
   await expect(page.locator('#modal')).toHaveClass(/v22-comment-modal/);
   await page.locator('#v73FeedbackMessage').fill(comment);
-  await page.locator('#modal').getByRole('button',{name:'✕'}).click();
+  await page.getByRole('button',{name:'Cerrar comentario'}).click();
 
   await cards.nth(0).getByRole('button',{name:/Comentario/i}).click();
   await expect(page.locator('#v73FeedbackMessage')).toHaveValue(comment);
