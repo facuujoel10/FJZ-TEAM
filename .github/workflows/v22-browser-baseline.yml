@@ -66,8 +66,8 @@ jobs:
           npm install --no-save --ignore-scripts @playwright/test@1.65.0
           npx playwright install --with-deps chromium
 
-      - name: V22 1A/1B canonical module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-save-sync.test.js
+      - name: V22 1A/1B/1C canonical module unit + contract tests
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-save-sync.test.js
 
       - name: Create local stack and build development app
         run: |
@@ -75,7 +75,7 @@ jobs:
           python scripts/dev_build.py
           python scripts/dev_guard.py --artifact
 
-      - name: V22 1B architecture inventory guard
+      - name: V22 1C architecture inventory guard
         run: python scripts/v22_architecture_inventory.py --check
 
       - name: Audit generated JavaScript syntax
@@ -130,3 +130,7 @@ jobs:
           test "$MOBILE_OUTCOME" = "success"
           test "$DESKTOP_OUTCOME" = "success"
           test "$SYNTAX_OUTCOME" = "success"
+
+      - name: Project-scoped local Supabase shutdown
+        if: always()
+        run: python scripts/dev_stop_local.py

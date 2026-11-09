@@ -23,6 +23,7 @@ if artifact.exists():
         "mutation_observers":len(re.findall(r"new\s+MutationObserver",html)),
         "date_core":'id="v22CanonicalDateCore"' in html,
         "date_pilot":'globalThis.TeamFJZDate.calendarDate' in html,
+        "read_errors":'id="v22ReadErrorsCore"' in html,
         "agenda_repository":'id="v22AgendaRepositoryCore"' in html,
         "agenda_read_policy":'id="v22AgendaReadPolicyCore"' in html,
         "agenda_repository_integration":"TeamFJZAgendaReadPolicy.readAgendaWithCompatibility" in html,
@@ -36,7 +37,9 @@ result={
     "date_core":(ROOT/"src/core/date.js").exists(),
     "save_contract":(ROOT/"src/core/save-contract.js").exists(),
     "repository_contracts":(ROOT/"src/data/repository-contracts.js").exists(),
+    "read_errors":(ROOT/"src/data/read-errors.js").exists(),
     "agenda_repository":(ROOT/"src/data/agenda-repository.js").exists(),
+    "comment_repository":(ROOT/"src/data/comment-repository.js").exists(),
     "agenda_read_policy":(ROOT/"src/data/agenda-read-policy.js").exists()
  }
 }
@@ -48,11 +51,11 @@ if __name__=="__main__":
         if patches.index(required[1])<=patches.index(required[0]): raise SystemExit("V22 1A must execute after 0C authority")
         if not all(result["contracts"].values()): raise SystemExit("V22 1A canonical contracts missing")
         if not runtime.get("date_core") or not runtime.get("date_pilot"): raise SystemExit("V22 1A generated date pilot missing")
-        for key in ("agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot"):
+        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot"):
             if not runtime.get(key): raise SystemExit("V22 1B runtime marker missing: "+key)
         expected={"render_assignments":18,"channels":2,"timeouts":56,"intervals":0,"listeners":51,"mutation_observers":3}
         actual={k:runtime.get(k) for k in expected}
-        if actual!=expected: raise SystemExit("V22 1B topology regression: "+repr({"expected":expected,"actual":actual}))
-        if len(patches)!=228: raise SystemExit("V22 1B must not add another Python patch; count="+str(len(patches)))
-    print("TEAM FJZ V22 1B ARCHITECTURE INVENTORY")
+        if actual!=expected: raise SystemExit("V22 1C topology regression: "+repr({"expected":expected,"actual":actual}))
+        if len(patches)!=228: raise SystemExit("V22 1C must not add another Python patch; count="+str(len(patches)))
+    print("TEAM FJZ V22 1C ARCHITECTURE INVENTORY")
     print(json.dumps(result,indent=2,ensure_ascii=False))

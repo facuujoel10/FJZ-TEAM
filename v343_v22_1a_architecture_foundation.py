@@ -33,6 +33,7 @@ for marker in [
 
 modules=[
     ("v22CanonicalDateCore","src/core/date.js"),
+    ("v22ReadErrorsCore","src/data/read-errors.js"),
     ("v22AgendaRepositoryCore","src/data/agenda-repository.js"),
     ("v22AgendaReadPolicyCore","src/data/agenda-read-policy.js"),
 ]
@@ -140,6 +141,7 @@ if after!=before:
 
 for marker in [
     'id="v22CanonicalDateCore"',
+    'id="v22ReadErrorsCore"',
     'id="v22AgendaRepositoryCore"',
     'id="v22AgendaReadPolicyCore"',
     'meta name="fjz-v22-1a-architecture-foundation" content="date-pilot"',

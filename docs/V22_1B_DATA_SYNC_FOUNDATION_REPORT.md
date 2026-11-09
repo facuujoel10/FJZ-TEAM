@@ -15,11 +15,11 @@ Antes de implementar 1B se actualizó únicamente la evidencia final de 1A:
 
 `2f2a273887638683d01652ae3c904dc4f2317573`
 
-Commit final de implementación 1B certificado antes de este informe:
+Commit final certificado de 1B:
 
-`0de7ce78b6d0615a80bf6e646857e288ae0f6467`
+`b100ca9203abfbddabb9ca18b4d7d9ee00521163`
 
-El commit que contiene este informe es el cierre documental de 1B y debe volver a superar los mismos workflows antes de considerar la etapa formalmente cerrada.
+El cierre documental y los dos workflows finales fueron certificados sobre ese mismo SHA.
 
 ## 2. Estado de producción
 
@@ -313,12 +313,12 @@ Evidencia del segundo smoke:
 
 ## 13. GitHub Actions
 
-Implementación 1B certificada sobre el mismo SHA `0de7ce78b6d0615a80bf6e646857e288ae0f6467`:
+Cierre 1B certificado sobre el mismo SHA `b100ca9203abfbddabb9ca18b4d7d9ee00521163`:
 
-- Integración local: https://github.com/facuujoel10/FJZ-TEAM/actions/runs/42621466408
-- Browser E2E: https://github.com/facuujoel10/FJZ-TEAM/actions/runs/42621466469
+- Integración local: https://github.com/facuujoel10/FJZ-TEAM/actions/runs/42622258794
+- Browser E2E: https://github.com/facuujoel10/FJZ-TEAM/actions/runs/42622258858
 
-El commit documental que contiene este informe debe generar y superar su propia pareja de workflows antes del cierre formal.
+Ambas ejecuciones finalizaron SUCCESS.
 
 ## 14. Fallos y limitaciones pendientes
 

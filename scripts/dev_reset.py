@@ -46,7 +46,7 @@ def main():
             stale=[]
             for row in rows:
                 name,_,ports=row.partition("|")
-                if name.startswith("supabase_") and any((":"+p+"->" in ports or "0.0.0.0:"+p+"->" in ports or "[::]:"+p+"->" in ports) for p in ("54321","54322","54323","54324","54325","54326","54327","54328","54329")):
+                if name.startswith("supabase_") and "team-fjz-v22-local" in name and any((":"+p+"->" in ports or "0.0.0.0:"+p+"->" in ports or "[::]:"+p+"->" in ports) for p in ("54321","54322","54323","54324","54325","54326","54327","54328","54329")):
                     stale.append(name)
             if stale:
                 subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
@@ -77,11 +77,14 @@ def main():
                     [docker,"ps","-a","--format","{{.Names}}"],
                     env=env,text=True,capture_output=True,check=False
                 ).stdout.splitlines()
-                stale=[n.strip() for n in rows if n.strip().startswith("supabase_")]
+                stale=[n.strip() for n in rows if n.strip().startswith("supabase_") and "team-fjz-v22-local" in n.strip()]
                 if stale:
                     subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
             time.sleep(0.5)
-        raise RuntimeError("Local Supabase ports still busy after cleanup: "+",".join(map(str,local_ports_busy())))
+        busy=local_ports_busy()
+        rows=subprocess.run([docker,"ps","--format","{{.Names}}|{{.Ports}}"],env=env,text=True,capture_output=True,check=False).stdout.splitlines()
+        owners=[row for row in rows if any((":"+str(p)+"->" in row or "0.0.0.0:"+str(p)+"->" in row or "[::]:"+str(p)+"->" in row) for p in busy)]
+        raise RuntimeError("Local Supabase ports still busy after project-scoped cleanup: "+",".join(map(str,busy))+" owners="+repr(owners))
 
     def local_stack_running():
         # A second reset in the same CI job should recreate only the database,

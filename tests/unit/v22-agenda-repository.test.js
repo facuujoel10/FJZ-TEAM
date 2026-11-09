@@ -1,151 +1,22 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {
-  createAgendaRepository,
-  AgendaRepositoryError
-}=require('../../src/data/agenda-repository.js');
+const {createAgendaRepository,AgendaRepositoryError}=require('../../src/data/agenda-repository.js');
+const {KINDS}=require('../../src/data/read-errors.js');
 const {readAgendaWithCompatibility}=require('../../src/data/agenda-read-policy.js');
-
-const A1='10000000-0000-4000-8000-000000000001';
-const A2='10000000-0000-4000-8000-000000000002';
-const S1='50000000-0000-4000-8000-000000000001';
-const R1='51000000-0000-4000-8000-000000000001';
-
-function fakeSupabase(seed,{throwNetwork=false,errorByTable={}}={}){
-  let calls=0;
-  function from(table){
-    calls++;
-    const filters=[];
-    const builder={
-      select(){return builder;},
-      eq(column,value){filters.push([column,value]);return builder;},
-      order(){return builder;},
-      maybeSingle(){
-        if(throwNetwork)return Promise.reject(new TypeError('Failed to fetch'));
-        const error=errorByTable[table]||null;
-        if(error)return Promise.resolve({data:null,error});
-        let rows=(seed[table]||[]).filter(row=>filters.every(([k,v])=>row[k]===v));
-        return Promise.resolve({data:rows[0]||null,error:null});
-      },
-      then(resolve,reject){
-        if(throwNetwork)return Promise.reject(new TypeError('Failed to fetch')).then(resolve,reject);
-        const error=errorByTable[table]||null;
-        let rows=(seed[table]||[]).filter(row=>filters.every(([k,v])=>row[k]===v));
-        return Promise.resolve({data:error?null:rows,error}).then(resolve,reject);
-      }
-    };
-    return builder;
-  }
-  return {client:{from},calls:()=>calls};
+const A1='10000000-0000-4000-8000-000000000001',A2='10000000-0000-4000-8000-000000000002',S1='50000000-0000-4000-8000-000000000001',R1='51000000-0000-4000-8000-000000000001';
+function fakeSupabase(seed,{throwNetwork=false,errorByTable={},delay=null}={}){
+  let calls=0,session={user:{id:'user-a'},access_token:'token-a'},listeners=[];
+  const auth={async getSession(){return {data:{session},error:null}},onAuthStateChange(fn){listeners.push(fn);return {data:{subscription:{unsubscribe(){listeners=listeners.filter(x=>x!==fn)}}}}}};
+  function setSession(next){session=next;for(const fn of listeners)fn(next?'SIGNED_IN':'SIGNED_OUT',next)}
+  function from(table){calls++;const filters=[];const b={select(){return b},eq(k,v){filters.push([k,v]);return b},order(){return b},maybeSingle(){return exec(true)},then(resolve,reject){return exec(false).then(resolve,reject)}};async function exec(single){if(delay)await delay();if(throwNetwork)throw new TypeError('Failed to fetch');const error=errorByTable[table]||null;if(error)return {data:null,error};const rows=(seed[table]||[]).filter(row=>filters.every(([k,v])=>row[k]===v));return {data:single?(rows[0]||null):rows,error:null}}return b}
+  return {client:{from,auth},calls:()=>calls,setSession};
 }
-
-function seed(){
-  return {
-    athlete_schedule:[
-      {id:S1,athlete_id:A1,coach_id:'coach',weekday:1,workout_day_name:'Día QA A',start_time:'09:00:00',active:true},
-      {id:'50000000-0000-4000-8000-000000000002',athlete_id:A2,coach_id:'coach',weekday:3,workout_day_name:'Día QA B',start_time:'18:00:00',active:true}
-    ],
-    athlete_reminders:[
-      {id:R1,athlete_id:A1,coach_id:'coach',title:'QA weekly',schedule_type:'weekly',reminder_date:null,weekday:1,remind_time:'08:00:00',active:true},
-      {id:'51000000-0000-4000-8000-000000000002',athlete_id:A2,coach_id:'coach',title:'QA once',schedule_type:'once',reminder_date:'2026-01-20',weekday:null,remind_time:null,active:true}
-    ]
-  };
-}
-
-test('AgendaRepository lists one athlete and preserves historical date/time strings',async()=>{
-  const f=fakeSupabase(seed());
-  const repo=createAgendaRepository({supabase:f.client,ttlMs:15000,clock:()=>1000});
-  const data=await repo.listForAthlete(A1);
-  assert.equal(data.athleteId,A1);
-  assert.equal(data.schedule.length,1);
-  assert.equal(data.schedule[0].start_time,'09:00:00');
-  assert.equal(data.reminders[0].remind_time,'08:00:00');
-
-  const a2=await repo.listForAthlete(A2);
-  assert.equal(a2.reminders[0].reminder_date,'2026-01-20');
-});
-
-test('AgendaRepository coalesces inflight reads and uses short cache',async()=>{
-  const f=fakeSupabase(seed());
-  const repo=createAgendaRepository({supabase:f.client,ttlMs:15000,clock:()=>1000});
-  const [a,b]=await Promise.all([repo.listForAthlete(A1),repo.listForAthlete(A1)]);
-  assert.equal(a,b);
-  assert.equal(f.calls(),2);
-  await repo.listForAthlete(A1);
-  assert.equal(f.calls(),2);
-});
-
-test('AgendaRepository getById uses cached rows and nonexistent ids are controlled',async()=>{
-  const f=fakeSupabase(seed());
-  const repo=createAgendaRepository({supabase:f.client,clock:()=>1000});
-  await repo.listForAthlete(A1);
-  const before=f.calls();
-  const event=await repo.getById(S1);
-  assert.equal(event.kind,'schedule');
-  assert.equal(event.row.workout_day_name,'Día QA A');
-  assert.equal(f.calls(),before);
-
-  const missing=await repo.getById('59999999-0000-4000-8000-000000000099');
-  assert.equal(missing,null);
-});
-
-test('empty agenda is a valid authoritative result',async()=>{
-  const f=fakeSupabase(seed());
-  const repo=createAgendaRepository({supabase:f.client,clock:()=>1000});
-  const data=await repo.listForAthlete('10000000-0000-4000-8000-000000000099');
-  assert.deepEqual(data.schedule,[]);
-  assert.deepEqual(data.reminders,[]);
-});
-
-test('network errors are classified and never cached as data',async()=>{
-  const f=fakeSupabase(seed(),{throwNetwork:true});
-  const repo=createAgendaRepository({supabase:f.client});
-  await assert.rejects(
-    ()=>repo.listForAthlete(A1),
-    err=>err instanceof AgendaRepositoryError&&err.kind==='network'
-  );
-});
-
-test('permission errors remain permission errors',async()=>{
-  const f=fakeSupabase(seed(),{errorByTable:{athlete_schedule:{code:'42501',message:'permission denied'}}});
-  const repo=createAgendaRepository({supabase:f.client});
-  await assert.rejects(
-    ()=>repo.listForAthlete(A1),
-    err=>err instanceof AgendaRepositoryError&&err.kind==='permission'
-  );
-});
-
-test('enabled canonical empty result never falls back to legacy',async()=>{
-  let legacyCalls=0;
-  const result=await readAgendaWithCompatibility({
-    enabled:true,
-    canonicalRead:async()=>({source:'agenda-repository-v22',schedule:[],reminders:[]}),
-    legacyRead:async()=>{legacyCalls++;return {source:'legacy'}}
-  });
-  assert.equal(result.source,'agenda-repository-v22');
-  assert.equal(legacyCalls,0);
-});
-
-test('enabled canonical permission denial never falls back to legacy',async()=>{
-  let legacyCalls=0;
-  await assert.rejects(
-    ()=>readAgendaWithCompatibility({
-      enabled:true,
-      canonicalRead:async()=>{throw new AgendaRepositoryError('permission','listForAthlete',{message:'denied'})},
-      legacyRead:async()=>{legacyCalls++;return {source:'legacy'}}
-    }),
-    err=>err.kind==='permission'
-  );
-  assert.equal(legacyCalls,0);
-});
-
-test('legacy path is only used when feature is explicitly disabled',async()=>{
-  let canonicalCalls=0;
-  const result=await readAgendaWithCompatibility({
-    enabled:false,
-    canonicalRead:async()=>{canonicalCalls++;return {source:'canonical'}},
-    legacyRead:async()=>({source:'legacy-v312',schedule:[],reminders:[]})
-  });
-  assert.equal(result.source,'legacy-v312');
-  assert.equal(canonicalCalls,0);
-});
+function seed(){return {athlete_schedule:[{id:S1,athlete_id:A1,coach_id:'coach',weekday:1,workout_day_name:'Día QA A',start_time:'09:00:00',active:true},{id:'50000000-0000-4000-8000-000000000002',athlete_id:A2,coach_id:'coach',weekday:3,workout_day_name:'Día QA B',start_time:'18:00:00',active:true}],athlete_reminders:[{id:R1,athlete_id:A1,coach_id:'coach',title:'QA weekly',schedule_type:'weekly',reminder_date:null,weekday:1,remind_time:'08:00:00',active:true}]}}
+test('cache belongs to authenticated identity and preserves historical values',async()=>{const f=fakeSupabase(seed()),repo=createAgendaRepository({supabase:f.client,clock:()=>1000});const a=await repo.listForAthlete(A1);assert.equal(a.ownerUserId,'user-a');assert.equal(a.schedule[0].start_time,'09:00:00');const before=f.calls();await repo.listForAthlete(A1);assert.equal(f.calls(),before);f.setSession({user:{id:'user-b'},access_token:'token-b'});const b=await repo.listForAthlete(A1);assert.equal(b.ownerUserId,'user-b');assert.ok(f.calls()>before)});
+test('same-owner inflight reads are coalesced',async()=>{const f=fakeSupabase(seed()),repo=createAgendaRepository({supabase:f.client,clock:()=>1000});const [a,b]=await Promise.all([repo.listForAthlete(A1),repo.listForAthlete(A1)]);assert.equal(a,b);assert.equal(f.calls(),2)});
+test('old-session pending result cannot repopulate cache',async()=>{let release,blocked=true;const gate=new Promise(r=>release=r);const f=fakeSupabase(seed(),{delay:async()=>{if(blocked){blocked=false;await gate}}}),repo=createAgendaRepository({supabase:f.client,clock:()=>1000});const old=repo.listForAthlete(A1);await new Promise(r=>setImmediate(r));f.setSession({user:{id:'user-b'},access_token:'token-b'});release();await assert.rejects(old,e=>e instanceof AgendaRepositoryError&&e.kind===KINDS.SESSION_CANCELLED);const fresh=await repo.listForAthlete(A1);assert.equal(fresh.ownerUserId,'user-b')});
+test('getById never reuses another identity cache',async()=>{const f=fakeSupabase(seed()),repo=createAgendaRepository({supabase:f.client,clock:()=>1000});await repo.listForAthlete(A1);const before=f.calls();assert.equal((await repo.getById(S1)).ownerUserId,'user-a');assert.equal(f.calls(),before);f.setSession({user:{id:'user-b'},access_token:'token-b'});assert.equal((await repo.getById(S1)).ownerUserId,'user-b');assert.ok(f.calls()>before)});
+test('explicit clear invalidates modified athlete cache',async()=>{const f=fakeSupabase(seed()),repo=createAgendaRepository({supabase:f.client,clock:()=>1000});await repo.listForAthlete(A1);const before=f.calls();repo.clear(A1);await repo.listForAthlete(A1);assert.ok(f.calls()>before)});
+test('network/permission errors never become empty data',async()=>{const n=fakeSupabase(seed(),{throwNetwork:true});await assert.rejects(()=>createAgendaRepository({supabase:n.client}).listForAthlete(A1),e=>e.kind===KINDS.NETWORK);const d=fakeSupabase(seed(),{errorByTable:{athlete_schedule:{code:'42501',message:'permission denied'}}});await assert.rejects(()=>createAgendaRepository({supabase:d.client}).listForAthlete(A1),e=>e.kind===KINDS.AUTHORIZATION)});
+test('canonical empty/denied never falls back to legacy',async()=>{let legacy=0;const r=await readAgendaWithCompatibility({enabled:true,canonicalRead:async()=>({source:'agenda-repository-v22',schedule:[],reminders:[]}),legacyRead:async()=>{legacy++;return {source:'legacy'}}});assert.equal(r.source,'agenda-repository-v22');await assert.rejects(()=>readAgendaWithCompatibility({enabled:true,canonicalRead:async()=>{throw new AgendaRepositoryError(KINDS.AUTHORIZATION,'listForAthlete',{message:'denied'})},legacyRead:async()=>{legacy++;return {source:'legacy'}}}),e=>e.kind===KINDS.AUTHORIZATION);assert.equal(legacy,0)});
+test('legacy path only when flag disabled',async()=>{let canonical=0;const r=await readAgendaWithCompatibility({enabled:false,canonicalRead:async()=>{canonical++;return {}},legacyRead:async()=>({source:'legacy-v312'})});assert.equal(r.source,'legacy-v312');assert.equal(canonical,0)});

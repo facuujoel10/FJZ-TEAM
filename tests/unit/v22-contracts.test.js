@@ -20,3 +20,14 @@ test('Agenda pilot delegates without UI or Supabase coupling',async()=>{
   assert.ok(Object.isFrozen(repo));
 });
 test('Agenda pilot rejects incomplete adapters',()=>assert.throws(()=>repos.createAgendaRepositoryPilot({listForAthlete(){}}),/getById/));
+
+test('Comment read pilot delegates without exposing write operations',async()=>{
+  const adapter={async listForAthlete(){return {rows:[]}},async listPending(){return {rows:[]}},async getById(){return null}};
+  const repo=repos.createCommentRepositoryPilot(adapter);
+  assert.deepEqual(await repo.listForAthlete('a1',{}),{rows:[]});
+  assert.deepEqual(await repo.listPending({}),{rows:[]});
+  assert.equal(await repo.getById('c1'),null);
+  assert.equal(typeof repo.markReviewed,'undefined');
+  assert.ok(Object.isFrozen(repo));
+});
+test('Comment read pilot rejects incomplete adapters',()=>assert.throws(()=>repos.createCommentRepositoryPilot({listForAthlete(){},listPending(){}}),/getById/));

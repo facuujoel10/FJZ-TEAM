@@ -60,8 +60,8 @@ jobs:
       - name: Static development guard
         run: python scripts/dev_guard.py
 
-      - name: V22 1A/1B canonical module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-save-sync.test.js
+      - name: V22 1A/1B/1C canonical module unit + contract tests
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-save-sync.test.js
 
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
@@ -72,10 +72,13 @@ jobs:
       - name: AgendaRepository local Auth/RLS contract
         run: python scripts/dev_agenda_repository_smoke.py
 
+      - name: CommentRepository local Auth/RLS contract
+        run: python scripts/dev_comment_repository_smoke.py
+
       - name: Build application against local Supabase
         run: python scripts/dev_build.py
 
-      - name: V22 1B architecture inventory guard
+      - name: V22 1C architecture inventory guard
         run: python scripts/v22_architecture_inventory.py --check
 
       - name: Explicit project preflight
@@ -87,5 +90,12 @@ jobs:
       - name: Repeat AgendaRepository Auth/RLS contract after database recreation
         run: python scripts/dev_agenda_repository_smoke.py
 
+      - name: Repeat CommentRepository Auth/RLS contract after database recreation
+        run: python scripts/dev_comment_repository_smoke.py
+
       - name: Final generated-artifact isolation check
         run: python scripts/dev_guard.py --artifact
+
+      - name: Project-scoped local Supabase shutdown
+        if: always()
+        run: python scripts/dev_stop_local.py
