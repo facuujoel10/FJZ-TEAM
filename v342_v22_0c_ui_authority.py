@@ -94,7 +94,7 @@ def patch_v324(body):
     const view=el('view');if(!view)return null;
     let button=view.querySelector('.v342-coach-agenda');
     if(button)return button;
-    let actions=view.querySelector('.v225-hero-actions,.hero .pill-row');
+    let actions=view.querySelector('.v225-hero-actions,.v170-coach-actions,.hero .pill-row');
     if(!actions){
       const hero=view.querySelector('.hero');if(!hero)return null;
       actions=document.createElement('div');
@@ -127,6 +127,25 @@ def patch_v324(body):
     return body
 
 html=edit_script(html,"v324ReviewDashboardHydrationRuntime",patch_v324)
+
+# The certified browser diagnostics proved the visible Coach dashboard is still
+# rendered by V170. Finalize that active authority directly instead of relying
+# on V80 hydration hooks that are not part of this dashboard path.
+v170_start=html.find("function renderCoachDashboardV170(){")
+v170_end=html.find("\n  const baseRenderCoachV170=window.renderCoach;",v170_start)
+if v170_start<0 or v170_end<0 or v170_end<=v170_start:
+    raise RuntimeError("V22 0C active V170 dashboard bounds missing")
+v170_block=html[v170_start:v170_end]
+v170_anchor="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(el('v170AlertTotal'))el('v170AlertTotal').textContent='—'});
+  }"""
+v170_repl="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(el('v170AlertTotal'))el('v170AlertTotal').textContent='—'});
+    try{window.__fjzRenderTrainingCommentsV325?.()}catch(_e){}
+    try{window.__fjzEnsureCoachAgendaV342?.()}catch(_e){}
+  }"""
+if v170_block.count(v170_anchor)!=1:
+    raise RuntimeError("V22 0C active V170 finalize anchor mismatch: "+str(v170_block.count(v170_anchor)))
+v170_block=v170_block.replace(v170_anchor,v170_repl,1)
+html=html[:v170_start]+v170_block+html[v170_end:]
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
 if len(styles)!=1:
@@ -171,6 +190,20 @@ if final_block.count("v342-coach-agenda")!=1:
     raise RuntimeError("V22 0C Agenda authority count mismatch: "+str(final_block.count("v342-coach-agenda")))
 if "coachTab='music';render()" in final_block or ">Música</button>" in final_block:
     raise RuntimeError("V22 0C retired dashboard Music route survived")
+
+active_v170_start=html.find("function renderCoachDashboardV170(){")
+active_v170_end=html.find("\n  const baseRenderCoachV170=window.renderCoach;",active_v170_start)
+active_v170_block=html[active_v170_start:active_v170_end]
+for marker in [
+    "window.__fjzRenderTrainingCommentsV325?.()",
+    "window.__fjzEnsureCoachAgendaV342?.()",
+    ".v170-coach-actions",
+]:
+    if marker not in active_v170_block and marker!=".v170-coach-actions":
+        raise RuntimeError("V22 0C active V170 authority missing "+marker)
+if ".v170-coach-actions" not in html:
+    raise RuntimeError("V22 0C active V170 action row missing")
+
 for marker in [
     'meta name="fjz-v22-0c-final-ui-authority" content="0C.10"',
     'class="btn v342-coach-agenda"',
