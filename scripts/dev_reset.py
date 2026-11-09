@@ -20,7 +20,10 @@ def main():
     cli=supabase_cmd()
     # Supabase manages its own Docker network. A custom --network-id caused
     # Storage to lose DNS resolution after db reset on GitHub-hosted runners.
-    # The runner is ephemeral; no ports are published by this workflow itself.
+    # A cancelled CI run can leave local containers behind on a reused runner,
+    # so clear this development project before binding its fixed local ports.
+    # This remains local-only and targets project_id=team-fjz-v22-local.
+    subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
     # supabase start prints local keys, so capture it. On failure print only a
     # sanitized diagnostic so CI can distinguish Docker/CLI/config failures
     # without leaking JWTs or API keys.
