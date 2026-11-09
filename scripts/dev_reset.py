@@ -20,10 +20,38 @@ def main():
     cli=supabase_cmd()
     # Supabase manages its own Docker network. A custom --network-id caused
     # Storage to lose DNS resolution after db reset on GitHub-hosted runners.
-    # A cancelled CI run can leave local containers behind on a reused runner,
-    # so clear this development project before binding its fixed local ports.
-    # This remains local-only and targets project_id=team-fjz-v22-local.
-    subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
+    # Cancelled/partial starts can leave containers behind, including a stopped
+    # project container or (on CI) another stale Supabase container still
+    # publishing one of the fixed local ports. Clean only Supabase/V22-local
+    # containers; never touch arbitrary user containers on a developer machine.
+    def cleanup_local_stack():
+        subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
+        names=subprocess.run(
+            [docker,"ps","-a","--format","{{.Names}}"],
+            env=env,text=True,capture_output=True,check=False
+        ).stdout.splitlines()
+        project_names=[n.strip() for n in names if "team-fjz-v22-local" in n]
+        if project_names:
+            subprocess.run([docker,"rm","-f",*project_names],env=env,text=True,capture_output=True,check=False)
+
+        # GitHub-hosted runners are disposable and dedicated to this job. If a
+        # previous partial Supabase start is still binding V22's local ports,
+        # remove only the conflicting Supabase container. Locally we fail
+        # closed instead of killing another developer's Supabase project.
+        if str(env.get("CI","")).lower()=="true":
+            rows=subprocess.run(
+                [docker,"ps","--format","{{.Names}}|{{.Ports}}"],
+                env=env,text=True,capture_output=True,check=False
+            ).stdout.splitlines()
+            stale=[]
+            for row in rows:
+                name,_,ports=row.partition("|")
+                if name.startswith("supabase_") and any((":"+p+"->" in ports or "0.0.0.0:"+p+"->" in ports or "[::]:"+p+"->" in ports) for p in ("54321","54322","54323","54324","54325","54326","54327","54328","54329")):
+                    stale.append(name)
+            if stale:
+                subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
+
+    cleanup_local_stack()
     # supabase start prints local keys, so capture it. Cold hosted runners can
     # occasionally time out a container health check immediately after pulling
     # images. Retry exactly once after a local cleanup; a persistent second
@@ -37,7 +65,7 @@ def main():
         except subprocess.CalledProcessError as exc:
             start_exc=exc
             if attempt==1:
-                subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
+                cleanup_local_stack()
                 continue
     if start_exc is not None:
         raw=((start_exc.stdout or "")+"\n"+(start_exc.stderr or "")).strip()
