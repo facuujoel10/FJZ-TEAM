@@ -186,7 +186,7 @@ v170_repl="""    loadCoachFeed(false).then(decorateCoachFeedV170).catch(()=>{if(
 if v170_block.count(v170_anchor)!=1:
     raise RuntimeError("V22 0C active V170 finalize anchor mismatch: "+str(v170_block.count(v170_anchor)))
 v170_block=v170_block.replace(v170_anchor,v170_repl,1)
-v170_block=v170_block.replace("  function renderCoachDashboardV170(){","  function renderCoachDashboardV170(){\n    /* v170DashboardStaticAuthorityV342:true */",1)
+v170_block=v170_block.replace("function renderCoachDashboardV170(){","function renderCoachDashboardV170(){\n    /* v170DashboardStaticAuthorityV342:true */",1)
 html=html[:v170_start]+v170_block+html[v170_end:]
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
