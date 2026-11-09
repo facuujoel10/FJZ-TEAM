@@ -20,7 +20,7 @@ before=metrics(html)
 
 for marker in [
     'meta name="fjz-mobile-workout-stability" content="21.41"',
-    'meta name="fjz-coach-dashboard-pro" content="20.25"',
+    'meta name="fjz-coach-dashboard" content="20.25"',
     "function renderCoachDashboardV80()",
     "trainingCommentsGlobalRendererV325:true",
     "trainingCommentsAfterHydrationV325:true",
