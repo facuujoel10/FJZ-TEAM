@@ -40,6 +40,8 @@ for marker in [
     "snapshotAndProjectionConfirmation:true",
     "sessionSuccessRequiresDoubleVerification:true",
     "globalSaveIntegrity:true",
+    "sessionExerciseFeedbackSnapshotV287",
+    "exerciseFeedbackSnapshotInSessionV287:true",
 ]:
     if marker not in html:
         raise RuntimeError("V21.40 prerequisite missing "+marker)
@@ -212,11 +214,13 @@ def patch_v207(body):
 """
     body=body.replace(anchor,helper+anchor,1)
 
-    old="""    attachMethodHistoryV207(pack,session);"""
+    old="""    sessionExerciseFeedbackSnapshotV287(pack,session);
+    attachMethodHistoryV207(pack,session);"""
     new="""    applyWorkoutStartedAtV340(pack,session);
+    sessionExerciseFeedbackSnapshotV287(pack,session);
     attachMethodHistoryV207(pack,session);"""
     if body.count(old)!=1:
-        raise RuntimeError("V21.40 V207 method-history anchor mismatch: "+str(body.count(old)))
+        raise RuntimeError("V21.40 V207 feedback/start-time ordering anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
     old="""  function beginCommitV207(pack){
@@ -248,7 +252,8 @@ def patch_v207(body):
     repsRangeMatchesDatabaseV340:true,
     rirRangeMatchesDatabaseV340:true,
     invalidSetNeverReachesCloudV340:true,
-    resumedWorkoutKeepsOriginalTimeV340:true
+    resumedWorkoutKeepsOriginalTimeV340:true,
+    exerciseFeedbackSnapshotAfterStartTimeV340:true
   };
 """
     body=body[:end]+markers+body[end:]
