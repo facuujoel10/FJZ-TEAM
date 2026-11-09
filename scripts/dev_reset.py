@@ -24,19 +24,29 @@ def main():
     # so clear this development project before binding its fixed local ports.
     # This remains local-only and targets project_id=team-fjz-v22-local.
     subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
-    # supabase start prints local keys, so capture it. On failure print only a
-    # sanitized diagnostic so CI can distinguish Docker/CLI/config failures
-    # without leaking JWTs or API keys.
-    try:
-        run(cli+["start"],env=env,capture=True)
-    except subprocess.CalledProcessError as exc:
-        raw=((exc.stdout or "")+"\n"+(exc.stderr or "")).strip()
+    # supabase start prints local keys, so capture it. Cold hosted runners can
+    # occasionally time out a container health check immediately after pulling
+    # images. Retry exactly once after a local cleanup; a persistent second
+    # failure still fails closed and prints only a sanitized diagnostic.
+    start_exc=None
+    for attempt in (1,2):
+        try:
+            run(cli+["start"],env=env,capture=True)
+            start_exc=None
+            break
+        except subprocess.CalledProcessError as exc:
+            start_exc=exc
+            if attempt==1:
+                subprocess.run(cli+["stop","--no-backup"],env=env,text=True,capture_output=True,check=False)
+                continue
+    if start_exc is not None:
+        raw=((start_exc.stdout or "")+"\n"+(start_exc.stderr or "")).strip()
         safe=re.sub(r'(?i)(anon key|service_role key|publishable key|secret key|jwt secret|access token)\\s*[:=]\\s*\\S+',r'\\1: [REDACTED]',raw)
         safe=re.sub(r'eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+','[REDACTED_JWT]',safe)
         safe=re.sub(r'sb_(?:publishable|secret)_[A-Za-z0-9._-]+','[REDACTED_SUPABASE_KEY]',safe)
-        print("SUPABASE START FAILED (sanitized):",file=sys.stderr)
+        print("SUPABASE START FAILED AFTER RETRY (sanitized):",file=sys.stderr)
         print(safe[-12000:] if safe else "(no diagnostic output)",file=sys.stderr)
-        raise
+        raise start_exc
     # Always name the target explicitly even though CLI v3 defaults to local.
     run(cli+["db","reset","--local"],env=env)
     run([sys.executable,"scripts/dev_bootstrap.py"],env=env)
