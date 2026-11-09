@@ -295,6 +295,27 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   const commentAgain = page.getByText(comment, { exact: true }).first();
   await expect(commentAgain).toBeVisible();
 
+  const deepCommentDebug = await commentAgain.evaluate(el => {
+    const safe = (fn, fallback = null) => { try { return fn(); } catch (_) { return fallback; } };
+    const root = el.closest('.v287-exercise-comment,.v244-exercise,article,.card,.feedback-item');
+    const modal = document.getElementById('modal');
+    return {
+      mode: safe(() => typeof mode === 'undefined' ? 'undefined' : mode),
+      coachTab: safe(() => typeof coachTab === 'undefined' ? 'undefined' : coachTab),
+      coachStudentTab: safe(() => typeof coachStudentTab === 'undefined' ? 'undefined' : coachStudentTab),
+      currentProfileRole: safe(() => typeof currentProfile === 'undefined' ? 'undefined' : currentProfile?.role || null),
+      focus: window.__fjzFocusTrainingCommentV328 || null,
+      rootTag: root?.tagName || null,
+      rootClass: root?.className || null,
+      rootHtml: (root?.outerHTML || '').replace(/\s+/g, ' ').slice(0, 6000),
+      modalHtml: (modal?.innerHTML || '').replace(/\s+/g, ' ').slice(0, 9000),
+      okButtons: [...document.querySelectorAll('button')]
+        .filter(b => /^(OK|Marcar revisado)/i.test((b.textContent || '').trim()))
+        .map(b => ({ text: (b.textContent || '').trim(), cls: b.className || '', visible: !!(b.offsetWidth || b.offsetHeight || b.getClientRects().length) }))
+    };
+  });
+  console.log('E2E_COMMENT_OPEN_DEBUG '+testInfo.project.name+' '+JSON.stringify(deepCommentDebug));
+
   const reviewContainer = commentAgain.locator('xpath=ancestor::*[self::article or contains(@class,"card") or contains(@class,"feedback-item")][1]');
   const ok = reviewContainer.getByRole('button', { name: /OK|Marcar revisado/i }).first();
   if (!(await ok.count())) {

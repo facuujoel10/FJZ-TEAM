@@ -83,32 +83,42 @@ def main():
             time.sleep(0.5)
         raise RuntimeError("Local Supabase ports still busy after cleanup: "+",".join(map(str,local_ports_busy())))
 
-    cleanup_local_stack()
-    await_local_ports_release()
-    # supabase start prints local keys, so capture it. Cold hosted runners can
-    # occasionally time out a container health check immediately after pulling
-    # images. Retry exactly once after a local cleanup; a persistent second
-    # failure still fails closed and prints only a sanitized diagnostic.
-    start_exc=None
-    for attempt in (1,2):
-        try:
-            run(cli+["start"],env=env,capture=True)
-            start_exc=None
-            break
-        except subprocess.CalledProcessError as exc:
-            start_exc=exc
-            if attempt==1:
-                cleanup_local_stack()
-                await_local_ports_release()
-                continue
-    if start_exc is not None:
-        raw=((start_exc.stdout or "")+"\n"+(start_exc.stderr or "")).strip()
-        safe=re.sub(r'(?i)(anon key|service_role key|publishable key|secret key|jwt secret|access token)\\s*[:=]\\s*\\S+',r'\\1: [REDACTED]',raw)
-        safe=re.sub(r'eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+','[REDACTED_JWT]',safe)
-        safe=re.sub(r'sb_(?:publishable|secret)_[A-Za-z0-9._-]+','[REDACTED_SUPABASE_KEY]',safe)
-        print("SUPABASE START FAILED AFTER RETRY (sanitized):",file=sys.stderr)
-        print(safe[-12000:] if safe else "(no diagnostic output)",file=sys.stderr)
-        raise start_exc
+    def local_stack_running():
+        # A second reset in the same CI job should recreate only the database,
+        # not tear down a healthy Docker stack and churn its published ports.
+        probe=subprocess.run(
+            cli+["status"],
+            env=env,text=True,capture_output=True,check=False
+        )
+        return probe.returncode==0
+
+    if not local_stack_running():
+        cleanup_local_stack()
+        await_local_ports_release()
+        # supabase start prints local keys, so capture it. Cold hosted runners can
+        # occasionally time out a container health check immediately after pulling
+        # images. Retry exactly once after a local cleanup; a persistent second
+        # failure still fails closed and prints only a sanitized diagnostic.
+        start_exc=None
+        for attempt in (1,2):
+            try:
+                run(cli+["start"],env=env,capture=True)
+                start_exc=None
+                break
+            except subprocess.CalledProcessError as exc:
+                start_exc=exc
+                if attempt==1:
+                    cleanup_local_stack()
+                    await_local_ports_release()
+                    continue
+        if start_exc is not None:
+            raw=((start_exc.stdout or "")+"\n"+(start_exc.stderr or "")).strip()
+            safe=re.sub(r'(?i)(anon key|service_role key|publishable key|secret key|jwt secret|access token)\\s*[:=]\\s*\\S+',r'\\1: [REDACTED]',raw)
+            safe=re.sub(r'eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+','[REDACTED_JWT]',safe)
+            safe=re.sub(r'sb_(?:publishable|secret)_[A-Za-z0-9._-]+','[REDACTED_SUPABASE_KEY]',safe)
+            print("SUPABASE START FAILED AFTER RETRY (sanitized):",file=sys.stderr)
+            print(safe[-12000:] if safe else "(no diagnostic output)",file=sys.stderr)
+            raise start_exc
     # Always name the target explicitly even though CLI v3 defaults to local.
     run(cli+["db","reset","--local"],env=env)
     run([sys.executable,"scripts/dev_bootstrap.py"],env=env)
