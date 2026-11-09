@@ -19,7 +19,9 @@ module.exports = defineConfig({
     serviceWorkers: 'block',
   },
   projects: [
+    { name: 'mobile-360', use: { viewport: { width: 360, height: 800 } } },
     { name: 'mobile-390', use: { viewport: { width: 390, height: 844 } } },
+    { name: 'mobile-430', use: { viewport: { width: 430, height: 932 } } },
     { name: 'desktop-1440', use: { viewport: { width: 1440, height: 900 } } },
   ],
 });

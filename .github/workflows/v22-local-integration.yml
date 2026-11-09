@@ -61,7 +61,7 @@ jobs:
         run: python scripts/dev_guard.py
 
       - name: V22 1A/1B/1C canonical module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-save-sync.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-save-sync.test.js
 
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
@@ -78,7 +78,7 @@ jobs:
       - name: Build application against local Supabase
         run: python scripts/dev_build.py
 
-      - name: V22 1C architecture inventory guard
+      - name: V22 2A architecture inventory guard
         run: python scripts/v22_architecture_inventory.py --check
 
       - name: Explicit project preflight
