@@ -158,7 +158,7 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
   await assertNoHorizontalOverflow(page);
 
   await page.getByRole('button', { name: 'Progreso' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Progreso' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Progreso', exact: true })).toBeVisible();
   await expect(page.getByText('Tu progreso', { exact: true }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
@@ -212,8 +212,10 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   await expect(cards.nth(0)).toContainText(/Comentario enviado/i);
 
   await page.getByRole('button', { name: /Finalizar sesión/i }).click();
+  await expect(page.getByRole('heading', { name: '¿Cómo salió la sesión?' })).toBeVisible();
+  await page.getByRole('button', { name: /Todo bien · finalizar/i }).click();
   await expect(page.locator('#modalWrap')).toBeVisible({ timeout: 15000 });
-  await expect(page.locator('#modal')).toContainText(/Sesión guardada|Entrenamiento completado|guardad/i);
+  await expect(page.locator('#modal')).toContainText(/Sesión guardada|Entrenamiento completado|guardad/i, { timeout: 15000 });
 
   const back = page.getByRole('button', { name: /Volver al inicio/i });
   if (await back.count()) await back.click();
@@ -262,7 +264,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   }
   await ok.click();
 
-  await page.getByRole('button', { name: /^Alumnos$/i }).first().click();
+  await page.getByRole('button', { name: /^Panel$/i }).first().click();
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true })).toHaveCount(0);
@@ -338,7 +340,7 @@ test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({
   await login(page, 'coach@test.local');
 
   await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Alumnos$/ }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Panel$/ }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Agenda' }).first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
