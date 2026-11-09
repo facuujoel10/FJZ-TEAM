@@ -43,7 +43,7 @@ for marker in [
     "v80AttentionCount","v80CriticalCount","v80CommentCount","v80CheckinCount",
     "v80AttentionFilters","v80AttentionBody","studentSearch","studentList",
     "hydrateCoachDashboardV80()","showSystemStatusV80()","showTemplates()",
-    "coachTab='music';render()","newStudent()"
+    "coachTab='agenda';render()","coachTab='music';render()","newStudent()"
 ]:
     if marker not in old:
         raise RuntimeError("V20.25 missing coach dashboard marker: "+marker)
@@ -63,6 +63,7 @@ new=r"""function renderCoachDashboardV80(){
     </div>
     <div class="v225-hero-actions">
       <button class="btn" onclick="showSystemStatusV80()">Estado</button>
+      <button class="btn" onclick="coachTab='agenda';render()">Agenda</button>
       <button class="btn" onclick="showTemplates()">Plantillas</button>
       <button class="btn" onclick="coachTab='music';render()">Música</button>
       <button class="btn primary" onclick="newStudent()">+ Nuevo alumno</button>
@@ -259,7 +260,7 @@ critical=[
     "v80AttentionCount","v80CriticalCount","v80CommentCount","v80CheckinCount",
     "v80AttentionFilters","v80AttentionBody","studentSearch","studentList",
     "hydrateCoachDashboardV80()","showSystemStatusV80()","showTemplates()",
-    "coachTab='music';render()","newStudent()",
+    "coachTab='agenda';render()","coachTab='music';render()","newStudent()",
     "v122FollowupPaymentsRuntime",'meta name="fjz-student-dashboard" content="20.24"'
 ]
 missing=[x for x in critical if x not in html]
