@@ -1,0 +1,1 @@
+# legacy\n\nCompatibility boundary for historical globals/runtime. Legacy is not deleted merely because it is old; consumers must be mapped and replacements tested first.\n

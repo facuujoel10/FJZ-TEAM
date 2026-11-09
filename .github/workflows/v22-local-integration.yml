@@ -60,6 +60,9 @@ jobs:
       - name: Static development guard
         run: python scripts/dev_guard.py
 
+      - name: V22 1A canonical module unit tests
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js
+
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
 
@@ -68,6 +71,9 @@ jobs:
 
       - name: Build application against local Supabase
         run: python scripts/dev_build.py
+
+      - name: V22 1A architecture inventory guard
+        run: python scripts/v22_architecture_inventory.py --check
 
       - name: Explicit project preflight
         run: python preflight.py

@@ -1,0 +1,1 @@
+# core\n\nCanonical cross-domain primitives. 1A introduces date.js and defines the save contract without replacing current save behavior.\n

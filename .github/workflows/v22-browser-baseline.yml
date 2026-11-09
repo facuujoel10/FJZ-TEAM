@@ -66,11 +66,17 @@ jobs:
           npm install --no-save --ignore-scripts @playwright/test@1.65.0
           npx playwright install --with-deps chromium
 
+      - name: V22 1A canonical module unit tests
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js
+
       - name: Create local stack and build development app
         run: |
           python scripts/dev_reset.py
           python scripts/dev_build.py
           python scripts/dev_guard.py --artifact
+
+      - name: V22 1A architecture inventory guard
+        run: python scripts/v22_architecture_inventory.py --check
 
       - name: Audit generated JavaScript syntax
         id: syntax
