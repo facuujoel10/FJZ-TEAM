@@ -24,6 +24,14 @@ def edit_script(doc,sid,fn):
 
 before=metrics(html)
 
+# Local calendar dates must follow the browser/user timezone. Using UTC via
+# toISOString() shifts the nutrition/check-in day after 21:00 in Argentina.
+old_today="function dateInputToday(){return new Date().toISOString().slice(0,10)}"
+new_today="function dateInputToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}"
+if html.count(old_today)!=1:
+    raise RuntimeError("V21.20 local dateInputToday anchor mismatch: "+str(html.count(old_today)))
+html=html.replace(old_today,new_today,1)
+
 for marker in [
     'meta name="fjz-first-review-authority" content="21.19"',
     'id="v312ReviewAgendaAuthorityRuntime"',
@@ -31,6 +39,7 @@ for marker in [
     'id="v316SessionLossProtectionRuntime"',
     "globalSaveIntegrity:true",
     "sessionSuccessRequiresDoubleVerification:true",
+    "function dateInputToday(){const d=new Date();",
 ]:
     if marker not in html:
         raise RuntimeError("V21.20 prerequisite missing "+marker)
