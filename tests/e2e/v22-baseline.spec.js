@@ -104,6 +104,35 @@ async function logout(page) {
   throw new Error('No existe una ruta visible al cierre de sesión desde el estado actual.');
 }
 
+async function logCoachRuntimeDebug(page, label) {
+  const debug = await page.evaluate(() => {
+    const view = document.getElementById('view');
+    const safe = (fn, fallback = null) => {
+      try { return fn(); } catch (_) { return fallback; }
+    };
+    return {
+      mode: safe(() => typeof mode === 'undefined' ? 'undefined' : mode),
+      coachTab: safe(() => typeof coachTab === 'undefined' ? 'undefined' : coachTab),
+      currentProfileRole: safe(() => typeof currentProfile === 'undefined' ? 'undefined' : currentProfile?.role || null),
+      commentsRenderer: typeof window.__fjzRenderTrainingCommentsV325,
+      agendaEnsure: typeof window.__fjzEnsureCoachAgendaV342,
+      v324: window.__fjzV324 || null,
+      commentsHost: !!document.getElementById('v325TrainingCommentsCenter'),
+      priorityHost: !!document.getElementById('v252PriorityCenter'),
+      heroActions: !!view?.querySelector('.v225-hero-actions'),
+      heroPillRow: !!view?.querySelector('.hero .pill-row'),
+      agendaButtons: [...(view?.querySelectorAll('button') || [])]
+        .map(x => (x.textContent || '').trim())
+        .filter(x => /Agenda/i.test(x)),
+      headings: [...(view?.querySelectorAll('h1,h2,h3,h4') || [])]
+        .map(x => (x.textContent || '').trim())
+        .slice(0, 30),
+      viewSnippet: (view?.innerHTML || '').replace(/\s+/g, ' ').slice(0, 7000)
+    };
+  });
+  console.log('E2E_COACH_RUNTIME_DEBUG '+label+' '+JSON.stringify(debug));
+}
+
 async function assertNoHorizontalOverflow(page) {
   const dims = await page.evaluate(() => ({
     width: window.innerWidth,
@@ -248,6 +277,7 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 
   await logout(page);
   await login(page, 'coach@test.local');
+  await logCoachRuntimeDebug(page, 'workout-'+testInfo.project.name);
 
   await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText(comment, { exact: true }).first()).toBeVisible({ timeout: 15000 });
@@ -346,6 +376,7 @@ test('Nutrición: plan, registro, macros, calculadora, personalizado, persistenc
 
 test('Coach: dashboard, agenda y workspace 360 sin romper navegación', async ({ page }, testInfo) => {
   await login(page, 'coach@test.local');
+  await logCoachRuntimeDebug(page, 'workspace-'+testInfo.project.name);
 
   await expect(page.locator('#view').getByText('TEST ALUMNO 01', { exact: true }).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Panel Coach', exact: true })).toBeVisible();
