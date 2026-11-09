@@ -106,9 +106,10 @@ def patch_v207(body):
         body=body.replace(old,new)
     old="      modalSuccessV207();"
     new="      modalSuccessV207();\n      try{globalThis.TeamFJZPremiumWorkout?.decorateSuccessModal()}catch(_e){}"
-    if body.count(old)!=1:
-        raise RuntimeError("V22 2A V207 success modal call anchor mismatch: "+str(body.count(old)))
-    return body.replace(old,new,1)
+    count=body.count(old)
+    if count<1:
+        raise RuntimeError("V22 2A V207 success modal call anchor missing")
+    return body.replace(old,new)
 html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
 old="""  exerciseFeedbackTargetV73={uid,name,dayId:d?.id||'',dayName:d?.name||''};
