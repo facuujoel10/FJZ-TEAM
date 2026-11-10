@@ -421,10 +421,11 @@ test('2A Premium: finalización confirmada, historial e idempotencia', async ({ 
   await page.evaluate(()=>finishWorkout());
   expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(after);
 
-  const history=page.getByRole('button',{name:/Ver historial/i}).first();
-  await expect(history).toBeVisible();
-  await history.click();
-  await expect(page.getByText('Día QA A',{exact:false}).first()).toBeVisible();
+  const history=page.locator('#modal .v22-history-after-save');
+  await expect(history,'El éxito confirmado debe ofrecer acceso directo al historial.').toBeVisible({timeout:10000});
+  await history.click({timeout:10000});
+  await expect(page.locator('#modalWrap')).toBeHidden({timeout:10000});
+  await expect(page.getByText('Día QA A',{exact:false}).first()).toBeVisible({timeout:10000});
   await assertNoHorizontalOverflow(page);
   await page.screenshot({path:'artifacts/2a/premium-complete-'+testInfo.project.name+'.png',fullPage:true});
   console.log('E2E_FLOW_OK premium-finish-history-idempotent-2a '+testInfo.project.name);
