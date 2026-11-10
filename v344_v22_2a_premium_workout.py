@@ -38,18 +38,20 @@ for marker in [
 
 module_code=pathlib.Path("src/modules/workouts/premium-workout.js").read_text(encoding="utf-8").strip()
 session_history_code=pathlib.Path("src/modules/workouts/session-history.js").read_text(encoding="utf-8").strip()
+visual_code=pathlib.Path("src/modules/workouts/visual-redesign.js").read_text(encoding="utf-8").strip()
+design_css=pathlib.Path("src/ui/design-system.css").read_text(encoding="utf-8").strip()
 premium_css=pathlib.Path("src/ui/premium-workout.css").read_text(encoding="utf-8").strip()
 history_css=pathlib.Path("src/ui/premium-history.css").read_text(encoding="utf-8").strip()
-if "</script" in module_code.lower() or "</script" in session_history_code.lower():
+if "</script" in module_code.lower() or "</script" in session_history_code.lower() or "</script" in visual_code.lower():
     raise RuntimeError("V22 module cannot contain closing script markup")
 
-html=html.replace("</head>",'<script id="v22PremiumWorkoutModule">\n'+module_code+'\n</script>\n<script id="v22SessionHistoryModule">\n'+session_history_code+'\n</script>\n<meta name="fjz-v22-2a-premium-workout" content="enabled">\n<meta name="fjz-v22-2b-session-history" content="enabled">\n</head>',1)
+html=html.replace("</head>",'<script id="v22PremiumWorkoutModule">\n'+module_code+'\n</script>\n<script id="v22SessionHistoryModule">\n'+session_history_code+'\n</script>\n<script id="v22VisualRedesignModule">\n'+visual_code+'\n</script>\n<meta name="fjz-v22-2a-premium-workout" content="enabled">\n<meta name="fjz-v22-2b-session-history" content="enabled">\n<meta name="fjz-v22-2bv-visual-redesign" content="enabled">\n</head>',1)
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
 if len(styles)!=1:
     raise RuntimeError("V22 2A expected one consolidated stylesheet")
 sm=styles[0]
-html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+premium_css+"\n"+history_css+"\n"+html[sm.end("body"):]
+html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+design_css+"\n"+premium_css+"\n"+history_css+"\n"+html[sm.end("body"):]
 
 def patch_v205(body):
     old="      return baseRenderWorkoutV205.apply(this,arguments);\n"
@@ -408,6 +410,22 @@ def patch_v244(body):
         raise RuntimeError("V22 2B V244 detail status anchor mismatch")
     body=body.replace(old,new,1)
 
+    old="""      :'<div class="empty">Todavía no hay sesiones registradas.</div>';
+  };"""
+    new="""      :'<div class="empty">Todavía no hay sesiones registradas.</div>';
+    try{globalThis.TeamFJZVisualRedesign?.enhanceHistory(b)}catch(_e){}
+  };"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B-V history visual hook mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old="""    if(linkedCommentV328){"""
+    new="""    try{globalThis.TeamFJZVisualRedesign?.enhanceSessionDetail(document.getElementById('modal'))}catch(_e){}
+    if(linkedCommentV328){"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B-V session detail visual hook mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
     marker="""    exactExerciseCommentAutoScrollV329:true"""
     if marker not in body:
         raise RuntimeError("V22 2B V244 marker anchor missing")
@@ -430,6 +448,7 @@ for marker in [
     'id="v22PremiumWorkoutModule"',
     'meta name="fjz-v22-2a-premium-workout" content="enabled"',
     'meta name="fjz-v22-2b-session-history" content="enabled"',
+    'meta name="fjz-v22-2bv-visual-redesign" content="enabled"',
     "TeamFJZPremiumWorkout?.enhanceWorkout",
     "TeamFJZPremiumWorkout?.setSaveState('saving')",
     "TeamFJZPremiumWorkout?.bindCommentDraft",
@@ -437,6 +456,10 @@ for marker in [
     "endCommentSubmit(t.uid,true)",
     "decorateSuccessModal",
     'id="v22SessionHistoryModule"',
+    'id="v22VisualRedesignModule"',
+    "TeamFJZVisualRedesign?.enhanceWorkout",
+    "TeamFJZVisualRedesign?.enhanceHistory",
+    "TeamFJZVisualRedesign?.enhanceSessionDetail",
     "TeamFJZSessionHistory?.activeSessionId",
     "session_id:globalThis.TeamFJZSessionHistory",
     "exactSessionCommentLinkV2B:true",
@@ -447,6 +470,6 @@ for marker in [
         raise RuntimeError("V22 2A missing marker "+marker)
 
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V22 2B SESSION HISTORY + EXACT COMMENTS")
+print("TEAM FJZ V22 2B-V VISUAL REDESIGN")
 print("V22 2A BEFORE:",before)
 print("V22 2A AFTER:",after)

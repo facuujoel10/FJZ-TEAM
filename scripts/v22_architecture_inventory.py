@@ -36,6 +36,8 @@ if artifact.exists():
         "session_history_flag":'meta name="fjz-v22-2b-session-history" content="enabled"' in html,
         "exact_session_comments":"exactSessionCommentLinkV2B:true" in html,
         "premium_history":"premiumHistoryV2B:true" in html,
+        "visual_redesign_module":'id="v22VisualRedesignModule"' in html,
+        "visual_redesign_flag":'meta name="fjz-v22-2bv-visual-redesign" content="enabled"' in html,
     }
 result={
  "build_patch_count":len(patches),"first_patches":patches[:10],"last_patches":patches[-12:],
@@ -51,7 +53,9 @@ result={
     "premium_workout_module":(ROOT/"src/modules/workouts/premium-workout.js").exists(),
     "premium_workout_ui":(ROOT/"src/ui/premium-workout.css").exists(),
     "session_history_module":(ROOT/"src/modules/workouts/session-history.js").exists(),
-    "premium_history_ui":(ROOT/"src/ui/premium-history.css").exists()
+    "premium_history_ui":(ROOT/"src/ui/premium-history.css").exists(),
+    "visual_redesign_module":(ROOT/"src/modules/workouts/visual-redesign.js").exists(),
+    "design_system":(ROOT/"src/ui/design-system.css").exists()
  }
 }
 if __name__=="__main__":
@@ -62,11 +66,11 @@ if __name__=="__main__":
         if not (patches.index(required[0])<patches.index(required[1])<patches.index(required[2])): raise SystemExit("V22 2B bridge must execute after 1A/1C foundation")
         if not all(result["contracts"].values()): raise SystemExit("V22 1A canonical contracts missing")
         if not runtime.get("date_core") or not runtime.get("date_pilot"): raise SystemExit("V22 1A generated date pilot missing")
-        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history"):
+        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag"):
             if not runtime.get(key): raise SystemExit("V22 runtime marker missing: "+key)
         expected={"render_assignments":18,"channels":2,"timeouts":56,"intervals":0,"listeners":51,"mutation_observers":3}
         actual={k:runtime.get(k) for k in expected}
         if actual!=expected: raise SystemExit("V22 1C topology regression: "+repr({"expected":expected,"actual":actual}))
-        if len(patches)!=229: raise SystemExit("V22 2B keeps exactly one V22 workout integration bridge patch; count="+str(len(patches)))
-    print("TEAM FJZ V22 2B ARCHITECTURE INVENTORY")
+        if len(patches)!=229: raise SystemExit("V22 2B-V keeps exactly one V22 workout integration bridge patch; count="+str(len(patches)))
+    print("TEAM FJZ V22 2B-V ARCHITECTURE INVENTORY")
     print(json.dumps(result,indent=2,ensure_ascii=False))

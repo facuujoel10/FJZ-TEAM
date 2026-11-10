@@ -75,7 +75,7 @@ jobs:
           python scripts/dev_build.py
           python scripts/dev_guard.py --artifact
 
-      - name: V22 2B architecture inventory guard
+      - name: V22 2B-V architecture inventory guard
         run: python scripts/v22_architecture_inventory.py --check
 
       - name: Audit generated JavaScript syntax
@@ -104,10 +104,10 @@ jobs:
         run: npx playwright test --project=mobile-390
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial"
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
@@ -123,10 +123,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v22-2b-session-history-screens
+          name: v22-2bv-visual-redesign-screens
           path: |
             artifacts/2a
             artifacts/2b
+            artifacts/2bv
           if-no-files-found: ignore
           retention-days: 14
 

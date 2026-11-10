@@ -1,0 +1,13 @@
+/* TEAM FJZ V22 · 2B-V VISUAL SYSTEM */
+:root{
+ --fjz-bg:#09090b;--fjz-surface:#111216;--fjz-surface-2:#17181d;--fjz-surface-3:#1e2026;
+ --fjz-line:#2a2d34;--fjz-line-strong:#3a3e47;--fjz-text:#f5f6f8;--fjz-text-2:#c1c5cd;
+ --fjz-text-3:#8e949f;--fjz-red:#ff3048;--fjz-red-2:#ff6678;--fjz-green:#57d99a;
+ --fjz-amber:#efb950;--fjz-blue:#72aefc;--fjz-radius-sm:10px;--fjz-radius-md:16px;
+ --fjz-radius-lg:22px;--fjz-space-1:6px;--fjz-space-2:10px;--fjz-space-3:14px;
+ --fjz-space-4:18px;--fjz-space-5:24px;--fjz-touch:48px;--fjz-copy:14px;--fjz-copy-sm:12px;--fjz-title:22px;
+}
+.v22v-surface{background:var(--fjz-surface);border:1px solid var(--fjz-line);border-radius:var(--fjz-radius-md)}
+.v22v-label{font-size:12px;line-height:1.25;font-weight:800;color:var(--fjz-text-3);letter-spacing:.045em;text-transform:uppercase}
+.v22v-muted{font-size:13px;line-height:1.45;color:var(--fjz-text-3)}
+.v22v-touch{min-height:var(--fjz-touch);min-width:var(--fjz-touch)}

@@ -4,7 +4,7 @@
   if(root)root.TeamFJZPremiumWorkout=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION='22.2A';
+  const VERSION='22.2B-V';
   const commentDrafts=new Map();
   const commentBusy=new Set();
   let currentSaveState={kind:'idle',at:null,detail:null};
@@ -163,6 +163,7 @@
     Array.from(view.querySelectorAll('.session-card')).forEach(decorateCard);
     renderSaveState();
     updateProgress();
+    try{globalThis.TeamFJZVisualRedesign?.enhanceWorkout(view)}catch(_e){}
     return true;
   }
   function decorateSuccessModal(){
@@ -218,6 +219,7 @@
         modal.prepend(close);
       }
     }
+    try{globalThis.TeamFJZVisualRedesign?.enhanceCommentModal(modal)}catch(_e){}
     return true;
   }
   function beginCommentSubmit(uid,message,type){
