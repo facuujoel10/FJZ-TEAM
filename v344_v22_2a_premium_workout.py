@@ -300,6 +300,23 @@ if html.count(old)!=1:
     raise RuntimeError("V22 2A comment success anchor mismatch: "+str(html.count(old)))
 html=html.replace(old,new,1)
 
+old="""      workout_day_name:t.dayName||null,
+      feedback_type:type,"""
+new="""      workout_day_name:t.dayName||null,
+      session_id:globalThis.TeamFJZSessionHistory?.activeSessionId?.()||null,
+      feedback_type:type,"""
+if html.count(old)!=1:
+    raise RuntimeError("V22 2B cloud comment session link anchor mismatch: "+str(html.count(old)))
+html=html.replace(old,new,1)
+
+old="""      id:uid('fb'),exercise_uid:t.uid,exercise_name:t.name,workout_day_id:t.dayId,
+      workout_day_name:t.dayName,feedback_type:type,message,status:'pending',created_at:nowISO()"""
+new="""      id:uid('fb'),session_id:globalThis.TeamFJZSessionHistory?.activeSessionId?.()||null,exercise_uid:t.uid,exercise_name:t.name,workout_day_id:t.dayId,
+      workout_day_name:t.dayName,feedback_type:type,message,status:'pending',created_at:nowISO()"""
+if html.count(old)!=1:
+    raise RuntimeError("V22 2B local comment session link anchor mismatch: "+str(html.count(old)))
+html=html.replace(old,new,1)
+
 def patch_v244(body):
     pattern=re.compile(r"  function exerciseFeedbackForSessionV287\(ss,r,rows\)\{.*?\n  \}\n\n  function commentFocusMatchesV329",re.S)
     m=pattern.search(body)
