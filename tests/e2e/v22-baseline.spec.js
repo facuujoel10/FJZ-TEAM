@@ -594,7 +594,7 @@ test('2B-V visual system: navegación contextual, contraste básico y dock sin t
     const active=document.querySelector('.v22-set-field input')?.getBoundingClientRect();
     const css=n=>n?getComputedStyle(n):null;
     const title=css(document.querySelector('.v22v-exercise-title strong'));
-    const body=css(document.querySelector('.v22v-technique-card .muted,.v22v-technique'));
+    const body=css(document.querySelector('.v22v-exercise .v72-tech-card .muted,.v22v-technique'));
     return{tabs,dock:dock?{h:dock.height,b:dock.bottom}:null,active:active?{h:active.height}:null,titleFont:parseFloat(title?.fontSize||0),bodyFont:parseFloat(body?.fontSize||0)};
   });
   expect(data.tabs.filter(x=>/^Inicio$/i.test(x)).length).toBe(0);
