@@ -632,6 +632,99 @@ test('2B-V historial: timeline y detalle legibles', async ({page},testInfo)=>{
   console.log('E2E_FLOW_OK visual-redesign-history-2bv '+testInfo.project.name);
 });
 
+
+test('2B-V.1 visual polish: series headers, previous reference and dock/input geometry', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const view=page.locator('#view.v22v-performance-shell');
+  await expect(view).toBeVisible();
+
+  const geometry=await page.evaluate(()=>{
+    const visible=n=>!!(n&&n.getBoundingClientRect().width&&n.getBoundingClientRect().height);
+    const headers=[...document.querySelectorAll('.v22v-series-header>span')].filter(visible).map(n=>{
+      const r=n.getBoundingClientRect(),s=getComputedStyle(n);
+      return {text:n.textContent.trim(),w:r.width,h:r.height,line:parseFloat(s.lineHeight)||parseFloat(s.fontSize)*1.2,whiteSpace:s.whiteSpace};
+    });
+    const refs=[...document.querySelectorAll('.v22v-previous-load,.v22-exercise .v205-prev-load')].filter(visible).map(n=>({
+      text:n.textContent.trim(),client:n.clientWidth,scroll:n.scrollWidth,whiteSpace:getComputedStyle(n).whiteSpace,textOverflow:getComputedStyle(n).textOverflow
+    }));
+    return {headers,refs,width:innerWidth,scroll:document.documentElement.scrollWidth};
+  });
+  expect(geometry.headers.map(x=>x.text.toUpperCase())).toEqual(expect.arrayContaining(['SERIE','CARGA','REPS','RIR']));
+  expect(geometry.headers.every(x=>x.h<=x.line*1.65)).toBeTruthy();
+  expect(geometry.headers.every(x=>x.whiteSpace==='nowrap')).toBeTruthy();
+  expect(geometry.refs.every(x=>x.whiteSpace!=='nowrap'&&x.textOverflow!=='ellipsis')).toBeTruthy();
+  expect(geometry.scroll).toBeLessThanOrEqual(geometry.width+2);
+
+  const lastInput=page.locator('.v22-set-field input').last();
+  await lastInput.scrollIntoViewIfNeeded();
+  await lastInput.fill('17.5');
+  await expect(lastInput).toBeFocused();
+  const focused=await page.evaluate(()=>{
+    const input=document.activeElement?.getBoundingClientRect?.();
+    const dock=document.querySelector('.v22v-finish-dock');
+    const d=dock?.getBoundingClientRect?.();
+    const s=dock?getComputedStyle(dock):null;
+    return {vw:innerWidth,vh:innerHeight,input:input?{top:input.top,bottom:input.bottom}:null,dock:d?{top:d.top,bottom:d.bottom,opacity:Number(s.opacity),pointer:s.pointerEvents}:null};
+  });
+  expect(focused.input?.bottom||0).toBeLessThanOrEqual(focused.vh+1);
+  if(focused.vw<1000){
+    expect(focused.dock?.opacity).toBe(0);
+    expect(focused.dock?.pointer).toBe('none');
+  }
+  await assertNoHorizontalOverflow(page);
+  await page.screenshot({path:'artifacts/2bv/polish-series-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK visual-polish-series-2bv1 '+testInfo.project.name);
+});
+
+test('2B-V.1 visual polish: comment modal has one close path and stable textarea focus', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await page.locator('.v22v-exercise').first().getByRole('button',{name:/Comentario/i}).click();
+  const modal=page.locator('#modal.v22v-comment-sheet');
+  await expect(modal).toBeVisible();
+  const closeActions=modal.getByRole('button',{name:/Cerrar/i}).filter({visible:true});
+  expect(await closeActions.count()).toBeLessThanOrEqual(1);
+  expect(await modal.locator('#v22CommentClose').count()).toBe(0);
+  const ta=modal.locator('textarea');
+  await ta.fill('Foco V22 2B-V.1');
+  await expect(ta).toBeFocused();
+  const box=await ta.boundingBox();
+  expect(box?.height||0).toBeGreaterThanOrEqual(120);
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK visual-polish-comment-2bv1 '+testInfo.project.name);
+});
+
+test('2B-V.1 visual polish: history KPIs and previous/current comparison do not collapse', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
+  const open=page.locator('.v22v-history-open').first();
+  if(await open.count()){
+    await open.click();
+    const modal=page.locator('#modal.v22v-session-modal');
+    await expect(modal).toBeVisible();
+    const metrics=await page.evaluate(()=>{
+      const visible=n=>!!(n&&n.getBoundingClientRect().width&&n.getBoundingClientRect().height);
+      const kpis=[...document.querySelectorAll('.v22v-session-kpis>div')].filter(visible).map(n=>{
+        const strong=n.querySelector('strong'),label=n.querySelector('span'),sr=strong?.getBoundingClientRect(),lr=label?.getBoundingClientRect();
+        return {strong:strong?.textContent.trim()||'',strongW:sr?.width||0,strongH:sr?.height||0,label:label?.textContent.trim()||'',labelW:lr?.width||0,labelH:lr?.height||0};
+      });
+      const compare=[...document.querySelectorAll('.v22-history-compare')].filter(visible).map(n=>({
+        boxes:n.querySelectorAll('.v22-history-compare-box').length,
+        previous:!!n.querySelector('.v22v-compare-previous'),
+        current:!!n.querySelector('.v22v-compare-current')
+      }));
+      return {kpis,compare,width:innerWidth,scroll:document.documentElement.scrollWidth};
+    });
+    expect(metrics.kpis.length).toBeGreaterThan(0);
+    expect(metrics.kpis.every(x=>x.strongW>0&&x.strongH<48&&x.labelW>0)).toBeTruthy();
+    expect(metrics.compare.every(x=>x.boxes===2&&x.previous&&x.current)).toBeTruthy();
+    expect(metrics.scroll).toBeLessThanOrEqual(metrics.width+2);
+    await page.screenshot({path:'artifacts/2bv/polish-history-'+testInfo.project.name+'.png',fullPage:true});
+  }
+  console.log('E2E_FLOW_OK visual-polish-history-2bv1 '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
