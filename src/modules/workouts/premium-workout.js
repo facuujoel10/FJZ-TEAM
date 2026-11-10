@@ -210,6 +210,11 @@
       modal.classList.add('v22-comment-modal');
       const redundant=modal.querySelector('#v22CommentClose');
       if(redundant)redundant.remove();
+      const close=modal.querySelector('.modal-head button[onclick*="closeModal"]');
+      if(close){
+        close.setAttribute('aria-label','Cerrar comentario');
+        close.setAttribute('title','Cerrar comentario');
+      }
     }
     try{globalThis.TeamFJZVisualRedesign?.enhanceCommentModal(modal)}catch(_e){}
     return true;
