@@ -4,7 +4,7 @@
   if(root)root.TeamFJZPremiumWorkout=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION='22.2B-V';
+  const VERSION='22.2B-V.1';
   const commentDrafts=new Map();
   const commentBusy=new Set();
   let currentSaveState={kind:'idle',at:null,detail:null};
@@ -208,16 +208,8 @@
     const modal=document.getElementById('modal');
     if(modal){
       modal.classList.add('v22-comment-modal');
-      if(!modal.querySelector('#v22CommentClose')){
-        const close=document.createElement('button');
-        close.id='v22CommentClose';
-        close.type='button';
-        close.className='btn ghost small v22-comment-close';
-        close.textContent='Cerrar';
-        close.setAttribute('aria-label','Cerrar comentario');
-        close.onclick=function(){try{closeModal()}catch(_e){}};
-        modal.prepend(close);
-      }
+      const redundant=modal.querySelector('#v22CommentClose');
+      if(redundant)redundant.remove();
     }
     try{globalThis.TeamFJZVisualRedesign?.enhanceCommentModal(modal)}catch(_e){}
     return true;
