@@ -64,3 +64,44 @@
  font-size:12px!important;
  line-height:1.45!important;
 }
+
+/* 2B-V.6 · real session cockpit + reduced training scroll */
+.v22v-duplicate-nav{display:none!important}
+.v22v-workout-layout{display:flex;flex-direction:column;gap:14px}
+.v22v-workout-feed{display:grid;gap:16px;min-width:0}
+.v22v-session-rail{display:flex;flex-direction:column;gap:10px;min-width:0;order:-1}
+.v22v-session-rail .v22v-save-state{margin:0!important}
+.v22v-pending-card{margin:0!important}
+.v22v-disclosure{margin:0;border-top:1px solid rgba(255,255,255,.045);background:#11151b}
+.v22v-disclosure-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:0 15px;color:#d8dce3;font-size:13px;font-weight:850;cursor:pointer;list-style:none}
+.v22v-disclosure-summary::-webkit-details-marker{display:none}
+.v22v-disclosure-action{display:inline-flex;align-items:center;min-height:28px;padding:3px 8px;border:1px solid #323842;border-radius:999px;color:#a9b0bc;font-size:12px;font-weight:800}
+.v22v-disclosure[open] .v22v-disclosure-action{color:#fff;border-color:rgba(255,48,72,.35);background:rgba(255,48,72,.08)}
+.v22v-disclosure>.v22v-technique-layout{border-top:0!important;padding-top:2px!important}
+.v22v-disclosure>.v22v-technique{border:0!important}
+.v22v-feedback-summary{font-size:12px!important}
+.v22v-context-rail .v22-recommendation,.v22v-context-rail .v22-last-session-reference{min-height:0!important}
+@media(max-width:999px){
+ #view.v22-premium-workout.v22v-performance-shell{display:block!important;max-width:760px!important}
+ .v22v-workout-layout{display:flex!important;flex-direction:column!important}
+ .v22v-session-rail{order:-1!important}
+ .v22v-session-rail .v22v-finish-dock{position:fixed!important}
+}
+@media(min-width:1000px){
+ #view.v22-premium-workout.v22v-performance-shell{display:block!important;max-width:var(--fjz-content-max)!important;padding-bottom:48px!important}
+ .v22v-workout-layout{display:grid!important;grid-template-columns:minmax(0,1fr) var(--fjz-rail);gap:22px;align-items:start}
+ .v22v-workout-feed{grid-column:1;gap:18px}
+ .v22v-session-rail{grid-column:2;order:0;position:sticky;top:18px;gap:12px}
+ .v22v-session-rail .v22v-save-state{position:static!important}
+ .v22v-session-rail .v22v-finish-dock{position:static!important;display:block!important;width:100%!important;max-width:none!important;inset:auto!important;margin:0!important}
+ .v22v-session-rail .v22v-finish-copy{margin-bottom:10px}
+ .v22v-exercise{margin-top:0!important}
+ .v22v-technique-card .v72-tech-steps,.v22v-exercise .v72-tech-card .v72-tech-steps{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:620px){
+ .v22v-context-rail{display:grid;grid-template-columns:1fr 1fr;padding:9px 12px 0}
+ .v22v-context-rail>*{min-width:0}
+ .v22v-context-rail .v22-recommendation,.v22v-context-rail .v22-last-session-reference{padding:10px 11px!important}
+ .v22v-context-rail p,.v22v-context-rail .muted{font-size:12px!important;line-height:1.35!important}
+ .v22v-disclosure-summary{padding-inline:13px}
+}

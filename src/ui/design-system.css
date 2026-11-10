@@ -14,3 +14,11 @@
 .v22v-touch{min-height:var(--fjz-touch);min-width:var(--fjz-touch)}
 .v22v-performance-shell button:focus-visible,.v22v-session-modal button:focus-visible,.v22v-comment-sheet button:focus-visible,
 .v22v-performance-shell input:focus-visible,.v22v-comment-sheet textarea:focus-visible{outline:none;box-shadow:var(--fjz-focus)!important}
+
+/* 2B-V.6 · reusable typography and layout scale */
+:root{
+ --fjz-text-xs:12px;--fjz-text-sm:13px;--fjz-text-md:15px;--fjz-text-lg:18px;
+ --fjz-heading-sm:20px;--fjz-heading-md:26px;--fjz-heading-lg:34px;
+ --fjz-control:48px;--fjz-content-max:1320px;--fjz-rail:340px;
+}
+.v22v-duplicate-nav[hidden],.v22v-context-nav[hidden]{display:none!important}

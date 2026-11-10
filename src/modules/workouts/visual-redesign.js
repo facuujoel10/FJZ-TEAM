@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.5';
+const VERSION='22.2B-V.6';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -24,11 +24,18 @@ function command(view){
   ensureOverview(view,hero);
 }
 function trimDuplicateNav(view){
+  if(!view)return;
   const duplicate=new Set(['inicio','nutrición','nutricion','progreso','entrenar']);
-  [...view.querySelectorAll('.tabs .tab')].forEach(b=>{
+  const groups=new Set();
+  [...view.querySelectorAll('.tabs .tab,button.tab')].forEach(b=>{
     if(!duplicate.has(t(b.textContent).toLowerCase()))return;
     b.classList.add('v22v-duplicate-nav');
-    b.closest('.tabs')?.classList.add('v22v-context-nav');
+    b.hidden=true;b.setAttribute('aria-hidden','true');b.tabIndex=-1;
+    const group=b.closest('.tabs');if(group){group.classList.add('v22v-context-nav');groups.add(group)}
+  });
+  groups.forEach(group=>{
+    const visible=[...group.querySelectorAll('.tab')].filter(x=>!x.hidden&&!x.classList.contains('v22v-duplicate-nav'));
+    if(!visible.length){group.hidden=true;group.setAttribute('aria-hidden','true')}
   });
 }
 function actions(card,head){let box=head.querySelector('.v22v-exercise-actions');if(!box){box=make('div','v22v-exercise-actions');head.appendChild(box)}
@@ -42,14 +49,58 @@ function series(card){const sets=[...card.querySelectorAll(':scope > .set-grid, 
  sets.forEach(x=>{if(x.parentElement!==block)block.appendChild(x)});labelSeriesRows(block)}
 function context(card){const xs=[...card.querySelectorAll(':scope > .v22-last-session-reference, :scope > .v22-recommendation, :scope > .coach-note, :scope > .recommend')];if(!xs.length)return;let rail=card.querySelector(':scope > .v22v-context-rail');
  if(!rail){rail=make('div','v22v-context-rail');const s=card.querySelector(':scope > .v22v-series-block');if(s)s.before(rail);else card.appendChild(rail)}xs.forEach(x=>{if(x.parentElement!==rail)rail.appendChild(x)})}
-function technique(card){const layout=card.querySelector(':scope > .v72-tech-layout');if(layout){layout.classList.add('v22v-technique-layout');const tech=layout.querySelector('.v72-tech-card');if(tech)tech.classList.add('v22v-technique-card');[...layout.querySelectorAll('.v72-tech-step')].forEach((x,i)=>{x.classList.add('v22v-technique-step');x.dataset.step=String(i+1)});return}const ps=[...card.querySelectorAll(':scope > p.muted')];ps.forEach(p=>{if(/técnica|tecnica|buscá|evitá|posición|posicion/i.test(t(p.textContent)))p.classList.add('v22v-technique')})}
-function exercise(card,index){card.classList.add('v22v-exercise');const h=card.querySelector('.day-head');if(h){h.classList.add('v22v-exercise-head');meta(card,h,index);actions(card,h)}technique(card);context(card);series(card)}
+function disclosure(node,label){
+  if(!node||node.closest('.v22v-disclosure'))return node?.closest('.v22v-disclosure')||null;
+  const d=make('details','v22v-disclosure'),s=make('summary','v22v-disclosure-summary','<span>'+label+'</span><span class="v22v-disclosure-action">Ver</span>');
+  node.before(d);d.appendChild(s);d.appendChild(node);return d;
+}
+function technique(card){
+  const layout=card.querySelector(':scope > .v72-tech-layout');
+  if(layout){
+    layout.classList.add('v22v-technique-layout');const tech=layout.querySelector('.v72-tech-card');
+    if(tech)tech.classList.add('v22v-technique-card');
+    [...layout.querySelectorAll('.v72-tech-step')].forEach((x,i)=>{x.classList.add('v22v-technique-step');x.dataset.step=String(i+1)});
+    disclosure(layout,'Técnica y ejecución');return;
+  }
+  [...card.querySelectorAll(':scope > p.muted')].forEach(p=>{
+    if(!/técnica|tecnica|buscá|evitá|posición|posicion/i.test(t(p.textContent)))return;
+    p.classList.add('v22v-technique');disclosure(p,'Técnica y ejecución');
+  });
+}
+function compactFeedbackStatus(card){
+  const status=card.querySelector('.v73-student-feedback-status');if(!status)return;
+  const chips=[...status.children];if(chips.length<2)return;
+  const labels=chips.map(x=>t(x.textContent));const first=labels[0];
+  if(labels.every(x=>x===first)){status.innerHTML='';const chip=make('span','v73-comment-badge v22v-feedback-summary',first+' · '+labels.length);status.appendChild(chip)}
+}
+function exercise(card,index){card.classList.add('v22v-exercise');const h=card.querySelector('.day-head');if(h){h.classList.add('v22v-exercise-head');meta(card,h,index);actions(card,h)}technique(card);context(card);series(card);compactFeedbackStatus(card)}
 function finishDock(view){const btn=view.querySelector('.v22-finish-workout');if(!btn)return;btn.classList.add('v22v-primary-finish');let dock=view.querySelector('.v22v-finish-dock');if(!dock){dock=make('div','v22v-finish-dock');dock.innerHTML='<div class="v22v-finish-copy"><span>Cuando termines</span><strong>Confirmar entrenamiento</strong></div>';btn.before(dock);dock.appendChild(btn)}}
-function enhanceWorkout(root){if(!hasDOM())return false;const view=root||document.getElementById('view');if(!view||!view.classList.contains('v22-premium-workout'))return false;view.classList.add('v22v-performance-shell');trimDuplicateNav(view);command(view);[...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);document.getElementById('v22WorkoutSaveState')?.classList.add('v22v-save-state');finishDock(view);return true}
+function workoutComposition(view){
+  let layout=view.querySelector(':scope > .v22v-workout-layout');
+  if(!layout){layout=make('div','v22v-workout-layout');const first=view.querySelector(':scope > .v22v-exercise');if(first)first.before(layout);else view.appendChild(layout)}
+  let feed=layout.querySelector(':scope > .v22v-workout-feed');if(!feed){feed=make('main','v22v-workout-feed');layout.appendChild(feed)}
+  let rail=layout.querySelector(':scope > .v22v-session-rail');if(!rail){rail=make('aside','v22v-session-rail');rail.setAttribute('aria-label','Estado de la sesión');layout.appendChild(rail)}
+  [...view.querySelectorAll(':scope > .v22v-exercise')].forEach(x=>feed.appendChild(x));
+  const save=document.getElementById('v22WorkoutSaveState');if(save&&save.parentElement!==rail)rail.appendChild(save);
+  [...view.children].filter(x=>x!==layout&&x!==rail&&x!==feed&&/cambios pendientes/i.test(t(x.textContent))&&t(x.textContent).length<700).forEach(x=>{x.classList.add('v22v-pending-card');rail.appendChild(x)});
+  const dock=view.querySelector(':scope > .v22v-finish-dock');if(dock&&dock.parentElement!==rail)rail.appendChild(dock);
+  return layout;
+}
+function enhanceWorkout(root){if(!hasDOM())return false;const view=root||document.getElementById('view');if(!view||!view.classList.contains('v22-premium-workout'))return false;view.classList.add('v22v-performance-shell');trimDuplicateNav(view);command(view);[...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);document.getElementById('v22WorkoutSaveState')?.classList.add('v22v-save-state');finishDock(view);workoutComposition(view);return true}
 function enhanceCommentModal(modal){if(!modal)return false;modal.classList.add('v22v-comment-sheet');modal.querySelector('.modal-content')?.classList.add('v22v-comment-panel');modal.querySelector('.modal-head')?.classList.add('v22v-comment-head');modal.querySelector('.v73-feedback-type')?.classList.add('v22v-comment-types');modal.querySelector('textarea')?.classList.add('v22v-comment-text');const send=[...modal.querySelectorAll('button')].find(x=>/Enviar al coach/i.test(t(x.textContent)));send?.classList.add('v22v-comment-submit');return true}
 function historyMetrics(row){const copy=row.querySelector('.v244-history-copy');if(!copy)return;const badges=copy.querySelector('.v244-history-badges')||row.querySelector('.v244-history-badges');badges?.classList.add('v22v-history-signals');const muted=copy.querySelector('.muted');muted?.classList.add('v22v-history-subline')}
-function enhanceHistory(host){if(!host)return false;trimDuplicateNav(document.getElementById('view')||host);const card=host.querySelector('.v22-premium-history');if(!card)return false;card.classList.add('v22v-history');card.querySelector('.v244-history-list')?.classList.add('v22v-history-list');
- [...card.querySelectorAll('.v22-history-session')].forEach((row,index)=>{row.classList.add('v22v-history-session');if(!row.querySelector('.v22v-history-index'))row.prepend(make('span','v22v-history-index',String(index+1).padStart(2,'0')));row.querySelector('.v244-history-copy')?.classList.add('v22v-history-copy');historyMetrics(row);const b=row.querySelector(':scope > button');if(b)b.classList.add('v22v-history-open')});return true}
+function historyOverview(card){
+  const rows=[...card.querySelectorAll('.v22-history-session')];let o=card.querySelector('.v22v-history-overview');
+  if(!o){o=make('div','v22v-history-overview');card.querySelector('.section-title')?.after(o)}
+  const withComments=rows.filter(r=>/comentario|molestia/i.test(t(r.textContent))).length;
+  o.innerHTML='<div><span class="v22v-label">Sesiones</span><strong>'+rows.length+'</strong></div><div><span class="v22v-label">Con feedback</span><strong>'+withComments+'</strong></div><p>Tu historial prioriza lo registrado: fecha, trabajo realizado y cambios verificables.</p>';
+}
+function enhanceHistory(host){
+  if(!host)return false;const view=document.getElementById('view')||host;trimDuplicateNav(view);
+  const card=host.querySelector('.v22-premium-history');if(!card)return false;card.classList.add('v22v-history');card.querySelector('.v244-history-list')?.classList.add('v22v-history-list');
+  [...card.querySelectorAll('.v22-history-session')].forEach((row,index)=>{row.classList.add('v22v-history-session');if(!row.querySelector('.v22v-history-index'))row.prepend(make('span','v22v-history-index',String(index+1).padStart(2,'0')));row.querySelector('.v244-history-copy')?.classList.add('v22v-history-copy');historyMetrics(row);const b=row.querySelector(':scope > button');if(b)b.classList.add('v22v-history-open')});
+  historyOverview(card);return true
+}
 function sessionLayout(modal){const content=modal.querySelector('.modal-content');if(!content)return;const k=modal.querySelector('.v244-summary-grid'),flow=modal.querySelector('.v244-timeline');if(!k||!flow)return;let layout=modal.querySelector('.v22v-session-layout');if(!layout){layout=make('div','v22v-session-layout');k.before(layout);layout.appendChild(k);layout.appendChild(flow)}}
 function enhanceSessionDetail(modal){if(!modal)return false;modal.classList.add('v22v-session-modal');modal.querySelector('.modal-content')?.classList.add('v22v-session-panel');modal.querySelector('.modal-head')?.classList.add('v22v-session-head');modal.querySelector('.v244-summary-grid')?.classList.add('v22v-session-kpis');modal.querySelector('.v244-timeline')?.classList.add('v22v-session-flow');sessionLayout(modal);
  [...modal.querySelectorAll('.v244-exercise')].forEach((x,i)=>{x.classList.add('v22v-history-exercise');if(!x.querySelector('.v22v-history-exercise-index'))x.prepend(make('span','v22v-history-exercise-index',String(i+1).padStart(2,'0')))});[...modal.querySelectorAll('.v287-exercise-comment')].forEach(x=>x.classList.add('v22v-context-comment'));return true}
