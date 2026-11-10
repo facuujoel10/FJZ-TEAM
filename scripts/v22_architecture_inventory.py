@@ -55,6 +55,7 @@ result={
     "session_history_module":(ROOT/"src/modules/workouts/session-history.js").exists(),
     "premium_history_ui":(ROOT/"src/ui/premium-history.css").exists(),
     "visual_redesign_module":(ROOT/"src/modules/workouts/visual-redesign.js").exists(),
+    "visual_foundation":(ROOT/"src/ui/design-system.css").exists(),
     "design_system":(ROOT/"src/ui/design-system.css").exists()
  }
 }

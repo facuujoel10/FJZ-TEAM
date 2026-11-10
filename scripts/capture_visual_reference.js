@@ -19,6 +19,16 @@ async function login(page){
 }
 async function nav(page,name){const b=page.getByRole('button',{name}).filter({visible:true}).first();if(await b.count())await b.click()}
 async function shot(page,vp,state){await page.screenshot({path:path.join(out,label+'-'+vp+'-'+state+'.png'),fullPage:false})}
+async function ensureWorkout(page){
+ await nav(page,'Entrenar');await page.waitForTimeout(180);
+ if(await page.locator('.session-card').count())return;
+ const start=page.getByRole('button',{name:/Iniciar entrenamiento|Comenzar|Entrenar ahora|Continuar entrenamiento/i}).filter({visible:true}).first();
+ if(await start.count())await start.click();
+ if(!(await page.locator('.session-card').count())){
+   await page.evaluate(()=>{try{if(typeof startWorkout==='function')startWorkout(0);else if(typeof currentDay!=='undefined'&&typeof render==='function'){currentDay=0;render()}}catch(_e){}});
+ }
+ await page.locator('.session-card').first().waitFor({state:'visible',timeout:12000});
+}
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
@@ -26,23 +36,19 @@ async function shot(page,vp,state){await page.screenshot({path:path.join(out,lab
    const context=await browser.newContext({viewport:{width:w,height:h},locale:'es-AR',timezoneId:'America/Argentina/Buenos_Aires',serviceWorkers:'block'});
    const page=await safePage(context);await login(page);
 
-   await nav(page,'Historial');await page.waitForTimeout(250);await shot(page,vp,'history');
+   await nav(page,'Historial');await page.waitForTimeout(220);await shot(page,vp,'history');
    const session=page.locator('.v22-history-session,.v244-history-item,.history-item').first();
    if(await session.count()){
-     const open=session.getByRole('button',{name:/Ver sesión|Abrir/i}).first();
-     if(await open.count()){await open.click();await page.waitForTimeout(200);await shot(page,vp,'session-detail');await shot(page,vp,'comments');const close=page.locator('#modal button[aria-label="Cerrar"],#modal button[title="Cerrar"]').first();if(await close.count())await close.click();}
+     const open=session.getByRole('button',{name:/Ver sesión|Ver|Abrir/i}).first();
+     if(await open.count()){await open.click();await page.waitForTimeout(180);await shot(page,vp,'session-detail');await shot(page,vp,'comments');const close=page.locator('#modal button[aria-label="Cerrar"],#modal button[title="Cerrar"],#modal .modal-head button').first();if(await close.count())await close.click();}
    }
 
-   await nav(page,'Entrenar');
-   const start=page.getByRole('button',{name:/Entrenar|Continuar entrenamiento/i}).filter({visible:true}).first();
-   if(await start.count()&&!(await page.locator('.session-card').count()))await start.click();
-   await page.locator('.session-card').first().waitFor({state:'visible',timeout:10000});
-   await shot(page,vp,'workout');
+   await ensureWorkout(page);await shot(page,vp,'workout');
    const inputs=page.locator('.session-card').first().locator('input');
    if(await inputs.count()>=3){await inputs.nth(0).fill('37.5');await inputs.nth(1).fill('9');await inputs.nth(2).fill('1.5');}
-   await shot(page,vp,'series');
+   await page.waitForTimeout(100);await shot(page,vp,'series');
    const comment=page.locator('.session-card').first().getByRole('button',{name:/Comentario/i}).first();
-   if(await comment.count()){await comment.click();const ta=page.locator('#v73FeedbackMessage');if(await ta.count())await ta.fill('Comentario visual QA · técnica estable');await shot(page,vp,'comment-compose');}
+   if(await comment.count()){await comment.click();const ta=page.locator('#v73FeedbackMessage');if(await ta.count())await ta.fill('Comentario visual QA · técnica estable');await page.waitForTimeout(100);await shot(page,vp,'comment-compose');}
    await context.close();
   }
  }finally{await browser.close()}

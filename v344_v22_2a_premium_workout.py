@@ -263,6 +263,7 @@ old="""    <button class="btn primary" style="width:100%;margin-top:12px" onclic
 }"""
 new="""    <button class="btn primary" style="width:100%;margin-top:12px" onclick="submitExerciseFeedbackV73()">Enviar al coach</button>`)
   try{globalThis.TeamFJZPremiumWorkout?.bindCommentDraft(exerciseFeedbackTargetV73)}catch(_e){}
+  try{globalThis.TeamFJZVisualRedesign?.enhanceCommentModal(document.getElementById('modal'))}catch(_e){}
 }"""
 if html.count(old)!=1:
     raise RuntimeError("V22 2A comment bind anchor mismatch: "+str(html.count(old)))
@@ -460,6 +461,7 @@ for marker in [
     "TeamFJZVisualRedesign?.enhanceWorkout",
     "TeamFJZVisualRedesign?.enhanceHistory",
     "TeamFJZVisualRedesign?.enhanceSessionDetail",
+    "TeamFJZVisualRedesign?.enhanceCommentModal",
     "TeamFJZSessionHistory?.activeSessionId",
     "session_id:globalThis.TeamFJZSessionHistory",
     "exactSessionCommentLinkV2B:true",

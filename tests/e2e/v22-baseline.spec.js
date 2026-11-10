@@ -583,6 +583,41 @@ test('2B-V visual system: legibility, touch targets, focus and composition', asy
   console.log('E2E_FLOW_OK visual-redesign-workout-2bv '+testInfo.project.name);
 });
 
+test('2B-V visual system: navegación contextual, contraste básico y dock sin tapar input activo', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const view=page.locator('#view.v22v-performance-shell');await expect(view).toBeVisible();
+  const data=await page.evaluate(()=>{
+    const visible=n=>!!(n&&n.getBoundingClientRect().width&&n.getBoundingClientRect().height);
+    const tabs=[...document.querySelectorAll('#view .v22v-context-nav .tab')].filter(visible).map(x=>x.textContent.trim());
+    const dock=document.querySelector('.v22v-finish-dock')?.getBoundingClientRect();
+    const active=document.querySelector('.v22-set-field input')?.getBoundingClientRect();
+    const css=n=>n?getComputedStyle(n):null;
+    const title=css(document.querySelector('.v22v-exercise-title strong'));
+    const body=css(document.querySelector('.v22v-technique'));
+    return{tabs,dock:dock?{h:dock.height,b:dock.bottom}:null,active:active?{h:active.height}:null,titleFont:parseFloat(title?.fontSize||0),bodyFont:parseFloat(body?.fontSize||0)};
+  });
+  expect(data.tabs.filter(x=>/^Inicio$/i.test(x)).length).toBe(0);
+  expect(data.tabs.filter(x=>/^Nutrici[oó]n$/i.test(x)).length).toBe(0);
+  expect(data.dock?.h||0).toBeGreaterThanOrEqual(48);
+  expect(data.active?.h||0).toBeGreaterThanOrEqual(44);
+  expect(data.titleFont).toBeGreaterThanOrEqual(18);
+  expect(data.bodyFont).toBeGreaterThanOrEqual(13);
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK visual-context-a11y-2bv '+testInfo.project.name);
+});
+
+test('2B-V comentarios: compose accesible y táctil', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const comment=page.locator('.v22v-exercise').first().getByRole('button',{name:/Comentario/i});await comment.click();
+  const modal=page.locator('#modal.v22v-comment-sheet');await expect(modal).toBeVisible();
+  const ta=modal.locator('textarea'),send=modal.getByRole('button',{name:/Enviar al coach/i});
+  const [tb,sb]=await Promise.all([ta.boundingBox(),send.boundingBox()]);
+  expect(tb?.height||0).toBeGreaterThanOrEqual(120);expect(sb?.height||0).toBeGreaterThanOrEqual(44);
+  await ta.fill('Comentario visual de prueba');await expect(ta).toBeFocused();await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK visual-comment-sheet-2bv '+testInfo.project.name);
+});
+
 test('2B-V historial: timeline y detalle legibles', async ({page},testInfo)=>{
   await login(page,'alumno01@test.local');
   await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
