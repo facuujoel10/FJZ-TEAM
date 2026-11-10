@@ -624,6 +624,8 @@ test('2B-V historial: timeline y detalle legibles', async ({page},testInfo)=>{
   await login(page,'alumno01@test.local');
   await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
   const history=page.locator('.v22v-history');
+  const duplicateGlobalTabs=page.locator('#view .v22v-context-nav .v22v-duplicate-nav:visible');
+  expect(await duplicateGlobalTabs.count()).toBe(0);
   if(await history.count()){await expect(history).toBeVisible();await assertNoHorizontalOverflow(page);const open=history.locator('.v22v-history-open').first();if(await open.count()){await open.click();await expect(page.locator('#modal.v22v-session-modal')).toBeVisible();const s=await page.evaluate(()=>({comments:[...document.querySelectorAll('.v22v-context-comment p')].map(x=>parseFloat(getComputedStyle(x).fontSize)),kpi:[...document.querySelectorAll('.v22v-session-kpis span')].map(x=>parseFloat(getComputedStyle(x).fontSize)),width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(s.comments.every(x=>x>=12)).toBeTruthy();expect(s.kpi.every(x=>x>=11)).toBeTruthy();expect(s.scroll).toBeLessThanOrEqual(s.width+1);await page.screenshot({path:'artifacts/2bv/session-detail-'+testInfo.project.name+'.png',fullPage:true});}}
   console.log('E2E_FLOW_OK visual-redesign-history-2bv '+testInfo.project.name);
 });
