@@ -119,6 +119,62 @@ jobs:
         continue-on-error: true
         run: npx playwright test --project=desktop-1440
 
+      - name: Checkout V21.41 visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807
+          path: visual_refs/v2141
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Checkout certified V22 2B visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 58134a4671c7ca67e79a4e1c32e07eca03e5a511
+          path: visual_refs/v22-2b
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Build isolated V21.41 and V22 2B references against local Supabase
+        run: |
+          python scripts/dev_build_visual_reference.py visual_refs/v2141
+          python scripts/dev_build_visual_reference.py visual_refs/v22-2b
+
+      - name: Start isolated visual reference servers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8001 -d visual_refs/v2141/public > /tmp/fjz-v2141-http.log 2>&1 &
+          python -m http.server 8002 -d visual_refs/v22-2b/public > /tmp/fjz-v22-2b-http.log 2>&1 &
+          for port in 8001 8002; do
+            for i in {1..20}; do
+              curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
+              sleep 1
+            done
+            curl -fsS "http://127.0.0.1:$port/" >/dev/null
+          done
+
+      - name: Capture V21.41 with deterministic fake fixture
+        run: |
+          python scripts/dev_reset.py
+          npx playwright test --project=mobile-390 --grep "2B exacto"
+          node scripts/capture_visual_reference.js v2141 http://127.0.0.1:8001 artifacts/2bv-comparison
+
+      - name: Capture certified V22 2B with same fake fixture
+        run: |
+          python scripts/dev_reset.py
+          npx playwright test --project=mobile-390 --grep "2B exacto"
+          node scripts/capture_visual_reference.js v22-2b http://127.0.0.1:8002 artifacts/2bv-comparison
+
+      - name: Capture V22 2B-V with same fake fixture
+        run: |
+          python scripts/dev_reset.py
+          npx playwright test --project=mobile-390 --grep "2B exacto"
+          node scripts/capture_visual_reference.js v22-2bv http://127.0.0.1:8000 artifacts/2bv-comparison
+
+      - name: Build V21.41 vs 2B vs 2B-V visual contact sheets
+        run: node scripts/build_visual_contact_sheets.js artifacts/2bv-comparison
+
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -128,6 +184,7 @@ jobs:
             artifacts/2a
             artifacts/2b
             artifacts/2bv
+            artifacts/2bv-comparison
           if-no-files-found: ignore
           retention-days: 14
 
