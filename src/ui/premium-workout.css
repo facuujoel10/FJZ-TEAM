@@ -127,3 +127,92 @@
  .v22v-session-rail>.v22v-finish-dock{position:static!important;inset:auto!important;width:100%!important;margin:0!important}
  .v22v-command>.v22v-finish-dock{display:none!important}
 }
+
+
+/* 2B-V.1 · final visual polish */
+.v22v-save-state strong,
+.v22v-save-state small{display:block!important}
+.v22v-save-state small{margin-top:2px!important}
+.v22v-series-header>span{
+ min-width:0;
+ white-space:nowrap;
+ word-break:keep-all;
+ overflow-wrap:normal;
+ text-align:center;
+ letter-spacing:.045em;
+}
+.v22v-series-header>span:first-child{text-align:left}
+.v22v-previous-load,
+.v22v-exercise .v205-prev-load,
+.v22v-context-rail .muted{
+ white-space:normal!important;
+ overflow:visible!important;
+ text-overflow:clip!important;
+ word-break:normal!important;
+ overflow-wrap:anywhere;
+}
+.v22-premium-set .v22-set-field{
+ min-width:0!important;
+ margin:0!important;
+}
+.v22-premium-set .v22-set-field>span,
+.v22-premium-set .v22-set-field>.label,
+.v22-premium-set .v22-set-field>small:first-child{
+ display:none!important;
+}
+@media(max-width:999px){
+ #view.v22-premium-workout.v22v-performance-shell{
+  padding-bottom:calc(196px + env(safe-area-inset-bottom))!important;
+  scroll-padding-bottom:calc(206px + env(safe-area-inset-bottom))!important;
+ }
+ .v22v-workout-feed .v22v-exercise:last-child{
+  scroll-margin-bottom:calc(206px + env(safe-area-inset-bottom));
+ }
+ #view.v22v-workout-active:has(.v22-set-field input:focus) .v22v-finish-dock{
+  opacity:0!important;
+  transform:translateY(calc(100% + 18px))!important;
+  pointer-events:none!important;
+ }
+ .v22v-finish-dock{
+  transition:opacity .16s ease,transform .16s ease;
+ }
+}
+@media(max-width:620px){
+ .v22v-series-header{
+  grid-template-columns:38px minmax(72px,1.15fr) minmax(56px,.9fr) minmax(48px,.8fr)!important;
+  gap:6px!important;
+  padding-inline:9px!important;
+ }
+ .v22-premium-set.v22-premium-set{
+  grid-template-columns:38px minmax(72px,1.15fr) minmax(56px,.9fr) minmax(48px,.8fr)!important;
+  gap:6px!important;
+  padding-inline:9px!important;
+ }
+ .v22v-series-header>span{font-size:11.5px!important}
+ .v22v-finish-dock{
+  bottom:max(70px,calc(64px + env(safe-area-inset-bottom)))!important;
+ }
+}
+@media(max-width:380px){
+ .v22v-series-header{
+  grid-template-columns:34px minmax(68px,1.15fr) minmax(52px,.9fr) minmax(44px,.8fr)!important;
+  gap:4px!important;
+  padding-inline:7px!important;
+ }
+ .v22-premium-set.v22-premium-set{
+  grid-template-columns:34px minmax(68px,1.15fr) minmax(52px,.9fr) minmax(44px,.8fr)!important;
+  gap:4px!important;
+  padding-inline:7px!important;
+ }
+ .v22v-series-header>span{font-size:11px!important;letter-spacing:.025em}
+}
+@media(min-width:1000px){
+ #view.v22-premium-workout.v22v-performance-shell{max-width:1280px!important}
+ .v22v-workout-layout{
+  grid-template-columns:minmax(0,1.65fr) minmax(300px,350px)!important;
+  gap:24px!important;
+ }
+ .v22v-session-rail{font-size:13px}
+ .v22v-session-rail .muted,
+ .v22v-session-rail small{font-size:12.5px!important;line-height:1.5!important}
+}
