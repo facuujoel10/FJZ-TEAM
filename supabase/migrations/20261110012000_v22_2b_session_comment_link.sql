@@ -23,8 +23,9 @@ end $$;
 create or replace function public.guard_feedback_session_link_v22_2b()
 returns trigger
 language plpgsql
+security definer
 set search_path to 'public','pg_temp'
-as $$
+as $
 declare
   v_owner uuid;
 begin
@@ -58,8 +59,9 @@ for each row execute function public.guard_feedback_session_link_v22_2b();
 create or replace function public.guard_workout_session_feedback_owner_v22_2b()
 returns trigger
 language plpgsql
+security definer
 set search_path to 'public','pg_temp'
-as $$
+as $
 begin
   if new.source_session_id is null then return new; end if;
   if exists(

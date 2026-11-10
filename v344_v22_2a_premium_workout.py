@@ -101,26 +101,24 @@ def patch_v145(body):
         raise RuntimeError("V22 2B V145 session id pack anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
-    old="""  startWorkout=function(i){
-    const p=restoreDraftV145(i);
-    currentDay=i;"""
-    new="""  startWorkout=function(i){
-    const p=restoreDraftV145(i);
-    const s=student?.(),d=s?.days?.[i];
-    const stableSessionId=globalThis.TeamFJZSessionHistory?.ensureSessionId({
-      studentId:s?.id,dayId:d?.id,priorSessionId:p?.sessionId,startedAt:p?.startedAt||null
-    })||p?.sessionId||null;
-    try{globalThis.TeamFJZSessionHistory?.activate({studentId:s?.id,dayId:d?.id,sessionId:stableSessionId,startedAt:p?.startedAt||null})}catch(_e){}
-    currentDay=i;"""
-    if body.count(old)!=1:
-        raise RuntimeError("V22 2B V145 start identity anchor mismatch: "+str(body.count(old)))
-    body=body.replace(old,new,1)
-
     anchor="""  window.__fjzWorkoutAutosaveV145={"""
     if body.count(anchor)!=1:
         raise RuntimeError("V22 2B V145 export anchor mismatch")
-    body=body.replace(anchor,"""  window.__fjzWorkoutSessionIdV2B=function(){return globalThis.TeamFJZSessionHistory?.activeSessionId?.()||null};
-  """+anchor,1)
+    helper="""  window.__fjzEnsureWorkoutSessionIdentityV2B=function(){
+    const s=student?.(),d=s?.days?.[currentDay];
+    if(!s||!d)return null;
+    const prior=freshestV145(readLocalV145(s,d),readCloudV145(s,d));
+    const sessionId=globalThis.TeamFJZSessionHistory?.ensureSessionId({
+      studentId:s.id,dayId:d.id,priorSessionId:prior?.sessionId,startedAt:prior?.startedAt||null
+    })||prior?.sessionId||null;
+    try{globalThis.TeamFJZSessionHistory?.activate({studentId:s.id,dayId:d.id,sessionId,startedAt:prior?.startedAt||null})}catch(_e){}
+    return sessionId;
+  };
+  window.__fjzWorkoutSessionIdV2B=function(){
+    return globalThis.TeamFJZSessionHistory?.activeSessionId?.()||window.__fjzEnsureWorkoutSessionIdentityV2B?.()||null;
+  };
+  """
+    body=body.replace(anchor,helper+anchor,1)
     return body
 html=edit_script(html,"v145WorkoutAutosaveRuntime",patch_v145)
 
@@ -177,6 +175,12 @@ def patch_v207(body):
         raise RuntimeError("V22 2B V207 confirmation identity anchor mismatch: "+str(body.count(old)))
     body=body.replace(old,new,1)
 
+    old="""      return baseStartV207.apply(this,arguments);
+    };"""
+    new="""      const out=baseStartV207.apply(this,arguments);
+      try{window.__fjzEnsureWorkoutSessionIdentityV2B?.()}catch(_e){}
+      return out;
+    };"""
     old_block="""    const sessionTime=Date.parse(session.date||0)||Date.now();
     const maxAge=18*60*60*1000;
 
