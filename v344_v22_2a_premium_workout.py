@@ -181,6 +181,10 @@ def patch_v207(body):
       try{window.__fjzEnsureWorkoutSessionIdentityV2B?.()}catch(_e){}
       return out;
     };"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V207 start identity anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
     old_block="""    const sessionTime=Date.parse(session.date||0)||Date.now();
     const maxAge=18*60*60*1000;
 
