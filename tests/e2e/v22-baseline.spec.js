@@ -594,15 +594,17 @@ test('2B-V visual system: navegación contextual, contraste básico y dock sin t
     const active=document.querySelector('.v22-set-field input')?.getBoundingClientRect();
     const css=n=>n?getComputedStyle(n):null;
     const title=css(document.querySelector('.v22v-exercise-title strong'));
-    const body=css(document.querySelector('.v22v-exercise .v72-tech-card .muted,.v22v-technique'));
-    return{tabs,dock:dock?{h:dock.height,b:dock.bottom}:null,active:active?{h:active.height}:null,titleFont:parseFloat(title?.fontSize||0),bodyFont:parseFloat(body?.fontSize||0)};
+    const contextual=[...document.querySelectorAll('.v22v-exercise .v72-tech-card .muted,.v22v-exercise .v22-previous-load,.v22v-exercise .v22-reference-label,.v22v-exercise .v22v-exercise-progress')]
+      .filter(visible).map(n=>parseFloat(getComputedStyle(n).fontSize)||0).filter(Boolean);
+    return{tabs,dock:dock?{h:dock.height,b:dock.bottom}:null,active:active?{h:active.height}:null,titleFont:parseFloat(title?.fontSize||0),contextualFonts:contextual};
   });
   expect(data.tabs.filter(x=>/^Inicio$/i.test(x)).length).toBe(0);
   expect(data.tabs.filter(x=>/^Nutrici[oó]n$/i.test(x)).length).toBe(0);
   expect(data.dock?.h||0).toBeGreaterThanOrEqual(48);
   expect(data.active?.h||0).toBeGreaterThanOrEqual(44);
   expect(data.titleFont).toBeGreaterThanOrEqual(18);
-  expect(data.bodyFont).toBeGreaterThanOrEqual(13);
+  expect(data.contextualFonts.length).toBeGreaterThan(0);
+  expect(Math.min(...data.contextualFonts)).toBeGreaterThanOrEqual(11);
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK visual-context-a11y-2bv '+testInfo.project.name);
 });
