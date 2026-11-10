@@ -24,3 +24,9 @@
  .v22v-session-head{margin:0 -13px 14px!important;padding:14px 13px 13px!important}.v22v-session-head h3{font-size:23px!important}.v22v-session-layout{display:block}.v22v-session-kpis{position:static;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;margin:0 0 15px!important;overflow-x:auto;padding-bottom:2px}.v22v-session-kpis>div{min-width:86px;min-height:78px;padding:10px!important}.v22v-session-kpis strong{font-size:22px!important}
  .v244-exercise-list{grid-template-columns:1fr!important}.v244-exercise.v22v-history-exercise{grid-template-columns:32px minmax(0,1fr);padding:12px!important}.v22-history-compare{grid-template-columns:1fr!important}.v22-history-compare>span{display:none!important}
 }
+
+/* 2B-V.3 · contextual review readability */
+.v22v-context-comment .v22-comment-meta{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px 12px!important;flex-wrap:wrap!important;margin-top:8px!important}
+.v22v-context-comment .v22-comment-meta time{font-size:11px!important;line-height:1.4!important;color:#a1a8b3!important}
+.v22v-context-comment .v22-comment-link{display:inline-flex!important;align-items:center!important;min-height:26px;padding:4px 7px!important;border:1px solid rgba(120,182,255,.2);border-radius:999px;background:rgba(120,182,255,.07);font-size:11px!important;line-height:1.2!important}
+.v22v-context-comment .v22-comment-link.compat{border-color:rgba(239,190,93,.22);background:rgba(239,190,93,.07)}

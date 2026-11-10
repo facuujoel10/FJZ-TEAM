@@ -44,3 +44,14 @@
 @media(min-width:1000px){#view.v22-premium-workout.v22v-performance-shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start;padding-bottom:40px}.v22v-command{grid-column:1/-1}.v22v-context-nav{grid-column:1/-1}.v22v-save-state{grid-column:2;position:sticky;top:18px;margin:0!important}.v22v-exercise{grid-column:1}.v22v-finish-dock{position:sticky;grid-column:2;grid-row:auto;top:110px;bottom:auto;left:auto;right:auto;width:100%;display:block;padding:14px;border-radius:18px}.v22v-finish-copy{margin-bottom:10px}.v22v-primary-finish{min-height:52px!important}}
 #view.v22-premium-workout.v22v-performance-shell .v22-premium-set .v22-set-field .input{height:52px!important;min-height:52px!important;max-height:none!important;font-size:18px!important}
 @media(max-width:620px){#view.v22-premium-workout.v22v-performance-shell .v22-premium-set .v22-set-field .input{height:50px!important;min-height:50px!important;font-size:17px!important}}
+
+/* 2B-V.3 · legibility + desktop composition hardening */
+.v22v-exercise .v72-tech-card .muted{font-size:13px!important;line-height:1.45!important;color:#aeb5c0!important}
+#modalWrap:has(#modal.v22v-comment-sheet),#modalWrap:has(#modal.v22v-session-modal){z-index:900!important}
+@media(min-width:1000px){
+ .v22v-command{display:block!important;min-height:0!important;padding:24px 26px!important}
+ .v22v-command>div:first-child{max-width:760px}
+ .v22v-command .v22v-session-overview{grid-template-columns:minmax(280px,1.45fr) repeat(2,minmax(150px,.55fr));max-width:860px;margin-top:22px}
+ .v22v-command .v22v-session-overview>div{min-height:82px}
+ .v22v-workout-title{font-size:36px!important}
+}

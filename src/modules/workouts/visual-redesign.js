@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.2';
+const VERSION='22.2B-V.3';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -24,7 +24,7 @@ function command(view){
   ensureOverview(view,hero);
 }
 function trimDuplicateNav(view){
-  [...view.querySelectorAll('.tabs .tab')].forEach(b=>{const s=t(b.textContent).toLowerCase();if(s==='inicio'||s==='nutrición'||s==='nutricion')b.classList.add('v22v-duplicate-nav')});
+  [...view.querySelectorAll('.tabs .tab')].forEach(b=>{const s=t(b.textContent).toLowerCase();if(['inicio','nutrición','nutricion','progreso','entrenar'].includes(s))b.classList.add('v22v-duplicate-nav')});
   const tabs=view.querySelector('.tabs');if(tabs)tabs.classList.add('v22v-context-nav');
 }
 function actions(card,head){let box=head.querySelector('.v22v-exercise-actions');if(!box){box=make('div','v22v-exercise-actions');head.appendChild(box)}
@@ -44,7 +44,7 @@ function finishDock(view){const btn=view.querySelector('.v22-finish-workout');if
 function enhanceWorkout(root){if(!hasDOM())return false;const view=root||document.getElementById('view');if(!view||!view.classList.contains('v22-premium-workout'))return false;view.classList.add('v22v-performance-shell');trimDuplicateNav(view);command(view);[...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);document.getElementById('v22WorkoutSaveState')?.classList.add('v22v-save-state');finishDock(view);return true}
 function enhanceCommentModal(modal){if(!modal)return false;modal.classList.add('v22v-comment-sheet');modal.querySelector('.modal-content')?.classList.add('v22v-comment-panel');modal.querySelector('.modal-head')?.classList.add('v22v-comment-head');modal.querySelector('.v73-feedback-type')?.classList.add('v22v-comment-types');modal.querySelector('textarea')?.classList.add('v22v-comment-text');const send=[...modal.querySelectorAll('button')].find(x=>/Enviar al coach/i.test(t(x.textContent)));send?.classList.add('v22v-comment-submit');return true}
 function historyMetrics(row){const copy=row.querySelector('.v244-history-copy');if(!copy)return;const badges=copy.querySelector('.v244-history-badges')||row.querySelector('.v244-history-badges');badges?.classList.add('v22v-history-signals');const muted=copy.querySelector('.muted');muted?.classList.add('v22v-history-subline')}
-function enhanceHistory(host){if(!host)return false;const card=host.querySelector('.v22-premium-history');if(!card)return false;card.classList.add('v22v-history');card.querySelector('.v244-history-list')?.classList.add('v22v-history-list');
+function enhanceHistory(host){if(!host)return false;trimDuplicateNav(document.getElementById('view')||host);const card=host.querySelector('.v22-premium-history');if(!card)return false;card.classList.add('v22v-history');card.querySelector('.v244-history-list')?.classList.add('v22v-history-list');
  [...card.querySelectorAll('.v22-history-session')].forEach((row,index)=>{row.classList.add('v22v-history-session');if(!row.querySelector('.v22v-history-index'))row.prepend(make('span','v22v-history-index',String(index+1).padStart(2,'0')));row.querySelector('.v244-history-copy')?.classList.add('v22v-history-copy');historyMetrics(row);const b=row.querySelector(':scope > button');if(b)b.classList.add('v22v-history-open')});return true}
 function sessionLayout(modal){const content=modal.querySelector('.modal-content');if(!content)return;const k=modal.querySelector('.v244-summary-grid'),flow=modal.querySelector('.v244-timeline');if(!k||!flow)return;let layout=modal.querySelector('.v22v-session-layout');if(!layout){layout=make('div','v22v-session-layout');k.before(layout);layout.appendChild(k);layout.appendChild(flow)}}
 function enhanceSessionDetail(modal){if(!modal)return false;modal.classList.add('v22v-session-modal');modal.querySelector('.modal-content')?.classList.add('v22v-session-panel');modal.querySelector('.modal-head')?.classList.add('v22v-session-head');modal.querySelector('.v244-summary-grid')?.classList.add('v22v-session-kpis');modal.querySelector('.v244-timeline')?.classList.add('v22v-session-flow');sessionLayout(modal);
