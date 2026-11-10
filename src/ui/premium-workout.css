@@ -55,3 +55,12 @@
  .v22v-command .v22v-session-overview>div{min-height:82px}
  .v22v-workout-title{font-size:36px!important}
 }
+
+/* 2B-V.4 · explicit readable contextual floor */
+#view.v22-premium-workout.v22v-performance-shell .v22v-exercise .v72-tech-card .muted,
+#view.v22-premium-workout.v22v-performance-shell .v22v-exercise .v22-previous-load,
+#view.v22-premium-workout.v22v-performance-shell .v22v-exercise .v22-reference-label,
+#view.v22-premium-workout.v22v-performance-shell .v22v-exercise .v22v-exercise-progress{
+ font-size:12px!important;
+ line-height:1.45!important;
+}
