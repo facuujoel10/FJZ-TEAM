@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.3';
+const VERSION='22.2B-V.5';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -24,8 +24,12 @@ function command(view){
   ensureOverview(view,hero);
 }
 function trimDuplicateNav(view){
-  [...view.querySelectorAll('.tabs .tab')].forEach(b=>{const s=t(b.textContent).toLowerCase();if(['inicio','nutrición','nutricion','progreso','entrenar'].includes(s))b.classList.add('v22v-duplicate-nav')});
-  const tabs=view.querySelector('.tabs');if(tabs)tabs.classList.add('v22v-context-nav');
+  const duplicate=new Set(['inicio','nutrición','nutricion','progreso','entrenar']);
+  [...view.querySelectorAll('.tabs')].forEach(tabs=>{
+    const buttons=[...tabs.querySelectorAll(':scope > .tab')];
+    buttons.forEach(b=>{if(duplicate.has(t(b.textContent).toLowerCase()))b.classList.add('v22v-duplicate-nav')});
+    if(buttons.some(b=>b.classList.contains('v22v-duplicate-nav')))tabs.classList.add('v22v-context-nav');
+  });
 }
 function actions(card,head){let box=head.querySelector('.v22v-exercise-actions');if(!box){box=make('div','v22v-exercise-actions');head.appendChild(box)}
  const btn=[...card.querySelectorAll('button')].find(x=>/comentario/i.test(t(x.textContent)));if(btn&&btn.parentElement!==box){btn.classList.add('v22v-icon-action');btn.textContent='Comentario';box.appendChild(btn)}}
