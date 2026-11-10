@@ -25,10 +25,10 @@ function command(view){
 }
 function trimDuplicateNav(view){
   const duplicate=new Set(['inicio','nutrición','nutricion','progreso','entrenar']);
-  [...view.querySelectorAll('.tabs')].forEach(tabs=>{
-    const buttons=[...tabs.querySelectorAll(':scope > .tab')];
-    buttons.forEach(b=>{if(duplicate.has(t(b.textContent).toLowerCase()))b.classList.add('v22v-duplicate-nav')});
-    if(buttons.some(b=>b.classList.contains('v22v-duplicate-nav')))tabs.classList.add('v22v-context-nav');
+  [...view.querySelectorAll('.tabs .tab')].forEach(b=>{
+    if(!duplicate.has(t(b.textContent).toLowerCase()))return;
+    b.classList.add('v22v-duplicate-nav');
+    b.closest('.tabs')?.classList.add('v22v-context-nav');
   });
 }
 function actions(card,head){let box=head.querySelector('.v22v-exercise-actions');if(!box){box=make('div','v22v-exercise-actions');head.appendChild(box)}
