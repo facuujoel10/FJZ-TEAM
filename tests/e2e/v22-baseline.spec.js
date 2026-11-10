@@ -674,6 +674,16 @@ test('2B-V.1 visual polish: series headers, previous reference and dock/input ge
   }
   await assertNoHorizontalOverflow(page);
   await page.screenshot({path:'artifacts/2bv/polish-series-'+testInfo.project.name+'.png',fullPage:true});
+  if(testInfo.project.name==='mobile-390'){
+    await page.setViewportSize({width:390,height:520});
+    await lastInput.scrollIntoViewIfNeeded();
+    await expect(lastInput).toBeFocused();
+    await page.screenshot({path:'artifacts/2bv/polish-series-mobile-390-reduced-height-focus.png',fullPage:false});
+    const reduced=await page.evaluate(()=>({vh:innerHeight,bottom:document.activeElement?.getBoundingClientRect?.().bottom||0,dockOpacity:Number(getComputedStyle(document.querySelector('.v22v-finish-dock')).opacity)}));
+    expect(reduced.bottom).toBeLessThanOrEqual(reduced.vh+1);
+    expect(reduced.dockOpacity).toBe(0);
+    await page.setViewportSize({width:390,height:844});
+  }
   console.log('E2E_FLOW_OK visual-polish-series-2bv1 '+testInfo.project.name);
 });
 
