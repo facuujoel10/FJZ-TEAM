@@ -66,8 +66,8 @@ jobs:
           npm install --no-save --ignore-scripts @playwright/test@1.65.0
           npx playwright install --with-deps chromium
 
-      - name: V22 1A/1B/1C canonical module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-save-sync.test.js
+      - name: V22 1A/1B/1C/2A/2B module unit + contract tests
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js
 
       - name: Create local stack and build development app
         run: |
@@ -75,7 +75,7 @@ jobs:
           python scripts/dev_build.py
           python scripts/dev_guard.py --artifact
 
-      - name: V22 2A architecture inventory guard
+      - name: V22 2B architecture inventory guard
         run: python scripts/v22_architecture_inventory.py --check
 
       - name: Audit generated JavaScript syntax
@@ -104,10 +104,10 @@ jobs:
         run: npx playwright test --project=mobile-390
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive"
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
@@ -123,8 +123,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v22-2a-premium-workout-screens
-          path: artifacts/2a
+          name: v22-2b-session-history-screens
+          path: |
+            artifacts/2a
+            artifacts/2b
           if-no-files-found: ignore
           retention-days: 14
 

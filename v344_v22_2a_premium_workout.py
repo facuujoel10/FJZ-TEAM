@@ -37,17 +37,19 @@ for marker in [
         raise RuntimeError("V22 2A prerequisite missing "+marker)
 
 module_code=pathlib.Path("src/modules/workouts/premium-workout.js").read_text(encoding="utf-8").strip()
+session_history_code=pathlib.Path("src/modules/workouts/session-history.js").read_text(encoding="utf-8").strip()
 premium_css=pathlib.Path("src/ui/premium-workout.css").read_text(encoding="utf-8").strip()
-if "</script" in module_code.lower():
-    raise RuntimeError("V22 2A module cannot contain closing script markup")
+history_css=pathlib.Path("src/ui/premium-history.css").read_text(encoding="utf-8").strip()
+if "</script" in module_code.lower() or "</script" in session_history_code.lower():
+    raise RuntimeError("V22 module cannot contain closing script markup")
 
-html=html.replace("</head>",'<script id="v22PremiumWorkoutModule">\n'+module_code+'\n</script>\n<meta name="fjz-v22-2a-premium-workout" content="enabled">\n</head>',1)
+html=html.replace("</head>",'<script id="v22PremiumWorkoutModule">\n'+module_code+'\n</script>\n<script id="v22SessionHistoryModule">\n'+session_history_code+'\n</script>\n<meta name="fjz-v22-2a-premium-workout" content="enabled">\n<meta name="fjz-v22-2b-session-history" content="enabled">\n</head>',1)
 
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
 if len(styles)!=1:
     raise RuntimeError("V22 2A expected one consolidated stylesheet")
 sm=styles[0]
-html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+premium_css+"\n"+html[sm.end("body"):]
+html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+premium_css+"\n"+history_css+"\n"+html[sm.end("body"):]
 
 def patch_v205(body):
     old="      return baseRenderWorkoutV205.apply(this,arguments);\n"
@@ -88,8 +90,47 @@ def patch_v145(body):
   }"""
     if body.count(old)!=1:
         raise RuntimeError("V22 2A V145 draft status anchor mismatch: "+str(body.count(old)))
-    return body.replace(old,new,1)
+    body=body.replace(old,new,1)
+
+    old="""      startedAt,
+      updatedAt:new Date().toISOString(),"""
+    new="""      startedAt,
+      sessionId:globalThis.TeamFJZSessionHistory?.ensureSessionId({studentId:s.id,dayId:d.id,priorSessionId:prior?.sessionId,startedAt})||prior?.sessionId||null,
+      updatedAt:new Date().toISOString(),"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V145 session id pack anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old="""  startWorkout=function(i){
+    const p=restoreDraftV145(i);
+    currentDay=i;"""
+    new="""  startWorkout=function(i){
+    const p=restoreDraftV145(i);
+    const s=student?.(),d=s?.days?.[i];
+    const stableSessionId=globalThis.TeamFJZSessionHistory?.ensureSessionId({
+      studentId:s?.id,dayId:d?.id,priorSessionId:p?.sessionId,startedAt:p?.startedAt||null
+    })||p?.sessionId||null;
+    try{globalThis.TeamFJZSessionHistory?.activate({studentId:s?.id,dayId:d?.id,sessionId:stableSessionId,startedAt:p?.startedAt||null})}catch(_e){}
+    currentDay=i;"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V145 start identity anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    anchor="""  window.__fjzWorkoutAutosaveV145={"""
+    if body.count(anchor)!=1:
+        raise RuntimeError("V22 2B V145 export anchor mismatch")
+    body=body.replace(anchor,"""  window.__fjzWorkoutSessionIdV2B=function(){return globalThis.TeamFJZSessionHistory?.activeSessionId?.()||null};
+  """+anchor,1)
+    return body
 html=edit_script(html,"v145WorkoutAutosaveRuntime",patch_v145)
+
+def patch_v106(body):
+    old="      id:uid('ss'),"
+    new="      id:(globalThis.TeamFJZSessionHistory?.activeSessionId?.()||uid('ss')),"
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V106 stable session id anchor mismatch: "+str(body.count(old)))
+    return body.replace(old,new,1)
+html=edit_script(html,"v106PartialSessionsRuntime",patch_v106)
 
 def patch_v207(body):
     pairs=[
@@ -109,7 +150,88 @@ def patch_v207(body):
     count=body.count(old)
     if count<1:
         raise RuntimeError("V22 2A V207 success modal call anchor missing")
-    return body.replace(old,new)
+    body=body.replace(old,new)
+
+    old="""    const session=window.__fjzSaveSessionV205?.(pack);
+    if(!session)throw new Error('No se pudo preparar la sesión.');
+
+    applyWorkoutStartedAtV340(pack,session);"""
+    new="""    const session=window.__fjzSaveSessionV205?.(pack);
+    if(!session)throw new Error('No se pudo preparar la sesión.');
+    const stableIdV2B=globalThis.TeamFJZSessionHistory?.activeSessionId?.();
+    if(stableIdV2B&&String(session.id)!==String(stableIdV2B))throw new Error('La identidad de sesión cambió durante el guardado.');
+
+    applyWorkoutStartedAtV340(pack,session);"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V207 prepared session identity anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old="""      window.__fjzSessionCloudConfirmedId=session.id;
+
+      stateV207='success';"""
+    new="""      window.__fjzSessionCloudConfirmedId=session.id;
+      try{globalThis.TeamFJZSessionHistory?.markConfirmed(session.id)}catch(_e){}
+
+      stateV207='success';"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V207 confirmation identity anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old_block="""    const sessionTime=Date.parse(session.date||0)||Date.now();
+    const maxAge=18*60*60*1000;
+
+    (session.exerciseResults||[]).forEach(r=>{
+      const matches=rows.filter(x=>{
+        if(String(x?.exercise_uid||'')!==String(r?.exerciseUid||''))return false;
+        const dayMatch=!x?.workout_day_id||!pack?.d?.id||String(x.workout_day_id)===String(pack.d.id);
+        if(!dayMatch)return false;
+        const t=Date.parse(x?.created_at||0);
+        return !!t && Math.abs(sessionTime-t)<=maxAge;
+      }).sort((a,b)=>(Date.parse(a?.created_at||0)||0)-(Date.parse(b?.created_at||0)||0));
+
+      if(!matches.length)return;
+      r.exerciseFeedback=matches.map(x=>({
+        id:x.id||null,
+        type:x.feedback_type||'comment',
+        message:String(x.message||'').trim(),
+        createdAt:x.created_at||null,
+        status:x.status||'pending'
+      })).filter(x=>x.message);
+    });"""
+    new_block="""    const sessionTime=Date.parse(session.date||0)||Date.now();
+    const maxAge=18*60*60*1000;
+
+    (session.exerciseResults||[]).forEach(r=>{
+      const exact=rows.filter(x=>
+        String(x?.session_id||'')===String(session.id||'')&&
+        String(x?.exercise_uid||'')===String(r?.exerciseUid||'')
+      );
+      const legacy=rows.filter(x=>{
+        if(x?.session_id)return false;
+        if(String(x?.exercise_uid||'')!==String(r?.exerciseUid||''))return false;
+        const dayMatch=!x?.workout_day_id||!pack?.d?.id||String(x.workout_day_id)===String(pack.d.id);
+        if(!dayMatch)return false;
+        const t=Date.parse(x?.created_at||0);
+        return !!t && Math.abs(sessionTime-t)<=maxAge;
+      });
+      const matches=(exact.length?exact:legacy)
+        .sort((a,b)=>(Date.parse(a?.created_at||0)||0)-(Date.parse(b?.created_at||0)||0));
+
+      if(!matches.length)return;
+      r.exerciseFeedback=matches.map(x=>({
+        id:x.id||null,
+        sessionId:x.session_id||null,
+        linkMode:x.session_id?'exact':'historical-compatible',
+        type:x.feedback_type||'comment',
+        message:String(x.message||'').trim(),
+        createdAt:x.created_at||null,
+        status:x.status||'pending'
+      })).filter(x=>x.message);
+    });"""
+    if body.count(old_block)!=1:
+        raise RuntimeError("V22 2B V287 snapshot matching anchor mismatch: "+str(body.count(old_block)))
+    body=body.replace(old_block,new_block,1)
+    return body
 html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
 old="""  exerciseFeedbackTargetV73={uid,name,dayId:d?.id||'',dayName:d?.name||''};
@@ -170,6 +292,108 @@ if html.count(old)!=1:
     raise RuntimeError("V22 2A comment success anchor mismatch: "+str(html.count(old)))
 html=html.replace(old,new,1)
 
+def patch_v244(body):
+    pattern=re.compile(r"  function exerciseFeedbackForSessionV287\(ss,r,rows\)\{.*?\n  \}\n\n  function commentFocusMatchesV329",re.S)
+    m=pattern.search(body)
+    if not m:
+        raise RuntimeError("V22 2B V244 feedback resolver missing")
+    resolver=r"""  function exerciseFeedbackForSessionV287(ss,r,rows){
+    const all=Array.isArray(rows)?rows:[];
+    const exact=all
+      .filter(x=>String(x?.session_id||'')===String(ss?.id||'')&&String(x?.exercise_uid||'')===String(r?.exerciseUid||''))
+      .sort((a,b)=>(Date.parse(a?.created_at||0)||0)-(Date.parse(b?.created_at||0)||0))
+      .map(x=>({id:x.id||null,sessionId:x.session_id||null,linkMode:'exact',type:x.feedback_type||'comment',message:String(x.message||'').trim(),createdAt:x.created_at||null,status:x.status||'pending'}))
+      .filter(x=>x.message);
+    if(exact.length)return exact;
+
+    const snap=(Array.isArray(r?.exerciseFeedback)?r.exerciseFeedback:[])
+      .filter(x=>String(x?.message||'').trim())
+      .map(x=>({...x,linkMode:x?.linkMode||(x?.sessionId?'exact':'snapshot')}));
+    if(snap.length)return snap;
+
+    const sessionTime=Date.parse(ss?.date||0)||0;
+    const maxDelta=18*60*60*1000;
+    return all
+      .filter(x=>{
+        if(x?.session_id)return false;
+        if(String(x?.exercise_uid||'')!==String(r?.exerciseUid||''))return false;
+        const dayOk=!ss?.dayId||!x?.workout_day_id||String(x.workout_day_id)===String(ss.dayId);
+        if(!dayOk)return false;
+        const t=Date.parse(x?.created_at||0)||0;
+        return !!sessionTime&&!!t&&Math.abs(sessionTime-t)<=maxDelta;
+      })
+      .sort((a,b)=>(Date.parse(a?.created_at||0)||0)-(Date.parse(b?.created_at||0)||0))
+      .map(x=>({id:x.id||null,sessionId:null,linkMode:'historical-compatible',type:x.feedback_type||'comment',message:String(x.message||'').trim(),createdAt:x.created_at||null,status:x.status||'pending'}))
+      .filter(x=>x.message);
+  }
+
+  function commentFocusMatchesV329"""
+    body=body[:m.start()]+resolver+body[m.end():]
+
+    old="""          '<p>'+esc(x.message)+'</p>'+
+          (canAck?"""
+    new="""          '<p>'+esc(x.message)+'</p>'+
+          '<div class="v22-comment-meta">'+
+            '<time>'+(x?.createdAt?esc(new Date(x.createdAt).toLocaleString('es-AR')):'Sin fecha')+'</time>'+
+            '<span class="v22-comment-link '+(x?.linkMode==='historical-compatible'?'compat':'')+'">'+
+              esc(globalThis.TeamFJZSessionHistory?.linkLabel?.(x?.linkMode)||'Comentario guardado')+
+            '</span>'+
+          '</div>'+
+          (canAck?"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V244 comment metadata anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old="""    const comments=exerciseFeedbackForSessionV287(ss,r,feedbackRows);
+    const focusExerciseV329=exerciseFocusMatchesV329(ss,r,comments);
+
+    return '<div class="v244-exercise '+(focusExerciseV329?'v329-comment-exercise-focus':'')+'">'+"""
+    new="""    const comments=exerciseFeedbackForSessionV287(ss,r,feedbackRows);
+    const focusExerciseV329=exerciseFocusMatchesV329(ss,r,comments);
+    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
+    const comparisonHtmlV2B=comparisonV2B?.previous
+      ?'<div class="v22-history-compare"><div class="v22-history-compare-box"><small>Sesión anterior</small><strong>'+esc(String(comparisonV2B.previous.load))+' kg × '+esc(String(comparisonV2B.previous.reps))+'</strong></div><span>→</span><div class="v22-history-compare-box current"><small>Esta sesión</small><strong>'+esc(String(comparisonV2B.current.load))+' kg × '+esc(String(comparisonV2B.current.reps))+'</strong></div></div>'
+      :'';
+
+    return '<div class="v244-exercise '+(focusExerciseV329?'v329-comment-exercise-focus':'')+'">'+"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V244 comparison anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    old="""      methodHtml+
+      exerciseCommentHtmlV287(comments,ss,r)+"""
+    new="""      methodHtml+
+      comparisonHtmlV2B+
+      exerciseCommentHtmlV287(comments,ss,r)+"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V244 comparison placement mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
+    body=body.replace("'<div class=\"card v244-history-card\">'+","'<div class=\"card v244-history-card v22-premium-history\">'+",1)
+    body=body.replace("'<div class=\"history-item v244-history-item\">'+","'<div class=\"history-item v244-history-item v22-history-session\">'+",1)
+    old="""'<div class="v244-history-badges">'+feedbackBadgeV244(x)+"""
+    new="""'<div class="v244-history-badges"><span class="badge green v22-session-confirmed">Confirmada</span>'+feedbackBadgeV244(x)+"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V244 confirmed badge anchor mismatch")
+    body=body.replace(old,new,1)
+
+    old="""      '<div class="muted tiny">'+esc(new Date(ss.date).toLocaleString('es-AR'))+'</div></div>'+"""
+    new="""      '<div class="muted tiny">'+esc(new Date(ss.date).toLocaleString('es-AR'))+'</div><div class="v22-session-detail-status"><span class="badge green v22-session-confirmed">Sesión confirmada</span></div></div>'+"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2B V244 detail status anchor mismatch")
+    body=body.replace(old,new,1)
+
+    marker="""    exactExerciseCommentAutoScrollV329:true"""
+    if marker not in body:
+        raise RuntimeError("V22 2B V244 marker anchor missing")
+    body=body.replace(marker,marker+""",
+    exactSessionCommentLinkV2B:true,
+    premiumHistoryV2B:true,
+    previousSessionComparisonV2B:true""",1)
+    return body
+
+html=edit_script(html,"v244UnifiedSessionHistoryRuntime",patch_v244)
+
 html=html.replace("</body>",'<script id="v22PremiumWorkoutBoot">try{globalThis.TeamFJZPremiumWorkout?.enhanceWorkout()}catch(_e){}</script>\n</body>',1)
 
 after=topology(html)
@@ -180,18 +404,24 @@ for key in ("styles","renders","channels","timeouts","intervals","listeners","mu
 for marker in [
     'id="v22PremiumWorkoutModule"',
     'meta name="fjz-v22-2a-premium-workout" content="enabled"',
+    'meta name="fjz-v22-2b-session-history" content="enabled"',
     "TeamFJZPremiumWorkout?.enhanceWorkout",
     "TeamFJZPremiumWorkout?.setSaveState('saving')",
     "TeamFJZPremiumWorkout?.bindCommentDraft",
     "beginCommentSubmit(t.uid,message,type)",
     "endCommentSubmit(t.uid,true)",
     "decorateSuccessModal",
+    'id="v22SessionHistoryModule"',
+    "TeamFJZSessionHistory?.activeSessionId",
+    "session_id:globalThis.TeamFJZSessionHistory",
+    "exactSessionCommentLinkV2B:true",
+    "premiumHistoryV2B:true",
     "sessionSuccessRequiresDoubleVerification:true",
 ]:
     if marker not in html:
         raise RuntimeError("V22 2A missing marker "+marker)
 
 p.write_text(html,encoding="utf-8")
-print("TEAM FJZ V22 2A PREMIUM WORKOUT EXPERIENCE")
+print("TEAM FJZ V22 2B SESSION HISTORY + EXACT COMMENTS")
 print("V22 2A BEFORE:",before)
 print("V22 2A AFTER:",after)

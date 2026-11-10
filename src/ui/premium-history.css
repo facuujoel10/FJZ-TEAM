@@ -1,0 +1,24 @@
+/* TEAM FJZ V22 · ETAPA 2B SESSION HISTORY */
+.v22-premium-history{border-color:#30343c;background:linear-gradient(180deg,rgba(255,51,71,.025),transparent 28%),#101116}
+.v22-premium-history .section-title h3{font-size:18px}
+.v22-history-session{padding:14px!important;border:1px solid rgba(255,255,255,.075)!important;border-radius:14px!important;background:#0d0e12!important}
+.v22-history-session .v244-history-copy>strong{font-size:14px}
+.v22-session-confirmed{border-color:rgba(85,217,149,.22)!important;background:rgba(85,217,149,.07)!important;color:#9be7bd!important}
+.v22-session-detail-status{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.v22-history-compare{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:7px;align-items:center;margin:9px 0 2px;padding:9px 10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:#0b0c10}
+.v22-history-compare>span{color:#747b88;font-size:12px;font-weight:900}
+.v22-history-compare-box small{display:block;color:#7f8591;font-size:8px;text-transform:uppercase;letter-spacing:.06em}
+.v22-history-compare-box strong{display:block;margin-top:3px;color:#e9ebef;font-size:10px}
+.v22-history-compare-box.current strong{color:#ff8a95}
+.v22-comment-meta{display:flex;gap:6px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:6px}
+.v22-comment-meta time{color:#858b97;font-size:8px}
+.v22-comment-link{font-size:8px;font-weight:850;color:#8fb8e9}
+.v22-comment-link.compat{color:#c8aa6b}
+@media(max-width:620px){
+  .v22-premium-history{padding:12px!important}
+  .v22-history-session{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:9px!important}
+  .v22-history-session>.btn{min-height:42px}
+  .v22-history-compare{grid-template-columns:1fr;gap:5px}
+  .v22-history-compare>span{display:none}
+  .v22-comment-meta{align-items:flex-start}
+}

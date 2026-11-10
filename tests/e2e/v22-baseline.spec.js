@@ -494,6 +494,81 @@ test('2A Premium responsive: controles táctiles sin overflow', async ({ page },
   console.log('E2E_FLOW_OK premium-responsive-2a '+testInfo.project.name);
 });
 
+test('2B exacto: identidad estable, comentario pre-finalización e historial exacto', async ({ page }, testInfo) => {
+  const comment='2B exact '+testInfo.project.name;
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.getByRole('heading',{name:'Día QA A'})).toBeVisible();
+
+  const firstSet=page.locator('.set-grid').first().locator('input');
+  await firstSet.nth(0).fill('32.5');
+  await firstSet.nth(1).fill('9');
+  await firstSet.nth(2).fill('1.5');
+  const sessionId=await page.evaluate(()=>window.__fjzWorkoutSessionIdV2B?.());
+  expect(sessionId).toMatch(/^ss_/);
+
+  const firstCard=page.locator('.session-card.v22-premium-exercise').first();
+  await firstCard.getByRole('button',{name:/Comentario/i}).click();
+  await page.locator('#v73FeedbackMessage').fill(comment);
+  await page.getByRole('button',{name:/Enviar al coach/i}).click();
+  await expect(page.locator('#v264QuickSaved')).toContainText(/Comentario (guardado|enviado)/i);
+
+  const linkedBefore=await page.evaluate(async ({comment,sessionId})=>{
+    const {data,error}=await supabaseClient.from('exercise_feedback')
+      .select('id,session_id,exercise_uid,status,message')
+      .eq('message',comment).single();
+    if(error)throw error;
+    return {id:data.id,session_id:data.session_id,exercise_uid:data.exercise_uid,status:data.status};
+  },{comment,sessionId});
+  expect(linkedBefore.session_id).toBe(sessionId);
+
+  await page.reload();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
+  if(!(await page.locator('#view .session-card').count())){
+    await page.getByRole('button',{name:/Continuar entrenamiento/i}).first().click();
+  }
+  expect(await page.evaluate(()=>window.__fjzWorkoutSessionIdV2B?.())).toBe(sessionId);
+
+  const sets=page.locator('.set-grid');
+  for(let i=0;i<await sets.count();i++){
+    const inputs=sets.nth(i).locator('input');
+    if(!(await inputs.nth(0).inputValue()))await inputs.nth(0).fill(i<3?'32.5':'35');
+    await inputs.nth(1).fill('9'); await inputs.nth(2).fill('1.5');
+  }
+  await page.getByRole('button',{name:/Finalizar sesión/i}).click();
+  const fb=page.getByRole('heading',{name:/¿Cómo salió la sesión\?/i});
+  if(await fb.count())await page.getByRole('button',{name:/Todo bien · finalizar/i}).click();
+  await expect(page.locator('#modal')).toContainText(/Sesión guardada con éxito/i,{timeout:20000});
+  const save=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
+  expect(save.sessionId).toBe(sessionId);expect(save.cloudConfirmed).toBeTruthy();
+
+  const projection=await page.evaluate(async sid=>{
+    const {data,error}=await supabaseClient.from('workout_sessions')
+      .select('source_session_id,status').eq('source_session_id',sid).single();
+    if(error)throw error; return data;
+  },sessionId);
+  expect(projection.source_session_id).toBe(sessionId);
+  expect(projection.status).toBe('completed');
+
+  await page.locator('#modal .v22-history-after-save').click();
+  const row=page.locator('.v22-history-session',{hasText:'Día QA A'}).first();
+  await expect(row).toBeVisible(); await row.getByRole('button',{name:/Ver sesión/i}).click();
+  await expect(page.locator('#modal')).toContainText(comment);
+  await expect(page.locator('#modal')).toContainText('Vinculado a esta sesión');
+  await page.screenshot({path:'artifacts/2b/exact-history-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK session-comment-history-2b '+testInfo.project.name);
+});
+
+test('2B History responsive: historial premium sin overflow', async ({ page }, testInfo) => {
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
+  await assertNoHorizontalOverflow(page);
+  const history=page.locator('.v22-premium-history');
+  if(await history.count())await expect(history).toBeVisible();
+  await page.screenshot({path:'artifacts/2b/history-responsive-'+testInfo.project.name+'.png',fullPage:true});
+  console.log('E2E_FLOW_OK history-responsive-2b '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
