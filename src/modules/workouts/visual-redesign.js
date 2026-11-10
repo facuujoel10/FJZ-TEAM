@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.6';
+const VERSION='22.2B-V.8';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -96,7 +96,7 @@ function historyOverview(card){
   o.innerHTML='<div><span class="v22v-label">Sesiones</span><strong>'+rows.length+'</strong></div><div><span class="v22v-label">Con feedback</span><strong>'+withComments+'</strong></div><p>Tu historial prioriza lo registrado: fecha, trabajo realizado y cambios verificables.</p>';
 }
 function enhanceHistory(host){
-  if(!host)return false;const view=document.getElementById('view')||host;trimDuplicateNav(view);
+  if(!host)return false;const view=document.getElementById('view')||host;view.classList.add('v22v-history-active');trimDuplicateNav(view);
   const card=host.querySelector('.v22-premium-history');if(!card)return false;card.classList.add('v22v-history');card.querySelector('.v244-history-list')?.classList.add('v22v-history-list');
   [...card.querySelectorAll('.v22-history-session')].forEach((row,index)=>{row.classList.add('v22v-history-session');if(!row.querySelector('.v22v-history-index'))row.prepend(make('span','v22v-history-index',String(index+1).padStart(2,'0')));row.querySelector('.v244-history-copy')?.classList.add('v22v-history-copy');historyMetrics(row);const b=row.querySelector(':scope > button');if(b)b.classList.add('v22v-history-open')});
   historyOverview(card);return true

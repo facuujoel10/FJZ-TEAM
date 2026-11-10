@@ -47,3 +47,11 @@
  .v22v-session-panel{width:min(1260px,calc(100% - 36px))!important;max-width:1260px!important}
  .v22v-session-layout{grid-template-columns:280px minmax(0,1fr)!important;gap:22px}
 }
+
+/* 2B-V.8 · persistent history-context nav deduplication after legacy tab injection */
+#view.v22v-history-active:has(.v22v-history) .tabs .tab[onclick*="studentTab='home'"],
+#view.v22v-history-active:has(.v22v-history) .tabs .tab[onclick*="studentTab='nutrition'"],
+#view.v22v-history-active:has(.v22v-history) .tabs .tab[onclick*="studentTab='progress'"],
+#view.v22v-history-active:has(.v22v-history) .tabs .tab[onclick*="studentTab='workout'"]{
+ display:none!important;
+}
