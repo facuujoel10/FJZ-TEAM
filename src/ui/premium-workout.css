@@ -105,3 +105,13 @@
  .v22v-context-rail p,.v22v-context-rail .muted{font-size:12px!important;line-height:1.35!important}
  .v22v-disclosure-summary{padding-inline:13px}
 }
+
+/* 2B-V.7 · 360px one-hand hardening */
+@media(max-width:380px){
+ .v22v-context-rail{grid-template-columns:1fr!important}
+ .v22v-context-rail>*{min-width:0!important;max-width:100%!important}
+ .v22v-session-overview{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+ .v22v-session-overview>div{min-width:0!important}
+ .v22v-exercise-head,.v22v-series-block,.v22-premium-set{max-width:100%!important}
+ .v22v-disclosure,.v22v-technique-layout{max-width:100%!important;overflow:hidden}
+}
