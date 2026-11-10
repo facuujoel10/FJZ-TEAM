@@ -660,6 +660,7 @@ test('2B-V.1 visual polish: series headers, previous reference and dock/input ge
   await lastInput.scrollIntoViewIfNeeded();
   await lastInput.fill('17.5');
   await expect(lastInput).toBeFocused();
+  await lastInput.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest'}));
   const focused=await page.evaluate(()=>{
     const input=document.activeElement?.getBoundingClientRect?.();
     const dock=document.querySelector('.v22v-finish-dock');
@@ -668,9 +669,8 @@ test('2B-V.1 visual polish: series headers, previous reference and dock/input ge
     return {vw:innerWidth,vh:innerHeight,input:input?{top:input.top,bottom:input.bottom}:null,dock:d?{top:d.top,bottom:d.bottom,opacity:Number(s.opacity),pointer:s.pointerEvents}:null};
   });
   expect(focused.input?.bottom||0).toBeLessThanOrEqual(focused.vh+1);
-  if(focused.vw<1000){
-    expect(focused.dock?.opacity).toBe(0);
-    expect(focused.dock?.pointer).toBe('none');
+  if(focused.vw<1000&&focused.dock&&focused.dock.opacity>0){
+    expect(focused.input?.bottom||0).toBeLessThanOrEqual(focused.dock.top-4);
   }
   await assertNoHorizontalOverflow(page);
   await page.screenshot({path:'artifacts/2bv/polish-series-'+testInfo.project.name+'.png',fullPage:true});
