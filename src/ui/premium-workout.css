@@ -115,3 +115,15 @@
  .v22v-exercise-head,.v22v-series-block,.v22-premium-set{max-width:100%!important}
  .v22v-disclosure,.v22v-technique-layout{max-width:100%!important;overflow:hidden}
 }
+
+/* 2B-V.9 · persistent workout-context nav + true desktop command rail */
+#view.v22v-workout-active:has(.v22v-workout-layout) .tabs .tab[onclick*="studentTab='home'"],
+#view.v22v-workout-active:has(.v22v-workout-layout) .tabs .tab[onclick*="studentTab='nutrition'"],
+#view.v22v-workout-active:has(.v22v-workout-layout) .tabs .tab[onclick*="studentTab='progress'"],
+#view.v22v-workout-active:has(.v22v-workout-layout) .tabs .tab[onclick*="studentTab='workout'"]{
+ display:none!important;
+}
+@media(min-width:1000px){
+ .v22v-session-rail>.v22v-finish-dock{position:static!important;inset:auto!important;width:100%!important;margin:0!important}
+ .v22v-command>.v22v-finish-dock{display:none!important}
+}

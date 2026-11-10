@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.8';
+const VERSION='22.2B-V.9';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -83,10 +83,10 @@ function workoutComposition(view){
   [...view.querySelectorAll(':scope > .v22v-exercise')].forEach(x=>feed.appendChild(x));
   const save=document.getElementById('v22WorkoutSaveState');if(save&&save.parentElement!==rail)rail.appendChild(save);
   [...view.children].filter(x=>x!==layout&&x!==rail&&x!==feed&&/cambios pendientes/i.test(t(x.textContent))&&t(x.textContent).length<700).forEach(x=>{x.classList.add('v22v-pending-card');rail.appendChild(x)});
-  const dock=view.querySelector(':scope > .v22v-finish-dock');if(dock&&dock.parentElement!==rail)rail.appendChild(dock);
+  const dock=view.querySelector('.v22v-finish-dock');if(dock&&dock.parentElement!==rail)rail.appendChild(dock);
   return layout;
 }
-function enhanceWorkout(root){if(!hasDOM())return false;const view=root||document.getElementById('view');if(!view||!view.classList.contains('v22-premium-workout'))return false;view.classList.add('v22v-performance-shell');trimDuplicateNav(view);command(view);[...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);document.getElementById('v22WorkoutSaveState')?.classList.add('v22v-save-state');finishDock(view);workoutComposition(view);return true}
+function enhanceWorkout(root){if(!hasDOM())return false;const view=root||document.getElementById('view');if(!view||!view.classList.contains('v22-premium-workout'))return false;view.classList.add('v22v-performance-shell','v22v-workout-active');trimDuplicateNav(view);command(view);[...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);document.getElementById('v22WorkoutSaveState')?.classList.add('v22v-save-state');finishDock(view);workoutComposition(view);return true}
 function enhanceCommentModal(modal){if(!modal)return false;modal.classList.add('v22v-comment-sheet');modal.querySelector('.modal-content')?.classList.add('v22v-comment-panel');modal.querySelector('.modal-head')?.classList.add('v22v-comment-head');modal.querySelector('.v73-feedback-type')?.classList.add('v22v-comment-types');modal.querySelector('textarea')?.classList.add('v22v-comment-text');const send=[...modal.querySelectorAll('button')].find(x=>/Enviar al coach/i.test(t(x.textContent)));send?.classList.add('v22v-comment-submit');return true}
 function historyMetrics(row){const copy=row.querySelector('.v244-history-copy');if(!copy)return;const badges=copy.querySelector('.v244-history-badges')||row.querySelector('.v244-history-badges');badges?.classList.add('v22v-history-signals');const muted=copy.querySelector('.muted');muted?.classList.add('v22v-history-subline')}
 function historyOverview(card){
