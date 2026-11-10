@@ -1,6 +1,6 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.TeamFJZVisualRedesign=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const VERSION='22.2B-V.9';
+const VERSION='22.2B-V.1.1';
 function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
 function t(v){return String(v??'').trim()}
 function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
@@ -103,6 +103,6 @@ function enhanceHistory(host){
 }
 function sessionLayout(modal){const content=modal.querySelector('.modal-content');if(!content)return;const k=modal.querySelector('.v244-summary-grid'),flow=modal.querySelector('.v244-timeline');if(!k||!flow)return;let layout=modal.querySelector('.v22v-session-layout');if(!layout){layout=make('div','v22v-session-layout');k.before(layout);layout.appendChild(k);layout.appendChild(flow)}}
 function enhanceSessionDetail(modal){if(!modal)return false;modal.classList.add('v22v-session-modal');modal.querySelector('.modal-content')?.classList.add('v22v-session-panel');modal.querySelector('.modal-head')?.classList.add('v22v-session-head');modal.querySelector('.v244-summary-grid')?.classList.add('v22v-session-kpis');modal.querySelector('.v244-timeline')?.classList.add('v22v-session-flow');sessionLayout(modal);
- [...modal.querySelectorAll('.v244-exercise')].forEach((x,i)=>{x.classList.add('v22v-history-exercise');if(!x.querySelector('.v22v-history-exercise-index'))x.prepend(make('span','v22v-history-exercise-index',String(i+1).padStart(2,'0')))});[...modal.querySelectorAll('.v287-exercise-comment')].forEach(x=>x.classList.add('v22v-context-comment'));return true}
+ [...modal.querySelectorAll('.v244-exercise')].forEach((x,i)=>{x.classList.add('v22v-history-exercise');if(!x.querySelector('.v22v-history-exercise-index'))x.prepend(make('span','v22v-history-exercise-index',String(i+1).padStart(2,'0')));[...x.querySelectorAll('.v22-history-compare-box')].forEach((box,bi)=>box.classList.add(bi===0?'v22v-compare-previous':'v22v-compare-current'))});[...modal.querySelectorAll('.v287-exercise-comment')].forEach(x=>x.classList.add('v22v-context-comment'));return true}
 return Object.freeze({VERSION,enhanceWorkout,enhanceCommentModal,enhanceHistory,enhanceSessionDetail});
 });
