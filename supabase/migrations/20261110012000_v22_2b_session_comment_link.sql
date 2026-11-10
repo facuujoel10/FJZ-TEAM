@@ -25,7 +25,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path to 'public','pg_temp'
-as $
+as $$
 declare
   v_owner uuid;
 begin
@@ -61,7 +61,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path to 'public','pg_temp'
-as $
+as $$
 begin
   if new.source_session_id is null then return new; end if;
   if exists(
