@@ -43,7 +43,7 @@ def main():
       "exercise_name":"Press QA","feedback_type":"comment","message":"cross","status":"pending"
     },prefer="return=representation"),"cross-student feedback")
 
-    expect_denied(lambda:rest(api,pub,s1,"PATCH","exercise_feedback?id=eq."+fid,{"session_id":"ss_changed"},prefer="return=representation"),"session id mutation")
+    expect_denied(lambda:rest(api,pub,coach,"PATCH","exercise_feedback?id=eq."+fid,{"session_id":"ss_changed"},prefer="return=representation"),"session id mutation by authorized updater")
 
     reviewed=rest(api,pub,coach,"PATCH","exercise_feedback?id=eq."+fid,{"status":"reviewed"},prefer="return=representation")
     assert reviewed and reviewed[0]["status"]=="reviewed",reviewed
