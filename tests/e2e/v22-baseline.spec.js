@@ -604,7 +604,7 @@ test('2B-V visual system: navegación contextual, contraste básico y dock sin t
   expect(data.active?.h||0).toBeGreaterThanOrEqual(44);
   expect(data.titleFont).toBeGreaterThanOrEqual(18);
   expect(data.contextualFonts.length).toBeGreaterThan(0);
-  expect(Math.min(...data.contextualFonts)).toBeGreaterThanOrEqual(11);
+  expect(Math.min(...data.contextualFonts)).toBeGreaterThanOrEqual(12);
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK visual-context-a11y-2bv '+testInfo.project.name);
 });
@@ -628,7 +628,7 @@ test('2B-V historial: timeline y detalle legibles', async ({page},testInfo)=>{
   expect(await duplicateGlobalTabs.count()).toBe(0);
   const historyGlobalLabels=await page.locator('#view .tabs .tab:visible').allTextContents();
   expect(historyGlobalLabels.map(x=>x.trim().toLowerCase()).filter(x=>['inicio','nutrición','nutricion','progreso','entrenar'].includes(x))).toEqual([]);
-  if(await history.count()){await expect(history).toBeVisible();await assertNoHorizontalOverflow(page);const open=history.locator('.v22v-history-open').first();if(await open.count()){await open.click();await expect(page.locator('#modal.v22v-session-modal')).toBeVisible();const s=await page.evaluate(()=>({comments:[...document.querySelectorAll('.v22v-context-comment p')].map(x=>parseFloat(getComputedStyle(x).fontSize)),kpi:[...document.querySelectorAll('.v22v-session-kpis span')].map(x=>parseFloat(getComputedStyle(x).fontSize)),width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(s.comments.every(x=>x>=12)).toBeTruthy();expect(s.kpi.every(x=>x>=11)).toBeTruthy();expect(s.scroll).toBeLessThanOrEqual(s.width+1);await page.screenshot({path:'artifacts/2bv/session-detail-'+testInfo.project.name+'.png',fullPage:true});}}
+  if(await history.count()){await expect(history).toBeVisible();await assertNoHorizontalOverflow(page);const open=history.locator('.v22v-history-open').first();if(await open.count()){await open.click();await expect(page.locator('#modal.v22v-session-modal')).toBeVisible();const s=await page.evaluate(()=>({comments:[...document.querySelectorAll('.v22v-context-comment p')].map(x=>parseFloat(getComputedStyle(x).fontSize)),kpi:[...document.querySelectorAll('.v22v-session-kpis span')].map(x=>parseFloat(getComputedStyle(x).fontSize)),width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(s.comments.every(x=>x>=12)).toBeTruthy();expect(s.kpi.every(x=>x>=12)).toBeTruthy();expect(s.scroll).toBeLessThanOrEqual(s.width+1);await page.screenshot({path:'artifacts/2bv/session-detail-'+testInfo.project.name+'.png',fullPage:true});}}
   console.log('E2E_FLOW_OK visual-redesign-history-2bv '+testInfo.project.name);
 });
 
