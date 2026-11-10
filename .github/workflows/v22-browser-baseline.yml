@@ -104,7 +104,7 @@ jobs:
         run: npx playwright test --project=mobile-390
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish"
 
       - name: Premium responsive — mobile 430x932
         run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial"
