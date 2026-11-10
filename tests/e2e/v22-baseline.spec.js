@@ -678,6 +678,7 @@ test('2B-V.1 visual polish: series headers, previous reference and dock/input ge
     await page.setViewportSize({width:390,height:520});
     await lastInput.scrollIntoViewIfNeeded();
     await expect(lastInput).toBeFocused();
+    await expect(page.locator('.v22v-finish-dock')).toHaveCSS('opacity','0');
     await page.screenshot({path:'artifacts/2bv/polish-series-mobile-390-reduced-height-focus.png',fullPage:false});
     const reduced=await page.evaluate(()=>({vh:innerHeight,bottom:document.activeElement?.getBoundingClientRect?.().bottom||0,dockOpacity:Number(getComputedStyle(document.querySelector('.v22v-finish-dock')).opacity)}));
     expect(reduced.bottom).toBeLessThanOrEqual(reduced.vh+1);
@@ -694,7 +695,7 @@ test('2B-V.1 visual polish: comment modal has one close path and stable textarea
   const modal=page.locator('#modal.v22v-comment-sheet');
   await expect(modal).toBeVisible();
   const closeActions=modal.getByRole('button',{name:/Cerrar/i}).filter({visible:true});
-  expect(await closeActions.count()).toBeLessThanOrEqual(1);
+  expect(await closeActions.count()).toBe(1);
   expect(await modal.locator('#v22CommentClose').count()).toBe(0);
   const ta=modal.locator('textarea');
   await ta.fill('Foco V22 2B-V.1');
