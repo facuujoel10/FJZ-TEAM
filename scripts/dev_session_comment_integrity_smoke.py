@@ -50,6 +50,28 @@ def main():
     reread=rest(api,pub,coach,"GET","exercise_feedback?select=id,session_id,status,reviewed_at&id=eq."+fid)
     assert reread and reread[0]["session_id"]==sid and reread[0]["status"]=="reviewed",reread
 
+    sid2="ss_v22_2b_same_day_002"
+    rest(api,pub,s1,"POST","workout_sessions",{
+      "student_id":uid1,"started_at":"2026-11-09T21:00:00Z","completed_at":"2026-11-09T21:25:00Z",
+      "status":"completed","notes":"Día QA A","source_session_id":sid2
+    },prefer="return=representation")
+    second=rest(api,pub,s1,"POST","exercise_feedback",{
+      "athlete_id":A1,"student_id":uid1,"session_id":sid2,"exercise_uid":"press-qa",
+      "exercise_name":"Press QA","workout_day_id":"day-qa-a","workout_day_name":"Día QA A",
+      "feedback_type":"comment","message":"2B misma fecha segunda sesión","status":"pending"
+    },prefer="return=representation")
+    first_exact=rest(api,pub,s1,"GET","exercise_feedback?select=id,session_id,exercise_uid,message&session_id=eq."+sid+"&exercise_uid=eq.press-qa")
+    second_exact=rest(api,pub,s1,"GET","exercise_feedback?select=id,session_id,exercise_uid,message&session_id=eq."+sid2+"&exercise_uid=eq.press-qa")
+    assert len(first_exact)==1 and first_exact[0]["session_id"]==sid,first_exact
+    assert len(second_exact)==1 and second_exact[0]["session_id"]==sid2 and second_exact[0]["id"]==second[0]["id"],second_exact
+
+    post_confirm=rest(api,pub,s1,"POST","exercise_feedback",{
+      "athlete_id":A1,"student_id":uid1,"session_id":sid,"exercise_uid":"row-qa",
+      "exercise_name":"Remo QA","workout_day_id":"day-qa-a","workout_day_name":"Día QA A",
+      "feedback_type":"comment","message":"2B comentario post-finalización","status":"pending"
+    },prefer="return=representation")
+    assert post_confirm and post_confirm[0]["session_id"]==sid,post_confirm
+
     legacy=rest(api,pub,s1,"POST","exercise_feedback",{
       "athlete_id":A1,"student_id":uid1,"exercise_uid":"row-qa","exercise_name":"Remo QA",
       "workout_day_id":"day-qa-a","workout_day_name":"Día QA A","feedback_type":"comment",
@@ -63,4 +85,6 @@ def main():
     print("session_id immutable: OK")
     print("Coach review persistence: OK")
     print("Historical NULL session compatibility: OK")
+    print("Two same-day sessions isolated by exact session_id: OK")
+    print("Post-confirmation exact comment: OK")
 if __name__=="__main__": main()
