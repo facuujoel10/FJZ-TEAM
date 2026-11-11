@@ -106,8 +106,10 @@ def patch_v145(body):
     anchor="""  window.__fjzWorkoutAutosaveV145={"""
     if body.count(anchor)!=1:
         raise RuntimeError("V22 2B V145 export anchor mismatch")
-    helper="""  window.__fjzEnsureWorkoutSessionIdentityV2B=function(){
-    const s=student?.(),d=s?.days?.[currentDay];
+    helper="""  window.__fjzEnsureWorkoutSessionIdentityV2B=function(dayIndexV2B){
+    const s=student?.();
+    const targetIndexV2B=Number.isInteger(Number(dayIndexV2B))?Number(dayIndexV2B):currentDay;
+    const d=s?.days?.[targetIndexV2B];
     if(!s||!d)return null;
     const prior=freshestV145(readLocalV145(s,d),readCloudV145(s,d));
     const sessionId=globalThis.TeamFJZSessionHistory?.ensureSessionId({
@@ -180,7 +182,8 @@ def patch_v207(body):
     old="""      return baseStartV207.apply(this,arguments);
     };"""
     new="""      let recoveredSessionV2B=null;
-      try{recoveredSessionV2B=window.__fjzEnsureWorkoutSessionIdentityV2B?.()||null}catch(_e){}
+      const targetDayV2B=Number(arguments?.[0]);
+      try{recoveredSessionV2B=window.__fjzEnsureWorkoutSessionIdentityV2B?.(Number.isInteger(targetDayV2B)?targetDayV2B:undefined)||null}catch(_e){}
       const out=baseStartV207.apply(this,arguments);
       try{
         const s=student?.(),d=s?.days?.[currentDay];
