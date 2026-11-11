@@ -212,3 +212,8 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
   min-height:44px!important;
   height:44px!important;
 }
+
+/* 2B-V2 desktop legibility hardening */
+#view.v22v2-workout-active .v22v2-set-row .v22-set-field input.input{
+  font-size:17px!important;
+}
