@@ -227,18 +227,28 @@ function technique(card){
   d.open=false;d.removeAttribute('open');
 }
 function compactFeedbackStatus(card){
-  const statuses=[...card.querySelectorAll('.v73-student-feedback-status')];if(!statuses.length)return;
-  const labels=statuses.flatMap(status=>[...status.children].map(x=>t(x.textContent)).filter(Boolean));
-  const firstStatus=statuses[0];
-  firstStatus.classList.add('v22v2-feedback-status');
-  statuses.slice(1).forEach(x=>x.remove());
-  if(!labels.length)return;
-  const normalized=labels.map(x=>x.replace(/\s*·\s*\d+\s*$/,'').trim());
-  const first=normalized[0];
-  if(normalized.every(x=>x===first)){
-    firstStatus.innerHTML='';
-    firstStatus.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+(labels.length>1?' · '+labels.length:'')));
+  const statuses=[...card.querySelectorAll('.v73-student-feedback-status')];
+  if(statuses.length){
+    const labels=statuses.flatMap(status=>[...status.children].map(x=>t(x.textContent)).filter(Boolean));
+    const firstStatus=statuses[0];
+    firstStatus.classList.add('v22v2-feedback-status');
+    statuses.slice(1).forEach(x=>x.remove());
+    if(labels.length){
+      const normalized=labels.map(x=>x.replace(/\s*·\s*\d+\s*$/,'').trim());
+      const first=normalized[0];
+      if(normalized.every(x=>x===first)){
+        firstStatus.innerHTML='';
+        firstStatus.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+(labels.length>1?' · '+labels.length:'')));
+      }
+    }
   }
+  const seen=new Set();
+  [...card.querySelectorAll('.v73-comment-badge,.v73-alert-badge')].forEach(badge=>{
+    const key=t(badge.textContent).replace(/\s*·\s*\d+\s*$/,'').trim().toLowerCase();
+    if(!key)return;
+    if(seen.has(key)){badge.remove();return}
+    seen.add(key);
+  });
 }
 function exercise(card,index){
   card.classList.add('v22v-exercise','v22v2-exercise','fjz-performance-section');
