@@ -79,6 +79,25 @@ def patch_v315(body):
 html=edit_script(html,"v315DecimalWorkoutWeightsRuntime",patch_v315)
 
 def patch_v145(body):
+    old="""  function meaningfulV145(p){
+    if(!p)return false;
+    return !!(
+      Object.keys(p.workoutDraft||{}).length ||
+      Object.keys(p.methodDraft||{}).length
+    );
+  }"""
+    new="""  function meaningfulV145(p){
+    if(!p)return false;
+    return !!(
+      String(p.sessionId||'').trim() ||
+      Object.keys(p.workoutDraft||{}).length ||
+      Object.keys(p.methodDraft||{}).length
+    );
+  }"""
+    if body.count(old)!=1:
+        raise RuntimeError("V22 2C V145 session identity significance anchor mismatch: "+str(body.count(old)))
+    body=body.replace(old,new,1)
+
     old="""    if(n){
       const d=new Date(lastSavedAt);
       n.textContent='Último guardado '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
