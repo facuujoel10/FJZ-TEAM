@@ -52,7 +52,7 @@ function sessionHeader(view){
     main=make('div','v22v2-header-main');
     const back=make('button','v22v2-back fjz-icon-button','‹');
     back.type='button';back.setAttribute('aria-label','Salir del entrenamiento');
-    back.addEventListener('click',()=>clickPrimaryNav('Inicio'));
+    back.onclick=()=>clickPrimaryNav('Inicio');
     const title=make('div','v22v2-header-copy');
     const h=hero.querySelector('h2');
     const subtitle=h?.parentElement?.querySelector('p,.muted');
@@ -184,13 +184,6 @@ function compactFeedbackStatus(card){
   const labels=chips.map(x=>t(x.textContent)),first=labels[0];
   if(labels.every(x=>x===first)){status.innerHTML='';status.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+' · '+labels.length))}
 }
-function bindActiveCard(card){
-  const mark=()=>{document.querySelectorAll('.v22v2-exercise.is-active').forEach(x=>x.classList.remove('is-active'));card.classList.add('is-active')};
-  card.querySelectorAll('input,textarea,button').forEach(el=>{
-    if(el.dataset.v22v2ActiveBound)return;el.dataset.v22v2ActiveBound='1';
-    el.addEventListener('focus',mark);el.addEventListener('pointerdown',mark,{passive:true});
-  });
-}
 function exercise(card,index){
   card.classList.add('v22v-exercise','v22v2-exercise','fjz-performance-section');
   card.dataset.exerciseIndex=String(index);
@@ -199,7 +192,6 @@ function exercise(card,index){
   secondaryContext(card,seriesBlock);
   technique(card);
   compactFeedbackStatus(card);
-  bindActiveCard(card);
   if(index===0)card.classList.add('is-active');
 }
 
@@ -211,7 +203,7 @@ function sessionNavigator(feed,aside){
     const name=t(card.querySelector('.v22v2-exercise-name')?.textContent)||('Ejercicio '+(i+1));
     const p=progress(card),b=make('button','v22v2-exercise-map-item');
     b.type='button';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><b>'+name+'</b><small>'+p.done+'/'+p.total+'</small>';
-    b.addEventListener('click',()=>card.scrollIntoView({behavior:'smooth',block:'start'}));nav.appendChild(b);
+    b.onclick=()=>card.scrollIntoView({behavior:'smooth',block:'start'});nav.appendChild(b);
   });
 }
 function finishZone(view,feed,aside){
@@ -252,7 +244,8 @@ function updateWorkout(view){
 }
 function bindWorkoutProgress(view){
   if(view.dataset.v22v2ProgressBound)return;view.dataset.v22v2ProgressBound='1';
-  view.addEventListener('input',e=>{if(e.target?.matches?.('.v22-set-field input,.set-grid input'))updateWorkout(view)});
+  const prior=view.oninput;
+  view.oninput=function(e){if(typeof prior==='function')prior.call(this,e);if(e.target?.matches?.('.v22-set-field input,.set-grid input'))updateWorkout(view)};
 }
 function enhanceWorkout(root){
   if(!hasDOM())return false;const view=root||document.getElementById('view');
