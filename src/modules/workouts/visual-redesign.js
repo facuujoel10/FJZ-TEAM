@@ -219,7 +219,7 @@ function finishZone(view,feed,aside){
   btn.classList.add('v22v-primary-finish','v22v2-primary-finish');
   let zone=view.querySelector('.v22v2-finish-zone');
   if(!zone){
-    zone=make('section','v22v2-finish-zone fjz-surface');
+    zone=make('section','v22v-finish-dock v22v2-finish-zone fjz-surface');
     zone.innerHTML='<div><span>Fin de la sesión</span><strong>¿Terminaste tu entrenamiento?</strong><small>Se confirmará el guardado antes de cerrar.</small></div>';
     zone.appendChild(btn);
   }
