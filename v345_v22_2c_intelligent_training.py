@@ -90,10 +90,12 @@ def patch_v207(body):
 
     old="""    if(stateV207==='success'){
       modalSuccessV207();
+      try{globalThis.TeamFJZPremiumWorkout?.decorateSuccessModal()}catch(_e){}
       return;
     }"""
     new="""    if(stateV207==='success'){
       modalSuccessV207();
+      try{globalThis.TeamFJZPremiumWorkout?.decorateSuccessModal()}catch(_e){}
       try{
         const summaryV2C=globalThis.TeamFJZIntelligentTraining?.buildConfirmedSummary(pendingV207?.session);
         if(summaryV2C)globalThis.TeamFJZIntelligentTraining?.renderSummaryModal(summaryV2C);
