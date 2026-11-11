@@ -299,8 +299,9 @@ function sessionDateBadge(row,index){
   row.prepend(badge);
 }
 function enhanceHistory(host){
-  if(!host)return false;const view=document.getElementById('view')||host;
-  view.classList.add('v22v-history-active','v22v2-history-active');if(role()!=='coach')trimDuplicateNav(view);
+  if(!host)return false;const view=document.getElementById('view')||host,isCoach=role()==='coach';
+  if(isCoach)host.classList.add('v22v-history-active','v22v2-history-active');
+  else{view.classList.add('v22v-history-active','v22v2-history-active');trimDuplicateNav(view)}
   const card=host.querySelector('.v22-premium-history');if(!card)return false;
   card.classList.add('v22v-history','v22v2-history','fjz-surface');
   card.querySelector('.v244-history-list')?.classList.add('v22v-history-list','v22v2-history-list');
@@ -312,7 +313,7 @@ function enhanceHistory(host){
     const b=row.querySelector(':scope > button');if(b){b.classList.add('v22v-history-open','v22v2-history-open');b.setAttribute('aria-label','Ver sesión')}
   });
   card.querySelector('.v22v-history-overview')?.remove();
-  view.dataset.v22ProductExperience='performance-history-v2';
+  (isCoach?host:view).dataset.v22ProductExperience='performance-history-v2';
   return true;
 }
 
