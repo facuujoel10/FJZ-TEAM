@@ -322,6 +322,10 @@ function enhanceWorkout(root){
   [...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);
   const composition=workoutComposition(view);bindWorkoutProgress(view);updateWorkout(view);
   view.dataset.v22ProductExperience='performance-training-v2';
+  if(typeof queueMicrotask==='function')queueMicrotask(()=>{
+    if(!view.isConnected)return;
+    [...view.querySelectorAll('.session-card.v22-premium-exercise,.v22v2-exercise')].forEach(compactFeedbackStatus);
+  });
   return !!composition;
 }
 
