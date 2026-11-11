@@ -97,16 +97,17 @@
     if(timer.remainingMs<=0){timer.remainingMs=0;timer.state='finished';timer.targetAt=null;saveTimer();syncTicker()}
     return timerSnapshot(at);
   }
+  function scheduleTick(){
+    if(typeof setTimeout!=='function'||timer?.state!=='running')return;
+    tickHandle=setTimeout(()=>{
+      tickHandle=null;
+      advance();renderTimer();
+      if(timer?.state==='running')scheduleTick();
+    },1000);
+  }
   function syncTicker(){
     if(tickHandle){clearTimeout(tickHandle);tickHandle=null}
-    if(timer?.state==='running'&&typeof setTimeout==='function'){
-      const tick=()=>{
-        tickHandle=null;
-        advance();renderTimer();
-        if(timer?.state==='running')tickHandle=setTimeout(tick,1000);
-      };
-      tickHandle=setTimeout(tick,1000);
-    }
+    if(timer?.state==='running')scheduleTick();
   }
   function timerCount(){return tickHandle?1:0}
 
