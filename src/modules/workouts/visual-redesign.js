@@ -228,26 +228,30 @@ function technique(card){
 }
 function compactFeedbackStatus(card){
   const statuses=[...card.querySelectorAll('.v73-student-feedback-status')];
-  if(statuses.length){
-    const labels=statuses.flatMap(status=>[...status.children].map(x=>t(x.textContent)).filter(Boolean));
-    const firstStatus=statuses[0];
-    firstStatus.classList.add('v22v2-feedback-status');
-    statuses.slice(1).forEach(x=>x.remove());
-    if(labels.length){
-      const normalized=labels.map(x=>x.replace(/\s*·\s*\d+\s*$/,'').trim());
-      const first=normalized[0];
-      if(normalized.every(x=>x===first)){
-        firstStatus.innerHTML='';
-        firstStatus.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+(labels.length>1?' · '+labels.length:'')));
-      }
-    }
+  const rawBadges=[...card.querySelectorAll('.v73-comment-badge,.v73-alert-badge')];
+  const entries=rawBadges.map(badge=>({
+    text:t(badge.textContent).replace(/\s*·\s*\d+\s*$/,'').trim(),
+    alert:badge.classList.contains('v73-alert-badge')||/molestia/i.test(t(badge.textContent))
+  })).filter(x=>x.text);
+  if(!entries.length){statuses.slice(1).forEach(x=>x.remove());return}
+  let host=statuses[0];
+  if(!host){
+    host=make('div','v73-student-feedback-status v22v2-feedback-status');
+    const header=card.querySelector('.v22v2-exercise-head,.v22v-exercise-head');
+    if(header)header.after(host);else card.prepend(host);
   }
+  host.classList.add('v22v2-feedback-status');
+  statuses.filter(x=>x!==host).forEach(x=>x.remove());
+  const unique=[];
   const seen=new Set();
-  [...card.querySelectorAll('.v73-comment-badge,.v73-alert-badge')].forEach(badge=>{
-    const key=t(badge.textContent).replace(/\s*·\s*\d+\s*$/,'').trim().toLowerCase();
-    if(!key)return;
-    if(seen.has(key)){badge.remove();return}
-    seen.add(key);
+  entries.forEach(entry=>{
+    const key=entry.text.toLowerCase();
+    if(seen.has(key))return;
+    seen.add(key);unique.push(entry);
+  });
+  host.innerHTML='';
+  unique.forEach(entry=>{
+    host.appendChild(make('span',(entry.alert?'v73-alert-badge':'v73-comment-badge')+' v22v-feedback-summary',entry.text));
   });
 }
 function exercise(card,index){
