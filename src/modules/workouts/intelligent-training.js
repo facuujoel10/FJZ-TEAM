@@ -219,11 +219,20 @@
   }
   function progressionSuggestion(analysis){
     if(!analysis?.comparable||!analysis.current||!analysis.previous)return null;
-    const c=analysis.current,p=analysis.previous;
-    if(c.rir===null)return {kind:'hold',label:'Sugerencia calculada',message:'Hay mejora verificable, pero falta RIR para justificar una subida de carga.'};
+    const c=analysis.current,p=analysis.previous,mode=analysis.mode||'external';
+    if(c.rir===null)return {kind:'hold',label:'Sugerencia calculada',message:'Hay mejora verificable, pero falta RIR para justificar un cambio de dificultad.'};
+    if(c.rir<1)return {kind:'hold',label:'Sugerencia calculada',message:'El esfuerzo fue muy alto. No se sugiere aumentar la dificultad automáticamente.'};
+    if(mode==='bodyweight'){
+      if(c.reps>p.reps&&c.rir>=2)return {kind:'consider',label:'Sugerencia calculada',message:'Más repeticiones con peso corporal y RIR ≥ 2. El Coach puede valorar una progresión, sin asumir automáticamente que deba añadir lastre.'};
+      return {kind:'maintain',label:'Sugerencia calculada',message:'Mantener la prescripción de peso corporal y observar otra sesión comparable.'};
+    }
+    if(mode==='assisted'){
+      if(c.load<p.load&&c.reps>=p.reps&&c.rir>=1)return {kind:'maintain',label:'Sugerencia calculada',message:'Ya hubo progreso con menor asistencia. Conviene confirmar esta tendencia antes de reducirla otra vez.'};
+      if(c.load===p.load&&c.reps>p.reps&&c.rir>=2)return {kind:'consider',label:'Sugerencia calculada',message:'Más repeticiones con la misma asistencia y RIR ≥ 2. El Coach puede considerar reducir la asistencia.'};
+      return {kind:'maintain',label:'Sugerencia calculada',message:'Mantener la asistencia indicada y observar otra sesión comparable.'};
+    }
     if(c.load>p.load&&c.reps>=p.reps&&c.rir>=1)return {kind:'maintain',label:'Sugerencia calculada',message:'La carga ya progresó con margen registrado. Conviene confirmar esta tendencia antes de otra subida.'};
     if(c.load===p.load&&c.reps>p.reps&&c.rir>=2)return {kind:'consider',label:'Sugerencia calculada',message:'Más repeticiones con la misma carga y RIR ≥ 2. El Coach puede considerar progresar la carga.'};
-    if(c.rir<1)return {kind:'hold',label:'Sugerencia calculada',message:'El esfuerzo fue muy alto. No se sugiere aumentar carga automáticamente.'};
     return {kind:'maintain',label:'Sugerencia calculada',message:'Mantener la prescripción y observar otra sesión comparable.'};
   }
   function workoutSummary({sessions,currentSession,confirmedSessionId,feedbackRows}={}){
@@ -306,7 +315,7 @@
     const content=modal.querySelector('.modal-content')||modal;
     const rows=summary.exercises.map(x=>{
       const pr=x.prs[0],imp=x.analysis?.improvements?.[0];
-      return '<div class="v22c-summary-exercise"><div><strong>'+escapeHtml(x.name)+'</strong><small>'+x.sets+' series registradas</small></div>'+
+      return '<div class="v22c-summary-exercise"><div><strong>'+escapeHtml(x.name)+'</strong><small>'+x.sets+' series registradas'+(x.comments?.length?' · '+x.comments.length+' comentario'+(x.comments.length===1?'':'s'):'')+'</small></div>'+
         (pr?'<span class="v22c-pr">PR · '+escapeHtml(pr.label)+'</span>':imp?'<span class="v22c-improvement">'+escapeHtml(imp.message)+'</span>':'')+'</div>';
     }).join('');
     content.innerHTML='<div class="v22c-summary"><div class="modal-head"><div><span class="v22c-kicker">SESIÓN CONFIRMADA</span><h3>'+escapeHtml(summary.dayName)+'</h3><div class="muted tiny">'+escapeHtml(summary.date?new Date(summary.date).toLocaleString('es-AR'):'')+'</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
