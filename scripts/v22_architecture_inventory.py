@@ -73,7 +73,7 @@ if __name__=="__main__":
         if not runtime.get("date_core") or not runtime.get("date_pilot"): raise SystemExit("V22 1A generated date pilot missing")
         for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag","intelligent_training_module","intelligent_training_flag"):
             if not runtime.get(key): raise SystemExit("V22 runtime marker missing: "+key)
-        expected={"render_assignments":18,"channels":2,"timeouts":58,"intervals":0,"listeners":51,"mutation_observers":3}
+        expected={"render_assignments":18,"channels":2,"timeouts":57,"intervals":0,"listeners":51,"mutation_observers":3}
         actual={k:runtime.get(k) for k in expected}
         if actual!=expected: raise SystemExit("V22 1C topology regression: "+repr({"expected":expected,"actual":actual}))
         if len(patches)!=230: raise SystemExit("V22 2C keeps one additional bounded intelligent-training bridge; count="+str(len(patches)))
