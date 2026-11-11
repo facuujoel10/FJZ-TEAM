@@ -109,7 +109,9 @@ html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
 def patch_history(body):
     old="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
-    const comparisonHtmlV2B=comparisonV2B?.previous"""
+    const comparisonHtmlV2B=comparisonV2B?.previous
+      ?'<div class="v22-history-compare"><div class="v22-history-compare-box"><small>Sesión anterior</small><strong>'+esc(String(comparisonV2B.previous.load))+' kg × '+esc(String(comparisonV2B.previous.reps))+'</strong></div><span>→</span><div class="v22-history-compare-box current"><small>Esta sesión</small><strong>'+esc(String(comparisonV2B.current.load))+' kg × '+esc(String(comparisonV2B.current.reps))+'</strong></div></div>'
+      :'';"""
     new="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
     const intelligentV2C=globalThis.TeamFJZIntelligentTraining?.analyzeExercise?.({
       sessions:student()?.sessions||[],currentSession:ss,exerciseUid:r?.exerciseUid,confirmedSessionId:ss?.confirmed||ss?.cloudConfirmed?ss.id:null
