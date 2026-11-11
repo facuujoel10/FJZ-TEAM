@@ -940,13 +940,24 @@ test('2C historial y Coach: progreso calculado se presenta sin sustituir prescri
     saveState();
   });
   await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
-  const row=page.locator('.v22v2-history-session').filter({hasText:/Día QA A/}).first();
+  const row=page.locator('.v22v2-history-session[data-session-id="qa-2c-history-b"]');
   await expect(row).toBeVisible();await row.locator('.v22v2-history-open').click();
   const note=page.locator('#modal .v22c-performance-note').first();
   await expect(note).toBeVisible();
   await expect(note).toContainText(/Progreso verificable/i);
   await expect(note).toContainText(/Sugerencia calculada/i);
   await page.screenshot({path:'artifacts/2c/progression-'+testInfo.project.name+'.png',fullPage:false});
+  await page.getByRole('button',{name:/Cerrar/i}).click();
+  await page.evaluate(()=>{
+    const s=student(),d=s.days[0],e=d.exercises[0];
+    const solo={id:'qa-2c-history-no-ref',date:'2026-11-10T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:e.uid,exerciseName:e.name,loadMode:'assisted',sets:[[25,10,2]]}]};
+    s.sessions=(s.sessions||[]).filter(x=>x.id!=='qa-2c-history-no-ref').concat([solo]);saveState();
+  });
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
+  const noRef=page.locator('.v22v2-history-session[data-session-id="qa-2c-history-no-ref"]');
+  await expect(noRef).toBeVisible();await noRef.locator('.v22v2-history-open').click();
+  await expect(page.locator('#modal .v22c-no-reference')).toContainText(/Sin referencia comparable/i);
+  await page.screenshot({path:'artifacts/2c/no-reference-'+testInfo.project.name+'.png',fullPage:false});
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK intelligent-progression-2c '+testInfo.project.name);
 });
@@ -1002,8 +1013,9 @@ test('2C Coach: historial conserva progreso verificable y comentarios exactos', 
   await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
   const historyTab=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:/^Historial/}).first();
   await expect(historyTab).toBeVisible();await historyTab.click();
-  const sessionRow=page.locator('#coachStudentBody .v22v2-history-session').first();
-  if(await sessionRow.count()){
+  const sessionRow=page.locator('#coachStudentBody .v22v2-history-session[data-session-id="qa-2c-coach-b"]');
+  await expect(sessionRow).toBeVisible();
+  {
     await sessionRow.locator('.v22v2-history-open').click();
     const note=page.locator('#modal .v22c-performance-note').first();
     await expect(note).toBeVisible();
