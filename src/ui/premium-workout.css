@@ -36,6 +36,8 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 }
 .v22v2-session-menu-panel>strong{display:block;font-size:14px}.v22v2-session-menu-panel>span{display:block;margin-top:4px;color:#9ba2ad;font-size:12px;line-height:1.45}
 .v22v2-autosave-menu{margin:12px 0 0!important;border:0!important;padding:0!important;background:transparent!important;box-shadow:none!important}
+.v22v2-session-menu:not([open]) .v22v2-session-menu-panel{display:none!important}
+.v22v2-session-menu[open] .v22v2-session-menu-panel{display:block!important}
 
 .v22v2-save-slot{justify-self:end;grid-column:3;grid-row:1}
 .v22-workout-save-state.v22v2-save-state{
@@ -105,6 +107,10 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 .v22v2-set-row[data-set-state="complete"]{background:linear-gradient(90deg,rgba(101,219,161,.055),transparent 70%)!important}
 .v22v2-set-row .set-n{display:grid!important;place-items:center;height:48px!important;color:#7f8792!important;font-size:12px!important;font-weight:900}
 .v22-premium-set .v22-set-field{min-width:0!important;margin:0!important}
+.v22v2-set-row .v22-set-field{font-size:0!important;line-height:0!important}
+.v22v2-set-row .v22-set-field .v205-prev-load,
+.v22v2-set-row .v22-set-field small,
+.v22v2-set-row .v22-set-field span{font-size:11px!important;line-height:1.2!important}
 .v22-set-field .input{
   height:48px!important;min-height:48px!important;margin:0!important;padding:0 6px!important;border:1px solid #2d323b!important;border-radius:11px!important;
   background:#15181d!important;color:#f8f9fb!important;font-size:17px!important;font-weight:900!important;text-align:center!important;
