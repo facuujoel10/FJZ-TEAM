@@ -24,7 +24,7 @@ function clickPrimaryNav(label){
 }
 
 function trimDuplicateNav(view){
-  if(!view)return;
+  if(!view||role()==='coach'||view.querySelector('button.tab[onclick*="coachStudentTab"]'))return;
   const duplicate=new Set(['inicio','nutrición','nutricion','progreso','entrenar']);
   const groups=new Set();
   [...view.querySelectorAll('.tabs .tab,button.tab')].forEach(b=>{
@@ -298,9 +298,17 @@ function sessionDateBadge(row,index){
   badge.innerHTML='<span>'+String(index+1).padStart(2,'0')+'</span><small>SES</small>';
   row.prepend(badge);
 }
+function restoreCoachNav(view){
+  if(!view)return;
+  [...view.querySelectorAll('button.tab[onclick*="coachStudentTab"]')].forEach(b=>{
+    b.hidden=false;b.removeAttribute('hidden');b.removeAttribute('aria-hidden');b.removeAttribute('tabindex');b.classList.remove('v22v-duplicate-nav','v22v2-duplicate-nav');
+    const group=b.closest('.tabs');if(group){group.hidden=false;group.removeAttribute('hidden');group.removeAttribute('aria-hidden');group.classList.remove('v22v-context-nav','v22v2-context-nav')}
+  });
+}
 function enhanceHistory(host){
-  if(!host)return false;const view=document.getElementById('view')||host,isCoach=role()==='coach';
-  if(!isCoach){view.classList.add('v22v-history-active','v22v2-history-active');trimDuplicateNav(view)}
+  if(!host)return false;const view=document.getElementById('view')||host,isCoach=role()==='coach'||!!view.querySelector('button.tab[onclick*="coachStudentTab"]');
+  if(isCoach)restoreCoachNav(view);
+  else{view.classList.add('v22v-history-active','v22v2-history-active');trimDuplicateNav(view)}
   const card=host.querySelector('.v22-premium-history');if(!card)return false;
   card.classList.add('v22v-history','v22v2-history','fjz-surface');
   card.querySelector('.v244-history-list')?.classList.add('v22v-history-list','v22v2-history-list');
