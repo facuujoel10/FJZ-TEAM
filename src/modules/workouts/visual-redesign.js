@@ -92,8 +92,20 @@ function sessionHeader(view){
       menuPanel.appendChild(btn);
     }
   });
-  const menuDiscards=menuPanel?[...menuPanel.querySelectorAll('button')].filter(x=>/Descartar borrador/i.test(t(x.textContent)||t(x.getAttribute('aria-label')))):[];
+  let menuDiscards=menuPanel?[...menuPanel.querySelectorAll('button')].filter(x=>/Descartar borrador/i.test(t(x.textContent)||t(x.getAttribute('aria-label')))):[];
   menuDiscards.slice(1).forEach(btn=>{btn.classList.add('v22v2-autosave-duplicate-action');btn.setAttribute('aria-hidden','true')});
+  if(menuPanel&&!menuDiscards.length&&typeof globalThis.confirmDiscardWorkoutDraftV145==='function'){
+    const action=make('button','btn v22v2-discard-menu-action','Descartar borrador');
+    action.type='button';
+    action.onclick=function(){
+      try{
+        const d=globalThis.student?.()?.days?.[globalThis.currentDay];
+        if(d?.id)globalThis.confirmDiscardWorkoutDraftV145(d.id);
+      }catch(_e){}
+    };
+    menuPanel.appendChild(action);
+    menuDiscards=[action];
+  }
   direct.filter(n=>n!==hero&&!n.querySelector?.('.session-card')&&/series con registro/i.test(t(n.textContent))).forEach(n=>n.classList.add('v22v2-legacy-progress'))
 
   let bar=hero.querySelector('.v22v2-progress');
