@@ -104,10 +104,10 @@ jobs:
         run: npx playwright test --project=mobile-390
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX"
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
@@ -127,25 +127,25 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Checkout certified V22 2B visual reference
+      - name: Checkout certified V22 2B-V.1 visual reference
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 58134a4671c7ca67e79a4e1c32e07eca03e5a511
-          path: visual_refs/v22-2b
+          ref: 6a7eb038d2920f384bb0fd73ccaaca3d9febd31c
+          path: visual_refs/v22-2bv1
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Build isolated V21.41 and V22 2B references against local Supabase
+      - name: Build isolated V21.41 and V22 2B-V.1 references against local Supabase
         run: |
           python scripts/dev_build_visual_reference.py visual_refs/v2141
-          python scripts/dev_build_visual_reference.py visual_refs/v22-2b
+          python scripts/dev_build_visual_reference.py visual_refs/v22-2bv1
 
       - name: Start isolated visual reference servers
         shell: bash
         run: |
           set -euo pipefail
           python -m http.server 8001 -d visual_refs/v2141/public > /tmp/fjz-v2141-http.log 2>&1 &
-          python -m http.server 8002 -d visual_refs/v22-2b/public > /tmp/fjz-v22-2b-http.log 2>&1 &
+          python -m http.server 8002 -d visual_refs/v22-2bv1/public > /tmp/fjz-v22-2bv1-http.log 2>&1 &
           for port in 8001 8002; do
             for i in {1..20}; do
               curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
@@ -154,37 +154,39 @@ jobs:
             curl -fsS "http://127.0.0.1:$port/" >/dev/null
           done
 
-      - name: Capture V21.41 with deterministic fake fixture
+      - name: Capture V21.41 product experience reference
         run: |
           python scripts/dev_reset.py
           npx playwright test --project=mobile-390 --grep "2B exacto"
-          node scripts/capture_visual_reference.js v2141 http://127.0.0.1:8001 artifacts/2bv-comparison
+          node scripts/capture_product_experience_v2.js v2141 http://127.0.0.1:8001 artifacts/2bv2-comparison
 
-      - name: Capture certified V22 2B with same fake fixture
+      - name: Capture certified V22 2B-V.1 with same fixture
         run: |
           python scripts/dev_reset.py
           npx playwright test --project=mobile-390 --grep "2B exacto"
-          node scripts/capture_visual_reference.js v22-2b http://127.0.0.1:8002 artifacts/2bv-comparison
+          node scripts/capture_product_experience_v2.js v22-2bv1 http://127.0.0.1:8002 artifacts/2bv2-comparison
 
-      - name: Capture V22 2B-V with same fake fixture
+      - name: Capture V22 2B-V2 with same fixture
         run: |
           python scripts/dev_reset.py
           npx playwright test --project=mobile-390 --grep "2B exacto"
-          node scripts/capture_visual_reference.js v22-2bv http://127.0.0.1:8000 artifacts/2bv-comparison
+          node scripts/capture_product_experience_v2.js v22-2bv2 http://127.0.0.1:8000 artifacts/2bv2-comparison
 
-      - name: Build V21.41 vs 2B vs 2B-V visual contact sheets
-        run: node scripts/build_visual_contact_sheets.js artifacts/2bv-comparison
+      - name: Build V21.41 vs 2B-V.1 vs 2B-V2 visual contact sheets
+        run: node scripts/build_product_experience_contact_sheets.js artifacts/2bv2-comparison
 
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v22-2bv-visual-redesign-screens
+          name: v22-2bv2-product-experience-screens
           path: |
             artifacts/2a
             artifacts/2b
             artifacts/2bv
             artifacts/2bv-comparison
+            artifacts/2bv2
+            artifacts/2bv2-comparison
           if-no-files-found: ignore
           retention-days: 14
 
