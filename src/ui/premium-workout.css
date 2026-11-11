@@ -217,3 +217,11 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 #view.v22v2-workout-active .v22v2-set-row .v22-set-field input.input{
   font-size:17px!important;
 }
+
+/* 2B-V2 visual residue cleanup */
+.v22v2-legacy-progress,
+.v22v2-previous-load-duplicate{display:none!important}
+.v22v2-autosave-menu{
+  max-height:220px;
+  overflow:auto;
+}
