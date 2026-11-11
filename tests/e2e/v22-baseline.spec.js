@@ -896,11 +896,13 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   await page.screenshot({path:'artifacts/2c/rest-active-'+testInfo.project.name+'.png',fullPage:false});
   await page.reload();
   await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
-  if(!(await page.locator('.v22c-rest-control').count())){
+  const restoredControl=page.locator('.v22c-rest-control').first();
+  if(!(await restoredControl.count())){
     const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
-    if(await resume.count())await resume.click();
+    await expect(resume).toBeVisible({timeout:10000});
+    await resume.click();
   }
-  await expect(page.locator('.v22c-rest-control').first()).toBeVisible();
+  await expect(page.locator('.v22c-rest-control').first()).toBeVisible({timeout:10000});
   const restored=await page.evaluate(sid=>({sid:window.TeamFJZIntelligentTraining.timerSnapshot()?.sessionId,count:window.TeamFJZIntelligentTraining.timerCount()}),sid);
   expect(restored.sid).toBe(sid);expect(restored.count).toBe(1);
   await page.locator('.v22c-rest-control').first().getByRole('button',{name:'Reiniciar'}).click();
@@ -934,8 +936,8 @@ test('2C historial y Coach: progreso calculado se presenta sin sustituir prescri
   await login(page,'alumno01@test.local');
   await page.evaluate(()=>{
     const s=student(),d=s.days[0],e=d.exercises[0],uid=e.uid;
-    const prior={id:'qa-2c-history-a',date:'2026-11-08T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[40,10,2]]}]};
-    const current={id:'qa-2c-history-b',date:'2026-11-09T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[42.5,10,2]]}]};
+    const prior={id:'qa-2c-history-a',date:'2026-11-08T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[40,10,2]]}]};
+    const current={id:'qa-2c-history-b',date:'2026-11-09T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[42.5,10,2]]}]};
     s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-history-')).concat([prior,current]);
     saveState();
   });
@@ -951,9 +953,8 @@ test('2C historial y Coach: progreso calculado se presenta sin sustituir prescri
   await page.evaluate(()=>{
     const s=student(),d=s.days[0],e=d.exercises[0];
     const solo={id:'qa-2c-history-no-ref',date:'2026-11-10T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:e.uid,exerciseName:e.name,loadMode:'assisted',sets:[[25,10,2]]}]};
-    s.sessions=(s.sessions||[]).filter(x=>x.id!=='qa-2c-history-no-ref').concat([solo]);saveState();
+    s.sessions=(s.sessions||[]).filter(x=>x.id!=='qa-2c-history-no-ref').concat([solo]);saveState();render();
   });
-  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
   const noRef=page.locator('.v22v2-history-session[data-session-id="qa-2c-history-no-ref"]');
   await expect(noRef).toBeVisible();await noRef.locator('.v22v2-history-open').click();
   await expect(page.locator('#modal .v22c-no-reference')).toContainText(/Sin referencia comparable/i);
@@ -968,7 +969,7 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
   await expect(page.locator('.v22c-rest-control').first()).toBeVisible();
   await page.evaluate(()=>{
     const s=student(),d=s.days[currentDay],e=d.exercises[0];
-    const prior={id:'qa-2c-prior-summary',date:'2026-11-07T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:e.uid,exerciseName:e.name,sets:[[10,8,2]]}]};
+    const prior={id:'qa-2c-prior-summary',date:'2026-11-07T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:e.uid,exerciseName:e.name,sets:[[10,8,2]]}]};
     s.sessions=(s.sessions||[]).filter(x=>x.id!=='qa-2c-prior-summary').concat([prior]);saveState();
   });
   const sets=page.locator('.set-grid');
@@ -1002,18 +1003,17 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
 
 
 test('2C Coach: historial conserva progreso verificable y comentarios exactos', async ({page},testInfo)=>{
-  await login(page,'alumno01@test.local');
+  await login(page,'coach@test.local');
   await page.evaluate(()=>{
-    const s=student(),d=s.days[0],e=d.exercises[0],uid=e.uid;
+    const s=(window.students||[]).find(x=>String(x?.name||'').includes('TEST ALUMNO 01'))||student();
+    const d=s.days[0],e=d.exercises[0],uid=e.uid;
     const rows=[
       {id:'qa-2c-coach-a',date:'2026-11-06T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[35,10,2]]}]},
       {id:'qa-2c-coach-b',date:'2026-11-07T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[37.5,10,2]]}]}
     ];
     s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-coach-')).concat(rows);
-    saveState();
+    saveState();render();
   });
-  await logout(page);
-  await login(page,'coach@test.local');
   const row=page.locator('.student-row',{hasText:'TEST ALUMNO 01'});
   await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
   const historyTab=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:/^Historial/}).first();
