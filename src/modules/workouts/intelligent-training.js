@@ -114,11 +114,9 @@
   function modeOf(result){
     const raw=text(result?.loadMode||result?.weightMode||result?.mode||result?.resistanceMode||result?.exerciseMode).toLowerCase();
     if(/assist/.test(raw)||result?.assisted===true||result?.isAssisted===true)return 'assisted';
-    if(/body|corporal/.test(raw)||result?.bodyweight===true||result?.isBodyweight===true){
-      if(/lastre|weighted|external/.test(raw)||result?.weightedBodyweight===true)return 'bodyweight-added';
-      return 'bodyweight';
-    }
-    if(/lastre|weighted-body/.test(raw))return 'bodyweight-added';
+    const added=/lastre|weighted|bodyweight[-_ ]?added|added[-_ ]?bodyweight|weighted[-_ ]?body/.test(raw)||result?.weightedBodyweight===true;
+    if(/body|corporal/.test(raw)||result?.bodyweight===true||result?.isBodyweight===true)return added?'bodyweight-added':'bodyweight';
+    if(added)return 'bodyweight-added';
     return 'external';
   }
   function comparableMode(a,b){return modeOf(a)===modeOf(b)}
