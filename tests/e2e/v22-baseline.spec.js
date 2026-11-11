@@ -775,6 +775,9 @@ test('2B-V2 UX: primer ejercicio y primera serie son accionables en el viewport 
 
   const discard=page.getByRole('button',{name:/Descartar borrador/i}).filter({visible:true});
   expect(await discard.count()).toBe(0);
+  const feedbackLabels=await firstExercise.locator('.v73-comment-badge:visible,.v73-alert-badge:visible').allTextContents();
+  const normalizedFeedback=feedbackLabels.map(x=>x.replace(/\s*·\s*\d+\s*$/,'').trim().toLowerCase()).filter(Boolean);
+  expect(new Set(normalizedFeedback).size).toBe(normalizedFeedback.length);
   const technique=firstExercise.locator('.v22v2-technique-disclosure').first();
   if(await technique.count())expect(await technique.getAttribute('open')).toBeNull();
   const menu=header.locator('.v22v2-session-menu');
