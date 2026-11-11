@@ -151,7 +151,7 @@
     const id=text(session?.id);
     if(!id)return false;
     if(id===text(confirmedSessionId)||confirmedIds.has(id))return true;
-    if(session?.cloudConfirmed===true||session?.confirmed===true)return true;
+    if(session?.cloudConfirmed===true)return true;
     if(text(session?.source_session_id)||text(session?.sourceSessionId))return true;
     return false;
   }
@@ -355,7 +355,7 @@
     content.innerHTML='<div class="v22c-summary"><div class="modal-head"><div><span class="v22c-kicker">SESIÓN CONFIRMADA</span><span class="v22c-confirmed-label">Sesión guardada con éxito</span><h3>'+escapeHtml(summary.dayName)+'</h3><div class="muted tiny">'+escapeHtml(summary.date?new Date(summary.date).toLocaleString('es-AR'):'')+'</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
       '<div class="v22c-summary-stats"><div><strong>'+summary.totalSets+'</strong><span>series</span></div><div><strong>'+summary.exercises.length+'</strong><span>ejercicios</span></div><div><strong>'+summary.recordCount+'</strong><span>récords</span></div></div>'+
       '<div class="v22c-summary-list">'+rows+'</div>'+
-      '<div class="v22c-summary-actions"><button class="btn" onclick="closeModal();studentTab=\'home\';currentDay=-1;render()">Volver al inicio</button><button class="btn primary" onclick="closeModal();studentTab=\'history\';currentDay=-1;render()">Ver historial</button></div></div>';
+      '<div class="v22c-summary-actions"><button class="btn" onclick="closeModal();studentTab=\'home\';currentDay=-1;render()">Volver al inicio</button><button class="btn primary v22-history-after-save" onclick="closeModal();studentTab=\'history\';currentDay=-1;render()">Ver historial</button></div></div>';
     return true;
   }
   function buildConfirmedSummary(session,feedbackRows){
