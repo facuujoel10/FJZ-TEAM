@@ -11,7 +11,7 @@
   let tickHandle=null;
 
   function text(v){return String(v??'').trim()}
-  function num(v){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:null}
+  function num(v){const raw=text(v).replace(',','.');if(!raw)return null;const n=Number(raw);return Number.isFinite(n)?n:null}
   function clone(v){try{return JSON.parse(JSON.stringify(v))}catch(_e){return v}}
   function hasDOM(){return typeof document!=='undefined'&&!!document.querySelector}
   function now(){return Date.now()}
@@ -124,12 +124,15 @@
   function comparableMode(a,b){return modeOf(a)===modeOf(b)}
   function validSet(set,index,result){
     if(!Array.isArray(set))return null;
-    const load=num(set[0]),reps=num(set[1]),rir=num(set[2]);
+    const mode=modeOf(result),rawLoad=text(set[0]);
+    const load=mode==='bodyweight'&&!rawLoad?0:num(set[0]),reps=num(set[1]),rir=num(set[2]);
     if(load===null||reps===null||reps<=0||load<0)return null;
+    if(mode==='bodyweight-added'&&load<=0)return null;
     const kinds=result?.setKinds||result?.setTypes||[];
     const kind=text(kinds[index]||'work').toLowerCase();
     if(/warm|calent/.test(kind))return null;
     if(/drop|rest.?pause|intens/.test(kind))return null;
+    if(set?.completed===false||set?.isComplete===false)return null;
     return {load,reps,rir:rir===null?null:rir,index,kind};
   }
   function workSets(result){
@@ -149,7 +152,7 @@
     if(!id)return false;
     if(id===text(confirmedSessionId)||confirmedIds.has(id))return true;
     if(session?.cloudConfirmed===true||session?.confirmed===true)return true;
-    if(text(session?.status).toLowerCase()==='completed')return true;
+    if(text(session?.source_session_id)||text(session?.sourceSessionId))return true;
     return false;
   }
   function markSessionConfirmed(sessionId){if(text(sessionId))confirmedIds.add(text(sessionId));return text(sessionId)||null}
@@ -163,18 +166,46 @@
     if(!current)return null;
     for(let i=rows.length-1;i>=0;i--){
       const s=rows[i];if(text(s?.id)===text(currentSession?.id))continue;
+      if(!sessionConfirmed(s))continue;
       if((Date.parse(s?.date||0)||0)>currentTime)continue;
       const r=sessionResult(s,exerciseUid);if(!r||!comparableMode(current,r))continue;
       if(workSets(r).length)return {session:s,result:r};
     }
     return null;
   }
+  function comparisonMessage(mode,p,c){
+    if(mode==='assisted')return `${p.load} kg asistencia × ${p.reps}${p.rir===null?'':' · RIR '+p.rir} → ${c.load} kg asistencia × ${c.reps}${c.rir===null?'':' · RIR '+c.rir}`;
+    if(mode==='bodyweight')return `${p.reps} reps${p.rir===null?'':' · RIR '+p.rir} → ${c.reps} reps${c.rir===null?'':' · RIR '+c.rir}`;
+    return `${p.load} kg × ${p.reps}${p.rir===null?'':' · RIR '+p.rir} → ${c.load} kg × ${c.reps}${c.rir===null?'':' · RIR '+c.rir}`;
+  }
+  function comparisonTrend(mode,p,c){
+    if(!p||!c)return 'unknown';
+    if(mode==='assisted'){
+      if(c.load<p.load&&c.reps>=p.reps)return 'improved';
+      if(c.load===p.load&&c.reps>p.reps)return 'improved';
+      if(c.load>p.load&&c.reps<=p.reps)return 'lower';
+    }else if(mode==='bodyweight'){
+      if(c.reps>p.reps)return 'improved';
+      if(c.reps<p.reps)return 'lower';
+    }else{
+      if(c.load>p.load&&c.reps>=p.reps)return 'improved';
+      if(c.load===p.load&&c.reps>p.reps)return 'improved';
+      if(c.load<p.load&&c.reps<=p.reps)return 'lower';
+      if(c.load===p.load&&c.reps< p.reps)return 'lower';
+    }
+    if(c.load===p.load&&c.reps===p.reps&&c.rir!==null&&p.rir!==null){
+      if(c.rir>p.rir)return 'improved';
+      if(c.rir<p.rir)return 'higher-effort';
+      return 'stable';
+    }
+    return 'mixed';
+  }
   function analyzeExercise({sessions,currentSession,exerciseUid,confirmedSessionId}={}){
-    if(!currentSession||!sessionConfirmed(currentSession,confirmedSessionId))return {comparable:false,reason:'La sesión actual todavía no está confirmada.',records:[],improvements:[]};
+    if(!currentSession||!sessionConfirmed(currentSession,confirmedSessionId))return {comparable:false,reason:'La sesión actual todavía no está confirmada.',records:[],improvements:[],trend:'unconfirmed'};
     const current=sessionResult(currentSession,exerciseUid);
-    if(!current||!workSets(current).length)return {comparable:false,reason:'No hay series de trabajo válidas para comparar.',records:[],improvements:[]};
+    if(!current||!workSets(current).length)return {comparable:false,reason:'No hay series de trabajo válidas para comparar.',records:[],improvements:[],trend:'invalid'};
     const previous=previousComparable(sessions,currentSession,exerciseUid);
-    if(!previous)return {comparable:false,reason:'No existe una referencia comparable confirmada.',records:[],improvements:[]};
+    if(!previous)return {comparable:false,reason:'No existe una referencia comparable confirmada.',records:[],improvements:[],trend:'no-reference'};
     const cb=bestLoad(current),pb=bestLoad(previous.result),records=[],improvements=[],mode=modeOf(current);
     if(cb&&pb&&mode==='assisted'&&cb.load<pb.load&&cb.reps>=pb.reps){
       records.push({type:'less_assistance',label:'Menor asistencia',from:pb,to:cb,message:`${pb.load} kg asistencia × ${pb.reps} → ${cb.load} kg asistencia × ${cb.reps}`});
@@ -185,16 +216,13 @@
     }else if(cb&&pb&&cb.load===pb.load&&cb.reps>pb.reps){
       records.push({type:'reps_same_load',label:'Más repeticiones con la misma carga',from:pb,to:cb,message:`${pb.load} kg × ${pb.reps} → ${cb.load} kg × ${cb.reps}`});
     }
-    if(cb&&pb){
-      if(cb.load!==pb.load||cb.reps!==pb.reps||cb.rir!==pb.rir){
-        improvements.push({type:'previous_comparison',from:pb,to:cb,message:`${pb.load} kg × ${pb.reps}${pb.rir===null?'':' · RIR '+pb.rir} → ${cb.load} kg × ${cb.reps}${cb.rir===null?'':' · RIR '+cb.rir}`});
-      }
-    }
-    return {comparable:true,mode:modeOf(current),previousSessionId:previous.session.id,current:cb,previous:pb,records,improvements};
+    const trend=comparisonTrend(mode,pb,cb),comparison=cb&&pb?comparisonMessage(mode,pb,cb):'';
+    if(trend==='improved')improvements.push({type:'previous_comparison',from:pb,to:cb,message:comparison});
+    return {comparable:true,mode,previousSessionId:previous.session.id,current:cb,previous:pb,records,improvements,trend,comparison};
   }
   function allPriorResults(sessions,currentSession,exerciseUid,currentResult){
     const t=Date.parse(currentSession?.date||0)||Infinity;
-    return (Array.isArray(sessions)?sessions:[]).filter(s=>text(s?.id)!==text(currentSession?.id)&&(Date.parse(s?.date||0)||0)<=t)
+    return (Array.isArray(sessions)?sessions:[]).filter(s=>text(s?.id)!==text(currentSession?.id)&&sessionConfirmed(s)&&(Date.parse(s?.date||0)||0)<=t)
       .map(s=>({session:s,result:sessionResult(s,exerciseUid)})).filter(x=>x.result&&comparableMode(currentResult,x.result)&&workSets(x.result).length);
   }
   function personalRecords({sessions,currentSession,exerciseUid,confirmedSessionId}={}){
@@ -226,7 +254,7 @@
   function progressionSuggestion(analysis){
     if(!analysis?.comparable||!analysis.current||!analysis.previous)return null;
     const c=analysis.current,p=analysis.previous,mode=analysis.mode||'external';
-    if(c.rir===null)return {kind:'hold',label:'Sugerencia calculada',message:'Hay mejora verificable, pero falta RIR para justificar un cambio de dificultad.'};
+    if(c.rir===null)return {kind:'hold',label:'Sugerencia calculada',message:'Falta RIR para justificar un cambio de dificultad. Se mantiene la prescripción del Coach.'};
     if(c.rir<1)return {kind:'hold',label:'Sugerencia calculada',message:'El esfuerzo fue muy alto. No se sugiere aumentar la dificultad automáticamente.'};
     if(mode==='bodyweight'){
       if(c.reps>p.reps&&c.rir>=2)return {kind:'consider',label:'Sugerencia calculada',message:'Más repeticiones con peso corporal y RIR ≥ 2. El Coach puede valorar una progresión, sin asumir automáticamente que deba añadir lastre.'};
