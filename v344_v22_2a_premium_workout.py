@@ -179,8 +179,22 @@ def patch_v207(body):
 
     old="""      return baseStartV207.apply(this,arguments);
     };"""
-    new="""      const out=baseStartV207.apply(this,arguments);
-      try{window.__fjzEnsureWorkoutSessionIdentityV2B?.()}catch(_e){}
+    new="""      let recoveredSessionV2B=null;
+      try{recoveredSessionV2B=window.__fjzEnsureWorkoutSessionIdentityV2B?.()||null}catch(_e){}
+      const out=baseStartV207.apply(this,arguments);
+      try{
+        const s=student?.(),d=s?.days?.[currentDay];
+        if(recoveredSessionV2B&&s&&d){
+          globalThis.TeamFJZSessionHistory?.activate({
+            studentId:s.id,
+            dayId:d.id,
+            sessionId:recoveredSessionV2B,
+            startedAt:window.__fjzWorkoutStartedAtV340?.()||null
+          });
+        }else{
+          window.__fjzEnsureWorkoutSessionIdentityV2B?.();
+        }
+      }catch(_e){}
       return out;
     };"""
     if body.count(old)!=1:
