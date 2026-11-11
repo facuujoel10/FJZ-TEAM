@@ -165,7 +165,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
   .v22v2-workout-subtitle{font-size:11px!important}
   .v22v2-save-slot{display:none}
   .v22v2-exercise-head{padding-top:11px!important}
-  .v22v2-exercise-name{font-size:17px!important}
+  .v22v2-exercise-name{font-size:18px!important}
   .v22v2-comment-action{font-size:0!important;width:44px!important;padding:0!important}
   .v22v2-comment-action:before{content:"💬";font-size:16px}
   .v22v2-comment-types{grid-template-columns:1fr!important}
