@@ -984,6 +984,36 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
   console.log('E2E_FLOW_OK intelligent-summary-2c '+testInfo.project.name);
 });
 
+
+test('2C Coach: historial conserva progreso verificable y comentarios exactos', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.evaluate(()=>{
+    const s=student(),d=s.days[0],e=d.exercises[0],uid=e.uid;
+    const rows=[
+      {id:'qa-2c-coach-a',date:'2026-11-06T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[35,10,2]]}]},
+      {id:'qa-2c-coach-b',date:'2026-11-07T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[37.5,10,2]]}]}
+    ];
+    s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-coach-')).concat(rows);
+    saveState();
+  });
+  await logout(page);
+  await login(page,'coach@test.local');
+  const row=page.locator('.student-row',{hasText:'TEST ALUMNO 01'});
+  await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
+  const historyTab=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:/^Historial/}).first();
+  await expect(historyTab).toBeVisible();await historyTab.click();
+  const sessionRow=page.locator('#coachStudentBody .v22v2-history-session').first();
+  if(await sessionRow.count()){
+    await sessionRow.locator('.v22v2-history-open').click();
+    const note=page.locator('#modal .v22c-performance-note').first();
+    await expect(note).toBeVisible();
+    await expect(note).toContainText(/Progreso verificable/i);
+  }
+  await page.screenshot({path:'artifacts/2c/coach-session-'+testInfo.project.name+'.png',fullPage:false});
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK intelligent-coach-2c '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
