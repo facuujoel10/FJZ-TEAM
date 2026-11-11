@@ -85,7 +85,8 @@ test('2C personal record requires prior comparable history and confirmed current
   const b=session('b','2026-11-10T10:00:00Z','press',[[82.5,10,2]]);
   const prs=engine.personalRecords({sessions:[a,b],currentSession:b,exerciseUid:'press',confirmedSessionId:'b'});
   assert.equal(prs[0].type,'all_time_load');
-  assert.deepEqual(engine.personalRecords({sessions:[a,b],currentSession:b,exerciseUid:'press'}),[]);
+  const unconfirmed={...b,status:undefined,confirmed:false,cloudConfirmed:false};
+  assert.deepEqual(engine.personalRecords({sessions:[a,unconfirmed],currentSession:unconfirmed,exerciseUid:'press'}),[]);
 });
 
 
