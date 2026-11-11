@@ -62,7 +62,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
   background:#0b0d10!important;box-shadow:none!important;overflow:visible!important;
 }
 .v22v2-exercise:first-child{border-top:1px solid #242830!important}
-.v22v2-exercise.is-active:before{
+.v22v2-exercise.is-active:before,.v22v2-exercise:focus-within:before{
   content:"";position:absolute;left:-12px;top:0;bottom:0;width:3px;background:#ff3048;
 }
 .v22v2-exercise-head{
