@@ -86,6 +86,14 @@ function sessionHeader(view){
     node.classList.add('v22v2-autosave-duplicate');
     node.setAttribute('aria-hidden','true');
   });
+  discardButtons.forEach(btn=>{
+    if(menuPanel&&!btn.closest('.v22v2-session-menu-panel')){
+      btn.classList.add('v22v2-discard-menu-action');
+      menuPanel.appendChild(btn);
+    }
+  });
+  const menuDiscards=menuPanel?[...menuPanel.querySelectorAll('button')].filter(x=>/Descartar borrador/i.test(t(x.textContent)||t(x.getAttribute('aria-label')))):[];
+  menuDiscards.slice(1).forEach(btn=>{btn.classList.add('v22v2-autosave-duplicate-action');btn.setAttribute('aria-hidden','true')});
   direct.filter(n=>n!==hero&&!n.querySelector?.('.session-card')&&/series con registro/i.test(t(n.textContent))).forEach(n=>n.classList.add('v22v2-legacy-progress'))
 
   let bar=hero.querySelector('.v22v2-progress');
