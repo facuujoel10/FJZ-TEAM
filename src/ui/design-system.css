@@ -22,3 +22,20 @@
  --fjz-control:48px;--fjz-content-max:1320px;--fjz-rail:340px;
 }
 .v22v-duplicate-nav[hidden],.v22v-context-nav[hidden]{display:none!important}
+
+
+/* TEAM FJZ V22 · 2B-V2 reusable product components */
+:root{
+ --fjz-app-bg:#08090b;--fjz-app-surface:#101216;--fjz-app-elevated:#15181d;--fjz-app-line:#292d35;
+ --fjz-app-action:#ff3048;--fjz-app-action-soft:rgba(255,48,72,.10);--fjz-app-safe:env(safe-area-inset-bottom);
+ --fjz-app-header:72px;--fjz-app-copy:14px;--fjz-app-radius:14px;
+}
+.fjz-appbar{color:var(--fjz-text);isolation:isolate}
+.fjz-surface{background:var(--fjz-app-surface);border:1px solid var(--fjz-app-line);border-radius:var(--fjz-app-radius)}
+.fjz-icon-button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.fjz-icon-button:focus-visible,.fjz-disclosure summary:focus-visible{outline:none;box-shadow:var(--fjz-focus)}
+.fjz-disclosure summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.fjz-performance-section{scroll-margin-top:106px}
+@media(prefers-reduced-motion:reduce){
+ .fjz-performance-section,.fjz-icon-button,.v22v2-progress-track i{scroll-behavior:auto!important;transition:none!important}
+}
