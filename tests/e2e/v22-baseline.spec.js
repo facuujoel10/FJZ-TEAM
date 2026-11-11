@@ -915,11 +915,11 @@ test('2C récords y progresión: comparación verificable, RIR y modalidades inc
   await login(page,'alumno01@test.local');
   const result=await page.evaluate(()=>{
     const e=window.TeamFJZIntelligentTraining;
-    const a={id:'qa-prior',date:'2026-11-09T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[80,10,2]],loadMode:'external'}]};
+    const a={id:'qa-prior',date:'2026-11-09T10:00:00Z',status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:'press-qa',sets:[[80,10,2]],loadMode:'external'}]};
     const b={id:'qa-current',date:'2026-11-10T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[82.5,10,2]],loadMode:'external'}]};
     const x=e.analyzeExercise({sessions:[a,b],currentSession:b,exerciseUid:'press-qa',confirmedSessionId:'qa-current'});
     const suggestion=e.progressionSuggestion(x);
-    const assisted={id:'qa-assisted',date:'2026-11-09T09:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[25,10,2]],loadMode:'assisted'}]};
+    const assisted={id:'qa-assisted',date:'2026-11-09T09:00:00Z',status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:'press-qa',sets:[[25,10,2]],loadMode:'assisted'}]};
     const incompatible=e.analyzeExercise({sessions:[assisted,b],currentSession:b,exerciseUid:'press-qa',confirmedSessionId:'qa-current'});
     return {record:x.records[0],suggestion,incompatible};
   });
