@@ -109,7 +109,7 @@ html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
 def patch_history(body):
     old="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
-    const comparisonHtmlV2B=comparisonV2B?.previous"""
+    const comparisonHtmlV2B=(intelligentV2C?.comparable&&comparisonV2B?.previous&&String(comparisonV2B.previousSessionId||'')===String(intelligentV2C.previousSessionId||''))"""
     new="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
     const intelligentV2C=globalThis.TeamFJZIntelligentTraining?.analyzeExercise?.({
       sessions:student()?.sessions||[],currentSession:ss,exerciseUid:r?.exerciseUid,confirmedSessionId:ss?.confirmed||ss?.cloudConfirmed?ss.id:null
