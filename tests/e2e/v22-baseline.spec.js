@@ -736,6 +736,116 @@ test('2B-V.1 visual polish: history KPIs and previous/current comparison do not 
   console.log('E2E_FLOW_OK visual-polish-history-2bv1 '+testInfo.project.name);
 });
 
+
+test('2B-V2 UX: primer ejercicio y primera serie son accionables en el viewport inicial', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const view=page.locator('#view.v22v2-workout-active');
+  await expect(view).toBeVisible();
+  await expect(view).toHaveAttribute('data-v22-product-experience','performance-training-v2');
+
+  const header=page.locator('.v22v2-workout-header');
+  const firstExercise=page.locator('.v22v2-exercise').first();
+  const firstInput=firstExercise.locator('.set-grid input').first();
+  await expect(header).toBeVisible();
+  await expect(firstExercise).toBeVisible();
+  await expect(firstInput).toBeVisible();
+
+  const initial=await page.evaluate(()=>{
+    const box=s=>document.querySelector(s)?.getBoundingClientRect?.();
+    const h=box('.v22v2-workout-header'),e=box('.v22v2-exercise'),i=box('.v22v2-exercise .set-grid input');
+    const bottom=document.querySelector('#bottomNav');
+    const finish=document.querySelector('.v22v2-finish-zone');
+    return {
+      vw:innerWidth,vh:innerHeight,
+      header:h?{top:h.top,bottom:h.bottom,height:h.height}:null,
+      exercise:e?{top:e.top,bottom:e.bottom}:null,
+      input:i?{top:i.top,bottom:i.bottom}:null,
+      bottomDisplay:bottom?getComputedStyle(bottom).display:null,
+      finishPosition:finish?getComputedStyle(finish).position:null,
+      overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth
+    };
+  });
+  expect(initial.header?.height||999).toBeLessThan(120);
+  expect(initial.exercise?.top||9999).toBeLessThan(initial.vh*.42);
+  expect(initial.input?.bottom||9999).toBeLessThanOrEqual(initial.vh);
+  expect(initial.bottomDisplay).toBe('none');
+  expect(initial.finishPosition).not.toBe('fixed');
+  expect(initial.overflow).toBeLessThanOrEqual(2);
+
+  await firstInput.fill('17.5');
+  await expect(firstInput).toBeFocused();
+  await expect(firstInput).toHaveValue('17.5');
+  const primaryInside=page.locator('#view .tabs .tab:visible').filter({hasText:/^(Inicio|Entrenar|Nutrición|Nutricion|Progreso)$/i});
+  expect(await primaryInside.count()).toBe(0);
+
+  await page.screenshot({path:'artifacts/2bv2/initial-workout-'+testInfo.project.name+'.png',fullPage:false});
+  console.log('E2E_FLOW_OK product-experience-initial-2bv2 '+testInfo.project.name);
+});
+
+test('2B-V2 UX: serie activa no queda tapada y finalización no compite con la carga', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const input=page.locator('.v22v2-exercise').first().locator('.set-grid input').first();
+  await input.fill('22.5');
+  await expect(input).toBeFocused();
+  const geometry=await page.evaluate(()=>{
+    const i=document.activeElement?.getBoundingClientRect?.();
+    const finish=document.querySelector('.v22v2-finish-zone')?.getBoundingClientRect?.();
+    const overlays=[...document.querySelectorAll('body *')].filter(n=>{
+      const s=getComputedStyle(n);if(!['fixed','sticky'].includes(s.position)||s.display==='none'||s.visibility==='hidden')return false;
+      const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.top<innerHeight&&r.bottom>0;
+    }).map(n=>({cls:n.className||n.id||n.tagName,top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom}));
+    return {vh:innerHeight,input:i?{top:i.top,bottom:i.bottom}:null,finish:finish?{top:finish.top,bottom:finish.bottom}:null,overlays};
+  });
+  expect(geometry.input?.bottom||0).toBeLessThanOrEqual(geometry.vh);
+  if(geometry.finish)expect(geometry.finish.top).toBeGreaterThan(geometry.input?.bottom||0);
+  expect(geometry.overlays.some(x=>String(x.cls).includes('v22v-finish-dock')&&x.top<(geometry.input?.bottom||0))).toBeFalsy();
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK product-experience-no-overlay-2bv2 '+testInfo.project.name);
+});
+
+test('2B-V2 UX: comentario contextual vuelve al flujo sin navegación secundaria', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const first=page.locator('.v22v2-exercise').first();
+  await first.getByRole('button',{name:/Comentario/i}).click();
+  const modal=page.locator('#modal.v22v2-comment-sheet');
+  await expect(modal).toBeVisible();
+  const ta=modal.locator('#v73FeedbackMessage');
+  await ta.fill('Comentario UX V2');
+  await expect(ta).toBeFocused();
+  expect(await modal.getByRole('button',{name:/Cerrar comentario/i}).count()).toBe(1);
+  await modal.getByRole('button',{name:/Cerrar comentario/i}).click();
+  await expect(page.locator('#modalWrap')).toBeHidden();
+  await expect(first.locator('.set-grid input').first()).toBeVisible();
+  console.log('E2E_FLOW_OK product-experience-comment-return-2bv2 '+testInfo.project.name);
+});
+
+test('2B-V2 UX: historial funciona como performance log y conserva detalle exacto', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
+  const history=page.locator('.v22v2-history');
+  await expect(history).toBeVisible();
+  await expect(page.locator('#view')).toHaveAttribute('data-v22-product-experience','performance-history-v2');
+  const rows=history.locator('.v22v2-history-session');
+  expect(await rows.count()).toBeGreaterThan(0);
+  const first=rows.first();
+  const b=first.locator('.v22v2-history-open');
+  await expect(b).toBeVisible();
+  const rowGeo=await first.evaluate(n=>{const r=n.getBoundingClientRect();return{height:r.height,top:r.top,bottom:r.bottom}});
+  expect(rowGeo.height).toBeLessThan(150);
+  await b.click();
+  const modal=page.locator('#modal.v22v2-session-modal');
+  await expect(modal).toBeVisible();
+  await expect(modal.locator('.v22v2-session-kpis')).toBeVisible();
+  const comments=modal.locator('.v22v2-context-comment');
+  if(await comments.count())await expect(comments.first()).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  await page.screenshot({path:'artifacts/2bv2/history-'+testInfo.project.name+'.png',fullPage:false});
+  console.log('E2E_FLOW_OK product-experience-history-2bv2 '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
