@@ -101,3 +101,16 @@ test('2C assisted and bodyweight modes use mode-correct progression semantics',(
   const bw=engine.analyzeExercise({sessions:[c1,c2],currentSession:c2,exerciseUid:'pullup-bw',confirmedSessionId:'c2'});
   assert.equal(bw.records[0].type,'bodyweight_reps');
 });
+
+
+test('2C suggestions never treat bodyweight reps as automatic load progression',()=>{
+  const s=engine.progressionSuggestion({comparable:true,mode:'bodyweight',current:{load:0,reps:12,rir:2},previous:{load:0,reps:10,rir:2}});
+  assert.match(s.message,/sin asumir automáticamente que deba añadir lastre/i);
+  assert.doesNotMatch(s.message,/progresar la carga/i);
+});
+
+test('2C assisted suggestion speaks in assistance, not external load',()=>{
+  const s=engine.progressionSuggestion({comparable:true,mode:'assisted',current:{load:25,reps:10,rir:2},previous:{load:30,reps:10,rir:2}});
+  assert.match(s.message,/menor asistencia/i);
+  assert.doesNotMatch(s.message,/subida de carga/i);
+});
