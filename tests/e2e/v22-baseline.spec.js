@@ -879,7 +879,7 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   await expect(rest).toBeVisible();
   const custom=rest.locator('input[aria-label*="Duración personal"]');
   if(await custom.count())await custom.fill('15');
-  await rest.getByRole('button',{name:'Iniciar'}).click();
+  await rest.locator('button[data-rest-action="start"]').click();
   await expect(rest).toHaveAttribute('data-active','true');
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
   const before=await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().remainingMs);
