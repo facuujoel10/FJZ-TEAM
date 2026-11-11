@@ -101,7 +101,7 @@ function ensureExerciseHeader(card,index){
   if(!top){
     top=make('div','v22v2-exercise-top');
     const number=make('span','v22v-exercise-number v22v2-exercise-number',String(index+1).padStart(2,'0'));
-    const copy=make('div','v22v2-exercise-copy');
+    const copy=make('div','v22v-exercise-title v22v2-exercise-copy');
     const strong=head.querySelector('strong');
     if(strong){strong.classList.add('v22v2-exercise-name');copy.appendChild(strong)}
     const prescription=parsePrescription(head);
@@ -115,7 +115,7 @@ function ensureExerciseHeader(card,index){
       action.setAttribute('aria-label','Comentario de '+t(strong?.textContent||'ejercicio'));
     }
     top.append(number,copy);
-    if(action)top.appendChild(action);
+    if(action){const actions=make('div','v22v-exercise-actions v22v2-exercise-actions');actions.appendChild(action);top.appendChild(actions)}
     head.prepend(top);
   }
   [...head.children].forEach(x=>{if(x!==top)x.classList.add('v22v2-head-legacy')});
@@ -138,7 +138,7 @@ function buildSeries(card){
   let block=card.querySelector(':scope > .v22v-series-block');
   if(!block){
     block=make('section','v22v-series-block v22v2-series-block');
-    const h=make('div','v22v-series-header v22v2-series-header','<span>Serie</span><span>Kg</span><span>Reps</span><span>RIR</span>');
+    const h=make('div','v22v-series-header v22v2-series-header','<span>Serie</span><span>Carga</span><span>Reps</span><span>RIR</span>');
     block.appendChild(h);sets[0].before(block);
   }else block.classList.add('v22v2-series-block');
   sets.forEach(x=>{x.classList.add('v22v2-set-row');if(x.parentElement!==block)block.appendChild(x)});
