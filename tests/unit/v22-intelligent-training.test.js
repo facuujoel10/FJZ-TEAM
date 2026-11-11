@@ -132,6 +132,14 @@ test('2C completed local status alone is not server confirmation',()=>{
   assert.deepEqual(engine.personalRecords({sessions:[local],currentSession:local,exerciseUid:'press'}),[]);
 });
 
+test('2C local confirmed flag alone is not server-verifiable confirmation',()=>{
+  const local={id:'local-confirmed-only',date:'2026-11-10T10:00:00Z',status:'completed',confirmed:true,cloudConfirmed:false,exerciseResults:[{exerciseUid:'press',sets:[[80,10,2]]}]};
+  assert.equal(engine.sessionConfirmed(local),false);
+  assert.deepEqual(engine.analyzeExercise({sessions:[local],currentSession:local,exerciseUid:'press'}).records,[]);
+  const persisted={...local,id:'persisted',source_session_id:'server-source-session'};
+  assert.equal(engine.sessionConfirmed(persisted),true);
+});
+
 test('2C unconfirmed prior sessions are excluded from comparisons and records',()=>{
   const draft={id:'draft',date:'2026-11-09T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press',sets:[[100,10,2]]}]};
   const current=session('confirmed','2026-11-10T10:00:00Z','press',[[80,10,2]]);
