@@ -871,6 +871,119 @@ test('2B-V2 UX: historial funciona como performance log y conserva detalle exact
   console.log('E2E_FLOW_OK product-experience-history-2bv2 '+testInfo.project.name);
 });
 
+
+test('2C temporizador: ciclo completo, una sola autoridad y recuperación por refresh', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  const rest=page.locator('.v22c-rest-control').first();
+  await expect(rest).toBeVisible();
+  const custom=rest.locator('input[aria-label*="Duración personal"]');
+  if(await custom.count())await custom.fill('15');
+  await rest.getByRole('button',{name:'Iniciar'}).click();
+  await expect(rest).toHaveAttribute('data-active','true');
+  expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
+  const before=await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().remainingMs);
+  await page.waitForTimeout(1100);
+  const after=await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().remainingMs);
+  expect(after).toBeLessThan(before);
+
+  await rest.getByRole('button',{name:'Pausar'}).click();
+  expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(0);
+  await rest.getByRole('button',{name:'Reanudar'}).click();
+  expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
+
+  const sid=await page.evaluate(()=>window.__fjzWorkoutSessionIdV2B?.());
+  await page.screenshot({path:'artifacts/2c/rest-active-'+testInfo.project.name+'.png',fullPage:false});
+  await page.reload();
+  await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
+  if(!(await page.locator('.v22c-rest-control').count())){
+    const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
+    if(await resume.count())await resume.click();
+  }
+  await expect(page.locator('.v22c-rest-control').first()).toBeVisible();
+  const restored=await page.evaluate(sid=>({sid:window.TeamFJZIntelligentTraining.timerSnapshot()?.sessionId,count:window.TeamFJZIntelligentTraining.timerCount()}),sid);
+  expect(restored.sid).toBe(sid);expect(restored.count).toBe(1);
+  await page.locator('.v22c-rest-control').first().getByRole('button',{name:'Reiniciar'}).click();
+  expect((await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().state))).toBe('paused');
+  await page.locator('.v22c-rest-control').first().getByRole('button',{name:'Omitir'}).click();
+  expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot())).toBeNull();
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK intelligent-rest-2c '+testInfo.project.name);
+});
+
+test('2C récords y progresión: comparación verificable, RIR y modalidades incompatibles', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  const result=await page.evaluate(()=>{
+    const e=window.TeamFJZIntelligentTraining;
+    const a={id:'qa-prior',date:'2026-11-09T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[80,10,2]],loadMode:'external'}]};
+    const b={id:'qa-current',date:'2026-11-10T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[82.5,10,2]],loadMode:'external'}]};
+    const x=e.analyzeExercise({sessions:[a,b],currentSession:b,exerciseUid:'press-qa',confirmedSessionId:'qa-current'});
+    const suggestion=e.progressionSuggestion(x);
+    const assisted={id:'qa-assisted',date:'2026-11-09T09:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press-qa',sets:[[25,10,2]],loadMode:'assisted'}]};
+    const incompatible=e.analyzeExercise({sessions:[assisted,b],currentSession:b,exerciseUid:'press-qa',confirmedSessionId:'qa-current'});
+    return {record:x.records[0],suggestion,incompatible};
+  });
+  expect(result.record.message).toBe('80 kg × 10 → 82.5 kg × 10');
+  expect(result.record.message).not.toContain('%');
+  expect(result.suggestion.label).toBe('Sugerencia calculada');
+  expect(result.incompatible.comparable).toBeFalsy();
+  console.log('E2E_FLOW_OK intelligent-records-2c '+testInfo.project.name);
+});
+
+test('2C historial y Coach: progreso calculado se presenta sin sustituir prescripción', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.evaluate(()=>{
+    const s=student(),d=s.days[0],e=d.exercises[0],uid=e.uid;
+    const prior={id:'qa-2c-history-a',date:'2026-11-08T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[40,10,2]]}]};
+    const current={id:'qa-2c-history-b',date:'2026-11-09T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[42.5,10,2]]}]};
+    s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-history-')).concat([prior,current]);
+    saveState();
+  });
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
+  const row=page.locator('.v22v2-history-session').filter({hasText:/Día QA A/}).first();
+  await expect(row).toBeVisible();await row.locator('.v22v2-history-open').click();
+  const note=page.locator('#modal .v22c-performance-note').first();
+  await expect(note).toBeVisible();
+  await expect(note).toContainText(/Progreso verificable/i);
+  await expect(note).toContainText(/Sugerencia calculada/i);
+  await page.screenshot({path:'artifacts/2c/progression-'+testInfo.project.name+'.png',fullPage:false});
+  await assertNoHorizontalOverflow(page);
+  console.log('E2E_FLOW_OK intelligent-progression-2c '+testInfo.project.name);
+});
+
+test('2C resumen final: sólo aparece después de confirmación real y mantiene idempotencia', async ({page},testInfo)=>{
+  await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Entrenar'}).first().click();
+  await expect(page.locator('.v22c-rest-control').first()).toBeVisible();
+  await page.evaluate(()=>{
+    const s=student(),d=s.days[currentDay],e=d.exercises[0];
+    const prior={id:'qa-2c-prior-summary',date:'2026-11-07T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,exerciseResults:[{exerciseUid:e.uid,exerciseName:e.name,sets:[[10,8,2]]}]};
+    s.sessions=(s.sessions||[]).filter(x=>x.id!=='qa-2c-prior-summary').concat([prior]);saveState();
+  });
+  const sets=page.locator('.set-grid');
+  for(let i=0;i<await sets.count();i++){
+    const inputs=sets.nth(i).locator('input');
+    await inputs.nth(0).fill(i<3?'20':'25');
+    await inputs.nth(1).fill('10');
+    await inputs.nth(2).fill('2');
+  }
+  const before=await page.evaluate(()=>student().sessions?.length||0);
+  await page.getByRole('button',{name:/Finalizar sesión/i}).click();
+  const fb=page.getByRole('heading',{name:/¿Cómo salió la sesión\?/i});
+  if(await fb.count())await page.getByRole('button',{name:/Todo bien · finalizar/i}).click();
+  await expect(page.locator('#modal .v22c-summary')).toBeVisible({timeout:20000});
+  const save=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
+  expect(save.state).toBe('success');expect(save.cloudConfirmed).toBeTruthy();
+  await expect(page.locator('#modal .v22c-summary')).toContainText(/SESIÓN CONFIRMADA/i);
+  await page.screenshot({path:'artifacts/2c/summary-'+testInfo.project.name+'.png',fullPage:false});
+  const after=await page.evaluate(()=>student().sessions?.length||0);
+  expect(after).toBe(before+1);
+  await page.evaluate(()=>finishWorkout());
+  await expect(page.locator('#modal .v22c-summary')).toBeVisible();
+  expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(after);
+  console.log('E2E_FLOW_OK intelligent-summary-2c '+testInfo.project.name);
+});
+
 test('Nutrición: plan, registro, macros, calculadora, personalizado, persistencia y eliminación', async ({ page }, testInfo) => {
   await login(page, 'alumno01@test.local');
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
