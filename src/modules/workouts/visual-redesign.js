@@ -70,8 +70,14 @@ function sessionHeader(view){
 
   const menuPanel=hero.querySelector('.v22v2-session-menu-panel');
   const direct=[...view.children];
-  const autosave=document.getElementById('v145AutosaveBox')||direct.find(n=>n!==hero&&!n.querySelector?.('.session-card')&&/Autoguardado activo|Descartar borrador/i.test(t(n.textContent)));
-  if(autosave&&menuPanel&&autosave.parentElement!==menuPanel){autosave.classList.add('v22v2-autosave-menu');menuPanel.appendChild(autosave)}
+  const discard=findButton(view,/Descartar borrador/i);
+  const autosave=document.getElementById('v145AutosaveBox')
+    ||discard?.closest?.('[id*="Autosave"],[class*="autosave"],.card,section')
+    ||direct.find(n=>n!==hero&&!n.querySelector?.('.session-card')&&/Autoguardado activo|Descartar borrador/i.test(t(n.textContent)));
+  if(autosave&&menuPanel&&autosave!==hero&&!autosave.closest('.session-card')&&autosave.parentElement!==menuPanel){
+    autosave.classList.add('v22v2-autosave-menu');
+    menuPanel.appendChild(autosave);
+  }
   direct.filter(n=>n!==hero&&!n.querySelector?.('.session-card')&&/series con registro/i.test(t(n.textContent))).forEach(n=>n.classList.add('v22v2-legacy-progress'))
 
   let bar=hero.querySelector('.v22v2-progress');
@@ -179,19 +185,32 @@ function technique(card){
   if(existing){existing.classList.add('v22v2-technique-disclosure','fjz-disclosure');existing.open=false;existing.removeAttribute('open');return}
   const layout=card.querySelector(':scope > .v72-tech-layout');
   let node=layout;
+  if(!node)node=[...card.children].find(n=>{
+    if(n.classList?.contains('v22v2-guidance')||n.classList?.contains('v22v2-series-block'))return false;
+    const tx=t(n.textContent);
+    return /técnica|tecnica/i.test(tx)&&/buscá|busca|evitá|evita|posición|posicion|ejecución|ejecucion/i.test(tx);
+  });
   if(!node)node=[...card.querySelectorAll(':scope > p.muted')].find(p=>/técnica|tecnica|buscá|evitá|posición|posicion/i.test(t(p.textContent)));
   if(!node)return;
   const d=make('details','v22v-disclosure v22v2-technique-disclosure fjz-disclosure');
   const s=make('summary','v22v-disclosure-summary','<span>Técnica y ejecución</span><span class="v22v-disclosure-action">Abrir</span>');
   node.before(d);d.append(s,node);
   node.classList.add('v22v-technique');
+  d.open=false;d.removeAttribute('open');
 }
 function compactFeedbackStatus(card){
-  const status=card.querySelector('.v73-student-feedback-status');if(!status)return;
-  status.classList.add('v22v2-feedback-status');
-  const chips=[...status.children];if(chips.length<2)return;
-  const labels=chips.map(x=>t(x.textContent)),first=labels[0];
-  if(labels.every(x=>x===first)){status.innerHTML='';status.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+' · '+labels.length))}
+  const statuses=[...card.querySelectorAll('.v73-student-feedback-status')];if(!statuses.length)return;
+  const labels=statuses.flatMap(status=>[...status.children].map(x=>t(x.textContent)).filter(Boolean));
+  const firstStatus=statuses[0];
+  firstStatus.classList.add('v22v2-feedback-status');
+  statuses.slice(1).forEach(x=>x.remove());
+  if(!labels.length)return;
+  const normalized=labels.map(x=>x.replace(/\s*·\s*\d+\s*$/,'').trim());
+  const first=normalized[0];
+  if(normalized.every(x=>x===first)){
+    firstStatus.innerHTML='';
+    firstStatus.appendChild(make('span','v73-comment-badge v22v-feedback-summary',first+(labels.length>1?' · '+labels.length:'')));
+  }
 }
 function exercise(card,index){
   card.classList.add('v22v-exercise','v22v2-exercise','fjz-performance-section');
