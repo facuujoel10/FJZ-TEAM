@@ -70,7 +70,9 @@
     const sid=text(sessionId),uid=text(exerciseUid),seconds=Math.round(Number(durationSeconds));
     if(!sid||!uid||!Number.isFinite(seconds)||seconds<1)return null;
     timer={sessionId:sid,exerciseUid:uid,durationMs:seconds*1000,state:'running',targetAt:now()+seconds*1000,remainingMs:seconds*1000,source:source==='coach'?'coach':'personal',startedAt:now()};
-    saveTimer();syncTicker();renderTimer();
+    saveTimer();
+    try{globalThis.__fjzPersistWorkoutDraftV145?.()}catch(_e){}
+    syncTicker();renderTimer();
     return timerSnapshot();
   }
   function pauseRest(){
