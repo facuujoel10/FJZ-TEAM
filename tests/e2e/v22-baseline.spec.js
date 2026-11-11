@@ -986,12 +986,17 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
   const save=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
   expect(save.state).toBe('success');expect(save.cloudConfirmed).toBeTruthy();
   await expect(page.locator('#modal .v22c-summary')).toContainText(/SESIÓN CONFIRMADA/i);
+  await expect(page.locator('#modal .v22c-summary')).toContainText(/PR · Récord/i);
   await page.screenshot({path:'artifacts/2c/summary-'+testInfo.project.name+'.png',fullPage:false});
+  await page.screenshot({path:'artifacts/2c/record-valid-'+testInfo.project.name+'.png',fullPage:false});
   const after=await page.evaluate(()=>student().sessions?.length||0);
   expect(after).toBe(before+1);
   await page.evaluate(()=>finishWorkout());
   await expect(page.locator('#modal .v22c-summary')).toBeVisible();
   expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(after);
+  await page.getByRole('button',{name:/Ver historial/i}).click();
+  await expect(page.locator('.v22v2-history-session').first()).toBeVisible();
+  await page.screenshot({path:'artifacts/2c/student-history-'+testInfo.project.name+'.png',fullPage:false});
   console.log('E2E_FLOW_OK intelligent-summary-2c '+testInfo.project.name);
 });
 
