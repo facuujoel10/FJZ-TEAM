@@ -1,0 +1,32 @@
+/* TEAM FJZ V22 2C — intelligent training */
+.v22c-rest-control{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0 12px;padding:10px 12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.035)}
+.v22c-rest-copy{display:flex;flex-direction:column;min-width:0}
+.v22c-rest-copy strong{font-size:18px;line-height:1.1;letter-spacing:-.02em}
+.v22c-rest-copy small{margin-top:3px;color:var(--muted,#9d9d9d);font-size:12px}
+.v22c-rest-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:7px}
+.v22c-rest-actions .btn{min-height:40px}
+.v22c-rest-custom{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted,#9d9d9d)}
+.v22c-rest-custom input{width:68px;min-height:40px;border-radius:10px;text-align:center}
+.v22c-rest-control[data-active="true"]{border-color:rgba(224,31,48,.5);background:linear-gradient(180deg,rgba(224,31,48,.08),rgba(255,255,255,.025))}
+.v22c-rest-control[data-active="true"] .v22c-rest-time{color:#fff}
+.v22c-performance-note{margin-top:10px;padding:10px 12px;border-left:2px solid #d91f31;background:rgba(255,255,255,.025);border-radius:0 10px 10px 0}
+.v22c-performance-note strong,.v22c-performance-note small{display:block}
+.v22c-performance-note small{margin-top:4px;color:var(--muted,#aaa)}
+.v22c-pr{display:inline-flex;align-items:center;min-height:28px;padding:5px 8px;border-radius:999px;background:rgba(217,31,49,.13);border:1px solid rgba(217,31,49,.35);font-size:11px;font-weight:800}
+.v22c-improvement{font-size:11px;color:var(--muted,#aaa)}
+.v22c-summary{display:flex;flex-direction:column;gap:14px}
+.v22c-kicker{font-size:10px;letter-spacing:.13em;font-weight:800;color:#ef3349}
+.v22c-summary .modal-head h3{margin-top:4px}
+.v22c-summary-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.v22c-summary-stats>div{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);text-align:center}
+.v22c-summary-stats strong{font-size:21px}
+.v22c-summary-stats span{font-size:11px;color:var(--muted,#aaa)}
+.v22c-summary-list{display:flex;flex-direction:column;gap:8px}
+.v22c-summary-exercise{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.v22c-summary-exercise>div{min-width:0}
+.v22c-summary-exercise strong,.v22c-summary-exercise small{display:block}
+.v22c-summary-exercise small{margin-top:3px;color:var(--muted,#aaa)}
+.v22c-summary-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v22c-summary-actions .btn{min-height:46px}
+@media(max-width:430px){.v22c-rest-control{padding:9px 10px}.v22c-summary-actions{grid-template-columns:1fr}.v22c-summary-stats strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.v22c-rest-control,.v22c-summary *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
