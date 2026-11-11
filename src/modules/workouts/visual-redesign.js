@@ -70,14 +70,22 @@ function sessionHeader(view){
 
   const menuPanel=hero.querySelector('.v22v2-session-menu-panel');
   const direct=[...view.children];
-  const discard=findButton(view,/Descartar borrador/i);
-  const autosave=document.getElementById('v145AutosaveBox')
-    ||discard?.closest?.('[id*="Autosave"],[class*="autosave"],.card,section')
-    ||direct.find(n=>n!==hero&&!n.querySelector?.('.session-card')&&/Autoguardado activo|Descartar borrador/i.test(t(n.textContent)));
-  if(autosave&&menuPanel&&autosave!==hero&&!autosave.closest('.session-card')&&autosave.parentElement!==menuPanel){
+  const discardButtons=[...view.querySelectorAll('button')].filter(x=>/Descartar borrador/i.test(t(x.textContent)||t(x.getAttribute('aria-label'))));
+  const autosaveCandidates=[
+    document.getElementById('v145AutosaveBox'),
+    ...discardButtons.map(btn=>btn.closest?.('[id*="Autosave"],[class*="autosave"],.card,section')||btn.parentElement),
+    direct.find(n=>n!==hero&&!n.querySelector?.('.session-card')&&/Autoguardado activo|Descartar borrador/i.test(t(n.textContent)))
+  ].filter(Boolean).filter((node,i,arr)=>arr.indexOf(node)===i&&node!==hero&&!node.closest?.('.session-card'));
+  const autosave=autosaveCandidates[0]||null;
+  if(autosave&&menuPanel&&autosave.parentElement!==menuPanel){
     autosave.classList.add('v22v2-autosave-menu');
     menuPanel.appendChild(autosave);
   }
+  autosaveCandidates.slice(1).forEach(node=>{
+    if(node===menuPanel||node.contains?.(menuPanel))return;
+    node.classList.add('v22v2-autosave-duplicate');
+    node.setAttribute('aria-hidden','true');
+  });
   direct.filter(n=>n!==hero&&!n.querySelector?.('.session-card')&&/series con registro/i.test(t(n.textContent))).forEach(n=>n.classList.add('v22v2-legacy-progress'))
 
   let bar=hero.querySelector('.v22v2-progress');
