@@ -109,7 +109,7 @@ html=edit_script(html,"v207ConfirmedSessionCommitRuntime",patch_v207)
 
 def patch_history(body):
     old="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
-    const comparisonHtmlV2B=(intelligentV2C?.comparable&&comparisonV2B?.previous&&String(comparisonV2B.previousSessionId||'')===String(intelligentV2C.previousSessionId||''))"""
+    const comparisonHtmlV2B=comparisonV2B?.previous"""
     new="""    const comparisonV2B=globalThis.TeamFJZSessionHistory?.compareExercise?.(student()?.sessions||[],ss?.id,r?.exerciseUid)||null;
     const intelligentV2C=globalThis.TeamFJZIntelligentTraining?.analyzeExercise?.({
       sessions:student()?.sessions||[],currentSession:ss,exerciseUid:r?.exerciseUid,confirmedSessionId:ss?.confirmed||ss?.cloudConfirmed?ss.id:null
@@ -120,7 +120,9 @@ def patch_history(body):
         ?'<div class="v22c-performance-note" data-comparison-state="'+esc(intelligentV2C.trend||'comparable')+'"><strong>Progreso verificable</strong><small>'+esc(intelligentV2C.comparison||intelligentV2C.improvements?.[0]?.message||'Sin cambio relevante frente a la sesión comparable anterior.')+'</small>'+(suggestionV2C?'<small><b>'+esc(suggestionV2C.label)+':</b> '+esc(suggestionV2C.message)+'</small>':'')+'</div>'
         :'<div class="v22c-performance-note v22c-no-reference" data-comparison-state="none"><strong>Sin referencia comparable</strong><small>'+esc(intelligentV2C.reason||'No hay datos confirmados suficientes para comparar esta sesión.')+'</small></div>')
       :'';
-    const comparisonHtmlV2B=comparisonV2B?.previous"""
+    const comparisonHtmlV2B=(intelligentV2C?.comparable&&comparisonV2B?.previous&&String(comparisonV2B.previousSessionId||'')===String(intelligentV2C.previousSessionId||''))
+      ?'<div class="v22-history-compare"><div class="v22-history-compare-box"><small>Sesión anterior</small><strong>'+esc(String(comparisonV2B.previous.load))+' kg × '+esc(String(comparisonV2B.previous.reps))+'</strong></div><span>→</span><div class="v22-history-compare-box current"><small>Esta sesión</small><strong>'+esc(String(comparisonV2B.current.load))+' kg × '+esc(String(comparisonV2B.current.reps))+'</strong></div></div>'
+      :'';"""
     if body.count(old)!=1: raise RuntimeError("V22 2C history analysis anchor mismatch "+str(body.count(old)))
     body=body.replace(old,new,1)
 
@@ -130,7 +132,12 @@ def patch_history(body):
       intelligentHtmlV2C+
       exerciseCommentHtmlV287(comments,ss,r)+"""
     if body.count(old)!=1: raise RuntimeError("V22 2C history placement anchor mismatch "+str(body.count(old)))
-    body=body.replace("'<div class=\"history-item v244-history-item v22-history-session\">'+","'<div class=\"history-item v244-history-item v22-history-session\" data-session-id=\"'+esc(x.id)+'\">'+",1)
+    body=body.replace(old,new,1)
+
+    old_row="'<div class=\"history-item v244-history-item v22-history-session\">'+"
+    new_row="'<div class=\"history-item v244-history-item v22-history-session\" data-session-id=\"'+esc(x.id)+'\">'+"
+    if body.count(old_row)!=1: raise RuntimeError("V22 2C history session identity anchor mismatch "+str(body.count(old_row)))
+    body=body.replace(old_row,new_row,1)
     return body
 html=edit_script(html,"v244UnifiedSessionHistoryRuntime",patch_history)
 
