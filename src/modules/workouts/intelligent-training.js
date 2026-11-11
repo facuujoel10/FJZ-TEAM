@@ -98,9 +98,14 @@
     return timerSnapshot(at);
   }
   function syncTicker(){
-    if(tickHandle){clearInterval(tickHandle);tickHandle=null}
-    if(timer?.state==='running'&&typeof setInterval==='function'){
-      tickHandle=setInterval(()=>{advance();renderTimer()},1000);
+    if(tickHandle){clearTimeout(tickHandle);tickHandle=null}
+    if(timer?.state==='running'&&typeof setTimeout==='function'){
+      const tick=()=>{
+        tickHandle=null;
+        advance();renderTimer();
+        if(timer?.state==='running')tickHandle=setTimeout(tick,1000);
+      };
+      tickHandle=setTimeout(tick,1000);
     }
   }
   function timerCount(){return tickHandle?1:0}
