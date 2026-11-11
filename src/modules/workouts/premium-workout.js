@@ -4,7 +4,7 @@
   if(root)root.TeamFJZPremiumWorkout=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION='22.2B-V.1';
+  const VERSION='22.2B-V2';
   const commentDrafts=new Map();
   const commentBusy=new Set();
   let currentSaveState={kind:'idle',at:null,detail:null};
