@@ -899,8 +899,9 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   const restoredControl=page.locator('.v22c-rest-control').first();
   if(!(await restoredControl.count())){
     const resume=page.getByRole('button',{name:/Continuar entrenamiento/i}).first();
-    await expect(resume).toBeVisible({timeout:10000});
-    await resume.click();
+    const train=page.getByRole('button',{name:'Entrenar',exact:true}).filter({visible:true}).first();
+    if(await resume.isVisible().catch(()=>false))await resume.click();
+    else{await expect(train).toBeVisible({timeout:10000});await train.click();}
   }
   await expect(page.locator('.v22c-rest-control').first()).toBeVisible({timeout:10000});
   const restored=await page.evaluate(sid=>({sid:window.TeamFJZIntelligentTraining.timerSnapshot()?.sessionId,count:window.TeamFJZIntelligentTraining.timerCount()}),sid);
@@ -995,7 +996,9 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
   await page.evaluate(()=>finishWorkout());
   await expect(page.locator('#modal .v22c-summary')).toBeVisible();
   expect(await page.evaluate(()=>student().sessions?.length||0)).toBe(after);
-  await page.getByRole('button',{name:/Ver historial/i}).click();
+  const historyAction=page.locator('#modal .v22-history-after-save');
+  await expect(historyAction).toBeVisible();
+  await historyAction.click();
   await expect(page.locator('.v22v2-history-session').first()).toBeVisible();
   await page.screenshot({path:'artifacts/2c/student-history-'+testInfo.project.name+'.png',fullPage:false});
   console.log('E2E_FLOW_OK intelligent-summary-2c '+testInfo.project.name);
