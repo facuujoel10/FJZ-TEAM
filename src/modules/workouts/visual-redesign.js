@@ -201,9 +201,10 @@ function sessionNavigator(feed,aside){
   nav.innerHTML='<div class="v22v2-aside-label">Ejercicios</div>';
   [...feed.querySelectorAll('.v22v2-exercise')].forEach((card,i)=>{
     const name=t(card.querySelector('.v22v2-exercise-name')?.textContent)||('Ejercicio '+(i+1));
-    const p=progress(card),b=make('button','v22v2-exercise-map-item');
-    b.type='button';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><b>'+name+'</b><small>'+p.done+'/'+p.total+'</small>';
-    b.onclick=()=>card.scrollIntoView({behavior:'smooth',block:'start'});nav.appendChild(b);
+    const p=progress(card),id='v22v2-exercise-'+(i+1);card.id=id;
+    const b=make('a','v22v2-exercise-map-item');
+    b.href='#'+id;b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><b>'+name+'</b><small>'+p.done+'/'+p.total+'</small>';
+    nav.appendChild(b);
   });
 }
 function finishZone(view,feed,aside){
