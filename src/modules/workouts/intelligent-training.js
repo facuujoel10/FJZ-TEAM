@@ -130,7 +130,10 @@
     return (Array.isArray(result?.sets)?result.sets:[]).map((s,i)=>validSet(s,i,result)).filter(Boolean);
   }
   function bestLoad(result){
-    return workSets(result).sort((a,b)=>b.load-a.load||b.reps-a.reps)[0]||null;
+    const sets=workSets(result),mode=modeOf(result);
+    if(mode==='assisted')return sets.sort((a,b)=>a.load-b.load||b.reps-a.reps)[0]||null;
+    if(mode==='bodyweight')return sets.sort((a,b)=>b.reps-a.reps||a.rir-b.rir)[0]||null;
+    return sets.sort((a,b)=>b.load-a.load||b.reps-a.reps)[0]||null;
   }
   function bestRepsAtLoad(result,load){
     return workSets(result).filter(x=>x.load===load).sort((a,b)=>b.reps-a.reps)[0]||null;
@@ -166,8 +169,12 @@
     if(!current||!workSets(current).length)return {comparable:false,reason:'No hay series de trabajo válidas para comparar.',records:[],improvements:[]};
     const previous=previousComparable(sessions,currentSession,exerciseUid);
     if(!previous)return {comparable:false,reason:'No existe una referencia comparable confirmada.',records:[],improvements:[]};
-    const cb=bestLoad(current),pb=bestLoad(previous.result),records=[],improvements=[];
-    if(cb&&pb&&cb.load>pb.load){
+    const cb=bestLoad(current),pb=bestLoad(previous.result),records=[],improvements=[],mode=modeOf(current);
+    if(cb&&pb&&mode==='assisted'&&cb.load<pb.load&&cb.reps>=pb.reps){
+      records.push({type:'less_assistance',label:'Menor asistencia',from:pb,to:cb,message:`${pb.load} kg asistencia × ${pb.reps} → ${cb.load} kg asistencia × ${cb.reps}`});
+    }else if(cb&&pb&&mode==='bodyweight'&&cb.reps>pb.reps){
+      records.push({type:'bodyweight_reps',label:'Más repeticiones con peso corporal',from:pb,to:cb,message:`${pb.reps} reps → ${cb.reps} reps`});
+    }else if(cb&&pb&&mode!=='assisted'&&mode!=='bodyweight'&&cb.load>pb.load){
       records.push({type:'load',label:'Mayor carga',from:pb,to:cb,message:`${pb.load} kg × ${pb.reps} → ${cb.load} kg × ${cb.reps}`});
     }else if(cb&&pb&&cb.load===pb.load&&cb.reps>pb.reps){
       records.push({type:'reps_same_load',label:'Más repeticiones con la misma carga',from:pb,to:cb,message:`${pb.load} kg × ${pb.reps} → ${cb.load} kg × ${cb.reps}`});
@@ -190,10 +197,18 @@
     const prior=allPriorResults(sessions,currentSession,exerciseUid,current);
     const sets=workSets(current),out=[];
     if(!sets.length||!prior.length)return out;
-    const priorSets=prior.flatMap(x=>workSets(x.result));
-    const priorMaxLoad=Math.max(...priorSets.map(x=>x.load));
+    const priorSets=prior.flatMap(x=>workSets(x.result)),mode=modeOf(current);
     const cMax=bestLoad(current);
-    if(cMax&&cMax.load>priorMaxLoad)out.push({type:'all_time_load',label:'Récord de carga',set:cMax});
+    if(mode==='assisted'){
+      const priorMin=Math.min(...priorSets.map(x=>x.load));
+      if(cMax&&cMax.load<priorMin)out.push({type:'all_time_less_assistance',label:'Récord de menor asistencia',set:cMax});
+    }else if(mode==='bodyweight'){
+      const priorMaxReps=Math.max(...priorSets.map(x=>x.reps));
+      if(cMax&&cMax.reps>priorMaxReps)out.push({type:'all_time_bodyweight_reps',label:'Récord de repeticiones',set:cMax});
+    }else{
+      const priorMaxLoad=Math.max(...priorSets.map(x=>x.load));
+      if(cMax&&cMax.load>priorMaxLoad)out.push({type:'all_time_load',label:'Récord de carga',set:cMax});
+    }
     for(const set of sets){
       const previousAtLoad=priorSets.filter(x=>x.load===set.load).sort((a,b)=>b.reps-a.reps)[0];
       if(previousAtLoad&&set.reps>previousAtLoad.reps){
@@ -217,7 +232,9 @@
     const exercises=results.map(r=>{
       const analysis=analyzeExercise({sessions,currentSession,exerciseUid:r.exerciseUid,confirmedSessionId});
       const prs=personalRecords({sessions,currentSession,exerciseUid:r.exerciseUid,confirmedSessionId});
-      const comments=(feedbackRows||[]).filter(x=>text(x?.session_id)===text(currentSession.id)&&text(x?.exercise_uid)===text(r.exerciseUid));
+      const exact=(feedbackRows||[]).filter(x=>text(x?.session_id)===text(currentSession.id)&&text(x?.exercise_uid)===text(r.exerciseUid));
+      const snapshot=(Array.isArray(r?.exerciseFeedback)?r.exerciseFeedback:[]).filter(x=>text(x?.message));
+      const comments=exact.length?exact:snapshot;
       return {exerciseUid:r.exerciseUid,name:r.exerciseName||r.name||r.exerciseUid,sets:workSets(r).length,analysis,prs,comments};
     });
     return {
