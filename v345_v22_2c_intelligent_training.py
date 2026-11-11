@@ -135,8 +135,8 @@ after=topology(html)
 for key in ("styles","renders","channels","listeners","mutation_observers"):
     if after[key]!=before[key]:
         raise RuntimeError("V22 2C topology changed "+key+": "+repr({"before":before,"after":after}))
-# Two bounded timeout call sites belong to the single autocancelable rest ticker.
-if after["timeouts"]!=before["timeouts"]+2:
+# One bounded timeout call site belongs to the single autocancelable rest ticker.
+if after["timeouts"]!=before["timeouts"]+1:
     raise RuntimeError("V22 2C timeout topology mismatch: "+repr({"before":before,"after":after}))
 # Preserve the certified zero-interval topology.
 if after["intervals"]!=before["intervals"]:
