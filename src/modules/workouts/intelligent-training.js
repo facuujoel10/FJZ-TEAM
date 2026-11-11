@@ -54,15 +54,17 @@
     return Object.freeze(out);
   }
   function restoreTimer(sessionId){
-    if(timer?.sessionId===text(sessionId))return timerSnapshot();
-    const s=storage(); if(!s)return null;
+    const sid=text(sessionId);
+    if(timer?.sessionId===sid)return timerSnapshot();
+    if(timer&&timer.sessionId!==sid){timer=null;syncTicker()}
+    const s=storage(); if(!s||!sid)return null;
     try{
-      const raw=JSON.parse(s.getItem(sessionKey(sessionId))||'null');
+      const raw=JSON.parse(s.getItem(sessionKey(sid))||'null');
       timer=normalizeTimer(raw);
       if(timer?.state==='finished')saveTimer();
       syncTicker();
       return timerSnapshot();
-    }catch(_e){return null}
+    }catch(_e){timer=null;syncTicker();return null}
   }
   function startRest({sessionId,exerciseUid,durationSeconds,source='personal'}={}){
     const sid=text(sessionId),uid=text(exerciseUid),seconds=Math.round(Number(durationSeconds));
