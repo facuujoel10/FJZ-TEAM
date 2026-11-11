@@ -18,6 +18,16 @@ test('2C timer uses absolute target time and prevents duplicate ticker semantics
   engine.skipRest();assert.equal(engine.timerCount(),0);assert.equal(engine.timerSnapshot(),null);
 });
 
+test('2C timer recalculates from absolute time and clears authority on session change',()=>{
+  const s=engine.startRest({sessionId:'timer-a',exerciseUid:'press',durationSeconds:30});
+  const future=engine.advance(s.startedAt+45000);
+  assert.equal(future.state,'finished');assert.equal(future.remainingMs,0);
+  engine.startRest({sessionId:'timer-a',exerciseUid:'press',durationSeconds:30});
+  assert.equal(engine.timerCount(),1);
+  const switched=engine.restoreTimer('timer-b');
+  assert.equal(switched,null);assert.equal(engine.timerSnapshot(),null);assert.equal(engine.timerCount(),0);
+});
+
 test('2C comparison detects real load and same-load rep improvements without percentages',()=>{
   const a=session('a','2026-11-09T10:00:00Z','press',[[80,10,2]]);
   const b=session('b','2026-11-10T10:00:00Z','press',[[82.5,10,2]]);
