@@ -200,3 +200,15 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
   .v22v2-exercise:first-child{border-radius:14px 14px 0 0!important}.v22v2-exercise:nth-last-child(2){border-radius:0 0 14px 14px!important}
   .v22v2-technique-disclosure .v72-tech-steps{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
+
+/* 2B-V2 hardening: compact header + certified 44px touch floor */
+.v22v2-workout-header > :not(.v22v2-header-main):not(.v22v2-progress){display:none!important}
+#view.v22v2-workout-active .v22v2-set-row .v22-set-field input.input{
+  height:48px!important;
+  min-height:48px!important;
+  max-height:none!important;
+}
+#view.v22v2-workout-active .v22v2-exercise-actions .v22-comment-action{
+  min-height:44px!important;
+  height:44px!important;
+}
