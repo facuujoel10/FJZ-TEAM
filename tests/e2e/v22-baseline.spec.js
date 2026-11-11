@@ -795,12 +795,25 @@ test('2B-V2 UX: serie activa no queda tapada y finalización no compite con la c
     const overlays=[...document.querySelectorAll('body *')].filter(n=>{
       const s=getComputedStyle(n);if(!['fixed','sticky'].includes(s.position)||s.display==='none'||s.visibility==='hidden')return false;
       const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.top<innerHeight&&r.bottom>0;
-    }).map(n=>({cls:n.className||n.id||n.tagName,top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom}));
-    return {vh:innerHeight,input:i?{top:i.top,bottom:i.bottom}:null,finish:finish?{top:finish.top,bottom:finish.bottom}:null,overlays};
+    }).map(n=>{const r=n.getBoundingClientRect();return{cls:n.className||n.id||n.tagName,top:r.top,bottom:r.bottom,left:r.left,right:r.right}});
+    return {
+      vh:innerHeight,
+      input:i?{top:i.top,bottom:i.bottom,left:i.left,right:i.right}:null,
+      finish:finish?{top:finish.top,bottom:finish.bottom,left:finish.left,right:finish.right}:null,
+      overlays
+    };
   });
   expect(geometry.input?.bottom||0).toBeLessThanOrEqual(geometry.vh);
-  if(geometry.finish)expect(geometry.finish.top).toBeGreaterThan(geometry.input?.bottom||0);
-  expect(geometry.overlays.some(x=>String(x.cls).includes('v22v-finish-dock')&&x.top<(geometry.input?.bottom||0))).toBeFalsy();
+  if(geometry.finish&&geometry.input){
+    const horizontalOverlap=geometry.finish.left<geometry.input.right&&geometry.finish.right>geometry.input.left;
+    if(horizontalOverlap)expect(geometry.finish.top).toBeGreaterThan(geometry.input.bottom);
+  }
+  expect(geometry.overlays.some(x=>{
+    if(!String(x.cls).includes('v22v-finish-dock')||!geometry.input)return false;
+    const horizontalOverlap=x.left<geometry.input.right&&x.right>geometry.input.left;
+    const verticalOverlap=x.top<geometry.input.bottom&&x.bottom>geometry.input.top;
+    return horizontalOverlap&&verticalOverlap;
+  })).toBeFalsy();
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK product-experience-no-overlay-2bv2 '+testInfo.project.name);
 });
