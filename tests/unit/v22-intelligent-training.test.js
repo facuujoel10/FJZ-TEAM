@@ -18,6 +18,15 @@ test('2C timer uses absolute target time and prevents duplicate ticker semantics
   engine.skipRest();assert.equal(engine.timerCount(),0);assert.equal(engine.timerSnapshot(),null);
 });
 
+test('2C timer start checkpoints workout identity through certified V145 autosave',()=>{
+  let calls=0;
+  global.__fjzPersistWorkoutDraftV145=()=>{calls++};
+  engine.startRest({sessionId:'timer-checkpoint',exerciseUid:'press',durationSeconds:30});
+  assert.equal(calls,1);
+  engine.skipRest();
+  delete global.__fjzPersistWorkoutDraftV145;
+});
+
 test('2C timer recalculates from absolute time and clears authority on session change',()=>{
   const s=engine.startRest({sessionId:'timer-a',exerciseUid:'press',durationSeconds:30});
   const future=engine.advance(s.startedAt+45000);
