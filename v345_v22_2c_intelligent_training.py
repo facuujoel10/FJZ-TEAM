@@ -132,11 +132,13 @@ def patch_history(body):
 html=edit_script(html,"v244UnifiedSessionHistoryRuntime",patch_history)
 
 after=topology(html)
-for key in ("styles","renders","channels","timeouts","listeners","mutation_observers"):
+for key in ("styles","renders","channels","listeners","mutation_observers"):
     if after[key]!=before[key]:
         raise RuntimeError("V22 2C topology changed "+key+": "+repr({"before":before,"after":after}))
-# The rest countdown must preserve the certified zero-interval topology.
-# It uses an autocancelable timeout chain and absolute targetAt timestamps.
+# Two bounded timeout call sites belong to the single autocancelable rest ticker.
+if after["timeouts"]!=before["timeouts"]+2:
+    raise RuntimeError("V22 2C timeout topology mismatch: "+repr({"before":before,"after":after}))
+# Preserve the certified zero-interval topology.
 if after["intervals"]!=before["intervals"]:
     raise RuntimeError("V22 2C interval topology changed: "+repr({"before":before,"after":after}))
 
