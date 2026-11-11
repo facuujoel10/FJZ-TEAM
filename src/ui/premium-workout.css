@@ -76,7 +76,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 .v22v2-exercise-copy{min-width:0}
 .v22v2-exercise-name{display:block!important;margin:0!important;font-size:18px!important;line-height:1.15!important;letter-spacing:-.015em;color:#f8f9fb!important}
 .v22v2-prescription{margin-top:3px;color:#9da4af;font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v22v2-exercise-progress{display:block;margin-top:3px;color:#747d89;font-size:11px;font-weight:800}
+.v22v2-exercise-progress{display:block;margin-top:3px;color:#747d89;font-size:12px;font-weight:800}
 .v22v2-exercise-progress[data-complete="true"]{color:#65dba1}
 .v22v2-head-legacy{display:none!important}
 .v22v2-comment-action{
@@ -88,7 +88,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 .v22v2-reference-strip::-webkit-scrollbar{display:none}
 .v22v2-previous-load,.v22-previous-load{
   display:inline-flex!important;align-items:center;min-height:26px;padding:4px 8px!important;border:1px solid #292e36;border-radius:999px;background:#12151a;
-  color:#aab1bc!important;font-size:12px!important;line-height:1.2!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+  color:#aab1bc!important;font-size:12px!important;line-height:1.2!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
 }
 
 .v22v2-series-block{margin:0!important;border:0!important}
