@@ -87,3 +87,16 @@ test('2C personal record requires prior comparable history and confirmed current
   assert.equal(prs[0].type,'all_time_load');
   assert.deepEqual(engine.personalRecords({sessions:[a,b],currentSession:b,exerciseUid:'press'}),[]);
 });
+
+
+test('2C assisted and bodyweight modes use mode-correct progression semantics',()=>{
+  const a=session('a','2026-11-09T10:00:00Z','pullup',[[30,8,2]],{loadMode:'assisted'});
+  const b=session('b','2026-11-10T10:00:00Z','pullup',[[25,8,2]],{loadMode:'assisted'});
+  const assisted=engine.analyzeExercise({sessions:[a,b],currentSession:b,exerciseUid:'pullup',confirmedSessionId:'b'});
+  assert.equal(assisted.records[0].type,'less_assistance');
+
+  const c1=session('c1','2026-11-09T10:00:00Z','pullup-bw',[[0,8,2]],{loadMode:'bodyweight'});
+  const c2=session('c2','2026-11-10T10:00:00Z','pullup-bw',[[0,10,2]],{loadMode:'bodyweight'});
+  const bw=engine.analyzeExercise({sessions:[c1,c2],currentSession:c2,exerciseUid:'pullup-bw',confirmedSessionId:'c2'});
+  assert.equal(bw.records[0].type,'bodyweight_reps');
+});
