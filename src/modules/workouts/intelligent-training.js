@@ -271,14 +271,14 @@
         (!prescribed?'<label class="v22c-rest-custom"><span>seg</span><input inputmode="numeric" min="15" max="600" step="15" value="90" aria-label="Duración personal del descanso en segundos"></label>':'')+
         '<div class="v22c-rest-actions"><button class="btn small" data-rest-action="start">Iniciar</button><button class="btn small" data-rest-action="pause" hidden>Pausar</button><button class="btn small" data-rest-action="resume" hidden>Reanudar</button><button class="btn small" data-rest-action="reset" hidden>Reiniciar</button><button class="btn small" data-rest-action="skip" hidden>Omitir</button></div>';
       const target=card.querySelector('.v22v2-series-block')||card.firstElementChild; target?.before(wrap);
-      wrap.addEventListener('click',e=>{
+      wrap.onclick=function(e){
         const b=e.target.closest('[data-rest-action]');if(!b)return;
         const action=b.dataset.restAction;
         const personal=num(wrap.querySelector('input')?.value);
         if(action==='start')startRest({sessionId:sid||sessionId(),exerciseUid:uid,durationSeconds:prescribed?.seconds||personal||90,source:prescribed?'coach':'personal'});
         if(action==='pause')pauseRest();if(action==='resume')resumeRest();if(action==='reset')resetRest();if(action==='skip')skipRest();
         renderTimer();
-      });
+      };
     });
     renderTimer();return true;
   }
