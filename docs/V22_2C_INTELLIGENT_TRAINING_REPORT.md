@@ -10,7 +10,7 @@ Base técnica aprobada 2B-V2: `586fedd08b81b1599b649c0becf76af44ee8f115`.
 
 SHA recibido al iniciar el cierre/estabilización: `dd98c9031d77df4ac6f2d37c52c7c7cd92e88884`.
 
-SHA de implementación congelada inmediatamente antes de incorporar este informe: `7885259209462d0685fe2738e2a1cbd5035e2e33`.
+SHA de implementación funcional congelada antes del cierre documental: `c1924563dc965521075cfadaef0f332d151ac06c`.
 
 El SHA final de certificación es el commit que contiene este informe y debe coincidir exactamente con los runs finales de **V22 local Supabase integration** y **V22 browser baseline**. Su valor y los enlaces directos a los runs se publican en la entrega de certificación asociada a este documento.
 
@@ -44,7 +44,7 @@ La comparación visual heredada de 2B sólo se muestra si su `previousSessionId`
 
 Durante el cierre se detectó un fallo fail-fast del build: una edición había alterado el texto que V345 utiliza como anclaje antes de insertar la lógica 2C. También faltaba aplicar una sustitución ya validada para colocar `intelligentHtmlV2C`.
 
-Se corrigió el patcher conservando sus guards de cardinalidad. Si el HTML upstream deja de coincidir, el build vuelve a fallar explícitamente en lugar de producir una interfaz parcialmente integrada.
+Se corrigió el patcher conservando sus guards de cardinalidad. En una segunda pasada, el auditor de JavaScript detectó que una sustitución parcial había dejado el cuerpo de la ternaria legacy duplicado (`Unexpected token '?'`). V345 pasó a sustituir atómicamente la asignación completa `comparisonHtmlV2B`; el build y el syntax audit validan el resultado generado. Si el HTML upstream deja de coincidir, el build vuelve a fallar explícitamente en lugar de producir una interfaz parcialmente integrada.
 
 ### 2.4 Modalidad bodyweight-added
 
