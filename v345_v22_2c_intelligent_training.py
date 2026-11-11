@@ -115,8 +115,10 @@ def patch_history(body):
       sessions:student()?.sessions||[],currentSession:ss,exerciseUid:r?.exerciseUid,confirmedSessionId:ss?.confirmed||ss?.cloudConfirmed?ss.id:null
     })||null;
     const suggestionV2C=globalThis.TeamFJZIntelligentTraining?.progressionSuggestion?.(intelligentV2C)||null;
-    const intelligentHtmlV2C=intelligentV2C?.comparable
-      ?'<div class="v22c-performance-note"><strong>Progreso verificable</strong><small>'+esc(intelligentV2C.improvements?.[0]?.message||'Sin cambio relevante frente a la sesión comparable anterior.')+'</small>'+(suggestionV2C?'<small><b>'+esc(suggestionV2C.label)+':</b> '+esc(suggestionV2C.message)+'</small>':'')+'</div>'
+    const intelligentHtmlV2C=intelligentV2C
+      ?(intelligentV2C.comparable
+        ?'<div class="v22c-performance-note" data-comparison-state="'+esc(intelligentV2C.trend||'comparable')+'"><strong>Progreso verificable</strong><small>'+esc(intelligentV2C.comparison||intelligentV2C.improvements?.[0]?.message||'Sin cambio relevante frente a la sesión comparable anterior.')+'</small>'+(suggestionV2C?'<small><b>'+esc(suggestionV2C.label)+':</b> '+esc(suggestionV2C.message)+'</small>':'')+'</div>'
+        :'<div class="v22c-performance-note v22c-no-reference" data-comparison-state="none"><strong>Sin referencia comparable</strong><small>'+esc(intelligentV2C.reason||'No hay datos confirmados suficientes para comparar esta sesión.')+'</small></div>')
       :'';
     const comparisonHtmlV2B=comparisonV2B?.previous"""
     if body.count(old)!=1: raise RuntimeError("V22 2C history analysis anchor mismatch "+str(body.count(old)))
@@ -128,6 +130,7 @@ def patch_history(body):
       intelligentHtmlV2C+
       exerciseCommentHtmlV287(comments,ss,r)+"""
     if body.count(old)!=1: raise RuntimeError("V22 2C history placement anchor mismatch "+str(body.count(old)))
+    body=body.replace("'<div class=\"history-item v244-history-item v22-history-session\">'+","'<div class=\"history-item v244-history-item v22-history-session\" data-session-id=\"'+esc(x.id)+'\">'+",1)
     return body
 html=edit_script(html,"v244UnifiedSessionHistoryRuntime",patch_history)
 
