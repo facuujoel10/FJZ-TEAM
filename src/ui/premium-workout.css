@@ -52,7 +52,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 .v22v2-progress-meta{display:flex;align-items:center;gap:7px;min-width:116px;justify-content:flex-end}
 .v22v2-progress-meta strong{font-size:11px;color:#d9dde3}.v22v2-progress-meta span{font-size:11px;color:#858d99}
 
-.v22v2-context-nav,.v22v2-duplicate-nav{display:none!important}
+.v22v2-duplicate-nav{display:none!important}
 .v22v2-workout-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
 .v22v2-workout-feed{display:block;min-width:0}
 .v22v2-session-aside{display:none}
