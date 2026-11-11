@@ -41,6 +41,7 @@ body:has(#view.v22v2-workout-active .session-card){background:#08090b!important}
 .v22v2-autosave-duplicate{display:none!important}
 .v22v2-autosave-duplicate-action{display:none!important}
 .v22v2-discard-menu-action{width:100%!important;min-height:44px!important;margin-top:10px!important}
+#view.v22v2-workout-active #v145AutosaveBox{display:none!important}
 
 .v22v2-save-slot{justify-self:end;grid-column:3;grid-row:1}
 .v22-workout-save-state.v22v2-save-state{
