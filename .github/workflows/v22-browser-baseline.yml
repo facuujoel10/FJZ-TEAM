@@ -67,7 +67,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js
 
       - name: Create local stack and build development app
         run: |
