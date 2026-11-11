@@ -135,3 +135,6 @@
 
 /* 2B-V2 navigation authority: history uses the global student navigation only */
 #view.v22v2-history-active #studentMainTabs{display:none!important}
+
+/* 2B-V2 visual residue cleanup */
+.v22v2-history-legacy-shell{display:none!important}
