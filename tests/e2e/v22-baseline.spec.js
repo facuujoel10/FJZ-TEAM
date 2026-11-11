@@ -773,6 +773,15 @@ test('2B-V2 UX: primer ejercicio y primera serie son accionables en el viewport 
   expect(initial.finishPosition).not.toBe('fixed');
   expect(initial.overflow).toBeLessThanOrEqual(2);
 
+  const discard=page.getByRole('button',{name:/Descartar borrador/i}).filter({visible:true});
+  expect(await discard.count()).toBe(0);
+  const technique=firstExercise.locator('.v22v2-technique-disclosure').first();
+  if(await technique.count())expect(await technique.getAttribute('open')).toBeNull();
+  const menu=header.locator('.v22v2-session-menu');
+  await menu.locator('summary').click();
+  await expect(page.getByRole('button',{name:/Descartar borrador/i}).filter({visible:true})).toBeVisible();
+  await menu.locator('summary').click();
+
   await firstInput.fill('17.5');
   await expect(firstInput).toBeFocused();
   await expect(firstInput).toHaveValue('17.5');
