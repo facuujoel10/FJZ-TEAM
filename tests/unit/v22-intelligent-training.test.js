@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const engine=require('../../src/modules/workouts/intelligent-training.js');
 
 function session(id,date,exerciseUid,sets,extra={}){
-  return {id,date,status:'completed',exerciseResults:[{exerciseUid,sets,...extra}]};
+  return {id,date,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid,sets,...extra}]};
 }
 
 test('2C timer uses absolute target time and prevents duplicate ticker semantics',()=>{
@@ -113,4 +113,48 @@ test('2C assisted suggestion speaks in assistance, not external load',()=>{
   const s=engine.progressionSuggestion({comparable:true,mode:'assisted',current:{load:25,reps:10,rir:2},previous:{load:30,reps:10,rir:2}});
   assert.match(s.message,/menor asistencia/i);
   assert.doesNotMatch(s.message,/subida de carga/i);
+});
+
+
+test('2C completed local status alone is not server confirmation',()=>{
+  const local={id:'local-only',date:'2026-11-10T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press',sets:[[80,10,2]]}]};
+  assert.equal(engine.sessionConfirmed(local),false);
+  assert.deepEqual(engine.personalRecords({sessions:[local],currentSession:local,exerciseUid:'press'}),[]);
+});
+
+test('2C unconfirmed prior sessions are excluded from comparisons and records',()=>{
+  const draft={id:'draft',date:'2026-11-09T10:00:00Z',status:'completed',exerciseResults:[{exerciseUid:'press',sets:[[100,10,2]]}]};
+  const current=session('confirmed','2026-11-10T10:00:00Z','press',[[80,10,2]]);
+  const a=engine.analyzeExercise({sessions:[draft,current],currentSession:current,exerciseUid:'press'});
+  assert.equal(a.comparable,false);
+  assert.match(a.reason,/referencia comparable confirmada/i);
+  assert.deepEqual(engine.personalRecords({sessions:[draft,current],currentSession:current,exerciseUid:'press'}),[]);
+});
+
+test('2C lower performance is comparison, not positive improvement',()=>{
+  const a=session('a','2026-11-09T10:00:00Z','press',[[80,10,2]]);
+  const b=session('b','2026-11-10T10:00:00Z','press',[[75,8,1]]);
+  const x=engine.analyzeExercise({sessions:[a,b],currentSession:b,exerciseUid:'press'});
+  assert.equal(x.comparable,true);
+  assert.equal(x.trend,'lower');
+  assert.equal(x.improvements.length,0);
+  assert.match(x.comparison,/80 kg × 10/);
+  assert.equal(engine.progressionSuggestion(x).kind,'maintain');
+});
+
+test('2C higher load with fewer reps can be a load record without being global improvement',()=>{
+  const a=session('a','2026-11-09T10:00:00Z','press',[[80,10,2]]);
+  const b=session('b','2026-11-10T10:00:00Z','press',[[82.5,5,1]]);
+  const x=engine.analyzeExercise({sessions:[a,b],currentSession:b,exerciseUid:'press'});
+  const prs=engine.personalRecords({sessions:[a,b],currentSession:b,exerciseUid:'press'});
+  assert.equal(x.records[0].type,'load');
+  assert.equal(x.improvements.length,0);
+  assert.equal(x.trend,'mixed');
+  assert.equal(prs[0].type,'all_time_load');
+});
+
+test('2C empty external load is invalid while explicit bodyweight can use zero load',()=>{
+  assert.equal(engine.workSets({sets:[['',10,2]],loadMode:'external'}).length,0);
+  assert.deepEqual(engine.workSets({sets:[['',10,2]],loadMode:'bodyweight'}).map(x=>[x.load,x.reps]),[[0,10]]);
+  assert.equal(engine.workSets({sets:[[0,10,2]],loadMode:'bodyweight-added'}).length,0);
 });
