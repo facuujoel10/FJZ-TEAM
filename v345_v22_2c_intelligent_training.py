@@ -135,9 +135,10 @@ after=topology(html)
 for key in ("styles","renders","channels","timeouts","listeners","mutation_observers"):
     if after[key]!=before[key]:
         raise RuntimeError("V22 2C topology changed "+key+": "+repr({"before":before,"after":after}))
-# One bounded interval is allowed only for the active rest countdown.
-if after["intervals"]!=before["intervals"]+1:
-    raise RuntimeError("V22 2C expected exactly one timer interval authority: "+repr({"before":before,"after":after}))
+# The rest countdown must preserve the certified zero-interval topology.
+# It uses an autocancelable timeout chain and absolute targetAt timestamps.
+if after["intervals"]!=before["intervals"]:
+    raise RuntimeError("V22 2C interval topology changed: "+repr({"before":before,"after":after}))
 
 for marker in [
     'id="v22IntelligentTrainingModule"',
