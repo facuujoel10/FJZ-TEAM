@@ -68,9 +68,11 @@ function sessionHeader(view){
     hero.prepend(main);
   }
 
-  const autosave=document.getElementById('v145AutosaveBox');
   const menuPanel=hero.querySelector('.v22v2-session-menu-panel');
+  const direct=[...view.children];
+  const autosave=document.getElementById('v145AutosaveBox')||direct.find(n=>n!==hero&&!n.querySelector?.('.session-card')&&/Autoguardado activo|Descartar borrador/i.test(t(n.textContent)));
   if(autosave&&menuPanel&&autosave.parentElement!==menuPanel){autosave.classList.add('v22v2-autosave-menu');menuPanel.appendChild(autosave)}
+  direct.filter(n=>n!==hero&&!n.querySelector?.('.session-card')&&/series con registro/i.test(t(n.textContent))).forEach(n=>n.classList.add('v22v2-legacy-progress'))
 
   let bar=hero.querySelector('.v22v2-progress');
   if(!bar){bar=make('div','v22v2-progress');bar.innerHTML='<div class="v22v2-progress-track"><i></i></div><div class="v22v2-progress-meta"><strong></strong><span></span></div>';hero.appendChild(bar)}
@@ -150,8 +152,15 @@ function secondaryContext(card,seriesBlock){
   const recommendation=[...card.querySelectorAll(':scope > .v22-recommendation, :scope > .recommend')];
   let strip=card.querySelector(':scope > .v22v2-reference-strip');
   if(!strip){strip=make('div','v22v2-reference-strip');if(seriesBlock)seriesBlock.before(strip);else card.appendChild(strip)}
-  [...card.querySelectorAll('.v22-previous-load,.v205-prev-load')].forEach(x=>{
-    x.classList.add('v22v2-previous-load');if(x.parentElement!==strip)strip.appendChild(x)
+  const prevNodes=[...card.querySelectorAll('.v22-previous-load,.v205-prev-load')];
+  const refText=t(previous[0]?.textContent);
+  const m=refText.match(/(\d+(?:[.,]\d+)?)\s*kg\s*[×x]\s*(\d+).*?RIR\s*([0-9.,]+)/i);
+  prevNodes.forEach((x,i)=>{
+    x.classList.add('v22v2-previous-load');
+    if(i===0){
+      if(m)x.textContent='Anterior '+m[1].replace(',','.')+' kg × '+m[2]+' · RIR '+m[3].replace(',','.');
+      if(x.parentElement!==strip)strip.appendChild(x);
+    }else x.classList.add('v22v2-previous-load-duplicate');
   });
 
   let details=card.querySelector(':scope > .v22v2-guidance');
@@ -167,7 +176,7 @@ function secondaryContext(card,seriesBlock){
 }
 function technique(card){
   const existing=card.querySelector(':scope > .v22v-disclosure');
-  if(existing){existing.classList.add('v22v2-technique-disclosure','fjz-disclosure');return}
+  if(existing){existing.classList.add('v22v2-technique-disclosure','fjz-disclosure');existing.open=false;existing.removeAttribute('open');return}
   const layout=card.querySelector(':scope > .v72-tech-layout');
   let node=layout;
   if(!node)node=[...card.querySelectorAll(':scope > p.muted')].find(p=>/técnica|tecnica|buscá|evitá|posición|posicion/i.test(t(p.textContent)));
@@ -286,8 +295,10 @@ function historyHeader(card){
   title.classList.add('v22v2-history-header','fjz-appbar');
   const h=title.querySelector('h3');if(h)h.textContent='Historial';
   const muted=title.querySelector('.muted');if(muted)muted.textContent='Sesiones, progreso verificable y comentarios en un solo registro.';
-  let count=title.querySelector('.v22v2-history-count');
+  let count=title.querySelector('.v22v2-history-count')||title.querySelector(':scope > .badge');
   if(!count){count=make('span','v22v2-history-count');title.appendChild(count)}
+  count.classList.remove('badge','blue','amber','green','red');count.classList.add('v22v2-history-count');
+  [...title.querySelectorAll(':scope > .badge')].filter(x=>x!==count).forEach(x=>x.remove());
   count.textContent=card.querySelectorAll('.v22-history-session').length+' sesiones';
 }
 function sessionDateBadge(row,index){
@@ -310,6 +321,13 @@ function enhanceHistory(host){
   if(isCoach)restoreCoachNav(view);
   else{view.classList.add('v22v-history-active','v22v2-history-active');trimDuplicateNav(view)}
   const card=host.querySelector('.v22-premium-history');if(!card)return false;
+  if(!isCoach){
+    [...view.children].forEach(n=>{
+      if(n===card||n.contains?.(card)||card.contains?.(n))return;
+      const tx=t(n.textContent);
+      if(/Historial/i.test(tx)&&(/Avisos/i.test(tx)||/ALUMNO/i.test(tx)||/←\s*Inicio/i.test(tx)))n.classList.add('v22v2-history-legacy-shell');
+    });
+  }
   card.classList.add('v22v-history','v22v2-history','fjz-surface');
   card.querySelector('.v244-history-list')?.classList.add('v22v-history-list','v22v2-history-list');
   historyHeader(card);
