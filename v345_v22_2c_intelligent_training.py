@@ -140,6 +140,28 @@ def patch_history(body):
     new_row="'<div class=\"history-item v244-history-item v22-history-session\" data-session-id=\"'+esc(x.id)+'\">'+"
     if body.count(old_row)!=1: raise RuntimeError("V22 2C history session identity anchor mismatch "+str(body.count(old_row)))
     body=body.replace(old_row,new_row,1)
+
+    old_metrics="""    const sum=ss.summary||{};
+    const isCoachView=mode==='coach'&&currentProfile?.role==='coach';
+    const exercises=Array.isArray(ss.exerciseResults)&&ss.exerciseResults.length"""
+    new_metrics="""    const sum=ss.summary||{};
+    const detailResultsV2C=Array.isArray(ss.exerciseResults)?ss.exerciseResults:[];
+    const detailSetsV2C=detailResultsV2C.reduce((n,r)=>n+(Array.isArray(r?.sets)?r.sets.filter(x=>Array.isArray(x)&&x.some(v=>String(v??'').trim()!=='')).length:0),0);
+    const totalSetsV2C=Number.isFinite(Number(sum.totalSets))&&Number(sum.totalSets)>0?Number(sum.totalSets):detailSetsV2C;
+    const completedExercisesV2C=Number.isFinite(Number(sum.completedExercises||sum.registeredExercises))&&Number(sum.completedExercises||sum.registeredExercises)>0
+      ?Number(sum.completedExercises||sum.registeredExercises)
+      :detailResultsV2C.filter(r=>Array.isArray(r?.sets)&&r.sets.some(x=>Array.isArray(x)&&x.some(v=>String(v??'').trim()!==''))).length;
+    const isCoachView=mode==='coach'&&currentProfile?.role==='coach';
+    const exercises=Array.isArray(ss.exerciseResults)&&ss.exerciseResults.length"""
+    if body.count(old_metrics)!=1: raise RuntimeError("V22 2C history metric fallback anchor mismatch "+str(body.count(old_metrics)))
+    body=body.replace(old_metrics,new_metrics,1)
+
+    old_grid="""        '<div><strong>'+summaryNumberV244(sum.totalSets)+'</strong><span>Series</span></div>'+
+        '<div><strong>'+summaryNumberV244(sum.completedExercises||sum.registeredExercises)+'</strong><span>Ejercicios</span></div>'+"""
+    new_grid="""        '<div><strong>'+summaryNumberV244(totalSetsV2C)+'</strong><span>Series</span></div>'+
+        '<div><strong>'+summaryNumberV244(completedExercisesV2C)+'</strong><span>Ejercicios</span></div>'+"""
+    if body.count(old_grid)!=1: raise RuntimeError("V22 2C history metric grid anchor mismatch "+str(body.count(old_grid)))
+    body=body.replace(old_grid,new_grid,1)
     return body
 html=edit_script(html,"v244UnifiedSessionHistoryRuntime",patch_history)
 
