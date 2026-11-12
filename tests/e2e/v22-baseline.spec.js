@@ -282,7 +282,16 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
   await login(page, 'coach@test.local');
   await logCoachRuntimeDebug(page, 'workout-'+testInfo.project.name);
 
-  await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
+  const commandCenterReady = await page.locator('.fjz3a-command-center').first()
+    .waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+  if (commandCenterReady) {
+    const groupWithComment = page.locator('.fjz3a-group').filter({ hasText: comment }).first();
+    await expect(groupWithComment, '3A debe conservar el comentario pendiente dentro del grupo exacto del alumno.').toBeVisible({ timeout: 15000 });
+    const groupToggle = groupWithComment.locator('.fjz3a-group-head').first();
+    if ((await groupToggle.getAttribute('aria-expanded')) !== 'true') await groupToggle.click();
+  } else {
+    await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
+  }
   await expect(page.getByText(comment, { exact: true }).first()).toBeVisible({ timeout: 15000 });
   const commentNode = page.getByText(comment, { exact: true }).first();
   const container = commentNode.locator('xpath=ancestor::*[self::article or contains(@class,"card") or contains(@class,"feedback-item")][1]');
@@ -1285,7 +1294,7 @@ test('Coach: dashboard y workspace 360 sin romper navegación', async ({ page },
 test('Coach: acceso visible a Agenda mensual desde dashboard', async ({ page }, testInfo) => {
   await login(page, 'coach@test.local');
   await expect(page.getByRole('heading', { name: 'Panel Coach', exact: true })).toBeVisible();
-  const agendaButton = page.locator("button[onclick*=\"coachTab='agenda'\"]").filter({ hasText: /^Agenda/ }).filter({ visible: true }).first();
+  const agendaButton = page.locator("button[onclick*=\"coachTab='agenda'\"], button[data-action='agenda-main']").filter({ hasText: /Agenda/i }).filter({ visible: true }).first();
   await expect(agendaButton, 'El dashboard Coach debe mantener una ruta visible a Agenda.').toBeVisible({ timeout: 10000 });
   await agendaButton.click({ timeout: 10000 });
   await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
