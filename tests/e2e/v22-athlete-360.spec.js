@@ -76,9 +76,8 @@ test.describe('V22 3B Athlete 360 Workspace',()=>{
  });
 
  test('fallo de lectura es recuperable y no mezcla estado anterior',async({page},testInfo)=>{
-   await login(page);
+   await login(page);await openAthlete(page);
    await page.route('**/rest/v1/exercise_feedback**',route=>route.abort('failed'));
-   await openAthlete(page);
    await page.evaluate(()=>window.__fjzHydrateAthlete360V22(true));
    await expect(page.locator('.fjz3b-error')).toBeVisible({timeout:15000});await expect(page.locator('.fjz3b-error')).toContainText(/Reintentar/i);
    await page.unroute('**/rest/v1/exercise_feedback**');await page.locator('.fjz3b-error [data-3b-action="retry"]').click();await expect(page.locator('#fjz3bSummary')).toContainText(/PRÓXIMA DECISIÓN/i,{timeout:20000});await noOverflow(page);
