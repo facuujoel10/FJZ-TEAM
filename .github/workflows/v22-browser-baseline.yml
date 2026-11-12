@@ -103,8 +103,14 @@ jobs:
         continue-on-error: true
         run: npx playwright test --project=mobile-390
 
+      - name: Reset local data before mobile 360
+        run: python scripts/dev_reset.py
+
       - name: Premium responsive — mobile 360x800
         run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A"
+
+      - name: Reset local data before mobile 430
+        run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 430x932
         run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A"
