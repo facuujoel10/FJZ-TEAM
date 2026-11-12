@@ -17,6 +17,18 @@ if 'id="v22CommentRepositoryCore"' not in html:
     html=html.replace("</head>",'<script id="v22CommentRepositoryCore">\n'+comment_repo+'\n</script>\n<meta name="fjz-v22-comment-repository-read" content="enabled">\n</head>',1)
 js=pathlib.Path("src/modules/coach/command-center.js").read_text(encoding="utf-8")
 css=pathlib.Path("src/ui/coach-command-center.css").read_text(encoding="utf-8")
+active_dispatcher="""window.renderCoach=function(){
+    if(coachTab==='dashboard')return renderCoachDashboardV170();
+    return baseRenderCoachV170.apply(this,arguments);
+  };"""
+command_dispatcher="""window.renderCoach=function(){
+    if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')return window.__fjzRenderCoachCommandCenterV22();
+    if(coachTab==='dashboard')return renderCoachDashboardV170();
+    return baseRenderCoachV170.apply(this,arguments);
+  };"""
+if html.count(active_dispatcher)!=1:
+    raise RuntimeError("V22 3A active Coach dispatcher authority changed")
+html=html.replace(active_dispatcher,command_dispatcher,1)
 if "TeamFJZCoachCommandCenter" in html or "fjz-coach-command-center" in html:
     raise RuntimeError("V22 3A duplicate command center injection")
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
@@ -27,7 +39,7 @@ html=html.replace("</head>",'<meta name="fjz-coach-command-center" content="22.3
 runtime='<script id="v22CoachCommandCenterRuntime">\n'+js+'\n</script>\n<script id="v22CoachCommandCenterInstall">\nif(!window.TeamFJZCoachCommandCenter?.install?.())throw new Error("TEAM FJZ V22 3A install failed");\n</script>\n'
 if "</body>" not in html: raise RuntimeError("V22 3A body anchor missing")
 html=html.replace("</body>",runtime+"</body>",1)
-for marker in ['meta name="fjz-coach-command-center" content="22.3A"','id="v22CoachCommandCenterRuntime"','id="v22CoachCommandCenterInstall"','id="v22CommentRepositoryCore"','meta name="fjz-v22-comment-repository-read" content="enabled"',"VERSION='22.3A'","root.renderCoachDashboardV80=render","root.renderCoachDashboardV170=render","__fjzHydrateCoachCommandCenterV22","Abrir no equivale a resolver","firstReviewCardsDisabledV327:true"]:
+for marker in ['meta name="fjz-coach-command-center" content="22.3A"','id="v22CoachCommandCenterRuntime"','id="v22CoachCommandCenterInstall"','id="v22CommentRepositoryCore"','meta name="fjz-v22-comment-repository-read" content="enabled"',"VERSION='22.3A'","root.renderCoachDashboardV80=render","window.__fjzRenderCoachCommandCenterV22","if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')","__fjzHydrateCoachCommandCenterV22","Abrir no equivale a resolver","firstReviewCardsDisabledV327:true"]:
     if marker not in html: raise RuntimeError("V22 3A output marker missing: "+marker)
 runtime_body=re.search(r'<script id="v22CoachCommandCenterRuntime">(.*?)</script>',html,re.S)
 if not runtime_body: raise RuntimeError("V22 3A runtime missing after injection")
