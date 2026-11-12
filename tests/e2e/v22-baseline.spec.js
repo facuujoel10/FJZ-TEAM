@@ -945,6 +945,9 @@ test('2C historial y Coach: progreso calculado se presenta sin sustituir prescri
   await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
   const row=page.locator('.v22v2-history-session[data-session-id="qa-2c-history-b"]');
   await expect(row).toBeVisible();await row.locator('.v22v2-history-open').click();
+  const historyMetrics=page.locator('#modal .v244-summary-grid strong');
+  await expect(historyMetrics.nth(0)).toHaveText('1');
+  await expect(historyMetrics.nth(1)).toHaveText('1');
   const note=page.locator('#modal .v22c-performance-note').first();
   await expect(note).toBeVisible();
   await expect(note).toContainText(/Progreso verificable/i);
@@ -1025,6 +1028,9 @@ test('2C Coach: historial conserva progreso verificable y comentarios exactos', 
   await expect(sessionRow).toBeVisible();
   {
     await sessionRow.locator('.v22v2-history-open').click();
+    const coachMetrics=page.locator('#modal .v244-summary-grid strong');
+    await expect(coachMetrics.nth(0)).toHaveText('1');
+    await expect(coachMetrics.nth(1)).toHaveText('1');
     const note=page.locator('#modal .v22c-performance-note').first();
     await expect(note).toBeVisible();
     await expect(note).toContainText(/Progreso verificable/i);
