@@ -1090,8 +1090,15 @@ test('2C Coach: historial conserva progreso verificable y comentarios exactos', 
   });
   const row=page.locator('.student-row',{hasText:'TEST ALUMNO 01'});
   await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
-  const historyTab=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:/^Historial/}).first();
-  await expect(historyTab).toBeVisible();await historyTab.click();
+  const modernTraining=page.locator('.fjz3b-nav button[data-section="training"]');
+  if(await modernTraining.isVisible().catch(()=>false)){
+    await modernTraining.click();
+    const historyTab=page.locator('[data-3b-action="legacy-tab"][data-tab="history"]');
+    await expect(historyTab).toBeVisible();await historyTab.click();
+  }else{
+    const historyTab=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:/^Historial/}).first();
+    await expect(historyTab).toBeVisible();await historyTab.click();
+  }
   const sessionRow=page.locator('#coachStudentBody .v22v2-history-session[data-session-id="qa-2c-coach-b"]');
   await expect(sessionRow).toBeVisible();
   {
@@ -1271,29 +1278,28 @@ test('Coach: dashboard y workspace 360 sin romper navegación', async ({ page },
   await expect(page.getByText('ATHLETE WORKSPACE · TEAM FJZ', { exact: true })).toBeVisible({ timeout: 10000 });
   console.log('E2E_COACH_STAGE workspace-open '+testInfo.project.name);
 
-  const expectedTabs = ['Resumen', 'Rutina', 'Progreso', 'Historial', 'Seguimiento', 'Nutrición'];
-  for (const tab of expectedTabs) {
-    const btn = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: new RegExp('^' + tab) }).first();
-    await expect(btn, `Falta pestaña Coach ${tab}`).toBeVisible({ timeout: 10000 });
-    await btn.click({ timeout: 10000 });
-    await expect(page.locator('#coachStudentBody')).not.toBeEmpty({ timeout: 10000 });
-    await assertNoHorizontalOverflow(page);
-    console.log('E2E_COACH_STAGE tab-'+tab+' '+testInfo.project.name);
+  const modernNav=page.locator('.fjz3b-nav');
+  if(await modernNav.isVisible().catch(()=>false)){
+    await expect(page.locator('.fjz3b-nav:visible')).toHaveCount(1);
+    await expect(page.locator('#coachStudentTabs:visible')).toHaveCount(0);
+    for(const key of ['summary','training','nutrition','progress','checkins','agenda','info']){
+      const btn=page.locator('.fjz3b-nav button[data-section="'+key+'"]');
+      await expect(btn,'Falta sección 3B '+key).toBeVisible({timeout:10000});
+      await btn.click();
+      await expect(page.locator('#coachStudentBody')).not.toBeEmpty({timeout:10000});
+      await assertNoHorizontalOverflow(page);
+      console.log('E2E_COACH_STAGE 3b-'+key+' '+testInfo.project.name);
+    }
+  }else{
+    const expectedTabs=['Resumen','Rutina','Progreso','Historial','Seguimiento','Nutrición'];
+    for(const tab of expectedTabs){
+      const btn=page.locator('button.tab[onclick*="coachStudentTab"]').filter({hasText:new RegExp('^'+tab)}).first();
+      await expect(btn).toBeVisible({timeout:10000});await btn.click();
+      await expect(page.locator('#coachStudentBody')).not.toBeEmpty({timeout:10000});
+      await assertNoHorizontalOverflow(page);
+    }
   }
 
-  const agendaTab = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: /^Agenda/ }).first();
-  if (await agendaTab.count()) {
-    await agendaTab.click({ timeout: 10000 });
-    await expect(page.locator('#coachStudentBody')).not.toBeEmpty({ timeout: 10000 });
-    console.log('E2E_COACH_STAGE athlete-agenda '+testInfo.project.name);
-  } else {
-    testInfo.annotations.push({ type: 'schema-or-ui-gap', description: 'Agenda no figura como pestaña permanente del workspace del alumno.' });
-  }
-
-  const paymentsTab = page.locator('button.tab[onclick*="coachStudentTab"]').filter({ hasText: /Pago|Cobranza/i }).first();
-  if (!(await paymentsTab.count())) {
-    testInfo.annotations.push({ type: 'baseline-gap', description: 'No se detectó pestaña visible de pagos/cobranzas en el workspace actual.' });
-  }
   console.log('E2E_FLOW_OK coach-workspace '+testInfo.project.name);
 });
 
