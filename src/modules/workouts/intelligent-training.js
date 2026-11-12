@@ -72,6 +72,7 @@
     timer={sessionId:sid,exerciseUid:uid,durationMs:seconds*1000,state:'running',targetAt:now()+seconds*1000,remainingMs:seconds*1000,source:source==='coach'?'coach':'personal',startedAt:now()};
     saveTimer();
     try{globalThis.__fjzPersistWorkoutDraftV145?.()}catch(_e){}
+    if(typeof queueMicrotask==='function')queueMicrotask(()=>{try{globalThis.TeamFJZVisualRedesign?.hideWorkoutGlobalNav?.(document.getElementById('view'))}catch(_e){};renderTimer()});
     syncTicker();renderTimer();
     return timerSnapshot();
   }
@@ -303,6 +304,7 @@
   function exerciseUid(card){return text(card?.querySelector('[data-exercise-uid]')?.dataset.exerciseUid||card?.dataset.exerciseUid||card?.querySelector('.v22-comment-action')?.getAttribute('onclick')?.match(/['"]([^'"]+)['"]/)?.[1]||card?.querySelector('.v22v2-exercise-name')?.textContent)}
   function renderTimer(){
     if(!hasDOM())return;
+    try{globalThis.TeamFJZVisualRedesign?.hideWorkoutGlobalNav?.(document.getElementById('view'))}catch(_e){}
     const snap=advance();
     document.querySelectorAll('.v22c-rest-control').forEach(node=>{
       const uid=node.dataset.exerciseUid;
