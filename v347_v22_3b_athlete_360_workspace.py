@@ -6,7 +6,7 @@ required=[
  'meta name="fjz-v22-2c-intelligent-training" content="enabled"',
  'meta name="fjz-comment-ok-exercise-focus" content="21.29"',
  'meta name="fjz-mobile-workout-stability" content="21.41"',
- 'meta name="fjz-confirmed-session-save" content="21.07"',
+ 'cloudConfirmationBeforeSuccess:true',
  'id="v22CoachCommandCenterAuthorityBridge"',
 ]
 for marker in required:
@@ -77,7 +77,7 @@ markers=[
  'meta name="fjz-athlete-360-workspace" content="22.3B"','id="v22Athlete360AuthorityBridge"','id="v22Athlete360Runtime"',
  "VERSION='22.3B'","__fjzRenderLegacyCoachStudentV22","__fjzRenderAthlete360V22","__fjzAthlete360LoadLegacyDataV22",
  "if(coachTab==='student'&&typeof window.__fjzRenderAthlete360V22==='function')",
- 'meta name="fjz-confirmed-session-save" content="21.07"','meta name="fjz-mobile-workout-stability" content="21.41"',
+ 'cloudConfirmationBeforeSuccess:true','meta name="fjz-mobile-workout-stability" content="21.41"',
  "firstReviewCardsDisabledV327:true","sessionSuccessRequiresDoubleVerification:true"
 ]
 for marker in markers:
