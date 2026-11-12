@@ -30,3 +30,21 @@
 .v22c-summary-actions .btn{min-height:46px}
 @media(max-width:430px){.v22c-rest-control{padding:9px 10px}.v22c-summary-actions{grid-template-columns:1fr}.v22c-summary-stats strong{font-size:19px}}
 @media(prefers-reduced-motion:reduce){.v22c-rest-control,.v22c-summary *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* TEAM FJZ V22 2C-UX — visual closure */
+.v22c-rest-actions [hidden]{display:none!important}
+.v22c-rest-custom{min-width:96px;white-space:nowrap;justify-content:flex-end}
+.v22c-rest-custom span{display:inline-block;white-space:nowrap;flex:0 0 auto;line-height:1}
+.v22c-rest-custom input{flex:0 0 68px}
+.v22c-summary-head{align-items:flex-start}
+.v22c-summary-heading{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:0}
+.v22c-summary-status{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-bottom:10px}
+.v22c-confirmed-label{display:block;color:var(--muted,#aaa);font-size:12px;line-height:1.3}
+.v22c-summary-title{display:block!important;margin:0!important;font-size:20px;line-height:1.2}
+.v22c-summary-date{display:block;margin-top:5px;color:var(--muted,#aaa);font-size:12px;line-height:1.35}
+@media(max-width:430px){
+  .v22c-rest-control{grid-template-columns:minmax(0,1fr) minmax(96px,auto)}
+  .v22c-rest-actions{gap:6px}
+  .v22c-rest-actions .btn{min-height:40px;padding-left:11px;padding-right:11px}
+}
