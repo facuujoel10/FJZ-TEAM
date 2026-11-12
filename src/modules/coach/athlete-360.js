@@ -25,7 +25,7 @@
   function sectionForTab(tab){
     const t=text(tab);
     if(t==='nutrition')return'nutrition';if(t==='tracking')return'checkins';if(t==='agenda')return'agenda';
-    if(t==='progress')return'progress';if(t==='routine'||t==='history')return'training';return'summary';
+    if(t==='routine'||t==='history'||t==='progress')return'training';return'summary';
   }
   function activeSection(){return ui.sectionOverride||sectionForTab(currentIdentity().coachStudentTab)}
   function verifiedSession(engine,session){return !!(engine&&typeof engine.sessionConfirmed==='function'&&engine.sessionConfirmed(session))}
@@ -127,7 +127,7 @@
   function trainingSubnav(){
     if(activeSection()!=='training')return'';
     const tab=currentIdentity().coachStudentTab;
-    return '<div class="fjz3b-subnav" aria-label="Entrenamiento"><button type="button" data-3b-action="legacy-tab" data-tab="routine" class="'+(tab!=='history'?'active':'')+'">Rutina</button><button type="button" data-3b-action="legacy-tab" data-tab="history" class="'+(tab==='history'?'active':'')+'">Historial y rendimiento</button></div>';
+    return '<div class="fjz3b-subnav" aria-label="Entrenamiento"><button type="button" data-3b-action="legacy-tab" data-tab="routine" class="'+(tab==='routine'?'active':'')+'">Rutina</button><button type="button" data-3b-action="legacy-tab" data-tab="history" class="'+(tab==='history'?'active':'')+'">Historial</button><button type="button" data-3b-action="legacy-tab" data-tab="progress" class="'+(tab==='progress'?'active':'')+'">Rendimiento</button></div>';
   }
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
