@@ -306,16 +306,25 @@
     const snap=advance();
     document.querySelectorAll('.v22c-rest-control').forEach(node=>{
       const uid=node.dataset.exerciseUid;
-      const active=snap&&uid===snap.exerciseUid;
+      const active=!!(snap&&uid===snap.exerciseUid);
+      const timerState=active?snap.state:'inactive';
+      const allowed={
+        inactive:new Set(['start']),
+        running:new Set(['pause','reset','skip']),
+        paused:new Set(['resume','reset','skip']),
+        finished:new Set(['start','reset','skip'])
+      }[timerState]||new Set(['start']);
       node.dataset.active=active?'true':'false';
+      node.dataset.timerState=timerState;
       const time=node.querySelector('.v22c-rest-time');
       const state=node.querySelector('.v22c-rest-state');
       if(time)time.textContent=active?fmt(snap.remainingMs):node.dataset.defaultLabel||'Descanso';
       if(state)state.textContent=active?(snap.state==='running'?'En curso':snap.state==='paused'?'Pausado':'Finalizado'):(node.dataset.source==='coach'?'Indicado por el Coach':'Temporizador personal');
       node.querySelectorAll('[data-rest-action]').forEach(b=>{
-        const a=b.dataset.restAction;
-        b.hidden=active?false:(a!=='start');
-        if(active&&a==='start')b.hidden=true;
+        const show=allowed.has(b.dataset.restAction);
+        b.hidden=!show;
+        if(show){b.removeAttribute('aria-hidden');b.removeAttribute('tabindex')}
+        else{b.setAttribute('aria-hidden','true');b.tabIndex=-1}
       });
     });
   }
@@ -354,7 +363,7 @@
       return '<div class="v22c-summary-exercise"><div><strong>'+escapeHtml(x.name)+'</strong><small>'+x.sets+' series registradas'+(x.comments?.length?' · '+x.comments.length+' comentario'+(x.comments.length===1?'':'s'):'')+'</small></div>'+
         (pr?'<span class="v22c-pr">PR · '+escapeHtml(pr.label)+'</span>':imp?'<span class="v22c-improvement">'+escapeHtml(imp.message)+'</span>':'')+'</div>';
     }).join('');
-    content.innerHTML='<div class="v22c-summary"><div class="modal-head"><div><span class="v22c-kicker">SESIÓN CONFIRMADA</span><span class="v22c-confirmed-label">Sesión guardada con éxito</span><h3>'+escapeHtml(summary.dayName)+'</h3><div class="muted tiny">'+escapeHtml(summary.date?new Date(summary.date).toLocaleString('es-AR'):'')+'</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
+    content.innerHTML='<div class="v22c-summary"><div class="modal-head v22c-summary-head"><div class="v22c-summary-heading"><div class="v22c-summary-status"><span class="v22c-kicker">SESIÓN CONFIRMADA</span><span class="v22c-confirmed-label">Sesión guardada con éxito</span></div><h3 class="v22c-summary-title">'+escapeHtml(summary.dayName)+'</h3><time class="v22c-summary-date" datetime="'+escapeHtml(summary.date||'')+'">'+escapeHtml(summary.date?new Date(summary.date).toLocaleString('es-AR'):'')+'</time></div><button class="btn small" aria-label="Cerrar resumen" onclick="closeModal()">✕</button></div>'+
       '<div class="v22c-summary-stats"><div><strong>'+summary.totalSets+'</strong><span>series</span></div><div><strong>'+summary.exercises.length+'</strong><span>ejercicios</span></div><div><strong>'+summary.recordCount+'</strong><span>récords</span></div></div>'+
       '<div class="v22c-summary-list">'+rows+'</div>'+
       '<div class="v22c-summary-actions"><button class="btn" onclick="closeModal();studentTab=\'home\';currentDay=-1;render()">Volver al inicio</button><button class="btn primary v22-history-after-save" onclick="closeModal();studentTab=\'history\';currentDay=-1;render()">Ver historial</button></div></div>';
