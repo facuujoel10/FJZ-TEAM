@@ -123,7 +123,7 @@ def main():
 
     upsert(api,secret,"exercise_feedback",[
       {"id":"40000000-0000-4000-8000-000000000001","athlete_id":a1,"student_id":s1,
-       "exercise_uid":"dev_ex_press","exercise_name":"Press QA","workout_day_id":"dev_day_01",
+       "session_id":None,"exercise_uid":"dev_ex_press","exercise_name":"Press QA","workout_day_id":"dev_day_01",
        "workout_day_name":"Día QA A","feedback_type":"comment","message":"Comentario ficticio pendiente para QA",
        "status":"pending"}
 ,
