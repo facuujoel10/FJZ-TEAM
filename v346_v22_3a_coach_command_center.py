@@ -19,7 +19,11 @@ js=pathlib.Path("src/modules/coach/command-center.js").read_text(encoding="utf-8
 css=pathlib.Path("src/ui/coach-command-center.css").read_text(encoding="utf-8")
 if "TeamFJZCoachCommandCenter" in html or "fjz-coach-command-center" in html:
     raise RuntimeError("V22 3A duplicate command center injection")
-html=html.replace("</head>",'<style id="v22CoachCommandCenterStyles">\\n'+css+'\\n</style>\\n<meta name="fjz-coach-command-center" content="22.3A">\\n</head>',1)
+styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
+if len(styles)!=1: raise RuntimeError("V22 3A expected one consolidated stylesheet, found "+str(len(styles)))
+sm=styles[0]
+html=html[:sm.start("body")]+sm.group("body").rstrip()+"\\n"+css+"\\n"+html[sm.end("body"):]
+html=html.replace("</head>",'<meta name="fjz-coach-command-center" content="22.3A">\\n</head>',1)
 runtime='<script id="v22CoachCommandCenterRuntime">\\n'+js+'\\n</script>\\n<script id="v22CoachCommandCenterInstall">\\nif(!window.TeamFJZCoachCommandCenter?.install?.())throw new Error("TEAM FJZ V22 3A install failed");\\n</script>\\n'
 if "</body>" not in html: raise RuntimeError("V22 3A body anchor missing")
 html=html.replace("</body>",runtime+"</body>",1)
