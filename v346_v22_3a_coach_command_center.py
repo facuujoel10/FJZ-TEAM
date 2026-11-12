@@ -6,7 +6,7 @@ required=[
  'meta name="fjz-review-center-curtain" content="21.39"',
  'meta name="fjz-no-first-review-alerts" content="21.27"',
  'meta name="fjz-v22-agenda-repository-read" content="enabled"',
- 'meta name="fjz-v22-intelligent-training" content="22.2C"',
+ 'meta name="fjz-v22-2c-intelligent-training" content="enabled"',
 ]
 for marker in required:
     if marker not in html: raise RuntimeError("V22 3A prerequisite missing: "+marker)
