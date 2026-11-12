@@ -44,6 +44,9 @@ if artifact.exists():
         "comment_repository_flag":'meta name="fjz-v22-comment-repository-read" content="enabled"' in html,
         "coach_command_center":'id="v22CoachCommandCenterRuntime"' in html,
         "coach_command_center_flag":'meta name="fjz-coach-command-center" content="22.3A"' in html,
+        "athlete_360_workspace":'id="v22Athlete360Runtime"' in html,
+        "athlete_360_flag":'meta name="fjz-athlete-360-workspace" content="22.3B"' in html,
+        "athlete_360_bridge":'id="v22Athlete360AuthorityBridge"' in html,
     }
 result={
  "build_patch_count":len(patches),"first_patches":patches[:10],"last_patches":patches[-12:],
@@ -66,22 +69,24 @@ result={
     "intelligent_training_module":(ROOT/"src/modules/workouts/intelligent-training.js").exists(),
     "intelligent_training_ui":(ROOT/"src/ui/intelligent-training.css").exists(),
     "coach_command_center":(ROOT/"src/modules/coach/command-center.js").exists(),
-    "coach_command_center_ui":(ROOT/"src/ui/coach-command-center.css").exists()
+    "coach_command_center_ui":(ROOT/"src/ui/coach-command-center.css").exists(),
+    "athlete_360_workspace":(ROOT/"src/modules/coach/athlete-360.js").exists(),
+    "athlete_360_ui":(ROOT/"src/ui/athlete-360.css").exists()
  }
 }
 if __name__=="__main__":
     parser=argparse.ArgumentParser();parser.add_argument("--check",action="store_true");args=parser.parse_args()
     if args.check:
-        required=["v342_v22_0c_ui_authority.py","v343_v22_1a_architecture_foundation.py","v344_v22_2a_premium_workout.py","v345_v22_2c_intelligent_training.py","v346_v22_3a_coach_command_center.py"]
-        if not all(x in patches for x in required): raise SystemExit("V22 3A build order markers missing")
-        if not (patches.index(required[0])<patches.index(required[1])<patches.index(required[2])<patches.index(required[3])<patches.index(required[4])): raise SystemExit("V22 3A bridge order invalid")
+        required=["v342_v22_0c_ui_authority.py","v343_v22_1a_architecture_foundation.py","v344_v22_2a_premium_workout.py","v345_v22_2c_intelligent_training.py","v346_v22_3a_coach_command_center.py","v347_v22_3b_athlete_360_workspace.py"]
+        if not all(x in patches for x in required): raise SystemExit("V22 3B build order markers missing")
+        if not all(patches.index(required[i])<patches.index(required[i+1]) for i in range(len(required)-1)): raise SystemExit("V22 3B bridge order invalid")
         if not all(result["contracts"].values()): raise SystemExit("V22 1A canonical contracts missing")
         if not runtime.get("date_core") or not runtime.get("date_pilot"): raise SystemExit("V22 1A generated date pilot missing")
-        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag","intelligent_training_module","intelligent_training_flag","comment_repository_runtime","comment_repository_flag","coach_command_center","coach_command_center_flag"):
+        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag","intelligent_training_module","intelligent_training_flag","comment_repository_runtime","comment_repository_flag","coach_command_center","coach_command_center_flag","athlete_360_workspace","athlete_360_flag","athlete_360_bridge"):
             if not runtime.get(key): raise SystemExit("V22 runtime marker missing: "+key)
         expected={"render_assignments":18,"channels":2,"timeouts":57,"intervals":0,"listeners":51,"mutation_observers":3}
         actual={k:runtime.get(k) for k in expected}
         if actual!=expected: raise SystemExit("V22 1C topology regression: "+repr({"expected":expected,"actual":actual}))
-        if len(patches)!=231: raise SystemExit("V22 3A requires exactly one additional bounded Coach bridge; count="+str(len(patches)))
-    print("TEAM FJZ V22 3A ARCHITECTURE INVENTORY")
+        if len(patches)!=232: raise SystemExit("V22 3B requires exactly one additional bounded Athlete 360 bridge over 3A; count="+str(len(patches)))
+    print("TEAM FJZ V22 3B ARCHITECTURE INVENTORY")
     print(json.dumps(result,indent=2,ensure_ascii=False))
