@@ -38,7 +38,7 @@ El Panel Coach previo reunía capacidades maduras pero dispersas: feed operativo
 
 - Bandeja operativa unificada por alumno.
 - Categorías: Entrenamientos, Comentarios, Check-ins, Progreso físico, Agenda y otras revisiones legítimas.
-- Deduplicación por identidad canónica del evento.
+- Deduplicación por identidad canónica del evento y agrupación estable por `studentId` canónico cuando existe mapeo.
 - Apertura de perfil/alumno y origen exacto cuando existe vínculo confiable.
 - Búsqueda operativa de alumnos.
 - Próximas fechas mediante `AgendaRepository`.
@@ -49,7 +49,7 @@ El Panel Coach previo reunía capacidades maduras pero dispersas: feed operativo
 
 ## 5. Arquitectura de eventos y estados
 
-`src/modules/coach/command-center.js` es una capa de presentación/coordination. Consume las autoridades existentes y publica únicamente `__fjzRenderCoachCommandCenterV22` como autoridad visual de 3A. El bridge `v346_v22_3a_coach_command_center.py` expone de forma acotada el contexto léxico que la app base mantiene privado (`currentProfile`, `coachTab`, `state`, `cloudAthletes` y `supabaseClient`) y modifica sólo el dispatcher Coach activo de V170: cuando `coachTab==='dashboard'` delega en 3A y, fuera de ese caso, conserva `renderCoachDashboardV170` / `baseRenderCoachV170`. No se agrega un wrapper global de `render` ni se duplica estado.
+`src/modules/coach/command-center.js` es una capa de presentación/coordination. Consume las autoridades existentes y publica únicamente `__fjzRenderCoachCommandCenterV22` como autoridad visual de 3A. El bridge `v346_v22_3a_coach_command_center.py` expone de forma acotada el contexto léxico que la app base mantiene privado (`currentProfile`, `coachTab`, `state`, `cloudAthletes` y `supabaseClient`) y modifica sólo el dispatcher Coach activo de V170: cuando `coachTab==='dashboard'` delega en 3A y, fuera de ese caso, conserva `renderCoachDashboardV170` / `baseRenderCoachV170`. No se agrega un wrapper global de `render` ni se duplica estado. Mientras `.fjz3a-command-center` está montado, CSS oculta únicamente los hijos directos legacy que V324–V339 puedan volver a insertar en `#view`; no se eliminan esas autoridades y vuelven a estar disponibles fuera del dashboard 3A.
 
 No agrega:
 - otro feed persistente;
@@ -108,6 +108,8 @@ Los comentarios se leen mediante `CommentRepository` y conservan:
 
 Cuando esos vínculos existen, la apertura reutiliza el deep-link V328 y el foco exacto V329. No se infieren asociaciones exactas para históricos ambiguos.
 
+Si el feed heredado y `CommentRepository` describen el mismo comentario pendiente, 3A prioriza el registro exacto del repositorio (mensaje, `session_id`, `exercise_uid` e ID de feedback) y descarta sólo el duplicado del feed. De esta forma un repaint posterior no puede reemplazar el comentario exacto por una señal genérica.
+
 ## 8. Rendimiento inteligente
 
 3A no recalcula récords. Reutiliza `TeamFJZIntelligentTraining` de 2C y muestra comparaciones concretas sólo cuando la fuente trae metadatos comparables. Se evita introducir porcentajes fabricados o reinterpretar una caída de volumen como mejora.
@@ -147,7 +149,7 @@ Se preservan las suites certificadas previas y se agregan:
 - ausencia de loading permanente;
 - ausencia de falso OK.
 
-La suite base ya cubre adicionalmente persistencia real del comentario revisado tras refresh y navegación con Supabase local. El baseline heredado fue adaptado para validar la representación agrupada de comentarios de 3A y la nueva acción de Agenda sin eliminar la compatibilidad con las rutas previas; no se relajó la comprobación del comentario exacto ni de la navegación real.
+La suite base ya cubre adicionalmente persistencia real del comentario revisado tras refresh y navegación con Supabase local. El baseline heredado fue adaptado para validar la representación agrupada de comentarios de 3A y la nueva acción de Agenda sin eliminar la compatibilidad con las rutas previas; no se relajó la comprobación del comentario exacto ni de la navegación real. Los E2E 3A verifican además que, una vez montado el Command Center, no quede visible ningún panel legacy hermano dentro de `#view`.
 
 Todos los datos son fixtures `test.local` / nombres `TEST ...`.
 
