@@ -919,6 +919,9 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
   await expect(rest).toHaveAttribute('data-timer-state','running');
   await actionState(['pause','reset','skip']);
+  await page.waitForTimeout(50);
+  const timerFocusNav=page.locator('#view.v22v2-workout-active .tabs .tab:visible').filter({hasText:/^(Inicio|Agenda|Check-in|Checkin|Entrenar|Nutrición|Nutricion|Progreso|Historial)$/i});
+  expect(await timerFocusNav.count()).toBe(0);
 
   const sid=await page.evaluate(()=>window.__fjzWorkoutSessionIdV2B?.());
   await page.screenshot({path:'artifacts/2c/rest-active-'+testInfo.project.name+'.png',fullPage:false});
@@ -932,6 +935,8 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
     else{await expect(train).toBeVisible({timeout:10000});await train.click();}
   }
   await expect(page.locator('.v22c-rest-control').first()).toBeVisible({timeout:10000});
+  const restoredFocusNav=page.locator('#view.v22v2-workout-active .tabs .tab:visible').filter({hasText:/^(Inicio|Agenda|Check-in|Checkin|Entrenar|Nutrición|Nutricion|Progreso|Historial)$/i});
+  expect(await restoredFocusNav.count()).toBe(0);
   const restored=await page.evaluate(sid=>({sid:window.TeamFJZIntelligentTraining.timerSnapshot()?.sessionId,count:window.TeamFJZIntelligentTraining.timerCount()}),sid);
   expect(restored.sid).toBe(sid);expect(restored.count).toBe(1);
   const restoredActions=await page.locator('.v22c-rest-control').first().evaluate(node=>[...node.querySelectorAll('[data-rest-action]')].filter(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return s.display!=='none'&&r.width>0&&r.height>0}).map(b=>b.dataset.restAction).sort());
