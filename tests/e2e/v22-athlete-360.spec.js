@@ -41,8 +41,9 @@ test.describe('V22 3B Athlete 360 Workspace',()=>{
    await page.locator('[data-3b-action="back"]').first().click();await expect(page.locator('.fjz3a-command-center')).toBeVisible();
    await openAthlete(page,'TEST ALUMNO 02');
    await expect(page.locator('.fjz3b-legacy-hero')).toContainText('TEST ALUMNO 02');
-   const state=await page.evaluate(()=>({studentId:__fjzAthlete360StateV22.studentId,athleteId:__fjzAthlete360StateV22.athleteId,comments:__fjzAthlete360StateV22.comments.map(x=>x.athlete_id)}));
-   expect(state.studentId).toBe('dev_student_02');expect(state.athleteId).toBe('10000000-0000-4000-8000-000000000002');expect(state.comments.every(x=>x===state.athleteId)).toBeTruthy();
+   await expect(page.locator('#fjz3bSummary')).toContainText('Día QA B',{timeout:15000});
+   const state=await page.evaluate(()=>({studentId:__fjzAthlete360StateV22.studentId,athleteId:__fjzAthlete360StateV22.athleteId,comments:__fjzAthlete360StateV22.comments.map(x=>x.athlete_id),latest:TeamFJZAthlete360.latestConfirmedSession(student().sessions)?.id}));
+   expect(state.studentId).toBe('dev_student_02');expect(state.athleteId).toBe('10000000-0000-4000-8000-000000000002');expect(state.latest).toBe('dev_session_b_01');expect(state.comments.every(x=>x===state.athleteId)).toBeTruthy();
    await expect(page.locator('#coachStudentBody')).not.toContainText('Molestia ficticia exacta 3B');await noOverflow(page);
    console.log('E2E_FLOW_OK V22 3B identity-isolation '+testInfo.project.name);
  });
@@ -92,6 +93,7 @@ test.describe('V22 3B Athlete 360 Workspace',()=>{
    await exact.getByRole('button',{name:'OK',exact:true}).click();await expect(page.locator('.fjz3b-comment',{hasText:'Molestia ficticia exacta 3B'})).toHaveCount(0,{timeout:15000});
    const statusAfter=await page.evaluate(async()=>{const r=await TeamFJZCommentRepository.createCommentRepository({supabase:supabaseClient}).getById('40000000-0000-4000-8000-000000000002');return r?.row?.status});expect(statusAfter).toBe('reviewed');
    await page.reload();await expect(page.locator('.fjz3b-header')).toBeVisible({timeout:20000});await expect(page.locator('#fjz3bSummary')).not.toContainText('Molestia ficticia exacta 3B',{timeout:20000});
+   await page.evaluate(async()=>{const {error}=await supabaseClient.from('exercise_feedback').update({status:'pending',reviewed_at:null,reviewed_by:null}).eq('id','40000000-0000-4000-8000-000000000002');if(error)throw error;});
    console.log('E2E_FLOW_OK V22 3B durable-comment-ok '+testInfo.project.name);
  });
 });
