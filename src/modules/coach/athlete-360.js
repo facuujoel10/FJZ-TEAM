@@ -77,7 +77,7 @@
     if(!checkin)return'none';
     try{if(typeof root.__fjzCheckinNeedsReviewV305==='function')return root.__fjzCheckinNeedsReviewV305(checkin)?'pending':'reviewed'}catch(_e){}
     if(!checkin.reviewed_at)return'pending';
-    const reviewed=Date.parse(checkin.reviewed_at||0),submitted=Date.parse(checkin.submitted_at||0);
+    const reviewed=checkin.reviewed_at?Date.parse(checkin.reviewed_at):NaN,submitted=checkin.submitted_at?Date.parse(checkin.submitted_at):NaN;
     if(Number.isFinite(submitted)&&(!Number.isFinite(reviewed)||reviewed<submitted))return'pending';
     return'reviewed';
   }
