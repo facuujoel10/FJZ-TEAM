@@ -13,7 +13,7 @@
   const normalize=v=>text(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   function context(){try{return root.__fjzCoachContextV22?.()||{}}catch(_e){return {}}}
   function appState(){return context().state||root.state||{students:[]}}
-  function appAthletes(){return context().cloudAthletes||appAthletes()||new Map()}
+  function appAthletes(){return context().cloudAthletes||new Map()}
   function isCoachDashboard(){const c=context();return (c.profile||root.currentProfile)?.role==='coach'&&text(c.coachTab??root.coachTab)==='dashboard'}
   function navigateCoach(tab,studentId='',studentTab=''){if(typeof root.__fjzCoachNavigateV22==='function')return root.__fjzCoachNavigateV22(tab,studentId,studentTab);if(studentId&&root.state){root.state.selectedStudentId=studentId;root.saveState?.()}root.coachTab=tab;if(studentTab)root.coachStudentTab=studentTab;root.render?.();return true}
   function uniqBy(rows,keyFn){const seen=new Set(),out=[];for(const row of rows||[]){const k=text(keyFn(row));if(!k||seen.has(k))continue;seen.add(k);out.push(row)}return out}
