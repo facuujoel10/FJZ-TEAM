@@ -788,10 +788,17 @@ test('2B-V2 UX: primer ejercicio y primera serie son accionables en el viewport 
   await firstInput.fill('17.5');
   await expect(firstInput).toBeFocused();
   await expect(firstInput).toHaveValue('17.5');
-  const primaryInside=page.locator('#view .tabs .tab:visible').filter({hasText:/^(Inicio|Entrenar|Nutrición|Nutricion|Progreso)$/i});
+  const primaryInside=page.locator('#view .tabs .tab:visible').filter({hasText:/^(Inicio|Agenda|Check-in|Checkin|Entrenar|Nutrición|Nutricion|Progreso|Historial)$/i});
   expect(await primaryInside.count()).toBe(0);
+  const focusNav=await page.evaluate(()=>{
+    const rows=[...document.querySelectorAll('#view.v22v2-workout-active .v22v2-workout-global-nav')];
+    return rows.map(n=>{const r=n.getBoundingClientRect(),s=getComputedStyle(n);return{hidden:n.hidden,aria:n.getAttribute('aria-hidden'),display:s.display,width:r.width,height:r.height,focusable:[...n.querySelectorAll('button,a,[tabindex]')].filter(x=>x.tabIndex>=0&&!x.hidden).length}});
+  });
+  expect(focusNav.length).toBeGreaterThan(0);
+  expect(focusNav.every(x=>x.hidden&&x.aria==='true'&&x.display==='none'&&x.width===0&&x.height===0&&x.focusable===0)).toBeTruthy();
 
   await page.screenshot({path:'artifacts/2bv2/initial-workout-'+testInfo.project.name+'.png',fullPage:false});
+  await page.screenshot({path:'artifacts/2c/training-focus-'+testInfo.project.name+'.png',fullPage:false});
   console.log('E2E_FLOW_OK product-experience-initial-2bv2 '+testInfo.project.name);
 });
 
@@ -878,9 +885,26 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   const rest=page.locator('.v22c-rest-control').first();
   await expect(rest).toBeVisible();
   const custom=rest.locator('input[aria-label*="Duración personal"]');
-  if(await custom.count())await custom.fill('15');
+  if(await custom.count()){
+    await custom.fill('15');
+    const seg=rest.locator('.v22c-rest-custom span');
+    const segLayout=await seg.evaluate(n=>({whiteSpace:getComputedStyle(n).whiteSpace,rects:n.getClientRects().length,height:n.getBoundingClientRect().height,lineHeight:parseFloat(getComputedStyle(n).lineHeight)||0}));
+    expect(segLayout.whiteSpace).toBe('nowrap');
+    expect(segLayout.rects).toBe(1);
+  }
+  const actionState=async(expectedVisible)=>{
+    const state=await rest.evaluate((node,expectedVisible)=>{
+      const allowed=new Set(expectedVisible);
+      return [...node.querySelectorAll('[data-rest-action]')].map(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b),visible=s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;return{action:b.dataset.restAction,visible,hidden:b.hidden,aria:b.getAttribute('aria-hidden'),tabIndex:b.tabIndex,width:r.width,height:r.height,expected:allowed.has(b.dataset.restAction)}})
+    },expectedVisible);
+    expect(state.filter(x=>x.visible).map(x=>x.action).sort()).toEqual([...expectedVisible].sort());
+    expect(state.filter(x=>!x.expected).every(x=>x.hidden&&x.aria==='true'&&x.tabIndex===-1&&x.width===0&&x.height===0)).toBeTruthy();
+  };
+  await actionState(['start']);
   await rest.locator('button[data-rest-action="start"]').click();
   await expect(rest).toHaveAttribute('data-active','true');
+  await expect(rest).toHaveAttribute('data-timer-state','running');
+  await actionState(['pause','reset','skip']);
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
   const before=await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().remainingMs);
   await page.waitForTimeout(1100);
@@ -889,8 +913,12 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
 
   await rest.getByRole('button',{name:'Pausar'}).click();
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(0);
+  await expect(rest).toHaveAttribute('data-timer-state','paused');
+  await actionState(['resume','reset','skip']);
   await rest.getByRole('button',{name:'Reanudar'}).click();
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerCount())).toBe(1);
+  await expect(rest).toHaveAttribute('data-timer-state','running');
+  await actionState(['pause','reset','skip']);
 
   const sid=await page.evaluate(()=>window.__fjzWorkoutSessionIdV2B?.());
   await page.screenshot({path:'artifacts/2c/rest-active-'+testInfo.project.name+'.png',fullPage:false});
@@ -906,8 +934,12 @@ test('2C temporizador: ciclo completo, una sola autoridad y recuperación por re
   await expect(page.locator('.v22c-rest-control').first()).toBeVisible({timeout:10000});
   const restored=await page.evaluate(sid=>({sid:window.TeamFJZIntelligentTraining.timerSnapshot()?.sessionId,count:window.TeamFJZIntelligentTraining.timerCount()}),sid);
   expect(restored.sid).toBe(sid);expect(restored.count).toBe(1);
+  const restoredActions=await page.locator('.v22c-rest-control').first().evaluate(node=>[...node.querySelectorAll('[data-rest-action]')].filter(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return s.display!=='none'&&r.width>0&&r.height>0}).map(b=>b.dataset.restAction).sort());
+  expect(restoredActions).toEqual(['pause','reset','skip']);
   await page.locator('.v22c-rest-control').first().getByRole('button',{name:'Reiniciar'}).click();
   expect((await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot().state))).toBe('paused');
+  const pausedAfterReset=await page.locator('.v22c-rest-control').first().evaluate(node=>[...node.querySelectorAll('[data-rest-action]')].filter(b=>{const r=b.getBoundingClientRect(),s=getComputedStyle(b);return s.display!=='none'&&r.width>0&&r.height>0}).map(b=>b.dataset.restAction).sort());
+  expect(pausedAfterReset).toEqual(['reset','resume','skip']);
   await page.locator('.v22c-rest-control').first().getByRole('button',{name:'Omitir'}).click();
   expect(await page.evaluate(()=>window.TeamFJZIntelligentTraining.timerSnapshot())).toBeNull();
   await assertNoHorizontalOverflow(page);
@@ -990,8 +1022,21 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
   await expect(page.locator('#modal .v22c-summary')).toBeVisible({timeout:20000});
   const save=await page.evaluate(()=>window.__fjzSessionSaveStateV207?.());
   expect(save.state).toBe('success');expect(save.cloudConfirmed).toBeTruthy();
-  await expect(page.locator('#modal .v22c-summary')).toContainText(/SESIÓN CONFIRMADA/i);
-  await expect(page.locator('#modal .v22c-summary')).toContainText(/PR · Récord/i);
+  const summaryModal=page.locator('#modal .v22c-summary');
+  await expect(summaryModal.locator('.v22c-kicker')).toHaveText('SESIÓN CONFIRMADA');
+  await expect(summaryModal.locator('.v22c-confirmed-label')).toHaveText('Sesión guardada con éxito');
+  await expect(summaryModal.locator('.v22c-summary-title')).not.toHaveText('');
+  await expect(summaryModal.locator('.v22c-summary-date')).not.toHaveText('');
+  const headingLayout=await summaryModal.evaluate(node=>{
+    const parts=['.v22c-kicker','.v22c-confirmed-label','.v22c-summary-title','.v22c-summary-date'].map(s=>node.querySelector(s)?.getBoundingClientRect()).filter(Boolean);
+    return parts.map(r=>({top:r.top,bottom:r.bottom,width:r.width,height:r.height}));
+  });
+  expect(headingLayout).toHaveLength(4);
+  expect(headingLayout.every(x=>x.width>0&&x.height>0)).toBeTruthy();
+  expect(headingLayout[0].bottom).toBeLessThanOrEqual(headingLayout[1].top+1);
+  expect(headingLayout[1].bottom).toBeLessThanOrEqual(headingLayout[2].top+12);
+  expect(headingLayout[2].bottom).toBeLessThanOrEqual(headingLayout[3].top+8);
+  await expect(summaryModal).toContainText(/PR · Récord/i);
   await page.screenshot({path:'artifacts/2c/summary-'+testInfo.project.name+'.png',fullPage:false});
   await page.screenshot({path:'artifacts/2c/record-valid-'+testInfo.project.name+'.png',fullPage:false});
   const after=await page.evaluate(()=>student().sessions?.length||0);
