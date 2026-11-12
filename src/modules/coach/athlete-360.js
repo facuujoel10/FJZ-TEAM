@@ -268,6 +268,13 @@
       '<section class="fjz3b-panel"><div class="fjz3b-panel-head"><div><span>AGENDA</span><h3>Próxima fecha</h3></div><button class="fjz3b-link" data-3b-action="section" data-section="agenda">Abrir</button></div>'+(next?'<div class="fjz3b-keyline"><strong>'+esc(next.title)+'</strong><span>'+esc(formatDate(next.date))+(next.time?' · '+esc(next.time):'')+'</span></div>'+(next.body?'<p class="fjz3b-note">'+esc(next.body)+'</p>':''):'<div class="fjz3b-empty"><strong>Sin próximas fechas</strong><span>No hay eventos futuros confirmados.</span></div>')+'</section></div>'+
       '<section class="fjz3b-panel fjz3b-comments"><div class="fjz3b-panel-head"><div><span>COMENTARIOS Y MOLESTIAS</span><h3>Contexto técnico pendiente</h3></div></div>'+(summary.pendingComments.length?summary.pendingComments.map(commentHtml).join(''):'<div class="fjz3b-empty"><strong>Sin comentarios pendientes</strong><span>Los revisados no vuelven a pendientes si el servidor confirmó el OK.</span></div>')+'</section>';
   }
+  function restoreSectionShell(){
+    const section=activeSection(),body=root.document?.getElementById('coachStudentBody');
+    if(!body||section==='summary'||section==='info')return;
+    shapeLegacySection(body);
+    let ctx=root.document?.getElementById('fjz3bSectionContext');
+    if(!ctx){ctx=root.document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';body.prepend(ctx)}
+  }
   function renderSectionContext(summary){
     const host=root.document?.getElementById('fjz3bSectionContext');if(!host)return;
     const section=activeSection(),check=summary.checkin,m=summary.measurement,next=ui.agenda[0],s=summary.lastSession;
@@ -284,7 +291,7 @@
   }
   async function hydrate(force=false){
     if(!isCoachStudent())return false;const identity=currentIdentity();resetForIdentity(identity);
-    if(!force&&ui.loadedAthleteId===identity.athleteId&&Date.now()-ui.loadedAt<15000){const summary=deriveSummary({student:identity.student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true}
+    if(!force&&ui.loadedAthleteId===identity.athleteId&&Date.now()-ui.loadedAt<15000){const summary=deriveSummary({student:identity.student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true}
     const token=++ui.token;ui.loading=true;ui.error=null;
     try{
       const {agendaRepo,commentRepo}=repositories();
@@ -306,9 +313,9 @@
       ui.agenda=nextAgendaItems(agendaRes.value||{});
       ui.loadedAt=Date.now();ui.loadedAthleteId=identity.athleteId;ui.loading=false;ui.error=null;
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
-      renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true;
+      restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true;
     }catch(err){
-      if(token!==ui.token)return false;ui.loading=false;ui.error=text(err?.publicMessage||err?.message||'No pudimos completar la consulta.');renderError(ui.error);return false;
+      if(token!==ui.token)return false;ui.loading=false;ui.error=text(err?.publicMessage||err?.message||'No pudimos completar la consulta.');restoreSectionShell();renderError(ui.error);return false;
     }
   }
   function render(){
