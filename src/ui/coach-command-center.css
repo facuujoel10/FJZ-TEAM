@@ -1,3 +1,4 @@
+#view:has(> .fjz3a-command-center)>:not(.fjz3a-command-center){display:none!important}
 /* TEAM FJZ V22 · 3A COACH COMMAND CENTER */
 .fjz3a-command-center{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:calc(100vh - 104px);background:var(--fjz-app-bg,#08090b);color:var(--fjz-text,#f6f7f9);border:1px solid var(--fjz-line,#292d35);border-radius:22px;overflow:hidden}
 .fjz3a-sidebar{background:linear-gradient(180deg,#0d0f13,#0a0b0e);border-right:1px solid var(--fjz-line,#292d35);padding:20px 14px;display:flex;flex-direction:column;gap:22px;position:sticky;top:12px;height:calc(100vh - 128px)}
