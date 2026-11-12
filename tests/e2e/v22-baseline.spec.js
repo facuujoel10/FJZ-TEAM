@@ -286,11 +286,15 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
     .waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
   let commentNode;
   if (commandCenterReady) {
+    await expect(page.locator('.fjz3a-sync span'), '3A debe completar su hidratación antes de operar revisiones.').toContainText(/Actualizado/i, { timeout: 15000 });
     const groupWithComment = page.locator('.fjz3a-group').filter({ hasText: comment }).first();
     await expect(groupWithComment, '3A debe conservar el comentario pendiente dentro del grupo exacto del alumno.').toBeVisible({ timeout: 15000 });
     const groupToggle = groupWithComment.locator('.fjz3a-group-head').first();
+    const groupBody = groupWithComment.locator('.fjz3a-group-body').first();
     if ((await groupToggle.getAttribute('aria-expanded')) !== 'true') await groupToggle.click();
-    commentNode = groupWithComment.getByText(comment, { exact: true }).first();
+    await expect(groupToggle, 'Abrir un grupo 3A debe persistir el estado expandido.').toHaveAttribute('aria-expanded', 'true', { timeout: 5000 });
+    await expect(groupBody, 'El cuerpo del grupo 3A debe quedar visible al abrirlo.').toBeVisible({ timeout: 5000 });
+    commentNode = groupBody.getByText(comment, { exact: true }).first();
   } else {
     await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
     commentNode = page.getByText(comment, { exact: true }).first();
