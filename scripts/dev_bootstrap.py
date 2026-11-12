@@ -6,6 +6,7 @@ USERS=[
   ("coach@test.local","TEST COACH","coach"),
   ("alumno01@test.local","TEST ALUMNO 01","student"),
   ("alumno02@test.local","TEST ALUMNO 02","student"),
+  ("outsider-coach@test.local","TEST COACH OUTSIDER","coach"),
 ]
 
 def admin_users(api,secret):
@@ -71,13 +72,21 @@ def main():
              "sets":3,"min":10,"max":12,"rirMin":1,"rirMax":2,"rest":90,"cue":"Fixture QA","history":[],"override":None}
           ]}
     history={"id":"dev_session_history_01","date":"2026-01-10T15:00:00.000Z","dayId":"dev_day_01",
-             "dayName":"Día QA A","summary":{"up":1,"hold":1,"review":0,"totalSets":6},
+             "dayName":"Día QA A","cloudConfirmed":True,"summary":{"up":1,"hold":1,"review":0,"totalSets":6},
              "exerciseResults":[
                {"exerciseUid":"dev_ex_press","name":"Press QA","sets":[[20,10,2],[20,9,2],[20,8,1]],
                 "recommendation":{"type":"hold","title":"Mantener","copy":"Fixture QA"}}
              ]}
+    history2={"id":"dev_session_history_02","date":"2026-11-10T15:00:00.000Z","dayId":"dev_day_01",
+              "dayName":"Día QA A","cloudConfirmed":True,"summary":{"up":1,"hold":0,"review":0,"totalSets":6},
+              "exerciseResults":[
+                {"exerciseUid":"dev_ex_press","exerciseName":"Press QA","name":"Press QA","sets":[[22.5,10,2],[22.5,9,2],[22.5,8,1]],
+                 "recommendation":{"type":"up","title":"Progresión QA","copy":"Fixture QA 3B"}},
+                {"exerciseUid":"dev_ex_row","exerciseName":"Remo QA","name":"Remo QA","sets":[[30,12,2],[30,11,2],[30,10,1]],
+                 "recommendation":{"type":"hold","title":"Mantener","copy":"Fixture QA 3B"}}
+              ]}
     snap1={"id":"dev_student_01","name":"TEST ALUMNO 01","goal":"QA ficticio: hipertrofia",
-           "plannedPerWeek":2,"lastWorkout":history["date"],"days":[day1],"sessions":[history],
+           "plannedPerWeek":2,"lastWorkout":history2["date"],"days":[day1],"sessions":[history,history2],
            "checkins":[],"workoutDrafts":{}}
     snap2={"id":"dev_student_02","name":"TEST ALUMNO 02","goal":"QA ficticio: recomposición",
            "plannedPerWeek":2,"lastWorkout":None,"days":[day1],"sessions":[],"checkins":[],"workoutDrafts":{}}
@@ -117,6 +126,11 @@ def main():
        "exercise_uid":"dev_ex_press","exercise_name":"Press QA","workout_day_id":"dev_day_01",
        "workout_day_name":"Día QA A","feedback_type":"comment","message":"Comentario ficticio pendiente para QA",
        "status":"pending"}
+,
+      {"id":"40000000-0000-4000-8000-000000000002","athlete_id":a1,"student_id":s1,
+       "session_id":"dev_session_history_02","exercise_uid":"dev_ex_press","exercise_name":"Press QA",
+       "workout_day_id":"dev_day_01","workout_day_name":"Día QA A","feedback_type":"discomfort",
+       "message":"Molestia ficticia exacta 3B","status":"pending"}
     ],"id")
 
     # ------------------------------------------------------------
@@ -154,6 +168,15 @@ def main():
        "measured_on":"2026-01-10","weight_kg":65,"waist_cm":76,"abdomen_cm":78,
        "hip_cm":92,"chest_cm":94,"arm_left_cm":31,"arm_right_cm":31,
        "thigh_left_cm":53,"thigh_right_cm":53,"notes":"Medición QA 2"}
+,
+      {"id":"52000000-0000-4000-8000-000000000003","athlete_id":a1,"student_id":s1,
+       "measured_on":"2026-11-08","weight_kg":71.8,"waist_cm":79,"abdomen_cm":81,
+       "hip_cm":96,"chest_cm":102,"arm_left_cm":35.5,"arm_right_cm":35.5,
+       "thigh_left_cm":57.5,"thigh_right_cm":57.5,"notes":"Medición QA 3B"},
+      {"id":"52000000-0000-4000-8000-000000000004","athlete_id":a2,"student_id":s2,
+       "measured_on":"2026-11-08","weight_kg":64.8,"waist_cm":75.5,"abdomen_cm":77.5,
+       "hip_cm":92,"chest_cm":94,"arm_left_cm":31,"arm_right_cm":31,
+       "thigh_left_cm":53,"thigh_right_cm":53,"notes":"Medición QA 3B alumno 02"}
     ],"id")
 
     upsert(api,secret,"weekly_checkins",[
@@ -167,6 +190,17 @@ def main():
        "energy_level":7,"adherence_level":8,"mood_level":7,"hunger_level":5,
        "recovery_level":7,"motivation_level":8,"notes":"Check-in QA alumno 02",
        "reviewed_at":"2026-01-08T12:00:00Z","coach_feedback":"Feedback QA"}
+,
+      {"id":"53000000-0000-4000-8000-000000000003","athlete_id":a1,"student_id":s1,
+       "week_start":"2026-11-09","weight_kg":71.8,"sleep_quality":8,"stress_level":3,
+       "energy_level":8,"adherence_level":9,"mood_level":8,"hunger_level":4,
+       "recovery_level":8,"motivation_level":9,"notes":"Check-in QA 3B pendiente",
+       "reviewed_at":None,"coach_feedback":""},
+      {"id":"53000000-0000-4000-8000-000000000004","athlete_id":a2,"student_id":s2,
+       "week_start":"2026-11-09","weight_kg":64.8,"sleep_quality":7,"stress_level":4,
+       "energy_level":7,"adherence_level":8,"mood_level":7,"hunger_level":5,
+       "recovery_level":7,"motivation_level":8,"notes":"Check-in QA 3B revisado",
+       "reviewed_at":"2026-11-11T12:00:00Z","coach_feedback":"Decisión: Mantener plan\nCómo seguimos: QA 3B"}
     ],"id")
 
     upsert(api,secret,"coach_media_settings",[
