@@ -88,8 +88,14 @@ def main():
     snap1={"id":"dev_student_01","name":"TEST ALUMNO 01","goal":"QA ficticio: hipertrofia",
            "plannedPerWeek":2,"lastWorkout":history2["date"],"days":[day1],"sessions":[history,history2],
            "checkins":[],"workoutDrafts":{}}
+    history_b={"id":"dev_session_b_01","date":"2026-11-07T18:00:00.000Z","dayId":"dev_day_01",
+               "dayName":"Día QA B","cloudConfirmed":True,"summary":{"up":0,"hold":1,"review":0,"totalSets":3},
+               "exerciseResults":[
+                 {"exerciseUid":"dev_ex_press","exerciseName":"Press QA","name":"Press QA","sets":[[15,10,3],[15,10,2],[15,9,2]],
+                  "recommendation":{"type":"hold","title":"Mantener","copy":"Fixture QA alumno 02"}}
+               ]}
     snap2={"id":"dev_student_02","name":"TEST ALUMNO 02","goal":"QA ficticio: recomposición",
-           "plannedPerWeek":2,"lastWorkout":None,"days":[day1],"sessions":[],"checkins":[],"workoutDrafts":{}}
+           "plannedPerWeek":2,"lastWorkout":history_b["date"],"days":[day1],"sessions":[history_b],"checkins":[],"workoutDrafts":{}}
     upsert(api,secret,"athlete_snapshots",[
       {"athlete_id":a1,"data":snap1},{"athlete_id":a2,"data":snap2}
     ],"athlete_id")
