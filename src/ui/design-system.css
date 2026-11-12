@@ -21,7 +21,7 @@
  --fjz-heading-sm:20px;--fjz-heading-md:26px;--fjz-heading-lg:34px;
  --fjz-control:48px;--fjz-content-max:1320px;--fjz-rail:340px;
 }
-.v22v-duplicate-nav[hidden],.v22v-context-nav[hidden]{display:none!important}
+.v22v-duplicate-nav[hidden],.v22v-context-nav[hidden],.v22v2-workout-global-nav[hidden]{display:none!important}
 
 
 /* TEAM FJZ V22 · 2B-V2 reusable product components */
