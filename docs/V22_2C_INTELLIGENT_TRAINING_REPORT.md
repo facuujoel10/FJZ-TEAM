@@ -68,6 +68,17 @@ Ahora:
 - carga vacía => inválida para carga externa, asistencia y lastre;
 - sólo peso corporal explícito puede normalizar carga vacía a 0.
 
+### 2.6 KPIs de detalle en Historial/Coach
+
+La revisión visual final detectó una incompatibilidad histórica adicional: algunas sesiones con `exerciseResults` válidos no conservan `session.summary.totalSets` ni `completedExercises`. V244 mostraba por eso `0 series / 0 ejercicios` aunque el registro detallado inferior sí tuviera datos.
+
+Se corrigió sin crear una nueva fuente de verdad:
+- si el resumen histórico contiene contadores positivos, se conservan;
+- si esos contadores no existen o llegan vacíos, la UI deriva exclusivamente los KPIs de presentación desde `exerciseResults`;
+- la analítica 2C de récords/progresión sigue usando `workSets()` y sus reglas estrictas, no estos contadores visuales;
+- Playwright exige ahora coherencia entre el detalle y los KPIs tanto en Historial Alumno como en Coach.
+
+
 ## 3. Temporizador profesional de descanso
 
 El temporizador es una única autoridad de módulo.
