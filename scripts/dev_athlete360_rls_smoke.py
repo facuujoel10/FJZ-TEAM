@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dev_common import TEST_PASSWORD,http_json,local_status
-A1="10000000-0000-4000-8000-000000000001"
+A1="10000000-0000-4000-8000-000000000001"\nA2="10000000-0000-4000-8000-000000000002"
 TABLES=("athletes","weekly_checkins","body_measurements","progress_photos","nutrition_plans","exercise_feedback","athlete_schedule","athlete_reminders")
 def login(api,pub,email):
     data=http_json("POST",api+"/auth/v1/token?grant_type=password",pub,None,{"email":email,"password":TEST_PASSWORD})
@@ -19,8 +19,8 @@ def main():
         assert rows,("authorized coach lost read",table,rows)
         hidden=get(api,pub,outsider,f"{table}?select=id&{key}=eq.{A1}")
         assert hidden==[],("unauthorized coach read leaked",table,hidden)
-    student_cross=get(api,pub,student,"athletes?select=id&id=neq."+A1)
-    assert all(x.get("id")==A1 for x in student_cross)==False if student_cross else True
+    student_cross=get(api,pub,student,"athletes?select=id&id=eq."+A2)
+    assert student_cross==[],("student cross-athlete read leaked",student_cross)
     print("TEAM FJZ V22 3B ATHLETE 360 RLS SMOKE OK")
     print("Authorized Coach 360 reads:",authorized)
     print("Unauthorized Coach cross-portfolio reads: 0")
