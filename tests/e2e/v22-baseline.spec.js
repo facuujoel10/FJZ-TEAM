@@ -284,16 +284,18 @@ test('Entrenamiento + comentario + persistencia + revisión Coach', async ({ pag
 
   const commandCenterReady = await page.locator('.fjz3a-command-center').first()
     .waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+  let commentNode;
   if (commandCenterReady) {
     const groupWithComment = page.locator('.fjz3a-group').filter({ hasText: comment }).first();
     await expect(groupWithComment, '3A debe conservar el comentario pendiente dentro del grupo exacto del alumno.').toBeVisible({ timeout: 15000 });
     const groupToggle = groupWithComment.locator('.fjz3a-group-head').first();
     if ((await groupToggle.getAttribute('aria-expanded')) !== 'true') await groupToggle.click();
+    commentNode = groupWithComment.getByText(comment, { exact: true }).first();
   } else {
     await expect(page.getByRole('heading', { name: 'Lo que te dejaron tus alumnos', exact: true })).toBeVisible({ timeout: 15000 });
+    commentNode = page.getByText(comment, { exact: true }).first();
   }
-  await expect(page.getByText(comment, { exact: true }).first()).toBeVisible({ timeout: 15000 });
-  const commentNode = page.getByText(comment, { exact: true }).first();
+  await expect(commentNode).toBeVisible({ timeout: 15000 });
   const container = commentNode.locator('xpath=ancestor::*[self::article or contains(@class,"card") or contains(@class,"feedback-item")][1]');
   const openAction = container.getByRole('button', { name: /Abrir|Ver/i }).first();
 
