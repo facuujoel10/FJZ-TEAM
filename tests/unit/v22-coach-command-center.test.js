@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');const api=require('../../src/modules/coach/command-center.js');
+test('3A event identity deduplicates one canonical event',()=>{const rows=api.eventView([{event_key:'same',athlete_id:'a',athlete_name:'A',kind:'training'},{event_key:'same',athlete_id:'a',athlete_name:'A',kind:'training'}]);assert.equal(rows.length,1)});
+test('3A grouping never mixes athletes',()=>{const rows=api.eventView([{event_key:'a',athlete_id:'1',athlete_name:'Uno',kind:'training'},{event_key:'b',athlete_id:'2',athlete_name:'Dos',kind:'checkin'}]);const groups=api.groupEvents(rows);assert.equal(groups.length,2);assert.deepEqual(groups.map(x=>x.rows.length),[1,1])});
+test('3A categories are operational',()=>{assert.equal(api.category('exercise_feedback'),'comments');assert.equal(api.category('checkin'),'checkins');assert.equal(api.category('progression'),'training')});

@@ -1061,6 +1061,9 @@ exec(compile(open("v344_v22_2a_premium_workout.py", encoding="utf-8").read(), "v
 # V22 Etapa 2C intelligent training: bounded timer + derived records/progression/summary.
 exec(compile(open("v345_v22_2c_intelligent_training.py", encoding="utf-8").read(), "v345_v22_2c_intelligent_training.py", "exec"))
 
+# V22 Etapa 3A Coach Command Center: one bounded Coach dashboard authority.
+exec(compile(open("v346_v22_3a_coach_command_center.py", encoding="utf-8").read(), "v346_v22_3a_coach_command_center.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
