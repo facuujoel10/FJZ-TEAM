@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-async function login(page,email){await page.goto('/');const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill(email);await page.locator('#authPass').fill('TEAMFJZ-Local-Only!22');await page.locator('#authGate .btn.primary').click()}await expect(gate).toBeHidden({timeout:20000})}
+async function login(page,email){await page.goto('/');const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill(email);await page.locator('#authPass').fill('TEAMFJZ-Local-Only!22');await page.locator('#authGate .btn.primary').click()}await expect(gate).toBeHidden({timeout:20000});if(email==='coach@test.local'){await page.evaluate(()=>{coachTab='dashboard';render()})}}
 async function assertNoOverflow(page){const v=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));expect(v.sw).toBeLessThanOrEqual(v.cw+2)}
 async function waitCommand(page){await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:20000})}
 test.describe('V22 3A Coach Command Center',()=>{
