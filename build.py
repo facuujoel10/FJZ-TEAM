@@ -1064,6 +1064,9 @@ exec(compile(open("v345_v22_2c_intelligent_training.py", encoding="utf-8").read(
 # V22 Etapa 3A Coach Command Center: one bounded Coach dashboard authority.
 exec(compile(open("v346_v22_3a_coach_command_center.py", encoding="utf-8").read(), "v346_v22_3a_coach_command_center.py", "exec"))
 
+# V22 Etapa 3B Athlete 360 Workspace: bounded Coach student-profile authority.
+exec(compile(open("v347_v22_3b_athlete_360_workspace.py", encoding="utf-8").read(), "v347_v22_3b_athlete_360_workspace.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
