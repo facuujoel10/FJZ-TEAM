@@ -187,7 +187,10 @@ test('Alumno: navegación principal, responsive y acceso a módulos visibles', a
   await expect(page.getByRole('heading', { name: 'Día QA A' })).toBeVisible();
   await expect(page.getByRole('button', { name: /Finalizar sesión/i })).toBeVisible();
   await assertNoHorizontalOverflow(page);
-  await page.getByRole('button', { name: /Inicio/i }).first().click();
+  const focusGlobalNav=page.locator('#view.v22v2-workout-active .tabs .tab:visible').filter({hasText:/^(Inicio|Agenda|Check-in|Checkin|Entrenar|Nutrición|Nutricion|Progreso|Historial)$/i});
+  expect(await focusGlobalNav.count()).toBe(0);
+  await page.getByRole('button', { name: /Salir del entrenamiento/i }).click();
+  await expect(page.getByRole('button', { name: 'Inicio', exact: true }).first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Nutrición' }).first().click();
   await expect(page.getByText('PLAN QA A', { exact: true })).toBeVisible({ timeout: 10000 });
