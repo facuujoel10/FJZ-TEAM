@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dev_common import TEST_PASSWORD,http_json,local_status
-A1="10000000-0000-4000-8000-000000000001"\nA2="10000000-0000-4000-8000-000000000002"
+A1="10000000-0000-4000-8000-000000000001"
+A2="10000000-0000-4000-8000-000000000002"
 TABLES=("athletes","weekly_checkins","body_measurements","progress_photos","nutrition_plans","exercise_feedback","athlete_schedule","athlete_reminders")
 def login(api,pub,email):
     data=http_json("POST",api+"/auth/v1/token?grant_type=password",pub,None,{"email":email,"password":TEST_PASSWORD})
