@@ -135,10 +135,19 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Build isolated V21.41 and V22 2B-V.1 references against local Supabase
+      - name: Checkout certified V22 pre-3A visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 5ad73468ba958620c2e69a7ede4c0a7fde2628ea
+          path: visual_refs/v22-pre3a
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Build isolated visual references against local Supabase
         run: |
           python scripts/dev_build_visual_reference.py visual_refs/v2141
           python scripts/dev_build_visual_reference.py visual_refs/v22-2bv1
+          python scripts/dev_build_visual_reference.py visual_refs/v22-pre3a
 
       - name: Start isolated visual reference servers
         shell: bash
@@ -146,7 +155,8 @@ jobs:
           set -euo pipefail
           python -m http.server 8001 -d visual_refs/v2141/public > /tmp/fjz-v2141-http.log 2>&1 &
           python -m http.server 8002 -d visual_refs/v22-2bv1/public > /tmp/fjz-v22-2bv1-http.log 2>&1 &
-          for port in 8001 8002; do
+          python -m http.server 8003 -d visual_refs/v22-pre3a/public > /tmp/fjz-v22-pre3a-http.log 2>&1 &
+          for port in 8001 8002 8003; do
             for i in {1..20}; do
               curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
               sleep 1
@@ -175,6 +185,13 @@ jobs:
       - name: Build V21.41 vs 2B-V.1 vs 2B-V2 visual contact sheets
         run: node scripts/build_product_experience_contact_sheets.js artifacts/2bv2-comparison
 
+      - name: Capture Coach 3A comparison and operational states
+        env:
+          FJZ_E2E_PASSWORD: TEAMFJZ-Local-Only!22
+        run: |
+          python scripts/dev_reset.py
+          node scripts/capture_3a_coach_comparison.js artifacts/3a-comparison
+
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -189,6 +206,7 @@ jobs:
             artifacts/2bv2-comparison
             artifacts/2c
             artifacts/3a
+            artifacts/3a-comparison
           if-no-files-found: ignore
           retention-days: 14
 
