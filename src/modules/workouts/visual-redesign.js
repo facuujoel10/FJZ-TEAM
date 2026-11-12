@@ -457,5 +457,5 @@ function enhanceSessionDetail(modal){
   return true;
 }
 
-return Object.freeze({VERSION,enhanceWorkout,enhanceCommentModal,enhanceHistory,enhanceSessionDetail});
+return Object.freeze({VERSION,enhanceWorkout,enhanceCommentModal,enhanceHistory,enhanceSessionDetail,hideWorkoutGlobalNav});
 });
