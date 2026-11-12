@@ -24,8 +24,8 @@
   function isCoachStudent(){const x=currentIdentity();return x.profile?.role==='coach'&&x.coachTab==='student'&&!!x.studentId}
   function sectionForTab(tab){
     const t=text(tab);
-    if(t==='nutrition')return'nutrition';if(t==='progress')return'progress';if(t==='tracking')return'checkins';if(t==='agenda')return'agenda';
-    if(t==='routine'||t==='history')return'training';return'summary';
+    if(t==='nutrition')return'nutrition';if(t==='tracking')return'checkins';if(t==='agenda')return'agenda';
+    if(t==='routine'||t==='history'||t==='progress')return'training';return'summary';
   }
   function activeSection(){return ui.sectionOverride||sectionForTab(currentIdentity().coachStudentTab)}
   function verifiedSession(engine,session){return !!(engine&&typeof engine.sessionConfirmed==='function'&&engine.sessionConfirmed(session))}
@@ -127,7 +127,7 @@
   function trainingSubnav(){
     if(activeSection()!=='training')return'';
     const tab=currentIdentity().coachStudentTab;
-    return '<div class="fjz3b-subnav" aria-label="Entrenamiento"><button type="button" data-3b-action="legacy-tab" data-tab="routine" class="'+(tab!=='history'?'active':'')+'">Rutina asignada</button><button type="button" data-3b-action="legacy-tab" data-tab="history" class="'+(tab==='history'?'active':'')+'">Historial confirmado</button></div>';
+    return '<div class="fjz3b-subnav" aria-label="Entrenamiento"><button type="button" data-3b-action="legacy-tab" data-tab="routine" class="'+(tab==='routine'?'active':'')+'">Rutina</button><button type="button" data-3b-action="legacy-tab" data-tab="history" class="'+(tab==='history'?'active':'')+'">Historial</button><button type="button" data-3b-action="legacy-tab" data-tab="progress" class="'+(tab==='progress'?'active':'')+'">Rendimiento</button></div>';
   }
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
@@ -159,6 +159,25 @@
     const rows=[['Objetivo',text(s.goal)],['Altura',a.height_cm!=null?text(a.height_cm)+' cm':''],['Sexo',text(a.sex)],['Ocupación',text(a.occupation||s.occupation)]].filter(x=>x[1]);
     return '<div class="fjz3b-info"><section class="fjz3b-panel"><div class="fjz3b-panel-head"><div><span>INFORMACIÓN</span><h3>Datos del alumno</h3></div></div><div class="fjz3b-info-grid">'+(rows.length?rows.map(([l,v])=>'<div><span>'+esc(l)+'</span><strong>'+esc(v)+'</strong></div>').join(''):'<div class="fjz3b-empty"><strong>Sin datos adicionales</strong><span>No se inventan campos ausentes.</span></div>')+'</div></section><section class="fjz3b-panel"><div class="fjz3b-panel-head"><div><span>ADMINISTRACIÓN EXISTENTE</span><h3>Acciones de la ficha</h3></div></div><div id="fjz3bAdminActions" class="fjz3b-admin-actions"></div></section></div>';
   }
+  function shapeLegacySection(body){
+    const section=activeSection();
+    if(section==='checkins'){
+      body.querySelector('.grid.kpi')?.remove();
+      const latest=[...body.querySelectorAll('.card')].find(card=>/Último check-in completo/i.test(card.textContent||''));
+      const two=[...body.children].find(x=>x.classList?.contains('grid')&&x.classList?.contains('two'));
+      if(two&&two.children[1])two.children[1].remove();
+      const photo=body.querySelector('#coachPhotoGrid')?.closest('.card');if(photo)photo.remove();
+      return;
+    }
+    if(section!=='progress')return;
+    const photo=body.querySelector('#coachPhotoGrid')?.closest('.card')||null;
+    const two=[...body.children].find(x=>x.classList?.contains('grid')&&x.classList?.contains('two'));
+    const measurementEditor=two?.querySelector('aside.card')||null;
+    const ms=(ui.tracking?.measurements||[]).slice().sort((a,b)=>text(b?.measured_on||b?.created_at).localeCompare(text(a?.measured_on||a?.created_at)));
+    body.innerHTML='<div class="fjz3b-physical-progress"><section class="fjz3b-panel"><div class="fjz3b-panel-head"><div><span>HISTORIAL CORPORAL</span><h3>Mediciones registradas</h3></div></div><div class="fjz3b-measure-list">'+(ms.length?ms.map((m,i)=>'<article><div><strong>'+esc(formatDate(m.measured_on||m.created_at))+'</strong><span>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg':'Peso sin registro')+'</span></div><div class="fjz3b-measure-values">'+[['Cintura',m.waist_cm],['Abdomen',m.abdomen_cm],['Cadera',m.hip_cm],['Pecho',m.chest_cm],['Brazo izq.',m.arm_left_cm],['Brazo der.',m.arm_right_cm],['Muslo izq.',m.thigh_left_cm],['Muslo der.',m.thigh_right_cm]].filter(x=>x[1]!=null).map(x=>'<span>'+esc(x[0])+' <b>'+esc(x[1])+' cm</b></span>').join('')+'</div>'+(m.notes?'<p>'+esc(m.notes)+'</p>':'')+'</article>').join(''):'<div class="fjz3b-empty"><strong>Sin mediciones</strong><span>No hay datos corporales registrados.</span></div>')+'</div></section></div>';
+    if(measurementEditor){const wrap=document.createElement('section');wrap.className='fjz3b-panel fjz3b-measure-editor';wrap.appendChild(measurementEditor);body.appendChild(wrap)}
+    if(photo)body.appendChild(photo);
+  }
   function mount(){
     const identity=currentIdentity();if(!isCoachStudent())return false;resetForIdentity(identity);
     const view=root.document?.getElementById('view');if(!view)return false;
@@ -183,6 +202,7 @@
       body.innerHTML=infoHtml(identity,actions);
       const host=root.document.getElementById('fjz3bAdminActions');if(host&&actions){actions.hidden=false;host.appendChild(actions)}
     }else{
+      shapeLegacySection(body);
       const ctx=document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';ctx.innerHTML='<div class="fjz3b-loading-line"></div>';body.prepend(ctx);
     }
     bind(view);return true;
@@ -202,8 +222,8 @@
   function navigateLegacy(tab){ui.sectionOverride=null;root.__fjzAthlete360NavigateV22?.(tab);return true}
   function navigateSection(section){
     const s=text(section);if(!['summary','training','nutrition','progress','checkins','agenda','info'].includes(s))return false;
-    if(s==='info')ui.sectionOverride='info';else ui.sectionOverride=null;
-    const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'progress',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
+    if(s==='info'||s==='progress')ui.sectionOverride=s;else ui.sectionOverride=null;
+    const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'tracking',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
     root.__fjzAthlete360NavigateV22?.(tab);return true;
   }
   function leave(){const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
