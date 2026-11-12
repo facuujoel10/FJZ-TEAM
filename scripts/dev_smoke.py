@@ -202,12 +202,12 @@ def main():
     assert cross_schedule==[],cross_schedule
 
     own_measurements=rest(api,pub,s1,"GET","body_measurements?select=athlete_id,weight_kg")
-    assert len(own_measurements)==1 and own_measurements[0]["athlete_id"]==a1,own_measurements
+    assert len(own_measurements)>=2 and all(x["athlete_id"]==a1 for x in own_measurements),own_measurements
     cross_measurements=rest(api,pub,s1,"GET","body_measurements?select=id&athlete_id=eq."+a2)
     assert cross_measurements==[],cross_measurements
 
     own_checkins=rest(api,pub,s1,"GET","weekly_checkins?select=id,athlete_id,notes")
-    assert len(own_checkins)==1 and own_checkins[0]["athlete_id"]==a1,own_checkins
+    assert len(own_checkins)>=2 and all(x["athlete_id"]==a1 for x in own_checkins),own_checkins
     cross_checkins=rest(api,pub,s1,"GET","weekly_checkins?select=id&athlete_id=eq."+a2)
     assert cross_checkins==[],cross_checkins
 
