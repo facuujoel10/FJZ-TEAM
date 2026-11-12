@@ -61,7 +61,7 @@ jobs:
         run: python scripts/dev_guard.py
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js
 
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
