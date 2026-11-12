@@ -49,7 +49,7 @@ El Panel Coach previo reunía capacidades maduras pero dispersas: feed operativo
 
 ## 5. Arquitectura de eventos y estados
 
-`src/modules/coach/command-center.js` es una capa de presentación/coordination. Consume las autoridades existentes y reemplaza únicamente `renderCoachDashboardV80` durante el dashboard Coach.
+`src/modules/coach/command-center.js` es una capa de presentación/coordination. Consume las autoridades existentes y publica únicamente `__fjzRenderCoachCommandCenterV22` como autoridad visual de 3A. El bridge `v346_v22_3a_coach_command_center.py` expone de forma acotada el contexto léxico que la app base mantiene privado (`currentProfile`, `coachTab`, `state`, `cloudAthletes` y `supabaseClient`) y modifica sólo el dispatcher Coach activo de V170: cuando `coachTab==='dashboard'` delega en 3A y, fuera de ese caso, conserva `renderCoachDashboardV170` / `baseRenderCoachV170`. No se agrega un wrapper global de `render` ni se duplica estado.
 
 No agrega:
 - otro feed persistente;
@@ -147,7 +147,7 @@ Se preservan las suites certificadas previas y se agregan:
 - ausencia de loading permanente;
 - ausencia de falso OK.
 
-La suite base ya cubre adicionalmente persistencia real del comentario revisado tras refresh y navegación con Supabase local.
+La suite base ya cubre adicionalmente persistencia real del comentario revisado tras refresh y navegación con Supabase local. El baseline heredado fue adaptado para validar la representación agrupada de comentarios de 3A y la nueva acción de Agenda sin eliminar la compatibilidad con las rutas previas; no se relajó la comprobación del comentario exacto ni de la navegación real.
 
 Todos los datos son fixtures `test.local` / nombres `TEST ...`.
 
