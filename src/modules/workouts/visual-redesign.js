@@ -40,6 +40,21 @@ function trimDuplicateNav(view){
   });
 }
 
+function hideWorkoutGlobalNav(view){
+  if(!view||role()==='coach')return;
+  const globalLabels=new Set(['inicio','agenda','check-in','checkin','nutrición','nutricion','progreso','entrenar','historial']);
+  [...view.querySelectorAll('.tabs')].forEach(group=>{
+    const buttons=[...group.querySelectorAll(':scope > .tab, :scope > button.tab')];
+    if(!buttons.length)return;
+    const labels=buttons.map(b=>t(b.textContent).toLowerCase()).filter(Boolean);
+    const globalCount=labels.filter(x=>globalLabels.has(x)).length;
+    if(globalCount<2)return;
+    group.classList.add('v22v2-workout-global-nav');
+    group.hidden=true;group.setAttribute('aria-hidden','true');
+    buttons.forEach(b=>{b.hidden=true;b.setAttribute('aria-hidden','true');b.tabIndex=-1});
+  });
+}
+
 function sessionHeader(view){
   const hero=view.querySelector('.v22-workout-hero,.hero');if(!hero)return null;
   hero.classList.add('v22v-command','v22v2-workout-header','fjz-appbar');
@@ -322,7 +337,7 @@ function enhanceWorkout(root){
   if(!hasDOM())return false;const view=root||document.getElementById('view');
   if(!view||!view.classList.contains('v22-premium-workout'))return false;
   view.classList.add('v22v-performance-shell','v22v-workout-active','v22v2-workout-active');
-  trimDuplicateNav(view);sessionHeader(view);
+  trimDuplicateNav(view);hideWorkoutGlobalNav(view);sessionHeader(view);
   [...view.querySelectorAll('.session-card.v22-premium-exercise')].forEach(exercise);
   const composition=workoutComposition(view);bindWorkoutProgress(view);updateWorkout(view);
   view.dataset.v22ProductExperience='performance-training-v2';
