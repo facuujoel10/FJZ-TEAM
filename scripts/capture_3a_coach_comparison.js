@@ -21,10 +21,10 @@ async function capture(label, baseURL, outDir, current=false) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const page = await context.newPage();
     await login(page, baseURL);
+    if (current) await page.locator('.fjz3a-command-center').waitFor({ state: 'visible', timeout: 20000 });
     await page.screenshot({ path: path.join(outDir, label + '-dashboard-desktop.png'), fullPage: true });
 
     if (current) {
-      await page.locator('.fjz3a-command-center').waitFor({ state: 'visible', timeout: 20000 });
       const group = page.locator('.fjz3a-group-head').first();
       if (await group.count()) {
         await group.click();
