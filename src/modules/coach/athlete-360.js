@@ -36,34 +36,51 @@
   function parseDateOnly(v){const s=text(v).slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null}
   function utcNoon(dateOnly){const [y,m,d]=dateOnly.split('-').map(Number);return new Date(Date.UTC(y,m-1,d,12))}
   function addDate(dateOnly,days){const d=utcNoon(dateOnly);d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)}
-  function mondayWeekday(dateOnly){return (utcNoon(dateOnly).getUTCDay()+6)%7}
+  function sundayWeekday(dateOnly){return utcNoon(dateOnly).getUTCDay()}
   function calendarToday(now=new Date()){
     try{return root.TeamFJZDate?.calendarDate?.(now,TZ)||new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(now)}
     catch(_e){return new Date(now).toISOString().slice(0,10)}
   }
+  function calendarTime(now=new Date()){
+    try{return new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(now)}
+    catch(_e){return '00:00'}
+  }
   function nextWeeklyDate(weekday,today=calendarToday()){
     const wd=Number(weekday);if(!Number.isInteger(wd)||wd<0||wd>6)return null;
-    const delta=(wd-mondayWeekday(today)+7)%7;
+    const delta=(wd-sundayWeekday(today)+7)%7;
     return addDate(today,delta);
   }
-  function nextAgendaItems(data,{today=calendarToday()}={}){
-    const out=[];
+  function nextAgendaItems(data,{today=calendarToday(),currentTime=null}={}){
+    const out=[],nowTime=currentTime==null?(today===calendarToday()?calendarTime():'00:00'):text(currentTime).slice(0,5);
+    const weeklyDate=(weekday,time)=>{
+      let date=nextWeeklyDate(Number(weekday),today);if(!date)return null;
+      const hh=text(time).slice(0,5);if(date===today&&hh&&nowTime&&hh<=nowTime)date=addDate(date,7);
+      return date;
+    };
     for(const r of data?.reminders||[]){
       if(r?.active===false)continue;
       const type=text(r?.schedule_type).toLowerCase();let date=null;
+      const time=text(r.remind_time).slice(0,5);
       if(type==='once')date=parseDateOnly(r?.reminder_date);
-      else if(Number.isInteger(Number(r?.weekday)))date=nextWeeklyDate(Number(r.weekday),today);
-      if(!date||date<today)continue;
-      out.push({id:text(r.id),kind:'reminder',date,time:text(r.remind_time).slice(0,5),title:text(r.title||r.body||'Seguimiento'),body:text(r.body),source:r});
+      else if(Number.isInteger(Number(r?.weekday)))date=weeklyDate(Number(r.weekday),time);
+      if(!date||date<today||(type==='once'&&date===today&&time&&nowTime&&time<=nowTime))continue;
+      out.push({id:text(r.id),kind:'reminder',date,time,title:text(r.title||r.body||'Seguimiento'),body:text(r.body),source:r});
     }
     for(const r of data?.schedule||[]){
       if(r?.active===false)continue;
-      const date=nextWeeklyDate(Number(r?.weekday),today);if(!date||date<today)continue;
-      out.push({id:text(r.id),kind:'schedule',date,time:text(r.start_time).slice(0,5),title:text(r.workout_day_name||'Entrenamiento programado'),body:text(r.notes),source:r});
+      const time=text(r.start_time).slice(0,5),date=weeklyDate(Number(r?.weekday),time);if(!date||date<today)continue;
+      out.push({id:text(r.id),kind:'schedule',date,time,title:text(r.workout_day_name||'Entrenamiento programado'),body:text(r.notes),source:r});
     }
     return out.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)||a.id.localeCompare(b.id));
   }
-  function reviewState(checkin){if(!checkin)return'none';return checkin.reviewed_at?'reviewed':'pending'}
+  function reviewState(checkin){
+    if(!checkin)return'none';
+    try{if(typeof root.__fjzCheckinNeedsReviewV305==='function')return root.__fjzCheckinNeedsReviewV305(checkin)?'pending':'reviewed'}catch(_e){}
+    if(!checkin.reviewed_at)return'pending';
+    const reviewed=Date.parse(checkin.reviewed_at||0),submitted=Date.parse(checkin.submitted_at||0);
+    if(Number.isFinite(submitted)&&(!Number.isFinite(reviewed)||reviewed<submitted))return'pending';
+    return'reviewed';
+  }
   function latestByDate(rows,keys){
     return (Array.isArray(rows)?rows:[]).slice().sort((a,b)=>{
       const av=keys.map(k=>a?.[k]).find(Boolean)||0,bv=keys.map(k=>b?.[k]).find(Boolean)||0;
@@ -108,6 +125,13 @@
   }
   function repositories(){
     const supabase=currentIdentity().supabase;if(!supabase)return{};
+    if(!agendaRepo||!commentRepo){
+      try{
+        const shared=root.TeamFJZCoachCommandCenter?.repositories?.()||{};
+        if(shared.agendaRepo)agendaRepo=shared.agendaRepo;
+        if(shared.commentRepo)commentRepo=shared.commentRepo;
+      }catch(_e){}
+    }
     if(!agendaRepo&&root.TeamFJZAgendaRepository?.createAgendaRepository)agendaRepo=root.TeamFJZAgendaRepository.createAgendaRepository({supabase,ttlMs:15000});
     if(!commentRepo&&root.TeamFJZCommentRepository?.createCommentRepository)commentRepo=root.TeamFJZCommentRepository.createCommentRepository({supabase});
     return {agendaRepo,commentRepo};
