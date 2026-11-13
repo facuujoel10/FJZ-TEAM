@@ -15,7 +15,7 @@ test.describe('V22 3C-UX final Coach experience polish',()=>{
  });
  test('V22 3C-UX section navigation is single, touchable and does not duplicate legacy navigation',async({page})=>{
    await login(page);await openAthlete(page);
-   await expect(page.locator('.fjz3b-nav')).toHaveCount(1);await expect(page.locator('#bottomNav:visible')).toHaveCount(0);
+   await expect(page.locator('.fjz3b-nav')).toHaveCount(1);await expect(page.locator('#bottomNav:visible')).toHaveCount(0);await expect(page.locator('.fjz3a-command-center:visible')).toHaveCount(0);
    const sizes=await page.locator('.fjz3b-nav button').evaluateAll(bs=>bs.map(b=>({w:b.getBoundingClientRect().width,h:b.getBoundingClientRect().height})));
    expect(sizes.every(x=>x.h>=44&&x.w>=44)).toBeTruthy();
    for(const key of ['training','progress','checkins','agenda']){await section(page,key);await expect(page.locator('.fjz3b-section-title')).toBeVisible();await noOverflow(page)}
