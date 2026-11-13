@@ -289,7 +289,7 @@
     const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'tracking',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
     root.__fjzAthlete360NavigateV22?.(tab);return true;
   }
-  function leave(){clearRoute();const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
+  function leave(){clearRoute();const view=root.document?.getElementById('view');if(view)view.classList.remove('fjz3b-mounted');const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
   function commentRow(id){return ui.comments.find(x=>text(x.id)===text(id))||null}
   async function openComment(id){
     const x=commentRow(id);if(!x)return false;
