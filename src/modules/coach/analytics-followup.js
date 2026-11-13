@@ -132,16 +132,18 @@
     queueMicrotask(()=>{try{const selector=name==='progress'?'[data-measurement="'+CSS.escape(text(id))+'"]':'[data-checkin="'+CSS.escape(text(id))+'"]';root.document?.querySelector(selector)?.scrollIntoView?.({block:'center'})}catch(_e){}});
     return true;
   }
-  let bound=false;
+  function handleAction(e){
+    const b=e.target.closest?.('[data-3c-action]');if(!b)return;
+    const a=b.dataset['3cAction'];
+    if(a==='session'||a==='training'){openSession(b.dataset.session||b.dataset.evidence);return}
+    if(a==='comment'){openComment(b.dataset.evidence);return}
+    if(a==='checkin'){openSection('checkins',b.dataset.checkin||b.dataset.evidence);return}
+    if(a==='measurement'||a==='progress'){openSection('progress',b.dataset.measurement||b.dataset.evidence);return}
+  }
   function bind(){
-    if(bound)return;bound=true;
-    root.document?.addEventListener?.('click',e=>{
-      const b=e.target.closest?.('[data-3c-action]');if(!b)return;
-      const a=b.dataset['3cAction'];
-      if(a==='session'||a==='training'){openSession(b.dataset.session||b.dataset.evidence);return}
-      if(a==='comment'){openComment(b.dataset.evidence);return}
-      if(a==='checkin'){openSection('checkins',b.dataset.checkin||b.dataset.evidence);return}
-      if(a==='measurement'||a==='progress'){openSection('progress',b.dataset.measurement||b.dataset.evidence);return}
+    root.document?.querySelectorAll?.('.fjz3c-host').forEach(host=>{
+      if(host.dataset.fjz3cBound==='true')return;
+      host.dataset.fjz3cBound='true';host.onclick=handleAction;
     });
   }
   function install(){
