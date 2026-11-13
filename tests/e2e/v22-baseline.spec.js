@@ -990,14 +990,14 @@ test('2C récords y progresión: comparación verificable, RIR y modalidades inc
 
 test('2C historial y Coach: progreso calculado se presenta sin sustituir prescripción', async ({page},testInfo)=>{
   await login(page,'alumno01@test.local');
+  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
   await page.evaluate(()=>{
     const s=student(),d=s.days[0],e=d.exercises[0],uid=e.uid;
     const prior={id:'qa-2c-history-a',date:'2026-11-08T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[40,10,2]]}]};
     const current={id:'qa-2c-history-b',date:'2026-11-09T10:00:00Z',dayId:d.id,dayName:d.name,status:'completed',confirmed:true,cloudConfirmed:true,exerciseResults:[{exerciseUid:uid,exerciseName:e.name,sets:[[42.5,10,2]]}]};
     s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-history-')).concat([prior,current]);
-    saveState();
+    saveState();render();
   });
-  await page.getByRole('button',{name:'Historial'}).filter({visible:true}).first().click();
   const row=page.locator('.v22v2-history-session[data-session-id="qa-2c-history-b"]');
   await expect(row).toBeVisible();await row.locator('.v22v2-history-open').click();
   const historyMetrics=page.locator('#modal .v244-summary-grid strong');
