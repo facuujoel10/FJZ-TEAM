@@ -106,7 +106,12 @@
   function renderAthlete(){
     const c=context(),s=state();if(c.profile?.role!=='coach'||c.coachTab!=='student'||!c.student)return false;
     const summary=root.document?.getElementById('fjz3bSummary');
-    if(summary){const h=ensureHost(summary.querySelector('.fjz3b-action-card')||summary,'fjz3cPriorityHost');if(h)renderPriorities(h,c.student,s.tracking,s.comments||[])}
+    if(summary){
+      const anchor=summary.querySelector('.fjz3b-action-card')||summary;
+      const h=ensureHost(anchor,'fjz3cPriorityHost');
+      if(h&&anchor!==summary&&h.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',h);
+      if(h)renderPriorities(h,c.student,s.tracking,s.comments||[]);
+    }
     const section=root.document?.querySelector('.fjz3b-section-title h2')?.textContent||'';
     if(/Entrenamiento/i.test(section)){const anchor=root.document?.getElementById('fjz3bSectionContext');const h=ensureHost(anchor,'fjz3cTrainingHost');if(h)renderTraining(h,c.student)}
     if(/Progreso/i.test(section)){const anchor=root.document?.getElementById('fjz3bSectionContext');const h=ensureHost(anchor,'fjz3cMeasurementsHost');if(h)renderMeasurements(h,s.tracking)}
