@@ -292,10 +292,15 @@
       if(action==='retry'){await hydrate(true);return}
     };
   }
-  function navigateLegacy(tab){ui.sectionOverride=null;root.__fjzAthlete360NavigateV22?.(tab);return true}
+  function clearSummaryPresentation(){
+    const body=root.document?.getElementById('coachStudentBody');
+    if(body)body.classList.remove('fjz3b-summary-body');
+  }
+  function navigateLegacy(tab){ui.sectionOverride=null;clearSummaryPresentation();root.__fjzAthlete360NavigateV22?.(tab);return true}
   function navigateSection(section){
     const s=text(section);if(!['summary','training','nutrition','progress','checkins','agenda','info'].includes(s))return false;
     if(s==='info'||s==='progress')ui.sectionOverride=s;else ui.sectionOverride=null;
+    if(s!=='summary')clearSummaryPresentation();
     const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'tracking',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
     root.__fjzAthlete360NavigateV22?.(tab);return true;
   }
@@ -423,6 +428,7 @@
   function render(){
     if(!isCoachStudent())return false;
     const identity=currentIdentity();resetForIdentity(identity);
+    if(activeSection()!=='summary')clearSummaryPresentation();
     const rendered=root.__fjzRenderLegacyCoachStudentV22?.();
     mount();queueMicrotask(()=>hydrate(false));return rendered===undefined?true:rendered;
   }
