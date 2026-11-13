@@ -87,13 +87,13 @@
   function renderMeasurements(host,tracking){
     const metrics=measurementTimeline(tracking?.measurements||[]),key=metrics.find(x=>x.key==='weight_kg')||metrics[0];
     host.innerHTML='<section class="fjz3c-panel"><div class="fjz3c-head"><div><span>SEGUIMIENTO CORPORAL</span><h3>Registros históricos</h3><p>Datos observados. Los cambios no se etiquetan automáticamente como positivos o negativos.</p></div></div>'+
-      (key?'<div class="fjz3c-feature"><div><span>'+esc(key.label)+'</span><strong>'+esc(key.latest.value)+' '+key.unit+'</strong><small>'+esc(deltaText(key.delta,key.unit))+'</small></div>'+spark(key.points,{min:Math.min(...key.points.map(p=>p.value)),max:Math.max(...key.points.map(p=>p.value))})+'</div>':'')+
-      '<div class="fjz3c-metric-grid">'+metrics.slice(0,8).map(m=>'<button data-3c-action="measurement" data-measurement="'+esc(m.latest.id)+'"><span>'+esc(m.label)+'</span><strong>'+esc(m.latest.value)+' '+m.unit+'</strong><small>'+esc(deltaText(m.delta,m.unit))+'</small></button>').join('')+'</div></section>';
+      (key?'<div class="fjz3c-feature"><div><span>'+esc(key.label)+'</span><strong>'+esc(key.latest.value)+' '+key.unit+'</strong><small>'+esc(deltaText(key.delta,key.unit))+'</small><time>'+esc(fmtDate(key.latest.date))+'</time></div>'+spark(key.points,{min:Math.min(...key.points.map(p=>p.value)),max:Math.max(...key.points.map(p=>p.value))})+'</div>':'')+
+      '<div class="fjz3c-metric-grid">'+metrics.slice(0,8).map(m=>'<button data-3c-action="measurement" data-measurement="'+esc(m.latest.id)+'"><span>'+esc(m.label)+'</span><strong>'+esc(m.latest.value)+' '+m.unit+'</strong><small>'+esc(deltaText(m.delta,m.unit))+'</small><time>'+esc(fmtDate(m.latest.date))+'</time></button>').join('')+'</div></section>';
   }
   function renderCheckins(host,tracking){
     const rows=checkinTimeline(tracking?.checkins||[]);
     host.innerHTML='<section class="fjz3c-panel"><div class="fjz3c-head"><div><span>RECUPERACIÓN Y CHECK-INS</span><h3>Comparación cronológica</h3><p>Cada escala mantiene su significado original. No se combinan en un score inventado.</p></div></div>'+
-      (rows.length?'<div class="fjz3c-check-grid">'+rows.slice(0,8).map(m=>'<button data-3c-action="checkin" data-checkin="'+esc(m.latest.id)+'"><div><span>'+esc(m.label)+'</span><strong>'+esc(m.latest.value)+'/10</strong><small>'+esc(deltaText(m.delta,''))+'</small></div>'+spark(m.points,{min:1,max:10})+'</button>').join('')+'</div>':'<div class="fjz3c-empty"><strong>Sin check-ins suficientes</strong><span>No se muestra tendencia sin registros observados.</span></div>')+'</section>';
+      (rows.length?'<div class="fjz3c-check-grid">'+rows.slice(0,8).map(m=>'<button data-3c-action="checkin" data-checkin="'+esc(m.latest.id)+'"><div><span>'+esc(m.label)+'</span><strong>'+esc(m.latest.value)+'/10</strong><small>'+esc(deltaText(m.delta,''))+'</small><time>'+esc(fmtDate(m.latest.date))+'</time></div>'+spark(m.points,{min:1,max:10})+'</button>').join('')+'</div>':'<div class="fjz3c-empty"><strong>Sin check-ins suficientes</strong><span>No se muestra tendencia sin registros observados.</span></div>')+'</section>';
   }
   function renderPriorities(host,student,tracking,comments){
     const rows=priorityReasons({comments,checkins:tracking?.checkins||[],sessions:student?.sessions||[]});

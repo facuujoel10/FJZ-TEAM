@@ -262,7 +262,9 @@
     }else{
       if(activeSection()!=='progress'||ui.tracking!==null)shapeLegacySection(body);
     }
-    bind(view);return true;
+    bind(view);
+    try{root.scrollTo?.({top:0,left:0,behavior:'auto'});if(root.document?.scrollingElement)root.document.scrollingElement.scrollTop=0}catch(_e){}
+    return true;
   }
   function bind(view){
     view.onclick=async e=>{
