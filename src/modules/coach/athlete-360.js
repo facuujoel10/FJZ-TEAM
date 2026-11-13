@@ -250,6 +250,7 @@
     const main=document.createElement('main');main.className='fjz3b-main';
     const title=document.createElement('div');title.className='fjz3b-section-title';title.innerHTML='<div><span>PERFIL 360</span><h2>'+esc(sectionLabel(activeSection()))+'</h2></div>'+trainingSubnav();
     main.appendChild(title);
+    if(!['summary','info'].includes(activeSection())){const ctx=document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';ctx.innerHTML='<div class="fjz3b-loading-line"></div>';main.appendChild(ctx)}
     if(activeSection()==='progress'){const progress=document.createElement('div');progress.id='fjz3bProgressPanel';progress.className='fjz3b-progress-authority';main.appendChild(progress)}
     main.appendChild(body);layout.appendChild(nav);layout.appendChild(main);view.appendChild(layout);
     if(activeSection()==='summary')body.innerHTML=summarySkeleton();
@@ -258,7 +259,6 @@
       const host=root.document.getElementById('fjz3bAdminActions');if(host&&actions){actions.hidden=false;host.appendChild(actions)}
     }else{
       if(activeSection()!=='progress'||ui.tracking!==null)shapeLegacySection(body);
-      const ctx=document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';ctx.innerHTML='<div class="fjz3b-loading-line"></div>';body.prepend(ctx);
     }
     bind(view);return true;
   }
@@ -308,6 +308,7 @@
       }
       if(!ok)throw new Error('El servidor no confirmó el OK.');
       resolvedCommentIds.add(fid);ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==fid);
+      button?.closest?.('.fjz3b-comment')?.remove?.();
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
       renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);
       return true;
@@ -342,7 +343,12 @@
     if(!body||section==='summary'||section==='info')return;
     shapeLegacySection(body);
     let ctx=root.document?.getElementById('fjz3bSectionContext');
-    if(!ctx){ctx=root.document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';body.prepend(ctx)}
+    if(!ctx){
+      const main=root.document?.querySelector('.fjz3b-main');if(!main)return;
+      ctx=root.document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';
+      const progress=root.document?.getElementById('fjz3bProgressPanel');
+      if(progress)main.insertBefore(ctx,progress);else main.insertBefore(ctx,body);
+    }
   }
   function renderProgressPanel(){
     const host=root.document?.getElementById('fjz3bProgressPanel');if(!host)return;
