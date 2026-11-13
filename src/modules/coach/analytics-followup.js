@@ -154,7 +154,13 @@
       try{previousAfterHydrate?.(payload)}catch(_e){}
       try{renderAthlete()}catch(_e){}
     };
+    const previousAfterCommandRender=root.__fjzAfterCoachCommandCenterRenderV22;
+    root.__fjzAfterCoachCommandCenterRenderV22=function(){
+      try{previousAfterCommandRender?.()}catch(_e){}
+      try{renderDashboard()}catch(_e){}
+    };
     bind();
+    queueMicrotask(()=>{try{renderDashboard()}catch(_e){}try{renderAthlete()}catch(_e){}});
     return true;
   }
   return Object.freeze({VERSION,confirmedSessions,exerciseSeries,measurementTimeline,checkinTimeline,priorityReasons,renderAthlete,renderDashboard,openSession,install});
