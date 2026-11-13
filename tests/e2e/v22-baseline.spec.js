@@ -1081,6 +1081,9 @@ test('2C Coach: historial conserva progreso verificable y comentarios exactos', 
   await page.evaluate(async()=>{
     try{await window.__fjzHydrateCoachCommandCenterV22?.(true)}catch(_e){}
   });
+  const row=page.locator('.student-row',{hasText:'TEST ALUMNO 01'});
+  await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
+  await expect(page.locator('.fjz3b-header')).toBeVisible();
   await page.evaluate(()=>{
     const s=(window.students||[]).find(x=>String(x?.name||'').includes('TEST ALUMNO 01'))||student();
     const d=s.days[0],e=d.exercises[0],uid=e.uid;
@@ -1091,8 +1094,7 @@ test('2C Coach: historial conserva progreso verificable y comentarios exactos', 
     s.sessions=(s.sessions||[]).filter(x=>!String(x.id||'').startsWith('qa-2c-coach-')).concat(rows);
     saveState();render();
   });
-  const row=page.locator('.student-row',{hasText:'TEST ALUMNO 01'});
-  await expect(row).toBeVisible();await row.getByRole('button',{name:/Abrir/i}).click();
+  await expect(page.locator('.fjz3b-header')).toBeVisible();
   const modernTraining=page.locator('.fjz3b-nav button[data-section="training"]');
   if(await modernTraining.isVisible().catch(()=>false)){
     await modernTraining.click();
