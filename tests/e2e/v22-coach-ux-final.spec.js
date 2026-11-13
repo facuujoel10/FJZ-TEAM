@@ -10,8 +10,15 @@ test.describe('V22 3C-UX final Coach experience polish',()=>{
    const header=page.locator('.fjz3b-header'),decision=page.locator('.fjz3b-action-card'),priority=page.locator('#fjz3cPriorityHost');
    await expect(header).toContainText('TEST ALUMNO 01');await expect(decision).toBeVisible();await expect(priority).toContainText(/Qué revisar primero/i);
    await expect(page.locator('.fjz3b-header')).toHaveCount(1);await expect(page.locator('.fjz3b-layout')).toHaveCount(1);await expect(page.locator('#coachStudentBody')).toHaveCount(1);await expect(page.locator('#fjz3cPriorityHost')).toHaveCount(1);
-   const boxes=await page.evaluate(()=>{const q=s=>document.querySelector(s)?.getBoundingClientRect();const h=q('.fjz3b-header'),d=q('#fjz3bSummary > .fjz3b-action-card'),p=q('#fjz3bSummary > #fjz3cPriorityHost');return{h:h&&{top:h.top,bottom:h.bottom},d:d&&{top:d.top,bottom:d.bottom},p:p&&{top:p.top,bottom:p.bottom},vh:innerHeight}});
-   expect(boxes.h.top).toBeLessThan(boxes.d.top);expect(boxes.d.top).toBeLessThan(boxes.p.top);expect(boxes.p.top).toBeLessThan(boxes.vh);
+   const boxes=await page.evaluate(()=>{
+     const rect=s=>{const el=document.querySelector(s);if(!el)return null;const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{top:r.top,bottom:r.bottom,left:r.left,width:r.width,height:r.height,display:cs.display,position:cs.position,marginTop:cs.marginTop,marginBottom:cs.marginBottom,paddingTop:cs.paddingTop,paddingBottom:cs.paddingBottom,transform:cs.transform}};
+     const view=document.querySelector('#view');
+     return{scrollY,scrollX,docH:document.documentElement.scrollHeight,bodyH:document.body.scrollHeight,vh:innerHeight,
+       view:rect('#view'),header:rect('.fjz3b-header'),hero:rect('.fjz3b-legacy-hero'),layout:rect('.fjz3b-layout'),nav:rect('.fjz3b-nav-wrap'),main:rect('.fjz3b-main'),title:rect('.fjz3b-section-title'),body:rect('#coachStudentBody'),summary:rect('#fjz3bSummary'),decision:rect('#fjz3bSummary > .fjz3b-action-card'),priority:rect('#fjz3bSummary > #fjz3cPriorityHost'),
+       viewChildren:view?[...view.children].map(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{tag:el.tagName,id:el.id,cls:el.className,top:r.top,height:r.height,display:cs.display,position:cs.position}}):[]};
+   });
+   console.log('FJZ3CUX_GEOMETRY '+JSON.stringify(boxes));
+   expect(boxes.header.top).toBeLessThan(boxes.decision.top);expect(boxes.decision.top).toBeLessThan(boxes.priority.top);expect(boxes.priority.top).toBeLessThan(boxes.vh);
    await noOverflow(page);
  });
  test('V22 3C-UX section navigation is single, touchable and does not duplicate legacy navigation',async({page})=>{
