@@ -114,7 +114,7 @@
     bind();return true;
   }
   function renderDashboard(){
-    const c=root.__fjzCoachCommandCenterContextV22?.()||{};if(c.profile?.role!=='coach'||c.coachTab!=='dashboard')return false;
+    const c=root.__fjzCoachContextV22?.()||{};if(c.profile?.role!=='coach'||c.coachTab!=='dashboard')return false;
     const host=root.document?.querySelector('.fjz3a-command-center');if(!host)return false;
     let badge=host.querySelector('.fjz3c-dashboard-note');if(!badge){badge=root.document.createElement('div');badge.className='fjz3c-dashboard-note';badge.innerHTML='<strong>3C · Evidencia primero</strong><span>Las prioridades abren el registro que las justifica; no se usan scores opacos.</span>';host.querySelector('.fjz3a-main')?.prepend(badge)}return true;
   }
@@ -148,7 +148,13 @@
   }
   function install(){
     if(root.__fjzCoachAnalyticsInstalledV22)return true;
-    root.__fjzCoachAnalyticsInstalledV22=true;bind();
+    root.__fjzCoachAnalyticsInstalledV22=true;
+    const previousAfterHydrate=root.__fjzAfterAthlete360HydrateV22;
+    root.__fjzAfterAthlete360HydrateV22=function(payload){
+      try{previousAfterHydrate?.(payload)}catch(_e){}
+      try{renderAthlete()}catch(_e){}
+    };
+    bind();
     return true;
   }
   return Object.freeze({VERSION,confirmedSessions,exerciseSeries,measurementTimeline,checkinTimeline,priorityReasons,renderAthlete,renderDashboard,openSession,install});
