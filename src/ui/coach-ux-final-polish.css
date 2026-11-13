@@ -6,6 +6,7 @@
 #view.fjz3b-mounted>.fjz3b-header{display:grid!important}
 #view.fjz3b-mounted>.fjz3b-layout{width:100%;min-width:0}
 #view.fjz3b-mounted #coachStudentBody{display:block!important;width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;align-items:stretch!important;justify-content:flex-start!important}
+#view.fjz3b-mounted #coachStudentBody.fjz3b-summary-body>:not(#fjz3bSummary){display:none!important}
 .fjz3b-header{padding:16px 18px;gap:12px;border-radius:20px;background:linear-gradient(120deg,rgba(255,38,57,.09),transparent 36%),#0d0f13}
 .fjz3b-back,.fjz3b-info-shortcut{min-height:var(--fjz-coach-touch);font-size:11px}
 .fjz3b-product{font-size:9px}
