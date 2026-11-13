@@ -9,7 +9,8 @@ test.describe('V22 3C-UX final Coach experience polish',()=>{
    await login(page);await openAthlete(page);
    const header=page.locator('.fjz3b-header'),decision=page.locator('.fjz3b-action-card'),priority=page.locator('#fjz3cPriorityHost');
    await expect(header).toContainText('TEST ALUMNO 01');await expect(decision).toBeVisible();await expect(priority).toContainText(/Qué revisar primero/i);
-   const boxes=await page.evaluate(()=>{const q=s=>document.querySelector(s)?.getBoundingClientRect();const h=q('.fjz3b-header'),d=q('.fjz3b-action-card'),p=q('#fjz3cPriorityHost');return{h:h&&{top:h.top,bottom:h.bottom},d:d&&{top:d.top,bottom:d.bottom},p:p&&{top:p.top,bottom:p.bottom},vh:innerHeight}});
+   await expect(page.locator('.fjz3b-header')).toHaveCount(1);await expect(page.locator('.fjz3b-layout')).toHaveCount(1);await expect(page.locator('#coachStudentBody')).toHaveCount(1);await expect(page.locator('#fjz3cPriorityHost')).toHaveCount(1);
+   const boxes=await page.evaluate(()=>{const q=s=>document.querySelector(s)?.getBoundingClientRect();const h=q('.fjz3b-header'),d=q('#fjz3bSummary > .fjz3b-action-card'),p=q('#fjz3bSummary > #fjz3cPriorityHost');return{h:h&&{top:h.top,bottom:h.bottom},d:d&&{top:d.top,bottom:d.bottom},p:p&&{top:p.top,bottom:p.bottom},vh:innerHeight}});
    expect(boxes.h.top).toBeLessThan(boxes.d.top);expect(boxes.d.top).toBeLessThan(boxes.p.top);expect(boxes.p.top).toBeLessThan(boxes.vh);
    await noOverflow(page);
  });
