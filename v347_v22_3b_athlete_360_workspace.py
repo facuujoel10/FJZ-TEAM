@@ -167,3 +167,28 @@ if re.search(r'\b(?:window\.)?render\s*=\s*function|const\s+_render\w*\s*=\s*ren
     raise RuntimeError("V22 3C must not add a global render wrapper")
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V22 3C Coach Analytics injected",len(html))
+
+
+# V22 Etapa 3C-UX final Coach experience polish. CSS-only presentation layer.
+p=pathlib.Path("public/index.html")
+html=p.read_text(encoding="utf-8")
+for marker in [
+ 'meta name="fjz-coach-analytics-followup" content="22.3C"',
+ 'meta name="fjz-athlete-360-workspace" content="22.3B"',
+ 'id="v22CoachAnalyticsRuntime"'
+]:
+    if marker not in html: raise RuntimeError("V22 3C-UX prerequisite missing: "+marker)
+cssux=pathlib.Path("src/ui/coach-ux-final-polish.css").read_text(encoding="utf-8")
+styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
+if len(styles)!=1: raise RuntimeError("V22 3C-UX expected one consolidated stylesheet")
+sm=styles[0]
+html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+cssux+"\n"+html[sm.end("body"):]
+html=html.replace("</head>",'<meta name="fjz-coach-ux-final-polish" content="22.3C-UX">\n</head>',1)
+for marker in [
+ 'meta name="fjz-coach-ux-final-polish" content="22.3C-UX"',
+ 'meta name="fjz-coach-analytics-followup" content="22.3C"',
+ 'id="v22CoachAnalyticsRuntime"'
+]:
+    if marker not in html: raise RuntimeError("V22 3C-UX output marker missing: "+marker)
+p.write_text(html,encoding="utf-8")
+print("TEAM FJZ V22 3C-UX final Coach polish injected",len(html))

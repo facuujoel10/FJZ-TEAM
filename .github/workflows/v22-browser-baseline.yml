@@ -165,6 +165,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Checkout certified V22 3C visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: db0f7e5bd3703c73ebc9a0b0e1abe8ad3b080002
+          path: visual_refs/v22-3c
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Build isolated visual references against local Supabase
         run: |
           python scripts/dev_build_visual_reference.py visual_refs/v2141
@@ -172,6 +180,7 @@ jobs:
           python scripts/dev_build_visual_reference.py visual_refs/v22-pre3a
           python scripts/dev_build_visual_reference.py visual_refs/v22-pre3b
           python scripts/dev_build_visual_reference.py visual_refs/v22-3b
+          python scripts/dev_build_visual_reference.py visual_refs/v22-3c
 
       - name: Start isolated visual reference servers
         shell: bash
@@ -182,7 +191,8 @@ jobs:
           python -m http.server 8003 -d visual_refs/v22-pre3a/public > /tmp/fjz-v22-pre3a-http.log 2>&1 &
           python -m http.server 8004 -d visual_refs/v22-pre3b/public > /tmp/fjz-v22-pre3b-http.log 2>&1 &
           python -m http.server 8005 -d visual_refs/v22-3b/public > /tmp/fjz-v22-3b-http.log 2>&1 &
-          for port in 8001 8002 8003 8004 8005; do
+          python -m http.server 8006 -d visual_refs/v22-3c/public > /tmp/fjz-v22-3c-http.log 2>&1 &
+          for port in 8001 8002 8003 8004 8005 8006; do
             for i in {1..20}; do
               curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
               sleep 1
@@ -232,6 +242,13 @@ jobs:
           python scripts/dev_reset.py
           node scripts/capture_3c_coach_analytics.js artifacts/3c-comparison http://127.0.0.1:8000 http://127.0.0.1:8005
 
+      - name: Capture Coach 3C vs 3C-UX final polish
+        env:
+          FJZ_E2E_PASSWORD: TEAMFJZ-Local-Only!22
+        run: |
+          python scripts/dev_reset.py
+          node scripts/capture_3c_ux_final.js artifacts/3c-ux-comparison http://127.0.0.1:8000 http://127.0.0.1:8006
+
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -249,6 +266,7 @@ jobs:
             artifacts/3a-comparison
             artifacts/3b-comparison
             artifacts/3c-comparison
+            artifacts/3c-ux-comparison
           if-no-files-found: ignore
           retention-days: 14
 
@@ -267,6 +285,15 @@ jobs:
         with:
           name: v22-3c-coach-analytics-screens
           path: artifacts/3c-comparison
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Coach 3C-UX final visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-3c-ux-final-polish-screens
+          path: artifacts/3c-ux-comparison
           if-no-files-found: ignore
           retention-days: 14
 

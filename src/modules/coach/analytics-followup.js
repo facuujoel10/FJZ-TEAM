@@ -71,7 +71,7 @@
     if(!points||points.length<2)return'';
     const w=180,h=54,pad=5,vals=points.map(p=>p.value),lo=Math.min(min,...vals),hi=Math.max(max,...vals),span=(hi-lo)||1;
     const d=points.map((p,i)=>{const x=pad+(w-pad*2)*(i/Math.max(1,points.length-1)),y=h-pad-(h-pad*2)*((p.value-lo)/span);return (i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}).join(' ');
-    return '<svg class="fjz3c-spark" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Evolución observada"><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    return '<svg class="fjz3c-spark" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Evolución observada · '+points.length+' registros"><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   }
   function deltaText(delta,unit=''){
     if(delta===null||!Number.isFinite(delta))return'Falta un registro comparable';
