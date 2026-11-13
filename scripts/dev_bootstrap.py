@@ -74,13 +74,13 @@ def main():
     history={"id":"dev_session_history_01","date":"2026-01-10T15:00:00.000Z","dayId":"dev_day_01",
              "dayName":"Día QA A","cloudConfirmed":True,"summary":{"up":1,"hold":1,"review":0,"totalSets":6},
              "exerciseResults":[
-               {"exerciseUid":"dev_ex_press","name":"Press QA","sets":[[20,10,2],[20,9,2],[20,8,1]],
+               {"exerciseUid":"dev_ex_press","name":"Press QA","sets":[[15,10,2],[15,9,2],[15,8,1]],
                 "recommendation":{"type":"hold","title":"Mantener","copy":"Fixture QA"}}
              ]}
     history2={"id":"dev_session_history_02","date":"2026-11-10T15:00:00.000Z","dayId":"dev_day_01",
               "dayName":"Día QA A","cloudConfirmed":True,"summary":{"up":1,"hold":0,"review":0,"totalSets":6},
               "exerciseResults":[
-                {"exerciseUid":"dev_ex_press","exerciseName":"Press QA","name":"Press QA","sets":[[22.5,10,2],[22.5,9,2],[22.5,8,1]],
+                {"exerciseUid":"dev_ex_press","exerciseName":"Press QA","name":"Press QA","sets":[[17.5,10,2],[17.5,9,2],[17.5,8,1]],
                  "recommendation":{"type":"up","title":"Progresión QA","copy":"Fixture QA 3B"}},
                 {"exerciseUid":"dev_ex_row","exerciseName":"Remo QA","name":"Remo QA","sets":[[30,12,2],[30,11,2],[30,10,1]],
                  "recommendation":{"type":"hold","title":"Mantener","copy":"Fixture QA 3B"}}

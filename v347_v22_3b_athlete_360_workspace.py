@@ -16,6 +16,7 @@ css=pathlib.Path("src/ui/athlete-360.css").read_text(encoding="utf-8")
 if "</script" in js.lower(): raise RuntimeError("V22 3B module contains closing script markup")
 active="""window.__fjzRenderLegacyCoachStudentV22=function(){return baseRenderCoachV170.apply(this,arguments);};
   window.renderCoach=function(){
+    if(coachTab==='dashboard'&&typeof window.__fjzAthlete360ResumeRouteV22==='function'&&window.__fjzAthlete360ResumeRouteV22()&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
     if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')return window.__fjzRenderCoachCommandCenterV22();
     if(coachTab==='dashboard')return renderCoachDashboardV170();
     if(coachTab==='student'&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
@@ -39,13 +40,21 @@ window.__fjzAthlete360ContextV22=function(){
   const athlete=s?.id?cloudAthletes?.get?.(s.id)||null:null;
   return {profile:currentProfile,coachTab:coachTab,coachStudentTab:coachStudentTab,selectedStudentId:state?.selectedStudentId||'',student:s,athlete:athlete,supabase:supabaseClient};
 };
+window.__fjzAthlete360ResumeRouteV22=function(){
+  if(currentProfile?.role!=='coach'||coachTab!=='dashboard')return false;
+  let route=null;try{route=JSON.parse(sessionStorage.getItem('team-fjz-v22-athlete360-route')||'null')}catch(_e){}
+  const sid=String(route?.studentId||''),target=(state?.students||[]).find(x=>String(x?.id||'')===sid);
+  if(!sid||!target)return false;
+  state.selectedStudentId=target.id;saveState();
+  coachStudentTab=String(route?.tab||'summary');coachTab='student';return true;
+};
 window.__fjzAthlete360NavigateV22=function(tab){
   coachStudentTab=tab||'summary';render();return true;
 };
 window.__fjzAthlete360ReturnV22=function(){
   coachTab='dashboard';render();return true;
 };
-window.__fjzAthlete360LoadLegacyDataV22=async function(expectedStudentId){
+window.__fjzAthlete360LoadLegacyDataV22=async function(expectedStudentId,forceRead){
   const cloneV22=x=>{try{return JSON.parse(JSON.stringify(x))}catch(_e){return x}};
   const current=()=>{try{return student()}catch(_e){return null}};
   const s=current();
@@ -53,12 +62,13 @@ window.__fjzAthlete360LoadLegacyDataV22=async function(expectedStudentId){
   const jobs=[];
   try{
     const aid=typeof trackingAthleteId==='function'?trackingAthleteId():null;
-    if(aid&&typeof loadTracking==='function'&&(typeof trackingLoadedFor==='undefined'||trackingLoadedFor!==aid))jobs.push(loadTracking(false));
+    const ready=aid&&typeof trackingLoadedFor!=='undefined'&&trackingLoadedFor===aid&&typeof trackingCache!=='undefined'&&trackingCache&&Array.isArray(trackingCache.measurements)&&Array.isArray(trackingCache.checkins);
+    if(aid&&typeof loadTracking==='function'&&(forceRead||!ready))jobs.push(loadTracking(false));
   }catch(_e){}
   try{
     const aid=typeof nutritionAthleteId==='function'?nutritionAthleteId():null;
-    const ready=aid&&typeof nutritionLoadedAthlete!=='undefined'&&nutritionLoadedAthlete===aid&&typeof nutritionFoodsLoaded!=='undefined'&&nutritionFoodsLoaded===true;
-    if(aid&&!ready&&typeof loadNutrition==='function')jobs.push(loadNutrition(false,typeof dateInputToday==='function'?dateInputToday():undefined));
+    const ready=aid&&typeof nutritionLoadedAthlete!=='undefined'&&nutritionLoadedAthlete===aid&&typeof nutritionFoodsLoaded!=='undefined'&&nutritionFoodsLoaded===true&&typeof nutritionCache!=='undefined'&&nutritionCache;
+    if(aid&&(forceRead||!ready)&&typeof loadNutrition==='function')jobs.push(loadNutrition(false,typeof dateInputToday==='function'?dateInputToday():undefined));
   }catch(_e){}
   await Promise.allSettled(jobs);
   const after=current();
@@ -75,7 +85,7 @@ if "</body>" not in html: raise RuntimeError("V22 3B body anchor missing")
 html=html.replace("</body>",runtime+"</body>",1)
 markers=[
  'meta name="fjz-athlete-360-workspace" content="22.3B"','id="v22Athlete360AuthorityBridge"','id="v22Athlete360Runtime"',
- "VERSION='22.3B'","__fjzRenderLegacyCoachStudentV22","__fjzRenderAthlete360V22","__fjzAthlete360LoadLegacyDataV22",
+ "VERSION='22.3B'","__fjzRenderLegacyCoachStudentV22","__fjzRenderAthlete360V22","__fjzAthlete360LoadLegacyDataV22","__fjzAthlete360ResumeRouteV22",
  "if(coachTab==='student'&&typeof window.__fjzRenderAthlete360V22==='function')",
  'cloudConfirmationBeforeSuccess:true','meta name="fjz-mobile-workout-stability" content="21.41"',
  "firstReviewCardsDisabledV327:true","sessionSuccessRequiresDoubleVerification:true"

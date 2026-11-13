@@ -6,6 +6,7 @@
   'use strict';
   const VERSION='22.3B';
   const TZ='America/Argentina/Buenos_Aires';
+  const ROUTE_KEY='team-fjz-v22-athlete360-route';
   const ui={
     studentId:'',athleteId:'',sectionOverride:null,loading:false,error:null,
     comments:[],agenda:[],tracking:null,nutrition:null,loadedAt:0,loadedAthleteId:'',
@@ -16,6 +17,21 @@
   function text(v){return String(v??'').trim()}
   function esc(v){return text(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
   function clone(v){try{return JSON.parse(JSON.stringify(v))}catch(_e){return v}}
+  function readRoute(){
+    try{
+      const raw=root.sessionStorage?.getItem?.(ROUTE_KEY);if(!raw)return null;
+      const x=JSON.parse(raw),section=text(x?.section),studentId=text(x?.studentId),tab=text(x?.tab);
+      if(!studentId||!['summary','training','nutrition','progress','checkins','agenda','info'].includes(section))return null;
+      return {studentId,section,tab:tab||'summary'};
+    }catch(_e){return null}
+  }
+  function rememberRoute(identity=currentIdentity()){
+    try{
+      const studentId=text(identity?.studentId),section=activeSection(),tab=text(identity?.coachStudentTab||'summary');
+      if(studentId)root.sessionStorage?.setItem?.(ROUTE_KEY,JSON.stringify({studentId,section,tab}));
+    }catch(_e){}
+  }
+  function clearRoute(){try{root.sessionStorage?.removeItem?.(ROUTE_KEY)}catch(_e){}}
   function context(){try{return root.__fjzAthlete360ContextV22?.()||{}}catch(_e){return{}}}
   function currentIdentity(){
     const c=context(),s=c.student||null,a=c.athlete||null;
@@ -160,6 +176,7 @@
     const identityBox=document.createElement('div');identityBox.className='fjz3b-identity';
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
+      hero.querySelector('.v266-profile-kicker')?.remove();
       const info=hero.querySelector('.v175-coach-profile-info');
       if(info&&goal){
         const p=info.querySelector('p');if(p)p.textContent=goal;
@@ -206,6 +223,7 @@
     const identity=currentIdentity();if(!isCoachStudent())return false;resetForIdentity(identity);
     const view=root.document?.getElementById('view');if(!view)return false;
     view.classList.add('fjz3b-mounted');
+    rememberRoute(identity);
     const legacyNav=root.document?.getElementById('bottomNav');if(legacyNav)legacyNav.classList.add('fjz3b-hide-legacy-nav');
     const hero=view.querySelector('.v175-coach-profile-hero,.hero');
     const actions=hero?.querySelector('.v175-coach-profile-actions,.pill-row')||null;
@@ -226,7 +244,7 @@
       body.innerHTML=infoHtml(identity,actions);
       const host=root.document.getElementById('fjz3bAdminActions');if(host&&actions){actions.hidden=false;host.appendChild(actions)}
     }else{
-      shapeLegacySection(body);
+      if(activeSection()!=='progress'||ui.tracking!==null)shapeLegacySection(body);
       const ctx=document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';ctx.innerHTML='<div class="fjz3b-loading-line"></div>';body.prepend(ctx);
     }
     bind(view);return true;
@@ -250,7 +268,7 @@
     const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'tracking',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
     root.__fjzAthlete360NavigateV22?.(tab);return true;
   }
-  function leave(){const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
+  function leave(){clearRoute();const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
   function commentRow(id){return ui.comments.find(x=>text(x.id)===text(id))||null}
   async function openComment(id){
     const x=commentRow(id);if(!x)return false;
@@ -264,8 +282,13 @@
     if(button){button.disabled=true;button.textContent='Guardando…'}
     try{
       const ok=await root.__fjzAckTrainingCommentV329?.(ui.studentId,text(x.session_id),'exercise',text(x.id),text(x.exercise_uid));
-      if(ok===false||ok==null)throw new Error('El servidor no confirmó el OK.');
-      await hydrate(true);return true;
+      if(ok!==true)throw new Error('El servidor no confirmó el OK.');
+      const repo=repositories().commentRepo,confirmed=repo?await repo.getById(text(x.id)):null;
+      if(!confirmed?.row||text(confirmed.row.status)!=='reviewed')throw new Error('El servidor no confirmó el estado revisado.');
+      ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==text(x.id));
+      const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
+      renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);
+      await Promise.resolve();await hydrate(true);return true;
     }catch(err){root.toast?.(text(err?.message||'No se pudo guardar el OK.'));if(button){button.disabled=false;button.textContent=old}return false}
   }
   function renderHeader(summary){
@@ -319,7 +342,7 @@
     const token=++ui.token;ui.loading=true;ui.error=null;
     try{
       const {agendaRepo,commentRepo}=repositories();
-      const legacyPromise=root.__fjzAthlete360LoadLegacyDataV22?.(identity.studentId)||Promise.resolve({tracking:null,nutrition:null});
+      const legacyPromise=root.__fjzAthlete360LoadLegacyDataV22?.(identity.studentId,ui.loadedAthleteId!==identity.athleteId)||Promise.resolve({tracking:null,nutrition:null});
       const [legacyRes,commentRes,agendaRes]=await Promise.allSettled([
         legacyPromise,
         commentRepo&&identity.athleteId?commentRepo.listForAthlete(identity.athleteId,{status:'pending',limit:100}):Promise.resolve({rows:[]}),
@@ -348,6 +371,11 @@
     const rendered=root.__fjzRenderLegacyCoachStudentV22?.();
     mount();queueMicrotask(()=>hydrate(false));return rendered===undefined?true:rendered;
   }
-  function install(){root.__fjzRenderAthlete360V22=render;root.__fjzHydrateAthlete360V22=hydrate;root.__fjzAthlete360StateV22=ui;return true}
+  function install(){
+    const saved=readRoute();if(saved?.section)ui.sectionOverride=['progress','info'].includes(saved.section)?saved.section:null;
+    root.__fjzRenderAthlete360V22=render;root.__fjzHydrateAthlete360V22=hydrate;root.__fjzAthlete360StateV22=ui;
+    try{if(root.__fjzAthlete360ResumeRouteV22?.()===true)render()}catch(_e){}
+    return true
+  }
   return Object.freeze({VERSION,TZ,sectionForTab,confirmedSessions,latestConfirmedSession,nextWeeklyDate,nextAgendaItems,reviewState,neutralWeightChange,activityCandidates,nextAction,deriveSummary,render,hydrate,openComment,resolveComment,navigateSection,install,state:ui});
 });
