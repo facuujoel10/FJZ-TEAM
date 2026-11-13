@@ -174,7 +174,7 @@
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
     const header=document.createElement('section');header.className='fjz3b-header';
-    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">PERFIL 360 · TEAM FJZ</div><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div>';
+    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div>';
     const identityBox=document.createElement('div');identityBox.className='fjz3b-identity';
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
@@ -249,7 +249,9 @@
     const nav=document.createElement('div');nav.className='fjz3b-nav-wrap';nav.innerHTML=navHtml();
     const main=document.createElement('main');main.className='fjz3b-main';
     const title=document.createElement('div');title.className='fjz3b-section-title';title.innerHTML='<div><span>PERFIL 360</span><h2>'+esc(sectionLabel(activeSection()))+'</h2></div>'+trainingSubnav();
-    main.appendChild(title);main.appendChild(body);layout.appendChild(nav);layout.appendChild(main);view.appendChild(layout);
+    main.appendChild(title);
+    if(activeSection()==='progress'){const progress=document.createElement('div');progress.id='fjz3bProgressPanel';progress.className='fjz3b-progress-authority';main.appendChild(progress)}
+    main.appendChild(body);layout.appendChild(nav);layout.appendChild(main);view.appendChild(layout);
     if(activeSection()==='summary')body.innerHTML=summarySkeleton();
     else if(activeSection()==='info'){
       body.innerHTML=infoHtml(identity,actions);
@@ -292,9 +294,20 @@
     const x=commentRow(id);if(!x)return false;const old=button?.textContent||'OK';
     if(button){button.disabled=true;button.textContent='Guardando…'}
     try{
-      const ok=await root.__fjzAckTrainingCommentV329?.(ui.studentId,text(x.session_id),'exercise',text(x.id),text(x.exercise_uid));
-      if(ok!==true)throw new Error('El servidor no confirmó el OK.');
-      resolvedCommentIds.add(text(x.id));ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==text(x.id));
+      const sid=text(x.session_id),fid=text(x.id),euid=text(x.exercise_uid);
+      const session=(currentIdentity().student?.sessions||[]).find(s=>text(s?.id)===sid)||null;
+      const embedded=(session?.exerciseResults||[]).some(r=>(r?.exerciseFeedback||[]).some(row=>text(row?.id)===fid));
+      let ok=false;
+      if(embedded&&typeof root.__fjzAckTrainingCommentV329==='function'){
+        ok=(await root.__fjzAckTrainingCommentV329(ui.studentId,sid,'exercise',fid,euid))===true;
+      }else{
+        const repo=repositories().commentRepo;
+        if(!repo)throw new Error('No está disponible CommentRepository.');
+        const result=await repo.markReviewed(fid);
+        ok=!!result?.ok&&text(result?.row?.status)==='reviewed';
+      }
+      if(!ok)throw new Error('El servidor no confirmó el OK.');
+      resolvedCommentIds.add(fid);ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==fid);
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
       renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);
       return true;
@@ -331,12 +344,19 @@
     let ctx=root.document?.getElementById('fjz3bSectionContext');
     if(!ctx){ctx=root.document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';body.prepend(ctx)}
   }
+  function renderProgressPanel(){
+    const host=root.document?.getElementById('fjz3bProgressPanel');if(!host)return;
+    const ms=(ui.tracking?.measurements||[]).slice().sort((a,b)=>text(b?.measured_on||b?.created_at).localeCompare(text(a?.measured_on||a?.created_at)));
+    host.innerHTML='<section class="fjz3b-panel fjz3b-measure-authority"><div class="fjz3b-panel-head"><div><span>HISTORIAL CORPORAL</span><h3>Mediciones registradas</h3></div></div><div class="fjz3b-measure-list">'+
+      (ms.length?ms.map(m=>'<article><div><strong>'+esc(formatDate(m.measured_on||m.created_at))+'</strong><span>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg':'Peso sin registro')+'</span></div><div class="fjz3b-measure-values">'+[['Cintura',m.waist_cm],['Abdomen',m.abdomen_cm],['Cadera',m.hip_cm],['Pecho',m.chest_cm],['Brazo izq.',m.arm_left_cm],['Brazo der.',m.arm_right_cm],['Muslo izq.',m.thigh_left_cm],['Muslo der.',m.thigh_right_cm]].filter(x=>x[1]!=null).map(x=>'<span>'+esc(x[0])+' <b>'+esc(x[1])+' cm</b></span>').join('')+'</div>'+(m.notes?'<p>'+esc(m.notes)+'</p>':'')+'</article>').join(''):'<div class="fjz3b-empty"><strong>Sin mediciones</strong><span>No hay datos corporales registrados.</span></div>')+
+      '</div></section>';
+  }
   function renderSectionContext(summary){
     const host=root.document?.getElementById('fjz3bSectionContext');if(!host)return;
     const section=activeSection(),check=summary.checkin,m=summary.measurement,next=ui.agenda[0],s=summary.lastSession;
     if(section==='training')host.innerHTML=s?'<div class="fjz3b-context-card"><span>ÚLTIMA SESIÓN CONFIRMADA</span><strong>'+esc(s.dayName||s.workoutDayName||'Entrenamiento')+'</strong><small>'+esc(formatDate(s.date||s.completedAt,true))+' · las comparaciones y PR se delegan a TeamFJZIntelligentTraining.</small></div>':'<div class="fjz3b-context-card empty"><strong>Sin sesión confirmada</strong><small>La rutina sigue disponible; no se fabrican referencias de rendimiento.</small></div>';
     else if(section==='nutrition')host.innerHTML='<div class="fjz3b-context-card"><span>PLAN NUTRICIONAL</span><strong>'+(ui.nutrition?.plan?esc(ui.nutrition.plan.title||'Plan asignado'):'Sin plan activo')+'</strong><small>Las cantidades y macros mostrados debajo provienen del plan existente; 3B no modifica cálculos ni registra comidas nuevas.</small></div>';
-    else if(section==='progress')host.innerHTML=m?'<div class="fjz3b-context-card"><span>ÚLTIMA MEDICIÓN</span><strong>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg · ':'')+esc(formatDate(m.measured_on||m.created_at))+'</strong><small>Las variaciones se presentan como registros corporales, sin interpretación clínica ni de grasa corporal.</small></div>':'<div class="fjz3b-context-card empty"><strong>Sin mediciones disponibles</strong><small>Podés seguir usando las funciones existentes de progreso y fotografías.</small></div>';
+    else if(section==='progress'){host.innerHTML=m?'<div class="fjz3b-context-card"><span>ÚLTIMA MEDICIÓN</span><strong>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg · ':'')+esc(formatDate(m.measured_on||m.created_at))+'</strong><small>Las variaciones se presentan como registros corporales, sin interpretación clínica ni de grasa corporal.</small></div>':'<div class="fjz3b-context-card empty"><strong>Sin mediciones disponibles</strong><small>Podés seguir usando las funciones existentes de progreso y fotografías.</small></div>';renderProgressPanel()}
     else if(section==='checkins')host.innerHTML=check?'<div class="fjz3b-context-card"><span>ÚLTIMO CHECK-IN</span><strong>'+esc(formatDate(check.submitted_at||check.week_start))+' · '+(reviewState(check)==='reviewed'?'Revisado':'Pendiente de revisión')+'</strong><small>'+esc(check.coach_feedback||check.notes||'Sin comentario adicional.')+'</small></div>':'<div class="fjz3b-context-card empty"><strong>Sin check-ins disponibles</strong><small>No hay una revisión reciente para mostrar.</small></div>';
     else if(section==='agenda')host.innerHTML=next?'<div class="fjz3b-context-card"><span>PRÓXIMA FECHA VÁLIDA</span><strong>'+esc(next.title)+'</strong><small>'+esc(formatDate(next.date))+(next.time?' · '+esc(next.time):'')+'. Las fechas vencidas no se presentan como próximas.</small></div>':'<div class="fjz3b-context-card empty"><strong>Sin próximas fechas</strong><small>La agenda completa permanece disponible debajo.</small></div>';
   }

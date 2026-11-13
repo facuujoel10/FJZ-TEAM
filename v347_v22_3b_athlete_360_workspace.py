@@ -29,6 +29,9 @@ before="""window.renderCoach=function(){
   };"""
 if html.count(before)!=1: raise RuntimeError("V22 3B active Coach dispatcher authority changed")
 html=html.replace(before,active,1)
+legacy_kicker='<div class="v266-profile-kicker">ATHLETE WORKSPACE · TEAM FJZ</div>'
+if html.count(legacy_kicker)!=1: raise RuntimeError("V22 3B legacy V266 kicker authority changed")
+html=html.replace(legacy_kicker,'<div class="v266-profile-kicker">FICHA DEL ALUMNO · TEAM FJZ</div>',1)
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
 if len(styles)!=1: raise RuntimeError("V22 3B expected one consolidated stylesheet")
 sm=styles[0]
