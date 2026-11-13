@@ -155,8 +155,10 @@
   }
   function resetForIdentity(identity){
     if(ui.studentId===identity.studentId&&ui.athleteId===identity.athleteId)return;
+    const saved=readRoute();
+    const restoredSection=!ui.studentId&&saved?.studentId===identity.studentId&&['progress','info'].includes(saved.section)?saved.section:null;
     resolvedCommentIds.clear();
-    ui.studentId=identity.studentId;ui.athleteId=identity.athleteId;ui.sectionOverride=null;ui.loading=false;ui.error=null;
+    ui.studentId=identity.studentId;ui.athleteId=identity.athleteId;ui.sectionOverride=restoredSection;ui.loading=false;ui.error=null;
     ui.comments=[];ui.agenda=[];ui.tracking=null;ui.nutrition=null;ui.loadedAt=0;ui.loadedAthleteId='';ui.token++;
   }
   function sectionLabel(section){return({summary:'Resumen',training:'Entrenamiento',nutrition:'Nutrición',progress:'Progreso',checkins:'Check-ins',agenda:'Agenda',info:'Información'})[section]||'Resumen'}
