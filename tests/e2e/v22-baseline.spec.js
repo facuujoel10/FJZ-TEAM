@@ -1078,6 +1078,10 @@ test('2C resumen final: sólo aparece después de confirmación real y mantiene 
 
 test('2C Coach: historial conserva progreso verificable y comentarios exactos', async ({page},testInfo)=>{
   await login(page,'coach@test.local');
+  const commandCenter=page.locator('.fjz3a-command-center');
+  if(await commandCenter.isVisible().catch(()=>false)){
+    await expect(page.locator('#fjz3aSyncState')).toContainText(/Actualizado/i,{timeout:15000});
+  }
   await page.evaluate(()=>{
     const s=(window.students||[]).find(x=>String(x?.name||'').includes('TEST ALUMNO 01'))||student();
     const d=s.days[0],e=d.exercises[0],uid=e.uid;
