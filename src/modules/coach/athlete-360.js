@@ -13,6 +13,7 @@
     token:0
   };
   let agendaRepo=null,commentRepo=null;
+  const resolvedCommentIds=new Set();
 
   function text(v){return String(v??'').trim()}
   function esc(v){return text(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -154,6 +155,7 @@
   }
   function resetForIdentity(identity){
     if(ui.studentId===identity.studentId&&ui.athleteId===identity.athleteId)return;
+    resolvedCommentIds.clear();
     ui.studentId=identity.studentId;ui.athleteId=identity.athleteId;ui.sectionOverride=null;ui.loading=false;ui.error=null;
     ui.comments=[];ui.agenda=[];ui.tracking=null;ui.nutrition=null;ui.loadedAt=0;ui.loadedAthleteId='';ui.token++;
   }
@@ -172,7 +174,7 @@
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
     const header=document.createElement('section');header.className='fjz3b-header';
-    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div>';
+    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">PERFIL 360 · TEAM FJZ</div><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div>';
     const identityBox=document.createElement('div');identityBox.className='fjz3b-identity';
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
@@ -211,13 +213,21 @@
       return;
     }
     if(section!=='progress')return;
-    const photo=body.querySelector('#coachPhotoGrid')?.closest('.card')||null;
-    const two=[...body.children].find(x=>x.classList?.contains('grid')&&x.classList?.contains('two'));
-    const measurementEditor=two?.querySelector('aside.card')||null;
+    const inherited=body.querySelector('#v176MeasurementHistory');
+    if(inherited){
+      body.querySelector('.fjz3b-measure-fallback')?.remove();
+      inherited.classList.add('fjz3b-panel','fjz3b-measure-history');
+      const inheritedList=inherited.querySelector('.v176-measure-list');
+      if(inheritedList)inheritedList.classList.add('fjz3b-measure-list');
+      return;
+    }
+    if(body.querySelector('.fjz3b-measure-fallback'))return;
     const ms=(ui.tracking?.measurements||[]).slice().sort((a,b)=>text(b?.measured_on||b?.created_at).localeCompare(text(a?.measured_on||a?.created_at)));
-    body.innerHTML='<div class="fjz3b-physical-progress"><section class="fjz3b-panel"><div class="fjz3b-panel-head"><div><span>HISTORIAL CORPORAL</span><h3>Mediciones registradas</h3></div></div><div class="fjz3b-measure-list">'+(ms.length?ms.map((m,i)=>'<article><div><strong>'+esc(formatDate(m.measured_on||m.created_at))+'</strong><span>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg':'Peso sin registro')+'</span></div><div class="fjz3b-measure-values">'+[['Cintura',m.waist_cm],['Abdomen',m.abdomen_cm],['Cadera',m.hip_cm],['Pecho',m.chest_cm],['Brazo izq.',m.arm_left_cm],['Brazo der.',m.arm_right_cm],['Muslo izq.',m.thigh_left_cm],['Muslo der.',m.thigh_right_cm]].filter(x=>x[1]!=null).map(x=>'<span>'+esc(x[0])+' <b>'+esc(x[1])+' cm</b></span>').join('')+'</div>'+(m.notes?'<p>'+esc(m.notes)+'</p>':'')+'</article>').join(''):'<div class="fjz3b-empty"><strong>Sin mediciones</strong><span>No hay datos corporales registrados.</span></div>')+'</div></section></div>';
-    if(measurementEditor){const wrap=document.createElement('section');wrap.className='fjz3b-panel fjz3b-measure-editor';wrap.appendChild(measurementEditor);body.appendChild(wrap)}
-    if(photo)body.appendChild(photo);
+    const fallback=document.createElement('section');
+    fallback.className='fjz3b-panel fjz3b-measure-fallback';
+    fallback.innerHTML='<div class="fjz3b-panel-head"><div><span>HISTORIAL CORPORAL</span><h3>Mediciones registradas</h3></div></div><div class="fjz3b-measure-list">'+(ms.length?ms.map(m=>'<article><div><strong>'+esc(formatDate(m.measured_on||m.created_at))+'</strong><span>'+(m.weight_kg!=null?esc(m.weight_kg)+' kg':'Peso sin registro')+'</span></div><div class="fjz3b-measure-values">'+[['Cintura',m.waist_cm],['Abdomen',m.abdomen_cm],['Cadera',m.hip_cm],['Pecho',m.chest_cm],['Brazo izq.',m.arm_left_cm],['Brazo der.',m.arm_right_cm],['Muslo izq.',m.thigh_left_cm],['Muslo der.',m.thigh_right_cm]].filter(x=>x[1]!=null).map(x=>'<span>'+esc(x[0])+' <b>'+esc(x[1])+' cm</b></span>').join('')+'</div>'+(m.notes?'<p>'+esc(m.notes)+'</p>':'')+'</article>').join(''):'<div class="fjz3b-empty"><strong>Sin mediciones</strong><span>No hay datos corporales registrados.</span></div>')+'</div>';
+    const photo=body.querySelector('#coachPhotoGrid')?.closest('.card')||null;
+    if(photo)body.insertBefore(fallback,photo);else body.prepend(fallback);
   }
   function mount(){
     const identity=currentIdentity();if(!isCoachStudent())return false;resetForIdentity(identity);
@@ -284,7 +294,7 @@
     try{
       const ok=await root.__fjzAckTrainingCommentV329?.(ui.studentId,text(x.session_id),'exercise',text(x.id),text(x.exercise_uid));
       if(ok!==true)throw new Error('El servidor no confirmó el OK.');
-      ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==text(x.id));
+      resolvedCommentIds.add(text(x.id));ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==text(x.id));
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
       renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);
       return true;
@@ -356,7 +366,7 @@
       if(legacyRes.value?.cancelled)return false;
       ui.tracking=clone(legacyRes.value?.tracking)||{checkins:[],measurements:[],photos:[]};
       ui.nutrition=clone(legacyRes.value?.nutrition)||null;
-      ui.comments=clone(commentRes.value?.rows)||[];
+      ui.comments=(clone(commentRes.value?.rows)||[]).filter(row=>!resolvedCommentIds.has(text(row?.id)));
       ui.agenda=nextAgendaItems(agendaRes.value||{});
       ui.loadedAt=Date.now();ui.loadedAthleteId=identity.athleteId;ui.loading=false;ui.error=null;
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
