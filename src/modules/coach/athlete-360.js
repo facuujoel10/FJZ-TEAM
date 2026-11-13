@@ -264,6 +264,7 @@
     if(!['summary','info'].includes(activeSection())){const ctx=document.createElement('div');ctx.id='fjz3bSectionContext';ctx.className='fjz3b-section-context';ctx.innerHTML='<div class="fjz3b-loading-line"></div>';main.appendChild(ctx)}
     if(activeSection()==='progress'){const progress=document.createElement('div');progress.id='fjz3bProgressPanel';progress.className='fjz3b-progress-authority';main.appendChild(progress)}
     main.appendChild(body);layout.appendChild(nav);layout.appendChild(main);header.insertAdjacentElement('afterend',layout);
+    body.classList.toggle('fjz3b-summary-body',activeSection()==='summary');
     if(activeSection()==='summary')body.innerHTML=summarySkeleton();
     else if(activeSection()==='info'){
       body.innerHTML=infoHtml(identity,actions);
