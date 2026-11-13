@@ -228,6 +228,7 @@
     const hero=view.querySelector('.v175-coach-profile-hero,.hero');
     const actions=hero?.querySelector('.v175-coach-profile-actions,.pill-row')||null;
     const header=headerShell(hero,identity);
+    view.querySelectorAll('.v266-profile-kicker').forEach(node=>node.remove());
     view.prepend(header);
     const oldTabs=root.document?.getElementById('coachStudentTabs')||view.querySelector('.tabs');
     if(oldTabs)oldTabs.classList.add('fjz3b-legacy-tabs');
@@ -283,12 +284,10 @@
     try{
       const ok=await root.__fjzAckTrainingCommentV329?.(ui.studentId,text(x.session_id),'exercise',text(x.id),text(x.exercise_uid));
       if(ok!==true)throw new Error('El servidor no confirmó el OK.');
-      const repo=repositories().commentRepo,confirmed=repo?await repo.getById(text(x.id)):null;
-      if(!confirmed?.row||text(confirmed.row.status)!=='reviewed')throw new Error('El servidor no confirmó el estado revisado.');
       ui.token++;ui.comments=ui.comments.filter(row=>text(row?.id)!==text(x.id));
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
       renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);
-      await Promise.resolve();await hydrate(true);return true;
+      return true;
     }catch(err){root.toast?.(text(err?.message||'No se pudo guardar el OK.'));if(button){button.disabled=false;button.textContent=old}return false}
   }
   function renderHeader(summary){
@@ -338,6 +337,7 @@
   }
   async function hydrate(force=false){
     if(!isCoachStudent())return false;const identity=currentIdentity();resetForIdentity(identity);
+    if(!force&&ui.loading&&ui.studentId===identity.studentId&&ui.athleteId===identity.athleteId)return true;
     if(!force&&ui.loadedAthleteId===identity.athleteId&&Date.now()-ui.loadedAt<15000){const summary=deriveSummary({student:identity.student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true}
     const token=++ui.token;ui.loading=true;ui.error=null;
     try{
