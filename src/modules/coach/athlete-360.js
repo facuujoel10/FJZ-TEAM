@@ -374,7 +374,7 @@
   async function hydrate(force=false){
     if(!isCoachStudent())return false;const identity=currentIdentity();resetForIdentity(identity);
     if(!force&&ui.loading&&ui.studentId===identity.studentId&&ui.athleteId===identity.athleteId)return true;
-    if(!force&&ui.loadedAthleteId===identity.athleteId&&Date.now()-ui.loadedAt<15000){const summary=deriveSummary({student:identity.student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true}
+    if(!force&&ui.loadedAthleteId===identity.athleteId&&Date.now()-ui.loadedAt<15000){const summary=deriveSummary({student:identity.student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:true,athleteId:identity.athleteId})}catch(_e){}return true}
     const token=++ui.token;ui.loading=true;ui.error=null;
     try{
       const {agendaRepo,commentRepo}=repositories();
@@ -396,9 +396,9 @@
       ui.agenda=nextAgendaItems(agendaRes.value||{});
       ui.loadedAt=Date.now();ui.loadedAthleteId=identity.athleteId;ui.loading=false;ui.error=null;
       const summary=deriveSummary({student:currentIdentity().student,tracking:ui.tracking,comments:ui.comments,agenda:ui.agenda});
-      restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);return true;
+      restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:false,athleteId:identity.athleteId})}catch(_e){}return true;
     }catch(err){
-      if(token!==ui.token)return false;ui.loading=false;ui.error=text(err?.publicMessage||err?.message||'No pudimos completar la consulta.');restoreSectionShell();renderError(ui.error);return false;
+      if(token!==ui.token)return false;ui.loading=false;ui.error=text(err?.publicMessage||err?.message||'No pudimos completar la consulta.');restoreSectionShell();renderError(ui.error);try{root.__fjzAfterAthlete360HydrateV22?.({ok:false,error:ui.error,athleteId:identity.athleteId})}catch(_e){}return false;
     }
   }
   function render(){
