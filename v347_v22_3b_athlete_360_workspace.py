@@ -101,3 +101,69 @@ if re.search(r'\b(?:window\.)?render\s*=\s*function|const\s+_render\w*\s*=\s*ren
     raise RuntimeError("V22 3B must not add a global render wrapper")
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V22 3B Athlete 360 Workspace injected",len(html))
+
+
+# V22 3C Coach Analytics / Follow-up. This extends only the bounded 3A/3B hooks.
+p=pathlib.Path("public/index.html")
+html=p.read_text(encoding="utf-8")
+for marker in [
+ 'meta name="fjz-athlete-360-workspace" content="22.3B"',
+ 'id="v22Athlete360Runtime"',
+ 'id="v22CoachCommandCenterAuthorityBridge"',
+ 'meta name="fjz-v22-2c-intelligent-training" content="enabled"'
+]:
+    if marker not in html: raise RuntimeError("V22 3C prerequisite missing: "+marker)
+js3c=pathlib.Path("src/modules/coach/analytics-followup.js").read_text(encoding="utf-8")
+css3c=pathlib.Path("src/ui/coach-analytics.css").read_text(encoding="utf-8")
+if "</script" in js3c.lower(): raise RuntimeError("V22 3C module contains closing script markup")
+styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
+if len(styles)!=1: raise RuntimeError("V22 3C expected one consolidated stylesheet")
+sm=styles[0]
+html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css3c+"\n"+html[sm.end("body"):]
+html=html.replace("</head>",'<meta name="fjz-coach-analytics-followup" content="22.3C">\n</head>',1)
+runtime3c=r'''<script id="v22CoachAnalyticsRuntime">
+''' + js3c + r'''
+</script>
+<script id="v22CoachAnalyticsInstall">
+(function(){
+  if(!window.TeamFJZCoachAnalytics?.install?.())throw new Error("TEAM FJZ V22 3C install failed");
+  const athleteRender=window.__fjzRenderAthlete360V22;
+  const athleteHydrate=window.__fjzHydrateAthlete360V22;
+  const commandRender=window.__fjzRenderCoachCommandCenterV22;
+  if(typeof athleteRender!=='function'||typeof athleteHydrate!=='function'||typeof commandRender!=='function')throw new Error("TEAM FJZ V22 3C bounded hooks missing");
+  window.__fjzRenderAthlete360V22=function(){
+    const out=athleteRender.apply(this,arguments);
+    queueMicrotask(()=>window.TeamFJZCoachAnalytics?.renderAthlete?.());
+    return out;
+  };
+  window.__fjzHydrateAthlete360V22=async function(){
+    const out=await athleteHydrate.apply(this,arguments);
+    window.TeamFJZCoachAnalytics?.renderAthlete?.();
+    return out;
+  };
+  window.__fjzRenderCoachCommandCenterV22=function(){
+    const out=commandRender.apply(this,arguments);
+    queueMicrotask(()=>window.TeamFJZCoachAnalytics?.renderDashboard?.());
+    return out;
+  };
+  window.__fjzCoachAnalyticsV22=window.TeamFJZCoachAnalytics;
+})();
+</script>
+'''
+if "</body>" not in html: raise RuntimeError("V22 3C body anchor missing")
+html=html.replace("</body>",runtime3c+"</body>",1)
+for marker in [
+ 'meta name="fjz-coach-analytics-followup" content="22.3C"',
+ 'id="v22CoachAnalyticsRuntime"','id="v22CoachAnalyticsInstall"',
+ "VERSION='22.3C'","measurementTimeline","checkinTimeline","priorityReasons",
+ "__fjzCoachAnalyticsV22","TeamFJZCoachAnalytics?.renderAthlete",
+ 'meta name="fjz-athlete-360-workspace" content="22.3B"',
+ 'cloudConfirmationBeforeSuccess:true'
+]:
+    if marker not in html: raise RuntimeError("V22 3C output marker missing: "+marker)
+body3c=re.search(r'<script id="v22CoachAnalyticsRuntime">(.*?)</script>',html,re.S)
+if not body3c: raise RuntimeError("V22 3C runtime missing")
+if re.search(r'\b(?:window\.)?render\s*=\s*function|const\s+_render\w*\s*=\s*render\b',body3c.group(1)):
+    raise RuntimeError("V22 3C must not add a global render wrapper")
+p.write_text(html,encoding="utf-8")
+print("TEAM FJZ V22 3C Coach Analytics injected",len(html))
