@@ -237,7 +237,18 @@
     view.classList.add('fjz3b-mounted');
     rememberRoute(identity);
     const legacyNav=root.document?.getElementById('bottomNav');if(legacyNav)legacyNav.classList.add('fjz3b-hide-legacy-nav');
-    const hero=view.querySelector('.v175-coach-profile-hero,.hero');
+
+    // Idempotent presentation mount: preserve the current legacy authorities,
+    // then remove stale 360 wrappers before creating exactly one workspace.
+    const heroCandidates=[...view.querySelectorAll('.v175-coach-profile-hero,.hero')];
+    const bodyCandidates=[...view.querySelectorAll('#coachStudentBody')];
+    const hero=heroCandidates.find(node=>!node.closest('.fjz3b-header'))||heroCandidates.at(-1)||null;
+    const body=bodyCandidates.find(node=>!node.closest('.fjz3b-layout'))||bodyCandidates.at(-1)||null;
+    if(hero?.closest('.fjz3b-header'))view.prepend(hero);
+    if(body?.closest('.fjz3b-layout'))view.appendChild(body);
+    view.querySelectorAll(':scope > .fjz3b-header,:scope > .fjz3b-layout').forEach(node=>node.remove());
+    if(!body)return false;
+
     const actions=hero?.querySelector('.v175-coach-profile-actions,.pill-row')||null;
     const header=headerShell(hero,identity);
     view.querySelectorAll('.v266-profile-kicker').forEach(node=>node.remove());
@@ -245,8 +256,6 @@
     const oldTabs=root.document?.getElementById('coachStudentTabs')||view.querySelector('.tabs');
     if(oldTabs)oldTabs.classList.add('fjz3b-legacy-tabs');
     const oldWorkspace=root.document?.getElementById('v266CoachWorkspace');if(oldWorkspace)oldWorkspace.classList.add('fjz3b-legacy-workspace');
-    const body=root.document?.getElementById('coachStudentBody');
-    if(!body)return false;
     const layout=document.createElement('div');layout.className='fjz3b-layout';
     const nav=document.createElement('div');nav.className='fjz3b-nav-wrap';nav.innerHTML=navHtml();
     const main=document.createElement('main');main.className='fjz3b-main';
