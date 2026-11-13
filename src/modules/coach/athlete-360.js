@@ -263,7 +263,11 @@
       if(activeSection()!=='progress'||ui.tracking!==null)shapeLegacySection(body);
     }
     bind(view);
-    try{root.scrollTo?.({top:0,left:0,behavior:'auto'});if(root.document?.scrollingElement)root.document.scrollingElement.scrollTop=0}catch(_e){}
+    try{
+      root.document?.activeElement?.blur?.();
+      const resetScroll=()=>{try{root.scrollTo?.({top:0,left:0,behavior:'auto'});if(root.document?.scrollingElement)root.document.scrollingElement.scrollTop=0}catch(_e){}};
+      resetScroll();root.queueMicrotask?.(resetScroll);
+    }catch(_e){}
     return true;
   }
   function bind(view){
