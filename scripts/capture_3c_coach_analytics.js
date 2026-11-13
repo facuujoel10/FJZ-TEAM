@@ -1,0 +1,12 @@
+const {chromium}=require('@playwright/test');
+const fs=require('fs');const path=require('path');
+const PASSWORD=process.env.FJZ_E2E_PASSWORD||'TEAMFJZ-Local-Only!22';
+const out=process.argv[2]||'artifacts/3c-comparison';
+const current=process.argv[3]||'http://127.0.0.1:8000';
+const base3b=process.argv[4]||'http://127.0.0.1:8005';
+fs.mkdirSync(out,{recursive:true});
+async function login(page,url){await page.goto(url,{waitUntil:'domcontentloaded'});const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill('coach@test.local');await page.locator('#authPass').fill(PASSWORD);await page.locator('#authGate .btn.primary').click()}await gate.waitFor({state:'hidden',timeout:20000});await page.locator('.fjz3a-command-center').waitFor({state:'visible',timeout:20000})}
+async function athlete(page){const row=page.locator('#studentList .student-row',{hasText:'TEST ALUMNO 01'}).first();await row.getByRole('button',{name:/Abrir/i}).click();await page.locator('.fjz3b-header').waitFor({state:'visible',timeout:15000});await page.locator('.fjz3b-header-context strong').first().waitFor({state:'visible',timeout:15000});await page.waitForTimeout(700)}
+async function section(page,key){await page.locator('.fjz3b-nav button[data-section="'+key+'"]').click();await page.waitForTimeout(700)}
+async function shot(browser,label,url,viewport){const page=await browser.newPage({viewportSize:viewport});await login(page,url);await page.screenshot({path:path.join(out,label+'-command-center.png'),fullPage:true});await athlete(page);await page.screenshot({path:path.join(out,label+'-summary.png'),fullPage:true});for(const key of ['training','progress','checkins']){await section(page,key);await page.screenshot({path:path.join(out,label+'-'+key+'.png'),fullPage:true})}await page.close()}
+(async()=>{const browser=await chromium.launch({headless:true});try{await shot(browser,'3b-mobile-390',base3b,{width:390,height:844});await shot(browser,'3c-mobile-390',current,{width:390,height:844});await shot(browser,'3b-desktop-1440',base3b,{width:1440,height:900});await shot(browser,'3c-desktop-1440',current,{width:1440,height:900})}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
