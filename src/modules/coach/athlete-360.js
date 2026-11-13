@@ -303,7 +303,7 @@
       }else{
         const repo=repositories().commentRepo;
         if(!repo)throw new Error('No está disponible CommentRepository.');
-        const result=await repo.markReviewed(fid);
+        const result=await repo.markReviewed(fid,{athleteId:ui.athleteId,sessionId:sid,exerciseUid:euid,reviewedBy:currentIdentity().profile?.id||null});
         ok=!!result?.ok&&text(result?.row?.status)==='reviewed';
       }
       if(!ok)throw new Error('El servidor no confirmó el OK.');

@@ -34,7 +34,24 @@
       const res=await run(q,'listPending');return Object.freeze({source:SOURCE,status:'pending',rows:freezeRows(res?.data)});
     }
     async function getById(id){const cid=idValue(id,'commentId'),res=await run(supabase.from('exercise_feedback').select(FIELDS).eq('id',cid).maybeSingle(),'getById');return res?.data?Object.freeze({source:SOURCE,row:Object.freeze({...res.data})}):null}
-    return Object.freeze({listForAthlete,listForSession,listPending,getById});
+    async function markReviewed(id,{athleteId=null,sessionId=null,exerciseUid=null,reviewedBy=null}={}){
+      const cid=idValue(id,'commentId'),reviewedAt=new Date().toISOString();
+      let q=supabase.from('exercise_feedback').update({
+        status:'reviewed',reviewed_at:reviewedAt,...(reviewedBy?{reviewed_by:String(reviewedBy)}:{})
+      }).eq('id',cid);
+      if(athleteId!=null)q=q.eq('athlete_id',idValue(athleteId,'athleteId'));
+      if(sessionId!=null)q=q.eq('session_id',idValue(sessionId,'sessionId'));
+      if(exerciseUid!=null)q=q.eq('exercise_uid',idValue(exerciseUid,'exerciseUid'));
+      const updated=await run(q.select(FIELDS).maybeSingle(),'markReviewed');
+      if(!updated?.data)return Object.freeze({source:SOURCE,ok:false,row:null});
+      const confirmed=await getById(cid),row=confirmed?.row||null;
+      const ok=!!row&&row.status==='reviewed'&&
+        (athleteId==null||row.athlete_id===String(athleteId))&&
+        (sessionId==null||row.session_id===String(sessionId))&&
+        (exerciseUid==null||row.exercise_uid===String(exerciseUid));
+      return Object.freeze({source:SOURCE,ok,row});
+    }
+    return Object.freeze({listForAthlete,listForSession,listPending,getById,markReviewed});
   }
   return Object.freeze({SOURCE,FIELDS,CommentRepositoryError,createCommentRepository});
 });
