@@ -21,8 +21,8 @@ old_recipe_search="${r.title} ${r.description} ${(r.ingredients||[]).join(' ')} 
 new_recipe_search="${r.title} ${r.description} ${(r.ingredients||[]).map(x=>typeof x==='object'?Object.values(x||{}).join(' '):x).join(' ')} ${(r.tags||[]).join(' ')}"
 if html.count(old_recipe_search)!=1: raise RuntimeError("V22 4A recipe search anchor changed")
 html=html.replace(old_recipe_search,new_recipe_search,1)
-old_recipe_items="${(r.ingredients||[]).map(x=>\`<li>${esc(x)}</li>\`).join('')}"
-new_recipe_items="${(r.ingredients||[]).map(x=>{const n=typeof x==='object'?(x?.name||x?.food||x?.ingredient||''):x;const a=typeof x==='object'?(x?.amount||x?.quantity||x?.qty||''):'';return \`<li>${esc([n,a].filter(Boolean).join(' · '))}</li>\`}).join('')}"
+old_recipe_items=r"""${(r.ingredients||[]).map(x=>`<li>${esc(x)}</li>`).join('')}"""
+new_recipe_items=r"""${(r.ingredients||[]).map(x=>{const n=typeof x==='object'?(x?.name||x?.food||x?.ingredient||''):x;const a=typeof x==='object'?(x?.amount||x?.quantity||x?.qty||''):'';return `<li>${esc([n,a].filter(Boolean).join(' · '))}</li>`}).join('')}"""
 if html.count(old_recipe_items)!=1: raise RuntimeError("V22 4A recipe ingredient anchor changed")
 html=html.replace(old_recipe_items,new_recipe_items,1)
 
