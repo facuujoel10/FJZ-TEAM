@@ -28,6 +28,32 @@ test.describe('V22 3C-UX final Coach experience polish',()=>{
    expect(sizes.every(x=>x.h>=44&&x.w>=44)).toBeTruthy();
    for(const key of ['training','progress','checkins','agenda']){await section(page,key);await expect(page.locator('.fjz3b-section-title')).toBeVisible();await noOverflow(page)}
  });
+ test('V22 3C-UX mobile navigation keeps active section fully visible without vertical scroll side effects',async({page},testInfo)=>{
+   test.skip(!testInfo.project.name.startsWith('mobile-'),'mobile-only navigation visibility');
+   await login(page);await openAthlete(page);
+   for(const key of ['progress','checkins']){
+     await section(page,key);
+     const geo=await page.locator('.fjz3b-nav').evaluate((nav,section)=>{
+       const active=nav.querySelector('button[data-section="'+section+'"][aria-current="page"]');
+       const n=nav.getBoundingClientRect(),a=active?.getBoundingClientRect();
+       return{navLeft:n.left,navRight:n.right,activeLeft:a?.left,activeRight:a?.right,scrollLeft:nav.scrollLeft,scrollY};
+     },key);
+     expect(geo.activeLeft).toBeGreaterThanOrEqual(geo.navLeft-1);
+     expect(geo.activeRight).toBeLessThanOrEqual(geo.navRight+1);
+     expect(geo.scrollY).toBe(0);
+   }
+   const agenda=page.locator('.fjz3b-nav button[data-section="agenda"]');
+   await agenda.focus();await page.keyboard.press('Enter');await expect(agenda).toHaveAttribute('aria-current','page');
+   const keyboardGeo=await page.locator('.fjz3b-nav').evaluate(nav=>{
+     const active=nav.querySelector('button[data-section="agenda"][aria-current="page"]');
+     const n=nav.getBoundingClientRect(),a=active?.getBoundingClientRect();
+     return{navLeft:n.left,navRight:n.right,activeLeft:a?.left,activeRight:a?.right,scrollY};
+   });
+   expect(keyboardGeo.activeLeft).toBeGreaterThanOrEqual(keyboardGeo.navLeft-1);
+   expect(keyboardGeo.activeRight).toBeLessThanOrEqual(keyboardGeo.navRight+1);
+   expect(keyboardGeo.scrollY).toBe(0);
+   await noOverflow(page);
+ });
  test('V22 3C-UX analytics expose exact values, date and source without chart overflow',async({page})=>{
    await login(page);await openAthlete(page);await section(page,'progress');
    const progress=page.locator('#fjz3cMeasurementsHost');await expect(progress).toContainText('71.8 kg');await expect(progress.locator('time').first()).toBeVisible();await expect(progress.locator('.fjz3c-spark')).toHaveCount(1);
