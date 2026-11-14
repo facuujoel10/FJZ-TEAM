@@ -61,7 +61,7 @@ jobs:
         run: python scripts/dev_guard.py
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js
 
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
@@ -77,6 +77,9 @@ jobs:
 
       - name: Athlete 360 local Auth/RLS isolation contract
         run: python scripts/dev_athlete360_rls_smoke.py
+
+      - name: Nutrition Premium 4A local Auth/RLS contract
+        run: python scripts/dev_nutrition_4a_rls_smoke.py
 
       - name: 2B session/comment integrity Auth/RLS contract
         run: python scripts/dev_session_comment_integrity_smoke.py
@@ -101,6 +104,9 @@ jobs:
 
       - name: Repeat Athlete 360 Auth/RLS isolation after database recreation
         run: python scripts/dev_athlete360_rls_smoke.py
+
+      - name: Repeat Nutrition Premium 4A Auth/RLS after database recreation
+        run: python scripts/dev_nutrition_4a_rls_smoke.py
 
       - name: Repeat 2B session/comment integrity after database recreation
         run: python scripts/dev_session_comment_integrity_smoke.py
