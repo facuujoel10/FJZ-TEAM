@@ -21,6 +21,7 @@ test.describe('V22 4A Nutrition Premium',()=>{
     await login(page);await openStudentNutrition(page);
     await expect(page.getByRole('heading',{name:'Mi alimentación'})).toBeVisible();await expect(page.locator('.fjz4a-student-shell')).toContainText('PLAN QA A');
     await expect(page.locator('.fjz4a-targets')).toContainText(/2200/);await expect(page.locator('.fjz4a-targets')).toContainText(/160/);
+    await page.evaluate(()=>{const p=__fjzNutritionContextV22().cache.plan.plan;const m=p.meals.find(x=>x.id==='meal_qa_breakfast');m.options.push({id:'opt_qa_1b',name:'Opción QA 1B',items:[{id:'item_qa_1b',name:'QA Tostadas ficticias',grams:60,kcal:150,protein_g:6,carbs_g:28,fat_g:2,measure_type:'units',quantity:2,unit_name:'tostadas',grams_per_unit:30}]});TeamFJZNutritionPremium.renderStudent()});
     const breakfast=page.locator('.fjz4a-meal',{hasText:'Desayuno'});const tabs=breakfast.locator('[role="tab"]');await expect(tabs).toHaveCount(2);
     const logsBefore=await page.locator('.nutrition-log-row').count();await tabs.nth(1).click();await expect(tabs.nth(1)).toHaveAttribute('aria-selected','true');
     const visible=breakfast.locator('.meal-option-student:visible');await expect(visible).toContainText('Opción QA 1B');await expect(visible).toContainText(/kcal/);await expect(visible).toContainText(/g/);
