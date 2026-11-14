@@ -190,7 +190,7 @@
       if(rows.some(r=>!(r.grams>0)))throw new Error('La opción contiene una cantidad inválida.');
       const {data,error}=await sb.from('nutrition_logs').insert(rows).select('id,meal_group_id,note');if(error)throw error;
       if(!Array.isArray(data)||data.length!==rows.length||data.some(x=>text(x.meal_group_id)!==group||parseOptionMarker(x.note)?.optionId!==text(optId)))throw new Error('El servidor no confirmó el registro completo.');
-      await actions().load?.(true,date);root.__fjzQuickSavedV264?.('Opción registrada');root.toast?.('Opción registrada');renderStudent();return true;
+      await actions().load?.(true,date);root.__fjzQuickSavedV264?.('Opción registrada');renderStudent();return true;
     }catch(err){root.toast?.(actions().cloudError?.(err)||text(err?.message||'No se pudo registrar la opción.'));if(button){button.disabled=false;button.textContent=old}return false}
     finally{ui.registering.delete(key)}
   }
