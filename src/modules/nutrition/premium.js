@@ -217,4 +217,32 @@
       if(a==='save-plan'){await savePlan(b);return}
       if(a==='coach-meal'){ui.coachMealId=b.dataset.meal;renderCoach();return}
       if(a==='add-meal'){actions().addMeal?.();return}
-      if(a==='rename-meal'){actions().renameMeal?.(b.dataset.meal)
+      if(a==='rename-meal'){actions().renameMeal?.(b.dataset.meal);return}
+      if(a==='delete-meal'){actions().deleteMeal?.(b.dataset.meal);setDirty();return}
+      if(a==='add-option'){actions().addOption?.(b.dataset.meal);setDirty();return}
+      if(a==='delete-option'){actions().deleteOption?.(b.dataset.meal,b.dataset.option);setDirty();return}
+      if(a==='add-food'){actions().openFood?.(b.dataset.meal,b.dataset.option);return}
+      if(a==='amount'){actions().editAmount?.(b.dataset.meal,b.dataset.option,b.dataset.item);return}
+      if(a==='remove-food'){actions().removeFood?.(b.dataset.meal,b.dataset.option,b.dataset.item);setDirty();return}
+      if(a==='meal-macros'){actions().mealMacros?.(b.dataset.meal);return}
+      if(a==='preview'){preview();return}
+      if(a==='coach-calculator'){actions().coachCalculator?.();return}
+      if(a==='coach-recipes'){actions().coachRecipes?.();return}
+      if(a==='templates'){actions().templates?.();return}
+      if(a==='save-template'){actions().saveTemplate?.();return}
+      if(a==='add-supplement'){actions().addSupplement?.();return}
+      if(a==='edit-supplement'){actions().editSupplement?.(Number(b.dataset.index));return}
+      if(a==='remove-supplement'){actions().removeSupplement?.(Number(b.dataset.index));setDirty();return}
+      if(a==='add-habit'){actions().addHabit?.();return}
+      if(a==='delete-habit'){actions().deleteHabit?.(b.dataset.habit);setDirty();return}
+      if(a==='retry-load'){if(b.dataset.role==='coach')await startCoach(true);else await startStudent(true);return}
+    };
+    host.oninput=e=>{const t=e.target;if(!t)return;if(['nutTitle','nutKcal','nutProtein','nutCarbs','nutFat','nutNotes'].includes(t.id)){setDirty(true);return}if(t.matches?.('[data-4a-action="option-name"]')){const pd=planData(),o=findOption(pd,t.dataset.meal,t.dataset.option);if(o){o.name=t.value;setDirty(true)}}};
+    host.onchange=e=>{const t=e.target;if(!t)return;if(t.id==='nutLoggingEnabled'){setDirty(true);return}if(t.matches?.('[data-4a-action="toggle-habit"]')){actions().toggleHabit?.(t.dataset.habit,!!t.checked);setDirty();return}if(['macroFood','macroMeasure','macroGrams','macroUnits'].includes(t.id)){actions().previewMacro?.();return}};
+    const food=root.document?.getElementById('macroFood'),measure=root.document?.getElementById('macroMeasure'),grams=root.document?.getElementById('macroGrams'),units=root.document?.getElementById('macroUnits');
+    for(const el of [food,measure])if(el)el.onchange=()=>actions().previewMacro?.();for(const el of [grams,units])if(el)el.oninput=()=>actions().previewMacro?.();
+  }
+  function install(){root.__fjzNutritionPremiumV22=api;return true}
+  const api={VERSION,optionTotals,logTotals,optionMarker,parseOptionMarker,consumptionGroups,startStudent,startCoach,renderStudent,renderCoach,registerOption,savePlan,install,state:ui};
+  return Object.freeze(api);
+});
