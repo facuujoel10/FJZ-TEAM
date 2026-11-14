@@ -113,7 +113,7 @@ jobs:
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
