@@ -209,7 +209,7 @@
       if(a==='select-option'){selectStudentOption(b);return}
       if(a==='register-option'){await registerOption(b.dataset.meal,b.dataset.option,b);return}
       if(a==='recipes'){actions().recipes?.();return}
-      if(a==='calculator-focus'){const h=root.document?.getElementById('fjz4aCalculator');h?.scrollIntoView?.({behavior:'smooth',block:'start'});h?.focus?.({preventScroll:true});return}
+      if(a==='calculator-focus'){const h=root.document?.getElementById('fjz4aCalculator');h?.scrollIntoView?.({behavior:'auto',block:'start'});h?.focus?.({preventScroll:true});return}
       if(a==='calculator-add'){await actions().calculatorAdd?.();return}
       if(a==='custom-log'){actions().customLog?.();return}
       if(a==='delete-log'){await deleteLog(b.dataset.group,b.dataset.row);return}
