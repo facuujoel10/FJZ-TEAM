@@ -168,6 +168,16 @@
       [['summary','Resumen','◉'],['training','Entreno','▤'],['nutrition','Nutrición','◇'],['progress','Progreso','↗'],['checkins','Check-ins','✓'],['agenda','Agenda','□'],['info','Info','ⓘ']].map(([k,l,i])=>'<button type="button" data-3b-action="section" data-section="'+k+'" class="'+(active===k?'active':'')+'" aria-current="'+(active===k?'page':'false')+'"><i>'+i+'</i><span>'+l+'</span></button>').join('')+
       '</nav>';
   }
+  function revealActiveNav(nav){
+    const scroller=nav?.querySelector?.('.fjz3b-nav'),active=scroller?.querySelector?.('button[aria-current="page"]');
+    if(!scroller||!active)return false;
+    if(scroller.scrollWidth<=scroller.clientWidth+1){scroller.scrollLeft=0;return true}
+    const box=scroller.getBoundingClientRect(),item=active.getBoundingClientRect(),pad=6;
+    if(item.left>=box.left+pad&&item.right<=box.right-pad)return true;
+    const target=active.offsetLeft-(scroller.clientWidth-active.offsetWidth)/2;
+    scroller.scrollLeft=Math.max(0,Math.min(target,scroller.scrollWidth-scroller.clientWidth));
+    return true;
+  }
   function trainingSubnav(){
     if(activeSection()!=='training')return'';
     const tab=currentIdentity().coachStudentTab;
@@ -273,6 +283,7 @@
       if(activeSection()!=='progress'||ui.tracking!==null)shapeLegacySection(body);
     }
     bind(view);
+    revealActiveNav(nav);
     try{
       root.document?.activeElement?.blur?.();
       const resetScroll=()=>{try{root.scrollTo?.({top:0,left:0,behavior:'auto'});if(root.document?.scrollingElement)root.document.scrollingElement.scrollTop=0}catch(_e){}};
