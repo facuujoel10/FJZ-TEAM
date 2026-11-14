@@ -162,4 +162,59 @@
     const meal=coachMealSelected(pd),meals=pd?.meals||[];
     host.innerHTML='<div class="fjz4a-coach-shell"><header class="fjz4a-coach-head"><div><span>ATHLETE 360 · NUTRICIÓN</span><h1>'+esc(c?.student?.name||'Alumno')+'</h1><p>'+esc(p.title||'Plan nutricional')+' · revisión '+esc(p.revision||1)+'</p></div><div class="fjz4a-coach-save">'+saveStateHtml(dirty)+'<button type="button" class="primary" data-4a-action="save-plan" '+(ui.saving?'disabled':'')+'>Guardar cambios</button></div></header>'+ 
       '<div class="fjz4a-coach-workspace"><aside class="fjz4a-editor-rail"><div class="fjz4a-rail-head"><span>COMIDAS</span><button type="button" data-4a-action="add-meal">+ Agregar</button></div><nav aria-label="Comidas del plan">'+meals.map((m,i)=>'<button type="button" class="'+(text(m.id)===text(meal?.id)?'active':'')+'" data-4a-action="coach-meal" data-meal="'+esc(text(m.id))+'"><span>'+String(i+1).padStart(2,'0')+'</span><div><strong>'+esc(m.name||'Comida')+'</strong><small>'+((m.options||[]).length)+' opciones</small></div></button>').join('')+'</nav>'+coachToolsHtml()+'</aside><main class="fjz4a-editor-main">'+ 
-      '<section class="fjz4a-plan-settings"><div class="fjz4a-section-heading"><span>CONFIGURACIÓN DEL PLAN</span><h2>Prescripción</h2><p>Los objetivos del plan se mantienen separados del consumo registrado.</p></div><div class="fjz4a-settings-grid"><label class="span2">Nombre del plan<input id="nutTitle" value="'+esc(p.title||'Plan nutricional')+'"></label><label>Calorías<input id="nutKcal" type="number" min="0" step="1" value="'+esc(p.target_kcal??'')+'"></label><label>Proteínas (g)<input id="nutProtein" type="number" min="0" step="1" value="'+esc(p.target_protein_g??'')+'"></label><label>Carbohidratos (g)<input id="nutCarbs" type="number" min="0" step="1" value="'+esc(p.target_carbs_g??'')+'"></label><label>Grasas (g)<input id="nutFat" type="number" min="0" step="1" value="'+esc(p.target_fat_g??'')+'"></label><label class="span2">Indicaciones<textarea id="nutNotes" rows="3">'+esc(p.notes||'')+'</textarea></label><label class="fjz4a-toggle span2"><input id="nutLoggingEnabled" type="checkbox" '+(p.student_logging_enabled!==
+      '<section class="fjz4a-plan-settings"><div class="fjz4a-section-heading"><span>CONFIGURACIÓN DEL PLAN</span><h2>Prescripción</h2><p>Los objetivos del plan se mantienen separados del consumo registrado.</p></div><div class="fjz4a-settings-grid"><label class="span2">Nombre del plan<input id="nutTitle" value="'+esc(p.title||'Plan nutricional')+'"></label><label>Calorías<input id="nutKcal" type="number" min="0" step="1" value="'+esc(p.target_kcal??'')+'"></label><label>Proteínas (g)<input id="nutProtein" type="number" min="0" step="1" value="'+esc(p.target_protein_g??'')+'"></label><label>Carbohidratos (g)<input id="nutCarbs" type="number" min="0" step="1" value="'+esc(p.target_carbs_g??'')+'"></label><label>Grasas (g)<input id="nutFat" type="number" min="0" step="1" value="'+esc(p.target_fat_g??'')+'"></label><label class="span2">Indicaciones<textarea id="nutNotes" rows="3">'+esc(p.notes||'')+'</textarea></label><label class="fjz4a-toggle span2"><input id="nutLoggingEnabled" type="checkbox" '+(p.student_logging_enabled!==false?'checked':'')+'><span><strong>Registro diario del alumno</strong><small>'+(p.student_logging_enabled!==false?'Habilitado con persistencia real':'Desactivado · el alumno sólo consulta el plan')+'</small></span></label></div></section>'+ 
+      (meal?'<section class="fjz4a-meal-editor"><div class="fjz4a-meal-editor-head"><div><span>COMIDA SELECCIONADA</span><h2>'+esc(meal.name||'Comida')+'</h2><p>'+((meal.options||[]).length)+' alternativa'+((meal.options||[]).length===1?'':'s')+'</p></div><div><button type="button" data-4a-action="meal-macros" data-meal="'+esc(text(meal.id))+'">Macros comida</button><button type="button" data-4a-action="rename-meal" data-meal="'+esc(text(meal.id))+'">Renombrar</button><button type="button" data-4a-action="add-option" data-meal="'+esc(text(meal.id))+'">+ Opción</button><button type="button" class="danger" data-4a-action="delete-meal" data-meal="'+esc(text(meal.id))+'">Eliminar</button></div></div><div class="fjz4a-coach-options">'+((meal.options||[]).length?meal.options.map((o,i)=>coachOptionHtml(meal,o,i)).join(''):'<div class="fjz4a-empty-block"><strong>Sin alternativas</strong><span>Agregá la primera opción para esta comida.</span></div>')+'</div></section>':'<section class="fjz4a-empty-block"><strong>Sin comidas</strong><span>Agregá una comida para comenzar el plan.</span></section>')+
+      resourcesHtml(pd,false)+consumptionHtml(c,false)+(typeof actions().historyHtml==='function'?actions().historyHtml():'')+'</main></div></div>';
+    bindHost(host);return true;
+  }
+  function setDirty(on=true){ui.lastSaveState=on?'dirty':'saved';const node=root.document?.getElementById('fjz4aSaveState');if(node){node.className='fjz4a-save-state '+(on?'dirty':'saved');node.innerHTML='<i></i>'+(on?'Cambios pendientes':'Guardado')}}
+  async function savePlan(button){
+    if(ui.saving)return false;const c=context(),p=c?.cache?.plan;if(!p)return false;
+    const beforeRev=Number(p.revision||0),beforeId=text(p.id);ui.saving=true;ui.lastSaveState='saving';if(button){button.disabled=true;button.textContent='Guardando…'}
+    try{
+      const result=await actions().savePlan?.();const now=context().cache?.plan;
+      if(!now||text(now.id)!==beforeId||Number(now.revision||0)<=beforeRev)throw new Error('El servidor no confirmó una nueva revisión del plan.');
+      ui.savedSignature=signature(context());ui.lastSaveState='saved';ui.saving=false;root.__fjzConfirmSavedV264?.('Plan nutricional guardado','Los cambios quedaron confirmados en la nube.');renderCoach();return result!==false;
+    }catch(err){ui.saving=false;ui.lastSaveState='error';root.toast?.(text(err?.message||'No se pudo guardar el plan.'));if(button){button.disabled=false;button.textContent='Guardar cambios'}const n=root.document?.getElementById('fjz4aSaveState');if(n){n.className='fjz4a-save-state error';n.innerHTML='<i></i>Error al guardar'}return false}
+  }
+  async function registerOption(mealId,optId,button){
+    const c=context(),pd=planData(c),meal=findMeal(pd,mealId),opt=findOption(pd,mealId,optId),key=text(mealId)+'|'+text(optId);
+    if(!meal||!opt||(opt.items||[]).length===0){root.toast?.('Esta opción no tiene alimentos.');return false}
+    if(c?.profile?.role!=='student'||!c?.cache?.plan||c.cache.plan.active===false||c.cache.plan.student_logging_enabled===false){root.toast?.('El registro nutricional no está habilitado.');return false}
+    if(ui.registering.has(key))return false;const sb=c?.supabase;if(!sb||!c.athleteId||!c.userId){root.toast?.('No está disponible la persistencia nutricional.');return false}
+    ui.registering.add(key);const old=button?.textContent||'Registrar hoy';if(button){button.disabled=true;button.textContent='Guardando…'}
+    try{
+      const group=(root.crypto?.randomUUID?.()||actions().uuid?.());if(!group)throw new Error('No se pudo crear la identidad del registro.');
+      const date=text(c?.cache?.date||actions().today?.()),note=optionMarker(mealId,optId);
+      const rows=(opt.items||[]).map(i=>({athlete_id:c.athleteId,student_id:c.userId,logged_on:date,meal_label:text(meal.name||'Comida'),food_id:i.food_id||null,food_name:text(i.name||'Alimento'),grams:num(i.grams),kcal:num(i.kcal),protein_g:num(i.protein_g),carbs_g:num(i.carbs_g),fat_g:num(i.fat_g),source:'plan',note,measure_type:text(i.measure_type)==='units'?'units':'grams',quantity:text(i.measure_type)==='units'?(i.quantity??null):null,unit_name:text(i.measure_type)==='units'?(i.unit_name||null):null,meal_group_id:group}));
+      if(rows.some(r=>!(r.grams>0)))throw new Error('La opción contiene una cantidad inválida.');
+      const {data,error}=await sb.from('nutrition_logs').insert(rows).select('id,meal_group_id,note');if(error)throw error;
+      if(!Array.isArray(data)||data.length!==rows.length||data.some(x=>text(x.meal_group_id)!==group||parseOptionMarker(x.note)?.optionId!==text(optId)))throw new Error('El servidor no confirmó el registro completo.');
+      await actions().load?.(true,date);root.__fjzQuickSavedV264?.('Opción registrada');root.toast?.('Opción registrada');renderStudent();return true;
+    }catch(err){root.toast?.(actions().cloudError?.(err)||text(err?.message||'No se pudo registrar la opción.'));if(button){button.disabled=false;button.textContent=old}return false}
+    finally{ui.registering.delete(key)}
+  }
+  async function deleteLog(groupId,rowId){
+    const c=context(),sb=c?.supabase;if(!sb)return false;
+    try{let q=sb.from('nutrition_logs').delete();q=groupId?q.eq('meal_group_id',groupId):q.eq('id',rowId);const {error}=await q;if(error)throw error;await actions().load?.(true,c?.cache?.date);root.__fjzQuickSavedV264?.('Cambio guardado');renderStudent();return true}catch(err){root.toast?.(actions().cloudError?.(err)||text(err?.message||'No se pudo eliminar el registro.'));return false}
+  }
+  function preview(){const c=context(),p=c?.cache?.plan,pd=planData(c);if(!p)return false;const html='<div class="fjz4a-preview-modal"><div class="fjz4a-preview-modal-head"><div><span>VISTA ALUMNO</span><h2>'+esc(p.title||'Mi alimentación')+'</h2></div><button type="button" onclick="closeModal()">Cerrar</button></div><div class="fjz4a-plan-overview compact">'+targetsHtml(p)+'</div><div class="fjz4a-meals preview">'+(pd?.meals||[]).map((m,i)=>mealStudentHtml(m,i,false,true)).join('')+'</div></div>';actions().showModal?.(html);return true}
+  function selectStudentOption(button){
+    const mid=text(button?.dataset?.meal),oid=text(button?.dataset?.option),meal=button?.closest?.('[data-4a-meal]');if(!meal)return;
+    ui.studentOptions[mid]=oid;meal.querySelectorAll('[role="tab"]').forEach(b=>{const on=text(b.dataset.option)===oid;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false')});meal.querySelectorAll('[data-4a-option]').forEach((a,i)=>{const on=text(a.dataset['4aOption'])===oid||(!text(a.dataset['4aOption'])&&i===0);a.hidden=!on;a.classList.toggle('active',on)});
+  }
+  function bindHost(host){
+    if(!host)return;host.onclick=async e=>{
+      const b=e.target.closest?.('[data-4a-action]');if(!b)return;const a=b.dataset['4aAction'];
+      if(a==='select-option'){selectStudentOption(b);return}
+      if(a==='register-option'){await registerOption(b.dataset.meal,b.dataset.option,b);return}
+      if(a==='recipes'){actions().recipes?.();return}
+      if(a==='calculator-focus'){const h=root.document?.getElementById('fjz4aCalculator');h?.scrollIntoView?.({behavior:'smooth',block:'start'});h?.focus?.({preventScroll:true});return}
+      if(a==='calculator-add'){await actions().calculatorAdd?.();return}
+      if(a==='custom-log'){actions().customLog?.();return}
+      if(a==='delete-log'){await deleteLog(b.dataset.group,b.dataset.row);return}
+      if(a==='create-plan'){await actions().createPlan?.();return}
+      if(a==='save-plan'){await savePlan(b);return}
+      if(a==='coach-meal'){ui.coachMealId=b.dataset.meal;renderCoach();return}
+      if(a==='add-meal'){actions().addMeal?.();return}
+      if(a==='rename-meal'){actions().renameMeal?.(b.dataset.meal)
