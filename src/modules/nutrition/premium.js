@@ -119,4 +119,47 @@
     try{await actions().load?.(force,c?.cache?.date);return renderStudent()}catch(err){host.innerHTML=loadErrorHtml('student',actions().cloudError?.(err)||err?.message);bindHost(host);return false}
   }
   async function startCoach(force=false){
-    const c=context();resetIdentity(c);if(c?.profil
+    const c=context();resetIdentity(c);if(c?.profile?.role!=='coach')return false;
+    const host=root.document?.getElementById('coachStudentBody');if(!host)return false;
+    host.innerHTML='<div class="fjz4a-coach-shell"><div class="fjz4a-loading">Cargando nutrición del alumno…</div></div>';
+    try{await actions().load?.(force,c?.cache?.date);return renderCoach()}catch(err){host.innerHTML=loadErrorHtml('coach',actions().cloudError?.(err)||err?.message);bindHost(host);return false}
+  }
+  function renderStudent(){
+    const c=context();resetIdentity(c);if(c?.profile?.role!=='student')return false;
+    const host=root.document?.getElementById('studentSubBody');if(!host)return false;
+    const p=c?.cache?.plan,pd=planData(c);
+    if(!p||p.active===false){host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><p>Tu espacio diario de nutrición.</p></div></header><section class="fjz4a-empty-state"><strong>Sin plan activo</strong><span>Tu coach todavía no publicó un plan nutricional activo.</span><button type="button" data-4a-action="recipes">Ver recetas disponibles</button></section>'+resourcesHtml(pd||{},true)+'</div>';bindHost(host);return true}
+    if(!ui.savedSignature)ui.savedSignature=signature(c);
+    const logging=p.student_logging_enabled!==false;
+    host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><p>'+esc(p.title||'Plan nutricional')+' · revisión '+esc(p.revision||1)+(p.updated_at?' · actualizada '+esc(actions().formatDate?.(p.updated_at)||''):'')+'</p></div><div class="fjz4a-plan-state"><i></i><strong>'+(p.active===false?'Pausado':'Plan asignado')+'</strong></div></header>'+ 
+      '<section class="fjz4a-plan-overview"><div><span>OBJETIVOS DEL PLAN</span><h2>Referencias diarias</h2><p>No representan consumo real.</p></div>'+targetsHtml(p)+(p.notes?'<aside><strong>Indicaciones del Coach</strong><p>'+esc(p.notes)+'</p></aside>':'')+'</section>'+ 
+      '<section class="fjz4a-meals"><div class="fjz4a-section-heading"><span>PLAN DEL DÍA</span><h2>Comidas y alternativas</h2><p>Elegí qué opción consultar. Cambiar de opción no registra nada.</p></div>'+((pd?.meals||[]).length?pd.meals.map((m,i)=>mealStudentHtml(m,i,logging,false)).join(''):'<div class="fjz4a-empty-block"><strong>Sin comidas cargadas</strong><span>Tu coach todavía no agregó comidas al plan.</span></div>')+'</section>'+ 
+      resourcesHtml(pd,true)+calculatorHtml(c)+consumptionHtml(c,true)+'</div>';
+    bindHost(host);actions().previewMacro?.();return true;
+  }
+  function coachMealSelected(pd){
+    const meals=pd?.meals||[];if(!meals.length)return null;
+    let m=findMeal(pd,ui.coachMealId);if(!m){m=meals[0];ui.coachMealId=text(m.id)}return m;
+  }
+  function coachOptionHtml(meal,opt,index){
+    const t=optionTotals(opt),mid=text(meal?.id),oid=text(opt?.id),editable=!!(mid&&oid);
+    return '<article class="fjz4a-coach-option"><div class="fjz4a-coach-option-head"><div><span>OPCIÓN '+(index+1)+'</span><input class="fjz4a-option-name" data-4a-action="option-name" data-meal="'+esc(mid)+'" data-option="'+esc(oid)+'" value="'+esc(opt?.name||('Opción '+(index+1)))+'" aria-label="Nombre de opción"></div>'+macrosHtml(t,'fjz4a-macros fjz4a-option-macros')+'</div><ul class="fjz4a-foods coach">'+((opt?.items||[]).length?opt.items.map(i=>itemHtml(i,true,mid,oid)).join(''):'<li class="fjz4a-empty-line">Sin alimentos en esta opción.</li>')+'</ul><div class="fjz4a-option-actions">'+(editable?'<button type="button" data-4a-action="add-food" data-meal="'+esc(mid)+'" data-option="'+esc(oid)+'">+ Alimento</button><button type="button" class="danger" data-4a-action="delete-option" data-meal="'+esc(mid)+'" data-option="'+esc(oid)+'">Eliminar opción</button>':'<span>Opción histórica sin identificador: lectura protegida.</span>')+'</div></article>';
+  }
+  function saveStateHtml(dirty){
+    const state=ui.saving?'saving':ui.lastSaveState==='error'?'error':dirty?'dirty':'saved';
+    const label=state==='saving'?'Guardando…':state==='error'?'Error al guardar':state==='dirty'?'Cambios pendientes':'Guardado';
+    return '<span id="fjz4aSaveState" class="fjz4a-save-state '+state+'"><i></i>'+label+'</span>';
+  }
+  function coachToolsHtml(){return '<div class="fjz4a-coach-tools"><button type="button" data-4a-action="preview">Vista Alumno</button><button type="button" data-4a-action="coach-calculator">Calculadora</button><button type="button" data-4a-action="coach-recipes">Recetas</button><button type="button" data-4a-action="templates">Plantillas</button><button type="button" data-4a-action="save-template">Guardar plantilla</button></div>'}
+  function renderCoach(){
+    const c=context();resetIdentity(c);if(c?.profile?.role!=='coach')return false;
+    const host=root.document?.getElementById('coachStudentBody');if(!host)return false;
+    const p=c?.cache?.plan,pd=planData(c);
+    if(p&&text(p.athlete_id)&&text(c.athleteId)&&text(p.athlete_id)!==text(c.athleteId)){host.innerHTML='<div class="fjz4a-loading">Actualizando nutrición del alumno…</div>';actions().load?.(true,c?.cache?.date).then(()=>renderCoach()).catch(()=>{});return true}
+    if(!p){host.innerHTML='<div class="fjz4a-coach-shell empty-plan"><header class="fjz4a-coach-head"><div><span>NUTRICIÓN DEL ALUMNO</span><h1>Editor nutricional</h1><p>'+esc(c?.student?.name||'Alumno')+'</p></div></header><section class="fjz4a-empty-state"><strong>Sin plan nutricional</strong><span>Creá un plan sin reemplazar ninguna otra autoridad del perfil.</span><button type="button" class="primary" data-4a-action="create-plan">Crear plan nutricional</button></section></div>';bindHost(host);return true}
+    if(!ui.savedSignature)ui.savedSignature=signature(c);
+    const dirty=signature(c)!==ui.savedSignature||ui.lastSaveState==='dirty';
+    const meal=coachMealSelected(pd),meals=pd?.meals||[];
+    host.innerHTML='<div class="fjz4a-coach-shell"><header class="fjz4a-coach-head"><div><span>ATHLETE 360 · NUTRICIÓN</span><h1>'+esc(c?.student?.name||'Alumno')+'</h1><p>'+esc(p.title||'Plan nutricional')+' · revisión '+esc(p.revision||1)+'</p></div><div class="fjz4a-coach-save">'+saveStateHtml(dirty)+'<button type="button" class="primary" data-4a-action="save-plan" '+(ui.saving?'disabled':'')+'>Guardar cambios</button></div></header>'+ 
+      '<div class="fjz4a-coach-workspace"><aside class="fjz4a-editor-rail"><div class="fjz4a-rail-head"><span>COMIDAS</span><button type="button" data-4a-action="add-meal">+ Agregar</button></div><nav aria-label="Comidas del plan">'+meals.map((m,i)=>'<button type="button" class="'+(text(m.id)===text(meal?.id)?'active':'')+'" data-4a-action="coach-meal" data-meal="'+esc(text(m.id))+'"><span>'+String(i+1).padStart(2,'0')+'</span><div><strong>'+esc(m.name||'Comida')+'</strong><small>'+((m.options||[]).length)+' opciones</small></div></button>').join('')+'</nav>'+coachToolsHtml()+'</aside><main class="fjz4a-editor-main">'+ 
+      '<section class="fjz4a-plan-settings"><div class="fjz4a-section-heading"><span>CONFIGURACIÓN DEL PLAN</span><h2>Prescripción</h2><p>Los objetivos del plan se mantienen separados del consumo registrado.</p></div><div class="fjz4a-settings-grid"><label class="span2">Nombre del plan<input id="nutTitle" value="'+esc(p.title||'Plan nutricional')+'"></label><label>Calorías<input id="nutKcal" type="number" min="0" step="1" value="'+esc(p.target_kcal??'')+'"></label><label>Proteínas (g)<input id="nutProtein" type="number" min="0" step="1" value="'+esc(p.target_protein_g??'')+'"></label><label>Carbohidratos (g)<input id="nutCarbs" type="number" min="0" step="1" value="'+esc(p.target_carbs_g??'')+'"></label><label>Grasas (g)<input id="nutFat" type="number" min="0" step="1" value="'+esc(p.target_fat_g??'')+'"></label><label class="span2">Indicaciones<textarea id="nutNotes" rows="3">'+esc(p.notes||'')+'</textarea></label><label class="fjz4a-toggle span2"><input id="nutLoggingEnabled" type="checkbox" '+(p.student_logging_enabled!==
