@@ -67,7 +67,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js
 
       - name: Create local stack and build development app
         run: |
@@ -107,7 +107,7 @@ jobs:
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A"
 
       - name: Reset local data before mobile 430
         run: python scripts/dev_reset.py
@@ -173,6 +173,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Checkout certified V22 pre-4A visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 8664d12d78a1c26b35989e2e4afec2177e458ab7
+          path: visual_refs/v22-pre4a
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Build isolated visual references against local Supabase
         run: |
           python scripts/dev_build_visual_reference.py visual_refs/v2141
@@ -181,6 +189,7 @@ jobs:
           python scripts/dev_build_visual_reference.py visual_refs/v22-pre3b
           python scripts/dev_build_visual_reference.py visual_refs/v22-3b
           python scripts/dev_build_visual_reference.py visual_refs/v22-3c
+          python scripts/dev_build_visual_reference.py visual_refs/v22-pre4a
 
       - name: Start isolated visual reference servers
         shell: bash
@@ -192,7 +201,8 @@ jobs:
           python -m http.server 8004 -d visual_refs/v22-pre3b/public > /tmp/fjz-v22-pre3b-http.log 2>&1 &
           python -m http.server 8005 -d visual_refs/v22-3b/public > /tmp/fjz-v22-3b-http.log 2>&1 &
           python -m http.server 8006 -d visual_refs/v22-3c/public > /tmp/fjz-v22-3c-http.log 2>&1 &
-          for port in 8001 8002 8003 8004 8005 8006; do
+          python -m http.server 8007 -d visual_refs/v22-pre4a/public > /tmp/fjz-v22-pre4a-http.log 2>&1 &
+          for port in 8001 8002 8003 8004 8005 8006 8007; do
             for i in {1..20}; do
               curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
               sleep 1
@@ -249,6 +259,13 @@ jobs:
           python scripts/dev_reset.py
           node scripts/capture_3c_ux_final.js artifacts/3c-ux-comparison http://127.0.0.1:8000 http://127.0.0.1:8006
 
+      - name: Capture Nutrition Premium 4A comparison and operational states
+        env:
+          FJZ_E2E_PASSWORD: TEAMFJZ-Local-Only!22
+        run: |
+          python scripts/dev_reset.py
+          node scripts/capture_4a_nutrition.js artifacts/4a-comparison http://127.0.0.1:8001 http://127.0.0.1:8007 http://127.0.0.1:8000
+
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -267,6 +284,7 @@ jobs:
             artifacts/3b-comparison
             artifacts/3c-comparison
             artifacts/3c-ux-comparison
+            artifacts/4a-comparison
           if-no-files-found: ignore
           retention-days: 14
 
@@ -295,6 +313,15 @@ jobs:
           name: v22-3c-ux-final-polish-screens
           path: artifacts/3c-ux-comparison
           if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Nutrition Premium 4A visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-4a-nutrition-premium-screens
+          path: artifacts/4a-comparison
+          if-no-files-found: error
           retention-days: 14
 
       - name: Final isolation and QA gate
