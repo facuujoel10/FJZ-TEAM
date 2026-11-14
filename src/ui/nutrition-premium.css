@@ -54,3 +54,18 @@
 
 .fjz4a-plan-title{display:block;margin-top:7px;font-size:13px;color:#f4f5f7;font-weight:750}
 .fjz4a-log-date{display:inline-flex;align-items:center;gap:8px;margin-top:10px;color:#8f95a0;font-size:10px}.fjz4a-log-date input{min-height:38px;border:1px solid #2b3039;background:#101319;color:#f6f7f8;border-radius:9px;padding:7px 9px}
+
+
+/* V22 4A mobile geometry hardening: contain the Coach workspace while preserving its intentional horizontal rails. */
+.fjz4a-coach-shell,.fjz4a-coach-workspace,.fjz4a-editor-rail,.fjz4a-editor-main,.fjz4a-plan-settings,.fjz4a-meal-editor{width:100%;max-width:100%;min-width:0}
+.fjz4a-coach-shell{overflow-x:clip}
+@media(max-width:900px){
+  .fjz4a-editor-rail nav,.fjz4a-coach-tools{width:100%;max-width:100%;min-width:0}
+  .fjz4a-coach-tools{display:flex;grid-template-columns:none;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+  .fjz4a-coach-tools::-webkit-scrollbar{display:none}
+  .fjz4a-coach-tools button{flex:0 0 120px}
+}
+@media(max-width:620px){
+  .fjz4a-coach-tools{grid-template-columns:none}
+  .fjz4a-coach-tools button{flex-basis:132px}
+}
