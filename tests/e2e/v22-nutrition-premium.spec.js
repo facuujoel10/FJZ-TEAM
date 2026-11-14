@@ -20,7 +20,7 @@ test.describe('V22 4A Nutrition Premium',()=>{
   test('V22 4A alumno: plan premium, alternativas, macros y selección visual sin consumo inventado',async({page})=>{
     await login(page);await openStudentNutrition(page);
     await expect(page.getByRole('heading',{name:'Mi alimentación'})).toBeVisible();await expect(page.locator('.fjz4a-student-shell')).toContainText('PLAN QA A');
-    await expect(page.locator('.fjz4a-targets')).toContainText(/2200/);await expect(page.locator('.fjz4a-targets')).toContainText(/160/);
+    await expect(page.locator('.fjz4a-targets')).toContainText(/2[.\\s]?200/);await expect(page.locator('.fjz4a-targets')).toContainText(/160/);
     await page.evaluate(()=>{const p=__fjzNutritionContextV22().cache.plan.plan;const m=p.meals.find(x=>x.id==='meal_qa_breakfast');m.options.push({id:'opt_qa_1b',name:'Opción QA 1B',items:[{id:'item_qa_1b',name:'QA Tostadas ficticias',grams:60,kcal:150,protein_g:6,carbs_g:28,fat_g:2,measure_type:'units',quantity:2,unit_name:'tostadas',grams_per_unit:30}]});TeamFJZNutritionPremium.renderStudent()});
     const breakfast=page.locator('.fjz4a-meal',{hasText:'Desayuno'});const tabs=breakfast.locator('[role="tab"]');await expect(tabs).toHaveCount(2);
     const logsBefore=await page.locator('.nutrition-log-row').count();await tabs.nth(1).click();await expect(tabs.nth(1)).toHaveAttribute('aria-selected','true');
@@ -39,7 +39,7 @@ test.describe('V22 4A Nutrition Premium',()=>{
 
   test('V22 4A recetas y calculadora reutilizan herramientas existentes',async({page})=>{
     await login(page);await openStudentNutrition(page);await page.getByRole('button',{name:/Recetas/i}).first().click();
-    await expect(page.getByText('Receta QA local',{exact:true})).toBeVisible({timeout:15000});await page.getByRole('button',{name:'Ver receta'}).first().click();await expect(page.locator('#modal')).toContainText('Ingrediente QA');await page.locator('#modal').getByRole('button',{name:/Cerrar|✕/}).first().click();
+    const recipe=page.locator('.v70-recipe-card',{hasText:'Receta QA local'});await expect(recipe).toBeVisible({timeout:15000});await recipe.getByRole('button',{name:'Ver receta'}).click();await expect(page.locator('#modal')).toContainText('Ingrediente QA');await page.locator('#modal').getByRole('button',{name:/Cerrar|✕/}).first().click();
     await page.getByRole('button',{name:/Mi plan/i}).first().click();await expect(page.locator('.fjz4a-student-shell')).toBeVisible({timeout:15000});await page.getByRole('button',{name:/Calculadora/i}).first().click();
     await expect(page.locator('#macroFood')).toBeVisible();await expect(page.locator('#macroPreview')).toContainText(/Proteína|Calorías/i);await noOverflow(page);
   });

@@ -16,6 +16,16 @@ required=[
 ]
 for marker in required:
     if marker not in html: raise RuntimeError("V22 4A prerequisite missing: "+marker)
+# V22 4A recipe compatibility: historical recipes may store ingredient rows as objects.
+old_recipe_search="${r.title} ${r.description} ${(r.ingredients||[]).join(' ')} ${(r.tags||[]).join(' ')}"
+new_recipe_search="${r.title} ${r.description} ${(r.ingredients||[]).map(x=>typeof x==='object'?Object.values(x||{}).join(' '):x).join(' ')} ${(r.tags||[]).join(' ')}"
+if html.count(old_recipe_search)!=1: raise RuntimeError("V22 4A recipe search anchor changed")
+html=html.replace(old_recipe_search,new_recipe_search,1)
+old_recipe_items="${(r.ingredients||[]).map(x=>\`<li>${esc(x)}</li>\`).join('')}"
+new_recipe_items="${(r.ingredients||[]).map(x=>{const n=typeof x==='object'?(x?.name||x?.food||x?.ingredient||''):x;const a=typeof x==='object'?(x?.amount||x?.quantity||x?.qty||''):'';return \`<li>${esc([n,a].filter(Boolean).join(' · '))}</li>\`}).join('')}"
+if html.count(old_recipe_items)!=1: raise RuntimeError("V22 4A recipe ingredient anchor changed")
+html=html.replace(old_recipe_items,new_recipe_items,1)
+
 js=pathlib.Path("src/modules/nutrition/premium.js").read_text(encoding="utf-8")
 css=pathlib.Path("src/ui/nutrition-premium.css").read_text(encoding="utf-8")
 if "</script" in js.lower(): raise RuntimeError("V22 4A module contains closing script markup")
@@ -75,6 +85,7 @@ bridge=r'''<script id="v22NutritionPremiumAuthorityBridge">
     toggleHabit:(id,on)=>typeof toggleCoachHabitV66==='function'?toggleCoachHabitV66(id,on):false,
     deleteHabit:id=>typeof deleteCustomHabitV66==='function'?deleteCustomHabitV66(id):false,
     calculatorAdd:()=>typeof addCalculatorLog==='function'?addCalculatorLog():false,
+    changeDate:d=>typeof changeNutritionLogDate==='function'?changeNutritionLogDate(d):false,
     customLog:()=>typeof openCustomMacroLog==='function'?openCustomMacroLog():false,
     previewMacro:()=>typeof updateMacroPreview==='function'?updateMacroPreview():false,
     showModal:body=>showModal(body),
