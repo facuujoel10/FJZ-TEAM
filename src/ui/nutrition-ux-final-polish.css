@@ -265,6 +265,23 @@
 }
 
 @media(max-width:380px){
+  .fjz4a-student-shell .fjz4a-option-tabs button,
+  .fjz4a-student-shell .fjz4a-register{
+    min-height:48px!important;
+  }
+  .fjz4a-student-shell .fjz4a-macros>div,
+  .fjz4a-student-shell .fjz4a-targets>div{
+    min-width:0!important;
+  }
+  .fjz4a-student-shell .fjz4a-macros span,
+  .fjz4a-student-shell .fjz4a-targets span,
+  .fjz4a-student-shell .fjz4a-macros strong,
+  .fjz4a-student-shell .fjz4a-targets strong{
+    max-width:100%;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+
   .fjz4a-student-shell .fjz4a-targets span,
   .fjz4a-student-shell .fjz4a-macros span{font-size:7px}
   .fjz4a-student-shell .fjz4a-targets strong,
