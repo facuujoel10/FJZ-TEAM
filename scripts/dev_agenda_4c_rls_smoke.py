@@ -8,11 +8,12 @@ def main():
     st=local_status();api=st["api"];pub=st["publishable"]
     coach=login(api,pub,"coach@test.local");s1=login(api,pub,"alumno01@test.local");s2=login(api,pub,"alumno02@test.local");out=login(api,pub,"outsider-coach@test.local")
     # Existing weekly schedule must be visible to owner + coach and isolated from another student.
-    own=rest(api,pub,s1,"GET","athlete_schedule?select=id,athlete_id,weekday,start_time&athlete_id=eq."+A1)
+    own=rest(api,pub,s1,"GET","athlete_schedule?select=id,athlete_id,coach_id,weekday,start_time&athlete_id=eq."+A1)
     assert own and own[0]["athlete_id"]==A1,own
+    coach_id=own[0]["coach_id"];assert coach_id,own
     assert rest(api,pub,s2,"GET","athlete_schedule?select=id&athlete_id=eq."+A1)==[]
     # Create a real one-off agenda event through the same table used by the app.
-    payload={"athlete_id":A1,"title":"QA 4C seguimiento","body":"Evento local ficticio","category":"custom","schedule_type":"once","reminder_date":DATE,"remind_time":"17:00","active":True}
+    payload={"athlete_id":A1,"coach_id":coach_id,"title":"QA 4C seguimiento","body":"Evento local ficticio","category":"custom","schedule_type":"once","reminder_date":DATE,"remind_time":"17:00","active":True}
     created=rest(api,pub,coach,"POST","athlete_reminders",payload,prefer="return=representation")
     assert len(created)==1,created
     rid=created[0]["id"]
