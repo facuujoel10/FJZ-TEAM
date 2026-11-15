@@ -1070,6 +1070,9 @@ exec(compile(open("v347_v22_3b_athlete_360_workspace.py", encoding="utf-8").read
 # V22 Etapa 4A Nutrition Premium: bounded nutrition presentation and persistence orchestration.
 exec(compile(open("v348_v22_4a_nutrition_premium.py", encoding="utf-8").read(), "v348_v22_4a_nutrition_premium.py", "exec"))
 
+# V22 Etapa 4A-UX Nutrition final polish: CSS-only hierarchy and responsive composition.
+exec(compile(open("v349_v22_4a_ux_nutrition_final_polish.py", encoding="utf-8").read(), "v349_v22_4a_ux_nutrition_final_polish.py", "exec"))
+
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
     exec(compile(open("staging_local_guard.py", encoding="utf-8").read(), "staging_local_guard.py", "exec"))
