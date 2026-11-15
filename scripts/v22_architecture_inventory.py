@@ -57,6 +57,9 @@ if artifact.exists():
         "progress_checkins_premium":'id="v22ProgressCheckinsPremiumRuntime"' in html,
         "progress_checkins_premium_flag":'meta name="fjz-v22-4b-progress-checkins-premium" content="22.4B"' in html,
         "progress_checkins_premium_bridge":'id="v22ProgressCheckinsAuthorityBridge"' in html,
+        "agenda_premium":'id="v22AgendaPremiumRuntime"' in html,
+        "agenda_premium_flag":'meta name="fjz-v22-4c-agenda-premium" content="22.4C"' in html,
+        "agenda_premium_bridge":'id="v22AgendaPremiumAuthorityBridge"' in html,
     }
 result={
  "build_patch_count":len(patches),"first_patches":patches[:10],"last_patches":patches[-12:],
@@ -89,22 +92,24 @@ result={
     "nutrition_premium_ui":(ROOT/"src/ui/nutrition-premium.css").exists(),
     "nutrition_ux_final_polish_ui":(ROOT/"src/ui/nutrition-ux-final-polish.css").exists(),
     "progress_checkins_premium_module":(ROOT/"src/modules/tracking/progress-checkins-premium.js").exists(),
-    "progress_checkins_premium_ui":(ROOT/"src/ui/progress-checkins-premium.css").exists()
+    "progress_checkins_premium_ui":(ROOT/"src/ui/progress-checkins-premium.css").exists(),
+    "agenda_premium_module":(ROOT/"src/modules/agenda/agenda-premium.js").exists(),
+    "agenda_premium_ui":(ROOT/"src/ui/agenda-premium.css").exists()
  }
 }
 if __name__=="__main__":
     parser=argparse.ArgumentParser();parser.add_argument("--check",action="store_true");args=parser.parse_args()
     if args.check:
-        required=["v342_v22_0c_ui_authority.py","v343_v22_1a_architecture_foundation.py","v344_v22_2a_premium_workout.py","v345_v22_2c_intelligent_training.py","v346_v22_3a_coach_command_center.py","v347_v22_3b_athlete_360_workspace.py","v348_v22_4a_nutrition_premium.py","v349_v22_4a_ux_nutrition_final_polish.py","v350_v22_4b_progress_checkins_premium.py"]
+        required=["v342_v22_0c_ui_authority.py","v343_v22_1a_architecture_foundation.py","v344_v22_2a_premium_workout.py","v345_v22_2c_intelligent_training.py","v346_v22_3a_coach_command_center.py","v347_v22_3b_athlete_360_workspace.py","v348_v22_4a_nutrition_premium.py","v349_v22_4a_ux_nutrition_final_polish.py","v350_v22_4b_progress_checkins_premium.py","v351_v22_4c_agenda_premium.py"]
         if not all(x in patches for x in required): raise SystemExit("V22 3B build order markers missing")
         if not all(patches.index(required[i])<patches.index(required[i+1]) for i in range(len(required)-1)): raise SystemExit("V22 3B bridge order invalid")
         if not all(result["contracts"].values()): raise SystemExit("V22 1A canonical contracts missing")
         if not runtime.get("date_core") or not runtime.get("date_pilot"): raise SystemExit("V22 1A generated date pilot missing")
-        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag","intelligent_training_module","intelligent_training_flag","comment_repository_runtime","comment_repository_flag","coach_command_center","coach_command_center_flag","athlete_360_workspace","athlete_360_flag","athlete_360_bridge","coach_analytics","coach_analytics_flag","coach_ux_final_polish","nutrition_premium","nutrition_premium_flag","nutrition_premium_bridge","nutrition_ux_final_polish","progress_checkins_premium","progress_checkins_premium_flag","progress_checkins_premium_bridge"):
+        for key in ("read_errors","agenda_repository","agenda_read_policy","agenda_repository_integration","agenda_repository_flag","second_date_pilot","premium_workout_module","premium_workout_flag","premium_workout_ui","session_history_module","session_history_flag","exact_session_comments","premium_history","visual_redesign_module","visual_redesign_flag","intelligent_training_module","intelligent_training_flag","comment_repository_runtime","comment_repository_flag","coach_command_center","coach_command_center_flag","athlete_360_workspace","athlete_360_flag","athlete_360_bridge","coach_analytics","coach_analytics_flag","coach_ux_final_polish","nutrition_premium","nutrition_premium_flag","nutrition_premium_bridge","nutrition_ux_final_polish","progress_checkins_premium","progress_checkins_premium_flag","progress_checkins_premium_bridge","agenda_premium","agenda_premium_flag","agenda_premium_bridge"):
             if not runtime.get(key): raise SystemExit("V22 runtime marker missing: "+key)
         expected={"render_assignments":18,"channels":2,"timeouts":57,"intervals":0,"listeners":51,"mutation_observers":3}
         actual={k:runtime.get(k) for k in expected}
         if actual!=expected: raise SystemExit("V22 1C topology regression: "+repr({"expected":expected,"actual":actual}))
-        if len(patches)!=235: raise SystemExit("V22 4B requires exactly one bounded patch after certified 4A-UX; count="+str(len(patches)))
-    print("TEAM FJZ V22 4B ARCHITECTURE INVENTORY")
+        if len(patches)!=236: raise SystemExit("V22 4C requires exactly one bounded patch after certified 4B; count="+str(len(patches)))
+    print("TEAM FJZ V22 4C ARCHITECTURE INVENTORY")
     print(json.dumps(result,indent=2,ensure_ascii=False))
