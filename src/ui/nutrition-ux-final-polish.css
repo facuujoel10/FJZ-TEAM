@@ -256,15 +256,8 @@
   .fjz4a-meal-editor-head{margin-bottom:9px}
 }
 
-/* Final mobile touch contract: override any certified legacy geometry. */
+/* Final mobile touch + macro contract: one geometry for 360/390/430. */
 @media(max-width:620px){
-  .fjz4a-student-shell .fjz4a-option-tabs button,
-  .fjz4a-student-shell .fjz4a-register{
-    min-height:44px!important;
-  }
-}
-
-@media(max-width:380px){
   .fjz4a-student-shell .fjz4a-option-tabs button,
   .fjz4a-student-shell .fjz4a-register{
     min-height:48px!important;
@@ -281,6 +274,9 @@
     overflow-wrap:anywhere;
     word-break:normal;
   }
+}
+
+@media(max-width:380px){
 
   .fjz4a-student-shell .fjz4a-targets span,
   .fjz4a-student-shell .fjz4a-macros span{font-size:7px}
