@@ -28,6 +28,20 @@ sm=styles[0]
 html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end("body"):]
 html=html.replace("</head>",'<meta name="fjz-v22-4c-agenda-premium" content="22.4C">\n</head>',1)
 
+# Route the inherited V8.1 Coach Agenda dispatcher to the premium hook. This edits the existing dispatcher;
+# it does not add a render wrapper or a new navigation authority.
+legacy_agenda_dispatch_old="""renderCoach=function(){
+  if(coachTab==='agenda')return renderCoachAgendaV81();
+  return _renderCoachV81Base()
+};"""
+legacy_agenda_dispatch_new="""renderCoach=function(){
+  if(coachTab==='agenda'&&typeof window.__fjzRenderAgendaPremiumCoachV22==='function')return window.__fjzRenderAgendaPremiumCoachV22();
+  if(coachTab==='agenda')return renderCoachAgendaV81();
+  return _renderCoachV81Base()
+};"""
+if html.count(legacy_agenda_dispatch_old)!=1: raise RuntimeError("V22 4C legacy Agenda dispatcher anchor changed")
+html=html.replace(legacy_agenda_dispatch_old,legacy_agenda_dispatch_new,1)
+
 # Integrate 4C into the already-certified Coach dispatcher without wrapping global render.
 coach_dispatch_old="""  window.renderCoach=function(){
     if(coachTab==='dashboard'&&typeof window.__fjzAthlete360ResumeRouteV22==='function'&&window.__fjzAthlete360ResumeRouteV22()&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
@@ -136,9 +150,10 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   if(typeof athlete360Render!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 hook missing");
   window.__fjzRenderAthlete360V22=function(){
     const out=athlete360Render.apply(this,arguments);
-    if(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='agenda'){
-      queueMicrotask(()=>coachAthleteAgenda4C());
-    }
+    const athleteAgendaActive=currentProfile?.role==='coach'&&coachTab==='student'&&(
+      coachStudentTab==='agenda'||window.__fjzAthlete360StateV22?.sectionOverride==='agenda'
+    );
+    if(athleteAgendaActive)queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
 
