@@ -20,17 +20,35 @@ async function verifiedShot(page,name,fullPage=false,strict=true){
  if(strict&&(css.rootScrollWidth>css.rootClientWidth+2||css.maxScrollX>2||(css.shellRect&&(css.shellRect.left<-2||css.shellRect.right>css.width+2))))throw Error('Horizontal page overflow '+name+' '+JSON.stringify(css));
  const file=path.join(out,name+(fullPage?'-full':'-viewport')+'.png');
  const fullCssHeight=Math.max(css.scrollHeight,css.bodyScrollHeight,css.height);
- const shot=fullPage&&strict
-   ?{path:file,clip:{x:0,y:0,width:css.width,height:fullCssHeight},captureBeyondViewport:true}
-   :{path:file,fullPage};
- const buf=await page.screenshot(shot);const png=pngSize(buf);
- const expectedWidth=Math.round(css.width*css.dpr),expectedHeight=Math.round(css.height*css.dpr),expectedFullHeight=Math.round(fullCssHeight*css.dpr);
+ let buf=null,captureCssHeight=fullCssHeight,captureMode=fullPage&&strict?'expanded-viewport-document-height':'playwright-full-page';
+ if(fullPage&&strict){
+   const original={width:vp.width,height:vp.height};
+   try{
+     await page.evaluate(()=>scrollTo(0,0));
+     await page.setViewportSize({width:css.width,height:Math.ceil(fullCssHeight)});
+     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     captureCssHeight=await page.evaluate(()=>Math.max(document.documentElement.scrollHeight,document.body?.scrollHeight||0,innerHeight));
+     if(captureCssHeight>page.viewportSize().height+1){
+       await page.setViewportSize({width:css.width,height:Math.ceil(captureCssHeight)});
+       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+       captureCssHeight=await page.evaluate(()=>Math.max(document.documentElement.scrollHeight,document.body?.scrollHeight||0,innerHeight));
+     }
+     await page.evaluate(()=>scrollTo(0,0));
+     buf=await page.screenshot({path:file,fullPage:false});
+   }finally{
+     await page.setViewportSize(original);
+   }
+ }else{
+   buf=await page.screenshot({path:file,fullPage});
+ }
+ const png=pngSize(buf);
+ const expectedWidth=Math.round(css.width*css.dpr),expectedHeight=Math.round(css.height*css.dpr),expectedFullHeight=Math.round(captureCssHeight*css.dpr);
  const widthMatches=png.width===expectedWidth;
  if(strict&&!widthMatches)throw Error('PNG width/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedWidth}));
  if(strict&&!fullPage&&png.height!==expectedHeight)throw Error('PNG viewport height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedHeight}));
- if(strict&&fullPage&&png.height!==expectedFullHeight)throw Error('PNG full-page height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedFullHeight}));
+ if(strict&&fullPage&&png.height!==expectedFullHeight)throw Error('PNG full-page height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedFullHeight,captureCssHeight}));
  if(!strict&&fullPage&&png.height<expectedHeight)throw Error('Full PNG shorter than viewport '+name+' '+JSON.stringify({css,png,expectedHeight}));
- fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight,rootScrollWidth:css.rootScrollWidth,rootClientWidth:css.rootClientWidth,maxScrollX:css.maxScrollX,shellRect:css.shellRect},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight,fullPageHeight:expectedFullHeight},widthMatchesCssDpr:widthMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage,fullPageCaptureMode:fullPage&&strict?'viewport-width-document-height':'playwright-full-page'},null,2));
+ fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight,rootScrollWidth:css.rootScrollWidth,rootClientWidth:css.rootClientWidth,maxScrollX:css.maxScrollX,shellRect:css.shellRect},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight,fullPageHeight:expectedFullHeight},captureCssHeight,widthMatchesCssDpr:widthMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage,fullPageCaptureMode:captureMode},null,2));
 }
 async function login(page,url,email){await page.goto(url,{waitUntil:'domcontentloaded'});const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill(email);await page.locator('#authPass').fill(PASSWORD);await page.locator('#authGate .btn.primary').click()}await gate.waitFor({state:'hidden',timeout:20000});await page.locator('#view').waitFor({state:'visible',timeout:15000})}
 async function openStudentNutrition(page){const b=page.getByRole('button',{name:/^Nutrición$/}).first();await b.waitFor({state:'visible',timeout:15000});await b.click();await page.waitForTimeout(500)}
