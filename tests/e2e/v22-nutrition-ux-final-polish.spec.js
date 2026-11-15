@@ -35,8 +35,8 @@ test.describe('V22 4A-UX Nutrition final polish',()=>{
     await tab.click();await expect(tab).toHaveAttribute('aria-selected','true');await expect(meal.locator('.meal-option-student:visible')).toContainText('QA Tostadas UX');
     const after=await page.evaluate(async()=>{const c=__fjzNutritionContextV22();const {count,error}=await c.supabase.from('nutrition_logs').select('id',{count:'exact',head:true}).eq('athlete_id',c.athleteId);if(error)throw error;return count||0});
     expect(after).toBe(before);
-    const dims=await page.evaluate(()=>({macro:[...document.querySelectorAll('.fjz4a-macros')].map(x=>[x.scrollWidth,x.clientWidth]),touch:[...document.querySelectorAll('.fjz4a-option-tabs button,.fjz4a-register')].map(x=>x.getBoundingClientRect().height)}));
-    expect(dims.macro.every(([sw,cw])=>sw<=cw+2)).toBeTruthy();expect(dims.touch.every(h=>h>=40)).toBeTruthy();await noOverflow(page);
+    const dims=await page.evaluate(()=>({w:innerWidth,macro:[...document.querySelectorAll('.fjz4a-macros')].filter(x=>x.getClientRects().length).map(x=>[x.scrollWidth,x.clientWidth]),touch:[...document.querySelectorAll('.fjz4a-option-tabs button,.fjz4a-register')].filter(x=>x.getClientRects().length).map(x=>x.getBoundingClientRect().height)}));
+    expect(dims.macro.every(([sw,cw])=>sw<=cw+2)).toBeTruthy();expect(dims.touch.length).toBeGreaterThan(0);expect(dims.touch.every(h=>h>=(dims.w<=620?44:40))).toBeTruthy();await noOverflow(page);
   });
 
   test('V22 4A-UX Coach: editor principal entra en primer viewport y no duplica cabeceras',async({page})=>{
