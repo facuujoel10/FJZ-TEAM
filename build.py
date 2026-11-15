@@ -1071,7 +1071,10 @@ exec(compile(open("v347_v22_3b_athlete_360_workspace.py", encoding="utf-8").read
 exec(compile(open("v348_v22_4a_nutrition_premium.py", encoding="utf-8").read(), "v348_v22_4a_nutrition_premium.py", "exec"))
 
 # V22 Etapa 4A-UX Nutrition final polish: CSS-only hierarchy and responsive composition.
-exec(compile(open("v349_v22_4a_ux_nutrition_final_polish.py", encoding="utf-8").read(), "v349_v22_4a_ux_nutrition_final_polish.py", "exec"))\n\n# V22 Etapa 4B Progress + Check-ins Premium: bounded tracking presentation over certified authorities.\nexec(compile(open("v350_v22_4b_progress_checkins_premium.py", encoding="utf-8").read(), "v350_v22_4b_progress_checkins_premium.py", "exec"))
+exec(compile(open("v349_v22_4a_ux_nutrition_final_polish.py", encoding="utf-8").read(), "v349_v22_4a_ux_nutrition_final_polish.py", "exec"))
+
+# V22 Etapa 4B Progress + Check-ins Premium: bounded tracking presentation over certified authorities.
+exec(compile(open("v350_v22_4b_progress_checkins_premium.py", encoding="utf-8").read(), "v350_v22_4b_progress_checkins_premium.py", "exec"))
 
 # Safe zero-cost local staging: synthetic/demo data only, cloud hard-disabled.
 if APP_ENV == "staging-local":
