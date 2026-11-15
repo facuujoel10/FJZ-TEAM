@@ -256,8 +256,40 @@
   .fjz4a-meal-editor-head{margin-bottom:9px}
 }
 
-/* Final mobile touch + macro contract: one geometry for 360/390/430. */
+/* Final mobile touch + macro contract: one geometry for 360/390/430.
+   2x2 preserves compactness without splitting labels or numeric targets. */
 @media(max-width:620px){
+  .fjz4a-student-shell .fjz4a-targets,
+  .fjz4a-student-shell .fjz4a-macros{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .fjz4a-student-shell .fjz4a-targets>div,
+  .fjz4a-student-shell .fjz4a-macros>div{
+    min-width:0!important;
+    padding:7px 9px!important;
+  }
+  .fjz4a-student-shell .fjz4a-targets span,
+  .fjz4a-student-shell .fjz4a-macros span{
+    min-height:0!important;
+    font-size:8px!important;
+    white-space:nowrap;
+    overflow-wrap:normal!important;
+  }
+  .fjz4a-student-shell .fjz4a-targets strong,
+  .fjz4a-student-shell .fjz4a-macros strong{
+    display:inline!important;
+    font-size:15px!important;
+    white-space:nowrap;
+    overflow-wrap:normal!important;
+  }
+  .fjz4a-student-shell .fjz4a-targets small,
+  .fjz4a-student-shell .fjz4a-macros small{
+    display:inline!important;
+    margin-left:3px;
+    font-size:8px!important;
+    white-space:nowrap;
+  }
+
   .fjz4a-student-shell .fjz4a-option-tabs button,
   .fjz4a-student-shell .fjz4a-register{
     min-height:48px!important;

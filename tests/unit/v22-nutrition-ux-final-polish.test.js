@@ -29,7 +29,7 @@ test('V22 4A-UX define jerarquía mobile y desktop explícita',()=>{
   const css=fs.readFileSync('src/ui/nutrition-ux-final-polish.css','utf8');
   assert.match(css,/@media\(max-width:620px\)/);
   assert.match(css,/#studentMainTabs\{display:none!important\}/);
-  assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
   assert.match(css,/position:static!important/);
   assert.match(css,/@media\(min-width:901px\)/);
   assert.match(css,/grid-template-columns:minmax\(0,1\.45fr\) minmax\(310px,\.72fr\)/);
