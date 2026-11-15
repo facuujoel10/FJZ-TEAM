@@ -28,6 +28,25 @@ sm=styles[0]
 html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end("body"):]
 html=html.replace("</head>",'<meta name="fjz-v22-4c-agenda-premium" content="22.4C">\n</head>',1)
 
+# Integrate 4C into the already-certified Coach dispatcher without wrapping global render.
+coach_dispatch_old="""  window.renderCoach=function(){
+    if(coachTab==='dashboard'&&typeof window.__fjzAthlete360ResumeRouteV22==='function'&&window.__fjzAthlete360ResumeRouteV22()&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
+    if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')return window.__fjzRenderCoachCommandCenterV22();
+    if(coachTab==='dashboard')return renderCoachDashboardV170();
+    if(coachTab==='student'&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
+    return baseRenderCoachV170.apply(this,arguments);
+  };"""
+coach_dispatch_new="""  window.renderCoach=function(){
+    if(coachTab==='dashboard'&&typeof window.__fjzAthlete360ResumeRouteV22==='function'&&window.__fjzAthlete360ResumeRouteV22()&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
+    if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')return window.__fjzRenderCoachCommandCenterV22();
+    if(coachTab==='dashboard')return renderCoachDashboardV170();
+    if(coachTab==='agenda'&&typeof window.__fjzRenderAgendaPremiumCoachV22==='function')return window.__fjzRenderAgendaPremiumCoachV22();
+    if(coachTab==='student'&&typeof window.__fjzRenderAthlete360V22==='function')return window.__fjzRenderAthlete360V22();
+    return baseRenderCoachV170.apply(this,arguments);
+  };"""
+if html.count(coach_dispatch_old)!=1: raise RuntimeError("V22 4C Coach dispatcher anchor changed")
+html=html.replace(coach_dispatch_old,coach_dispatch_new,1)
+
 bridge=r'''<script id="v22AgendaPremiumAuthorityBridge">
 (function(){
   let repoV22=null;
@@ -111,6 +130,14 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   window.renderStudentAgendaV81=studentAgenda4C;try{renderStudentAgendaV81=studentAgenda4C}catch(_e){}
   window.renderCoachAgendaV81=coachAgenda4C;try{renderCoachAgendaV81=coachAgenda4C}catch(_e){}
   window.renderCoachStudentAgendaV81=coachAthleteAgenda4C;try{renderCoachStudentAgendaV81=coachAthleteAgenda4C}catch(_e){}
+  window.__fjzRenderAgendaPremiumCoachV22=coachAgenda4C;
+
+  const athlete360Render=window.__fjzRenderAthlete360V22;
+  if(typeof athlete360Render!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 hook missing");
+  window.__fjzRenderAthlete360V22=function(){
+    if(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='agenda')return coachAthleteAgenda4C();
+    return athlete360Render.apply(this,arguments);
+  };
 
   window.__fjzAgendaPremiumRefreshV22=function(){
     try{
