@@ -61,7 +61,7 @@ jobs:
         run: python scripts/dev_guard.py
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js tests/unit/v22-nutrition-ux-final-polish.test.js tests/unit/v22-progress-checkins-premium.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js tests/unit/v22-nutrition-ux-final-polish.test.js tests/unit/v22-progress-checkins-premium.test.js tests/unit/v22-agenda-premium.test.js
 
       - name: Negative isolation tests
         run: python scripts/dev_negative_guard.py
@@ -83,6 +83,9 @@ jobs:
 
       - name: Progress + Check-ins 4B local Auth/RLS contract
         run: python scripts/dev_progress_checkins_4b_rls_smoke.py
+
+      - name: Agenda Premium 4C local Auth/RLS + sync contract
+        run: python scripts/dev_agenda_4c_rls_smoke.py
 
       - name: 2B session/comment integrity Auth/RLS contract
         run: python scripts/dev_session_comment_integrity_smoke.py
@@ -110,6 +113,9 @@ jobs:
 
       - name: Repeat Nutrition Premium 4A Auth/RLS after database recreation
         run: python scripts/dev_nutrition_4a_rls_smoke.py
+
+      - name: Repeat Agenda Premium 4C Auth/RLS + sync after database recreation
+        run: python scripts/dev_agenda_4c_rls_smoke.py
 
       - name: Repeat 2B session/comment integrity after database recreation
         run: python scripts/dev_session_comment_integrity_smoke.py
