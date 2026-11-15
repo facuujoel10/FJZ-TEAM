@@ -100,7 +100,11 @@ bridge=r'''<script id="v22AgendaPremiumAuthorityBridge">
     for(const s of (state?.students||[])){
       const athlete=athleteForStudent(s);if(!athlete?.id)continue;
       try{rows.push({student:s,athlete:{...athlete,name:s.name||athlete.name||'Alumno'},data:await loadAthlete(athlete.id,force)})}
-      catch(e){if(e?.kind==='authorization')throw e}
+      catch(e){
+        // RLS-hidden portfolio rows are omitted fail-closed; transport/data errors remain explicit.
+        if(e?.kind==='authorization')continue;
+        throw e;
+      }
     }
     return rows;
   }
@@ -148,12 +152,18 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
 
   const athlete360Render=window.__fjzRenderAthlete360V22;
   if(typeof athlete360Render!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 hook missing");
+  const athleteAgendaActive=()=>currentProfile?.role==='coach'&&coachTab==='student'&&(
+    coachStudentTab==='agenda'||window.__fjzAthlete360StateV22?.sectionOverride==='agenda'
+  );
   window.__fjzRenderAthlete360V22=function(){
     const out=athlete360Render.apply(this,arguments);
-    const athleteAgendaActive=currentProfile?.role==='coach'&&coachTab==='student'&&(
-      coachStudentTab==='agenda'||window.__fjzAthlete360StateV22?.sectionOverride==='agenda'
-    );
-    if(athleteAgendaActive)queueMicrotask(()=>coachAthleteAgenda4C());
+    if(athleteAgendaActive())queueMicrotask(()=>coachAthleteAgenda4C());
+    return out;
+  };
+  const afterAthleteHydrate=window.__fjzAfterAthlete360HydrateV22;
+  window.__fjzAfterAthlete360HydrateV22=function(payload){
+    let out;try{out=afterAthleteHydrate?.apply(this,arguments)}catch(_e){}
+    if(payload?.ok!==false&&athleteAgendaActive())queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
 
