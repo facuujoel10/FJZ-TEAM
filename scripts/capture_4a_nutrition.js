@@ -22,9 +22,22 @@ async function verifiedShot(page,name,fullPage=false,strict=true){
  const fullCssHeight=Math.max(css.scrollHeight,css.bodyScrollHeight,css.height);
  await page.evaluate(()=>scrollTo(0,0));
  const beforeShot=fullPage?await page.evaluate(()=>({scrollHeight:Math.max(document.documentElement.scrollHeight,document.body?.scrollHeight||0,innerHeight),width:innerWidth,height:innerHeight,dpr:devicePixelRatio})):null;
- const buf=fullPage
-   ? await page.screenshot({path:file,clip:{x:0,y:0,width:css.width,height:fullCssHeight}})
-   : await page.screenshot({path:file,fullPage:false});
+ let buf;
+ if(fullPage){
+   const cdp=await page.context().newCDPSession(page);
+   try{
+     const shot=await cdp.send('Page.captureScreenshot',{
+       format:'png',
+       fromSurface:true,
+       captureBeyondViewport:true,
+       clip:{x:0,y:0,width:css.width,height:fullCssHeight,scale:1}
+     });
+     buf=Buffer.from(shot.data,'base64');
+     fs.writeFileSync(file,buf);
+   }finally{await cdp.detach()}
+ }else{
+   buf=await page.screenshot({path:file,fullPage:false});
+ }
  const png=pngSize(buf);
  const expectedWidth=Math.round(css.width*css.dpr),expectedHeight=Math.round(css.height*css.dpr),expectedFullHeight=Math.round(fullCssHeight*css.dpr);
  const actualCssHeight=png.height/css.dpr;
@@ -34,7 +47,7 @@ async function verifiedShot(page,name,fullPage=false,strict=true){
  if(strict&&!fullPage&&png.height!==expectedHeight)throw Error('PNG viewport height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedHeight}));
  if(strict&&fullPage&&!fullHeightMatches)throw Error('PNG full-page height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedFullHeight,actualCssHeight,beforeShot}));
  if(!strict&&fullPage&&png.height<expectedHeight)throw Error('Full PNG shorter than viewport '+name+' '+JSON.stringify({css,png,expectedHeight}));
- fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight,rootScrollWidth:css.rootScrollWidth,rootClientWidth:css.rootClientWidth,maxScrollX:css.maxScrollX,shellRect:css.shellRect},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight,fullPageHeight:expectedFullHeight},actualCssHeight,beforeShot,widthMatchesCssDpr:widthMatches,fullHeightMatchesCssDpr:fullHeightMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage,fullPageCaptureMode:'viewport-width-document-clip'},null,2));
+ fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight,rootScrollWidth:css.rootScrollWidth,rootClientWidth:css.rootClientWidth,maxScrollX:css.maxScrollX,shellRect:css.shellRect},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight,fullPageHeight:expectedFullHeight},actualCssHeight,beforeShot,widthMatchesCssDpr:widthMatches,fullHeightMatchesCssDpr:fullHeightMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage,fullPageCaptureMode:'chromium-capture-beyond-viewport'},null,2));
 }
 async function login(page,url,email){await page.goto(url,{waitUntil:'domcontentloaded'});const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill(email);await page.locator('#authPass').fill(PASSWORD);await page.locator('#authGate .btn.primary').click()}await gate.waitFor({state:'hidden',timeout:20000});await page.locator('#view').waitFor({state:'visible',timeout:15000})}
 async function openStudentNutrition(page){const b=page.getByRole('button',{name:/^Nutrición$/}).first();await b.waitFor({state:'visible',timeout:15000});await b.click();await page.waitForTimeout(500)}
