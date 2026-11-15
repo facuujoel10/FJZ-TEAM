@@ -135,8 +135,11 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   const athlete360Render=window.__fjzRenderAthlete360V22;
   if(typeof athlete360Render!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 hook missing");
   window.__fjzRenderAthlete360V22=function(){
-    if(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='agenda')return coachAthleteAgenda4C();
-    return athlete360Render.apply(this,arguments);
+    const out=athlete360Render.apply(this,arguments);
+    if(currentProfile?.role==='coach'&&coachTab==='student'&&coachStudentTab==='agenda'){
+      queueMicrotask(()=>coachAthleteAgenda4C());
+    }
+    return out;
   };
 
   window.__fjzAgendaPremiumRefreshV22=function(){
