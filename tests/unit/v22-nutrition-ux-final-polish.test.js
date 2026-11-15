@@ -20,8 +20,8 @@ test('V22 4A-UX prioriza comida Coach antes de configuración general sin cambia
   const settings=src.indexOf('<section class="fjz4a-plan-settings"');
   assert.ok(meal>0&&settings>meal,'la comida seleccionada debe preceder la prescripción');
   assert.match(src,/EDITOR NUTRICIONAL/);
-  for(const authority of ['meal_group_id','optionMarker','actions\(\)\.optionTotals','actions\(\)\.savePlan']){
-    assert.match(src,new RegExp(authority));
+  for(const authority of ['meal_group_id','optionMarker','actions().optionTotals','actions().savePlan']){
+    assert.ok(src.includes(authority),'autoridad preservada: '+authority);
   }
 });
 
