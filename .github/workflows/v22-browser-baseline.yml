@@ -67,7 +67,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: V22 1A/1B/1C/2A/2B module unit + contract tests
-        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js tests/unit/v22-nutrition-ux-final-polish.test.js tests/unit/v22-progress-checkins-premium.test.js
+        run: node --test tests/unit/v22-date.test.js tests/unit/v22-contracts.test.js tests/unit/v22-agenda-repository.test.js tests/unit/v22-comment-repository.test.js tests/unit/v22-premium-workout.test.js tests/unit/v22-session-history.test.js tests/unit/v22-save-sync.test.js tests/unit/v22-intelligent-training.test.js tests/unit/v22-coach-command-center.test.js tests/unit/v22-athlete-360.test.js tests/unit/v22-coach-analytics.test.js tests/unit/v22-nutrition-premium.test.js tests/unit/v22-nutrition-ux-final-polish.test.js tests/unit/v22-progress-checkins-premium.test.js tests/unit/v22-agenda-premium.test.js
 
       - name: Create local stack and build development app
         run: |
@@ -107,13 +107,13 @@ jobs:
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C"
 
       - name: Reset local data before mobile 430
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
@@ -197,6 +197,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Checkout certified V22 pre-4C visual reference
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 374bfff596a79ba36debbec490989bbaa20c12dc
+          path: visual_refs/v22-pre4c
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Build isolated visual references against local Supabase
         run: |
           python scripts/dev_build_visual_reference.py visual_refs/v2141
@@ -208,6 +216,7 @@ jobs:
           python scripts/dev_build_visual_reference.py visual_refs/v22-pre4a
           python scripts/dev_build_visual_reference.py visual_refs/v22-4a
           python scripts/dev_build_visual_reference.py visual_refs/v22-pre4b
+          python scripts/dev_build_visual_reference.py visual_refs/v22-pre4c
 
       - name: Start isolated visual reference servers
         shell: bash
@@ -222,7 +231,8 @@ jobs:
           python -m http.server 8007 -d visual_refs/v22-pre4a/public > /tmp/fjz-v22-pre4a-http.log 2>&1 &
           python -m http.server 8008 -d visual_refs/v22-4a/public > /tmp/fjz-v22-4a-http.log 2>&1 &
           python -m http.server 8009 -d visual_refs/v22-pre4b/public > /tmp/fjz-v22-pre4b-http.log 2>&1 &
-          for port in 8001 8002 8003 8004 8005 8006 8007 8008 8009; do
+          python -m http.server 8010 -d visual_refs/v22-pre4c/public > /tmp/fjz-v22-pre4c-http.log 2>&1 &
+          for port in 8001 8002 8003 8004 8005 8006 8007 8008 8009 8010; do
             for i in {1..20}; do
               curl -fsS "http://127.0.0.1:$port/" >/dev/null && break
               sleep 1
@@ -300,6 +310,13 @@ jobs:
           python scripts/dev_reset.py
           node scripts/capture_4b_progress_checkins.js artifacts/4b-comparison http://127.0.0.1:8001 http://127.0.0.1:8009 http://127.0.0.1:8000
 
+      - name: Capture Agenda Premium 4C comparison and operational states
+        env:
+          FJZ_E2E_PASSWORD: TEAMFJZ-Local-Only!22
+        run: |
+          python scripts/dev_reset.py
+          node scripts/capture_4c_agenda.js artifacts/4c-comparison http://127.0.0.1:8001 http://127.0.0.1:8010 http://127.0.0.1:8000
+
       - name: Upload Premium workout screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -373,6 +390,15 @@ jobs:
         with:
           name: v22-4b-progress-checkins-premium-screens
           path: artifacts/4b-comparison
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Agenda Premium 4C visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-4c-agenda-premium-screens
+          path: artifacts/4c-comparison
           if-no-files-found: error
           retention-days: 14
 
