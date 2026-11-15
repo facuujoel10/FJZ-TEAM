@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
   const VERSION='22.4C',TZ='America/Argentina/Buenos_Aires',DAY=86400000;
-  const ui={studentMonth:null,coachMonth:null,selectedStudentDate:'',selectedCoachEvent:'',studentData:null,coachData:[],studentNotice:'',coachNotice:''};
+  const ui={studentMonth:null,coachMonth:null,selectedStudentDate:'',selectedCoachDate:'',selectedCoachEvent:'',studentData:null,coachData:[],studentNotice:'',coachNotice:''};
   const text=v=>String(v??'').trim();
   const esc=v=>text(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const pad=n=>String(n).padStart(2,'0');
@@ -97,20 +97,23 @@
     const next=events.find(e=>!e.isPast)||null;
     if(!ui.coachMonth)ui.coachMonth=monthStart(next?parseDate(next.date):new Date());
     const monthEvents=events.filter(e=>{const d=parseDate(e.date);return d&&d.getFullYear()===ui.coachMonth.getFullYear()&&d.getMonth()===ui.coachMonth.getMonth()});
-    const selected=events.find(e=>stableEventKey(e)===ui.selectedCoachEvent)||next||null;
+    if(!ui.selectedCoachDate)ui.selectedCoachDate=next?.date||localKey(new Date());
+    const dayEvents=events.filter(e=>e.date===ui.selectedCoachDate);
+    const selected=events.find(e=>stableEventKey(e)===ui.selectedCoachEvent)||dayEvents[0]||next||null;
     return '<div class="fjz4c-shell fjz4c-coach"><header class="fjz4c-hero"><div><span>AGENDA DEL COACH</span><h2>Seguimientos en una sola vista</h2><p>Fechas reales por alumno, sin mezclar revisiones pendientes con eventos programados.</p></div><div class="fjz4c-hero-actions"><button class="btn" data-4c-action="back-dashboard">← Command Center</button></div></header>'+
       '<div class="fjz4c-coach-stats"><div><strong>'+events.filter(e=>e.isToday).length+'</strong><span>Hoy</span></div><div><strong>'+events.filter(e=>!e.isPast).length+'</strong><span>Próximos</span></div><div><strong>'+items.length+'</strong><span>Alumnos con acceso</span></div></div>'+
       '<div class="fjz4c-toolbar"><button class="btn small" data-4c-action="shift-coach-month" data-delta="-1">‹</button><strong>'+esc(monthTitle(ui.coachMonth))+'</strong><button class="btn small" data-4c-action="shift-coach-month" data-delta="1">›</button></div>'+
-      '<section class="fjz4c-coach-grid"><div class="fjz4c-calendar-panel">'+calendarHtml(ui.coachMonth,monthEvents,'')+'</div><aside class="fjz4c-side"><div class="fjz4c-panel-head"><div><span>PRÓXIMO</span><h3>Seguimientos</h3></div></div><div class="fjz4c-event-list">'+(events.filter(e=>!e.isPast).slice(0,10).map(e=>eventCard(e,{coach:true,selected:selected&&stableEventKey(e)===stableEventKey(selected)})).join('')||'<div class="fjz4c-empty"><strong>Sin eventos próximos</strong><span>No hay seguimientos programados.</span></div>')+'</div>'+detailHtml(selected,{coach:true})+'</aside></section></div>';
+      '<section class="fjz4c-coach-grid"><div class="fjz4c-calendar-panel">'+calendarHtml(ui.coachMonth,monthEvents,ui.selectedCoachDate)+'</div><aside class="fjz4c-side"><div class="fjz4c-panel-head"><div><span>FECHA SELECCIONADA</span><h3>'+esc(fmtDate(ui.selectedCoachDate,{weekday:true}))+'</h3></div><small>'+dayEvents.length+' evento'+(dayEvents.length===1?'':'s')+'</small></div><div class="fjz4c-event-list">'+(dayEvents.length?dayEvents.map(e=>eventCard(e,{coach:true,selected:selected&&stableEventKey(e)===stableEventKey(selected)})).join(''):'<div class="fjz4c-empty"><strong>Sin eventos ese día</strong><span>Elegí otra fecha marcada o revisá los próximos seguimientos.</span></div>')+'</div>'+detailHtml(selected,{coach:true})+'<div class="fjz4c-panel-head fjz4c-next-list-head"><div><span>SIGUIENTES</span><h3>Próximos seguimientos</h3></div></div><div class="fjz4c-event-list">'+(events.filter(e=>!e.isPast).slice(0,8).map(e=>eventCard(e,{coach:true,selected:selected&&stableEventKey(e)===stableEventKey(selected)})).join('')||'<div class="fjz4c-empty"><strong>Sin eventos próximos</strong><span>No hay seguimientos programados.</span></div>')+'</div></aside></section></div>';
   }
   function bind(host,coach=false){
     if(!host)return;
     host.onclick=async e=>{
-      const dateBtn=e.target.closest('[data-4c-date]');if(dateBtn){if(coach)return;ui.selectedStudentDate=dateBtn.dataset['4cDate'];renderStudent();return}
+      const dateBtn=e.target.closest('[data-4c-date]');if(dateBtn){if(coach){ui.selectedCoachDate=dateBtn.dataset['4cDate'];ui.selectedCoachEvent='';renderCoach();return}ui.selectedStudentDate=dateBtn.dataset['4cDate'];renderStudent();return}
       const eventBtn=e.target.closest('[data-4c-event]');if(eventBtn){if(coach){ui.selectedCoachEvent=eventBtn.dataset['4cEvent'];renderCoach()}return}
       const b=e.target.closest('[data-4c-action]');if(!b)return;
       const a=b.dataset['4cAction'];
-      if(a==='shift-month'){ui.studentMonth=new Date(ui.studentMonth.getFullYear(),ui.studentMonth.getMonth()+Number(b.dataset.delta||0),1);renderStudent()}
+      if(a==='retry-student')renderStudent(true)
+      else if(a==='shift-month'){ui.studentMonth=new Date(ui.studentMonth.getFullYear(),ui.studentMonth.getMonth()+Number(b.dataset.delta||0),1);renderStudent()}
       else if(a==='shift-coach-month'){ui.coachMonth=new Date(ui.coachMonth.getFullYear(),ui.coachMonth.getMonth()+Number(b.dataset.delta||0),1);renderCoach()}
       else if(a==='back-dashboard')actions().backDashboard?.();
       else if(a==='open-athlete')actions().openAthlete?.(b.dataset.athlete,'agenda');
