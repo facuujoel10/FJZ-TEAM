@@ -13,7 +13,7 @@ async function openAthlete(page,name='TEST ALUMNO 01'){
   await expect(page.locator('.fjz3b-header')).toBeVisible({timeout:15000});
 }
 async function openCoachNutrition(page){const b=page.locator('.fjz3b-nav button[data-section="nutrition"]');await b.click();await expect(b).toHaveAttribute('aria-current','page');await expect(page.locator('.fjz4a-coach-shell')).toBeVisible({timeout:20000})}
-async function noOverflow(page){const x=await page.evaluate(()=>({html:document.documentElement.scrollWidth,body:document.body?.scrollWidth||0,viewport:innerWidth}));expect(Math.max(x.html,x.body)).toBeLessThanOrEqual(x.viewport+2)}
+async function noOverflow(page){const x=await page.evaluate(()=>{const root=document.scrollingElement||document.documentElement,oldX=scrollX,oldY=scrollY;window.scrollTo(100000,oldY);const maxX=scrollX;window.scrollTo(oldX,oldY);const shell=[...document.querySelectorAll('.fjz4a-coach-shell,.fjz4a-student-shell')].find(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return s.display!=='none'&&r.width>0&&r.height>0});const rect=shell?.getBoundingClientRect();return{rootWidth:root.scrollWidth,clientWidth:root.clientWidth,maxX,viewport:innerWidth,shell:rect?{left:rect.left,right:rect.right}:null}});expect(x.rootWidth).toBeLessThanOrEqual(x.clientWidth+2);expect(x.maxX).toBeLessThanOrEqual(2);if(x.shell){expect(x.shell.left).toBeGreaterThanOrEqual(-2);expect(x.shell.right).toBeLessThanOrEqual(x.viewport+2)}}
 async function closeSaveModal(page){const modal=page.locator('#modal');if(await modal.isVisible().catch(()=>false)){const b=modal.getByRole('button',{name:/Listo|Cerrar/i}).first();if(await b.count())await b.click();else await page.keyboard.press('Escape')}}
 
 test.describe('V22 4A Nutrition Premium',()=>{

@@ -9,16 +9,22 @@ fs.mkdirSync(out,{recursive:true});
 function pngSize(buf){return{width:buf.readUInt32BE(16),height:buf.readUInt32BE(20)}}
 async function verifiedShot(page,name,fullPage=false,strict=true){
  const vp=page.viewportSize();if(!vp)throw Error('Missing viewport '+name);
- const css=await page.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,scrollWidth:document.documentElement.scrollWidth,scrollHeight:document.documentElement.scrollHeight,bodyScrollWidth:document.body?.scrollWidth||0,bodyScrollHeight:document.body?.scrollHeight||0}));
+ const css=await page.evaluate(()=>{
+   const root=document.scrollingElement||document.documentElement,oldX=scrollX,oldY=scrollY;
+   window.scrollTo(100000,oldY);const maxScrollX=scrollX;window.scrollTo(oldX,oldY);
+   const shell=[...document.querySelectorAll('.fjz4a-coach-shell,.fjz4a-student-shell')].find(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return s.display!=='none'&&r.width>0&&r.height>0})||null;
+   const rect=shell?shell.getBoundingClientRect():null;
+   return {width:innerWidth,height:innerHeight,dpr:devicePixelRatio,scrollWidth:document.documentElement.scrollWidth,scrollHeight:document.documentElement.scrollHeight,bodyScrollWidth:document.body?.scrollWidth||0,bodyScrollHeight:document.body?.scrollHeight||0,rootScrollWidth:root.scrollWidth,rootClientWidth:root.clientWidth,maxScrollX,shellRect:rect?{left:rect.left,right:rect.right,width:rect.width}:null};
+ });
  if(css.width!==vp.width||css.height!==vp.height)throw Error('CSS viewport mismatch '+name+' '+JSON.stringify({vp,css}));
- if(strict&&Math.max(css.scrollWidth,css.bodyScrollWidth)>css.width+2)throw Error('Horizontal overflow '+name+' '+JSON.stringify(css));
+ if(strict&&(css.rootScrollWidth>css.rootClientWidth+2||css.maxScrollX>2||(css.shellRect&&(css.shellRect.left<-2||css.shellRect.right>css.width+2))))throw Error('Horizontal page overflow '+name+' '+JSON.stringify(css));
  const file=path.join(out,name+(fullPage?'-full':'-viewport')+'.png');const buf=await page.screenshot({path:file,fullPage});const png=pngSize(buf);
  const expectedWidth=Math.round(css.width*css.dpr),expectedHeight=Math.round(css.height*css.dpr);
  const widthMatches=png.width===expectedWidth;
  if(strict&&!widthMatches)throw Error('PNG width/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedWidth}));
  if(strict&&!fullPage&&png.height!==expectedHeight)throw Error('PNG viewport height/DPR mismatch '+name+' '+JSON.stringify({css,png,expectedHeight}));
  if(fullPage&&png.height<expectedHeight)throw Error('Full PNG shorter than viewport '+name+' '+JSON.stringify({css,png,expectedHeight}));
- fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight},widthMatchesCssDpr:widthMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage},null,2));
+ fs.writeFileSync(path.join(out,name+(fullPage?'-full':'-viewport')+'.json'),JSON.stringify({cssViewport:{width:css.width,height:css.height},devicePixelRatio:css.dpr,document:{scrollWidth:css.scrollWidth,scrollHeight:css.scrollHeight,bodyScrollWidth:css.bodyScrollWidth,bodyScrollHeight:css.bodyScrollHeight,rootScrollWidth:css.rootScrollWidth,rootClientWidth:css.rootClientWidth,maxScrollX:css.maxScrollX,shellRect:css.shellRect},pngPixels:png,expectedPixels:{width:expectedWidth,viewportHeight:expectedHeight},widthMatchesCssDpr:widthMatches,strictCurrent4A:strict,historicalGeometryMismatch:!strict&&!widthMatches,fullPage},null,2));
 }
 async function login(page,url,email){await page.goto(url,{waitUntil:'domcontentloaded'});const gate=page.locator('#authGate');if(await gate.isVisible().catch(()=>false)){await page.locator('#authEmail').fill(email);await page.locator('#authPass').fill(PASSWORD);await page.locator('#authGate .btn.primary').click()}await gate.waitFor({state:'hidden',timeout:20000});await page.locator('#view').waitFor({state:'visible',timeout:15000})}
 async function openStudentNutrition(page){const b=page.getByRole('button',{name:/^Nutrición$/}).first();await b.waitFor({state:'visible',timeout:15000});await b.click();await page.waitForTimeout(500)}
