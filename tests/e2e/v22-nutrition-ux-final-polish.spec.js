@@ -17,6 +17,9 @@ async function noOverflow(page){const g=await page.evaluate(()=>{const r=documen
 test.describe('V22 4A-UX Nutrition final polish',()=>{
   test('V22 4A-UX alumno: primera comida entra antes y navegación mobile no se duplica',async({page})=>{
     await login(page);await openStudentNutrition(page);
+    await expect(page.locator('.fjz4a-student-head')).toBeVisible({timeout:15000});
+    await expect(page.locator('.fjz4a-targets')).toBeVisible({timeout:15000});
+    await expect(page.locator('.fjz4a-meal').first()).toBeVisible({timeout:15000});
     const geo=await page.evaluate(()=>{
       const meal=document.querySelector('.fjz4a-meal'),head=document.querySelector('.fjz4a-student-head'),targets=document.querySelector('.fjz4a-targets'),tabs=document.querySelector('#studentMainTabs'),bottom=document.querySelector('#bottomNav');
       const rect=x=>x?x.getBoundingClientRect():null;
