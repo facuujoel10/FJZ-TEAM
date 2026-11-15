@@ -2,7 +2,7 @@ import pathlib,re
 p=pathlib.Path("public/index.html")
 html=p.read_text(encoding="utf-8")
 required=[
- 'meta name="fjz-nutrition-premium" content="22.4A"',
+ 'meta name="fjz-v22-4a-nutrition-premium" content="22.4A"',
  'id="v22NutritionPremiumRuntime"',
  'meta name="fjz-athlete-360-workspace" content="22.3B"',
  'meta name="fjz-coach-ux-final-polish" content="22.3C-UX"'
