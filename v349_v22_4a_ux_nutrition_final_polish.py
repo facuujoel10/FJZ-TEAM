@@ -10,11 +10,11 @@ required=[
 for marker in required:
     if marker not in html: raise RuntimeError("V22 4A-UX prerequisite missing: "+marker)
 before={
- "scripts":len(re.findall(r"<script\\b",html,re.I)),
- "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
- "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
- "timers":len(re.findall(r"setTimeout\\s*\\(|setInterval\\s*\\(",html)),
- "observers":len(re.findall(r"new\\s+(?:Mutation|Performance)Observer",html))
+ "scripts":len(re.findall(r"<script\b",html,re.I)),
+ "channels":len(re.findall(r"\.channel\s*\(",html)),
+ "listeners":len(re.findall(r"addEventListener\s*\(",html)),
+ "timers":len(re.findall(r"setTimeout\s*\(|setInterval\s*\(",html)),
+ "observers":len(re.findall(r"new\s+(?:Mutation|Performance)Observer",html))
 }
 css=pathlib.Path("src/ui/nutrition-ux-final-polish.css").read_text(encoding="utf-8")
 styles=list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>",html,re.S|re.I))
@@ -23,11 +23,11 @@ sm=styles[0]
 html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end("body"):]
 html=html.replace("</head>",'<meta name="fjz-nutrition-ux-final-polish" content="22.4A-UX">\n</head>',1)
 after={
- "scripts":len(re.findall(r"<script\\b",html,re.I)),
- "channels":len(re.findall(r"\\.channel\\s*\\(",html)),
- "listeners":len(re.findall(r"addEventListener\\s*\\(",html)),
- "timers":len(re.findall(r"setTimeout\\s*\\(|setInterval\\s*\\(",html)),
- "observers":len(re.findall(r"new\\s+(?:Mutation|Performance)Observer",html))
+ "scripts":len(re.findall(r"<script\b",html,re.I)),
+ "channels":len(re.findall(r"\.channel\s*\(",html)),
+ "listeners":len(re.findall(r"addEventListener\s*\(",html)),
+ "timers":len(re.findall(r"setTimeout\s*\(|setInterval\s*\(",html)),
+ "observers":len(re.findall(r"new\s+(?:Mutation|Performance)Observer",html))
 }
 if before!=after: raise RuntimeError("V22 4A-UX changed runtime topology: "+repr({"before":before,"after":after}))
 for marker in [
