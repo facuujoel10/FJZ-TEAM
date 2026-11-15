@@ -309,6 +309,14 @@
 }
 
 @media(max-width:380px){
+  /* Daily targets stay one compact row at the narrowest viewport so the first meal remains actionable.
+     Option macros remain 2x2 below, where horizontal room matters more than vertical compression. */
+  .fjz4a-student-shell .fjz4a-targets{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+  .fjz4a-student-shell .fjz4a-targets>div{
+    padding:6px 4px!important;
+  }
 
   .fjz4a-student-shell .fjz4a-targets span,
   .fjz4a-student-shell .fjz4a-macros span{font-size:7px}
