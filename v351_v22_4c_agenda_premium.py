@@ -166,6 +166,13 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
     if(payload?.ok!==false&&athleteAgendaActive())queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
+  const athleteNavigate=window.__fjzAthlete360NavigateV22;
+  if(typeof athleteNavigate!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 navigation hook missing");
+  window.__fjzAthlete360NavigateV22=function(tab){
+    const out=athleteNavigate.apply(this,arguments);
+    if(String(tab||'')==='agenda')queueMicrotask(()=>coachAthleteAgenda4C());
+    return out;
+  };
 
   window.__fjzAgendaPremiumRefreshV22=function(){
     try{
