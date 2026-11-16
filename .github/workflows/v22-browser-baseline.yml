@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: team-fjz-v22-browser-baseline-${{ github.sha }}
-  cancel-in-progress: true
+  group: team-fjz-v22-cert-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   browser-e2e:

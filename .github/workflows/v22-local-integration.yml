@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: team-fjz-v22-local-integration-${{ github.sha }}
-  cancel-in-progress: true
+  group: team-fjz-v22-cert-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   integration:
