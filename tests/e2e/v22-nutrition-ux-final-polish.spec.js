@@ -59,6 +59,8 @@ test.describe('V22 4A-UX Nutrition final polish',()=>{
 
   test('V22 4A-UX Coach mobile: comidas y edición táctil antes de prescripción general',async({page})=>{
     await login(page,'coach@test.local');await openAthlete(page);await openCoachNutrition(page);
+    await expect(page.locator('.fjz4a-meal-editor').first()).toBeVisible({timeout:15000});
+    await expect(page.locator('.fjz4a-plan-settings')).toBeVisible({timeout:15000});
     const g=await page.evaluate(()=>{
       const meal=document.querySelector('.fjz4a-meal-editor')?.getBoundingClientRect(),settings=document.querySelector('.fjz4a-plan-settings')?.getBoundingClientRect();
       const nav=[...document.querySelectorAll('.fjz4a-editor-rail nav>button')].map(x=>x.getBoundingClientRect().height);
