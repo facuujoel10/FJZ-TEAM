@@ -34,20 +34,19 @@ def main():
         if project_names:
             subprocess.run([docker,"rm","-f",*project_names],env=env,text=True,capture_output=True,check=False)
 
-        # GitHub-hosted runners are disposable and dedicated to this job. If a
-        # previous partial Supabase start is still binding V22's local ports,
-        # remove only the conflicting Supabase container. Locally we fail
-        # closed instead of killing another developer's Supabase project.
+        # GitHub-hosted runners are disposable and dedicated to this job. A
+        # cancelled/partial Supabase start can leave a sibling supabase_* container
+        # publishing one of the fixed local ports even after the project-scoped
+        # stop returns. On CI it is therefore safe to remove every residual
+        # Supabase container before starting the isolated V22 stack. Locally we
+        # keep the narrower project-only cleanup to avoid touching another
+        # developer project.
         if str(env.get("CI","")).lower()=="true":
-            rows=subprocess.run(
-                [docker,"ps","--format","{{.Names}}|{{.Ports}}"],
+            all_names=subprocess.run(
+                [docker,"ps","-a","--format","{{.Names}}"],
                 env=env,text=True,capture_output=True,check=False
             ).stdout.splitlines()
-            stale=[]
-            for row in rows:
-                name,_,ports=row.partition("|")
-                if name.startswith("supabase_") and "team-fjz-v22-local" in name and any((":"+p+"->" in ports or "0.0.0.0:"+p+"->" in ports or "[::]:"+p+"->" in ports) for p in ("54321","54322","54323","54324","54325","54326","54327","54328","54329")):
-                    stale.append(name)
+            stale=[n.strip() for n in all_names if n.strip().startswith("supabase_")]
             if stale:
                 subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
 
@@ -77,7 +76,7 @@ def main():
                     [docker,"ps","-a","--format","{{.Names}}"],
                     env=env,text=True,capture_output=True,check=False
                 ).stdout.splitlines()
-                stale=[n.strip() for n in rows if n.strip().startswith("supabase_") and "team-fjz-v22-local" in n.strip()]
+                stale=[n.strip() for n in rows if n.strip().startswith("supabase_")]
                 if stale:
                     subprocess.run([docker,"rm","-f",*stale],env=env,text=True,capture_output=True,check=False)
             time.sleep(0.5)
