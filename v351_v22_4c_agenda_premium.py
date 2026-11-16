@@ -96,17 +96,17 @@ bridge=r'''<script id="v22AgendaPremiumAuthorityBridge">
   }
   async function loadCoach(force=false){
     if(currentProfile?.role!=='coach')return [];
-    const rows=[];
-    for(const s of (state?.students||[])){
-      const athlete=athleteForStudent(s);if(!athlete?.id)continue;
-      try{rows.push({student:s,athlete:{...athlete,name:s.name||athlete.name||'Alumno'},data:await loadAthlete(athlete.id,force)})}
+    const jobs=(state?.students||[]).map(async s=>{
+      const athlete=athleteForStudent(s);if(!athlete?.id)return null;
+      try{return {student:s,athlete:{...athlete,name:s.name||athlete.name||'Alumno'},data:await loadAthlete(athlete.id,force)}}
       catch(e){
         // RLS-hidden portfolio rows are omitted fail-closed; transport/data errors remain explicit.
-        if(e?.kind==='authorization')continue;
+        if(e?.kind==='authorization')return null;
         throw e;
       }
-    }
-    return rows;
+    });
+    const rows=await Promise.all(jobs);
+    return rows.filter(Boolean);
   }
   function openAthlete(aid,tab='agenda'){
     const entry=(state?.students||[]).find(s=>String(athleteForStudent(s)?.id||'')===String(aid||''));
