@@ -161,7 +161,10 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   window.__fjzLegacyDeleteReminderV22=window.deleteReminderV81||globalThis.deleteReminderV81;
 
   const studentAgenda4C=function(){return window.TeamFJZAgendaPremium.renderStudent(true)};
-  const coachAgenda4C=function(){return window.TeamFJZAgendaPremium.renderCoach(true)};
+  const coachAgenda4C=function(){
+    document.getElementById('bottomNav')?.classList.add('fjz3a-hide-legacy-nav');
+    return window.TeamFJZAgendaPremium.renderCoach(true);
+  };
   const coachAthleteAgenda4C=function(){return window.TeamFJZAgendaPremium.renderCoachAthlete(true)};
   window.renderStudentAgendaV81=studentAgenda4C;try{renderStudentAgendaV81=studentAgenda4C}catch(_e){}
   window.renderCoachAgendaV81=coachAgenda4C;try{renderCoachAgendaV81=coachAgenda4C}catch(_e){}
