@@ -85,3 +85,7 @@ Los enlaces exactos de Integración y Browser se registran en el cierre de la et
 
 ## Producción
 `main`, Render y Supabase productivo permanecen fuera del alcance de 4C.
+
+## Nota de certificación
+
+La certificación final debe considerar únicamente un par de workflows `Integración + Browser` completados sobre el mismo SHA. Runs cancelados por la política de concurrencia de GitHub Actions no se consideran fallos funcionales ni evidencia de cierre.
