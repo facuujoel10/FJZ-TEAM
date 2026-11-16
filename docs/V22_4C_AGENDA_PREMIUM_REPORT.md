@@ -89,3 +89,8 @@ Los enlaces exactos de Integración y Browser se registran en el cierre de la et
 ## Nota de certificación
 
 La certificación final debe considerar únicamente un par de workflows `Integración + Browser` completados sobre el mismo SHA. Runs cancelados por la política de concurrencia de GitHub Actions no se consideran fallos funcionales ni evidencia de cierre.
+
+
+## Revalidación final
+
+La certificación final incorpora montaje inmediato de las superficies Agenda Premium y lectura paralela de la cartera del Coach, preservando AgendaRepository, RLS y las autoridades de escritura existentes. No se añadieron tablas, migraciones, Realtime, polling ni cambios productivos.
