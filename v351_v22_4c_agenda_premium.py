@@ -61,6 +61,23 @@ coach_dispatch_new="""  window.renderCoach=function(){
 if html.count(coach_dispatch_old)!=1: raise RuntimeError("V22 4C Coach dispatcher anchor changed")
 html=html.replace(coach_dispatch_old,coach_dispatch_new,1)
 
+# 4C attaches to the certified Athlete 360 internal lifecycle through an optional hook.
+# This keeps 3B standalone while making Agenda deterministic after mount and after hydration.
+athlete_render_old="mount();queueMicrotask(()=>hydrate(false));return rendered===undefined?true:rendered;"
+athlete_render_new="mount();if(activeSection()==='agenda'&&typeof root.__fjzRenderAgendaPremiumAthleteV22==='function')queueMicrotask(()=>root.__fjzRenderAgendaPremiumAthleteV22());queueMicrotask(()=>hydrate(false));return rendered===undefined?true:rendered;"
+if html.count(athlete_render_old)!=1: raise RuntimeError("V22 4C Athlete 360 render lifecycle anchor changed")
+html=html.replace(athlete_render_old,athlete_render_new,1)
+
+athlete_cached_old="restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:true,athleteId:identity.athleteId})}catch(_e){}return true"
+athlete_cached_new="restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);if(activeSection()==='agenda')root.__fjzRenderAgendaPremiumAthleteV22?.();try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:true,athleteId:identity.athleteId})}catch(_e){}return true"
+if html.count(athlete_cached_old)!=1: raise RuntimeError("V22 4C Athlete 360 cached hydrate anchor changed")
+html=html.replace(athlete_cached_old,athlete_cached_new,1)
+
+athlete_fresh_old="restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:false,athleteId:identity.athleteId})}catch(_e){}return true;"
+athlete_fresh_new="restoreSectionShell();renderHeader(summary);if(activeSection()==='summary')renderSummary(summary);else renderSectionContext(summary);if(activeSection()==='agenda')root.__fjzRenderAgendaPremiumAthleteV22?.();try{root.__fjzAfterAthlete360HydrateV22?.({ok:true,cached:false,athleteId:identity.athleteId})}catch(_e){}return true;"
+if html.count(athlete_fresh_old)!=1: raise RuntimeError("V22 4C Athlete 360 fresh hydrate anchor changed")
+html=html.replace(athlete_fresh_old,athlete_fresh_new,1)
+
 bridge=r'''<script id="v22AgendaPremiumAuthorityBridge">
 (function(){
   let repoV22=null;
@@ -111,6 +128,7 @@ bridge=r'''<script id="v22AgendaPremiumAuthorityBridge">
   function openAthlete(aid,tab='agenda'){
     const entry=(state?.students||[]).find(s=>String(athleteForStudent(s)?.id||'')===String(aid||''));
     if(!entry)return false;
+    if(typeof window.__fjzCoachNavigateV22==='function')return window.__fjzCoachNavigateV22('student',entry.id,tab);
     if(typeof openCoachStudentTabV235==='function')return openCoachStudentTabV235(entry.id,tab);
     state.selectedStudentId=entry.id;coachTab='student';coachStudentTab=tab;saveState?.();render?.();return true;
   }
@@ -149,6 +167,7 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   window.renderCoachAgendaV81=coachAgenda4C;try{renderCoachAgendaV81=coachAgenda4C}catch(_e){}
   window.renderCoachStudentAgendaV81=coachAthleteAgenda4C;try{renderCoachStudentAgendaV81=coachAthleteAgenda4C}catch(_e){}
   window.__fjzRenderAgendaPremiumCoachV22=coachAgenda4C;
+  window.__fjzRenderAgendaPremiumAthleteV22=coachAthleteAgenda4C;
 
   const coachNavigate4C=window.__fjzCoachNavigateV22;
   if(typeof coachNavigate4C!=='function')throw new Error("TEAM FJZ V22 4C Coach navigation hook missing");
@@ -210,6 +229,7 @@ for marker in [
  'id="v22AgendaPremiumAuthorityBridge"','id="v22AgendaPremiumRuntime"','id="v22AgendaPremiumInstall"',
  "VERSION='22.4C'","TeamFJZAgendaRepository.createAgendaRepository","renderCoachAgendaV81=coachAgenda4C",
  "renderCoachStudentAgendaV81=coachAthleteAgenda4C","renderStudentAgendaV81=studentAgenda4C",
+ "__fjzRenderAgendaPremiumAthleteV22","__fjzCoachNavigateV22('student',entry.id,tab)",
  "agendaExactReadBack:true","reminderReadBack:true","America/Argentina/Buenos_Aires"
 ]:
     if marker not in html: raise RuntimeError("V22 4C output marker missing: "+marker)
