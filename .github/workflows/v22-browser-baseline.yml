@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: team-fjz-v22-browser-baseline-${{ github.ref }}
+  group: team-fjz-v22-browser-baseline-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
