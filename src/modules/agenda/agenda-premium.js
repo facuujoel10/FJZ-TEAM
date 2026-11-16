@@ -128,7 +128,7 @@
   async function renderCoach(force=false){
     const host=root.document?.getElementById('view');if(!host)return false;
     host.innerHTML=coachView(Array.isArray(ui.coachData)?ui.coachData:[]);bind(host,true);
-    try{ui.coachData=await actions().loadCoach?.(force)||[];host.innerHTML=coachView(ui.coachData);bind(host,true);return true}catch(err){host.innerHTML='<div class="fjz4c-shell fjz4c-coach"><div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div></div>';return false}
+    try{ui.coachData=await actions().loadCoach?.(force)||[];host.innerHTML=coachView(ui.coachData);host.querySelector('.fjz4c-coach')?.setAttribute('data-4c-ready','true');bind(host,true);return true}catch(err){host.innerHTML='<div class="fjz4c-shell fjz4c-coach"><div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div></div>';return false}
   }
   function mountCoachAthlete(host,html){
     host.innerHTML='<div class="fjz4c-coach-create"><button type="button" class="btn primary" id="fjz4cAddReminder">+ Nuevo recordatorio</button><button type="button" class="btn" id="fjz4cEditWeekly">Editar programación semanal</button></div>'+html;
