@@ -313,7 +313,9 @@
     if(s==='info'||s==='progress')ui.sectionOverride=s;else ui.sectionOverride=null;
     if(s!=='summary')clearSummaryPresentation();
     const tab={summary:'summary',training:'routine',nutrition:'nutrition',progress:'tracking',checkins:'tracking',agenda:'agenda',info:'summary'}[s];
-    root.__fjzAthlete360NavigateV22?.(tab);return true;
+    const out=root.__fjzAthlete360NavigateV22?.(tab);
+    if(s==='agenda')root.queueMicrotask?.(()=>root.__fjzRenderAgendaPremiumAthleteV22?.());
+    return out===false?false:true;
   }
   function leave(){clearRoute();const view=root.document?.getElementById('view');if(view)view.classList.remove('fjz3b-mounted');const nav=root.document?.getElementById('bottomNav');if(nav)nav.classList.remove('fjz3b-hide-legacy-nav')}
   function commentRow(id){return ui.comments.find(x=>text(x.id)===text(id))||null}
