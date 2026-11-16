@@ -173,6 +173,13 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
     if(String(tab||'')==='agenda')queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
+  const athleteHydrate=window.__fjzHydrateAthlete360V22;
+  if(typeof athleteHydrate!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 hydrate hook missing");
+  window.__fjzHydrateAthlete360V22=async function(){
+    const out=await athleteHydrate.apply(this,arguments);
+    if(athleteAgendaActive())await coachAthleteAgenda4C();
+    return out;
+  };
 
   window.__fjzAgendaPremiumRefreshV22=function(){
     try{
