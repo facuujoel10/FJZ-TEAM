@@ -127,13 +127,21 @@
   }
   async function renderCoach(force=false){
     const host=root.document?.getElementById('view');if(!host)return false;
-    host.innerHTML='<div class="fjz4c-loading">Cargando agenda del Coach…</div>';
-    try{ui.coachData=await actions().loadCoach?.(force)||[];host.innerHTML=coachView(ui.coachData);bind(host,true);return true}catch(err){host.innerHTML='<div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div>';return false}
+    host.innerHTML=coachView(Array.isArray(ui.coachData)?ui.coachData:[]);bind(host,true);
+    try{ui.coachData=await actions().loadCoach?.(force)||[];host.innerHTML=coachView(ui.coachData);bind(host,true);return true}catch(err){host.innerHTML='<div class="fjz4c-shell fjz4c-coach"><div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div></div>';return false}
+  }
+  function mountCoachAthlete(host,html){
+    host.innerHTML='<div class="fjz4c-coach-create"><button type="button" class="btn primary" id="fjz4cAddReminder">+ Nuevo recordatorio</button><button type="button" class="btn" id="fjz4cEditWeekly">Editar programación semanal</button></div>'+html;
+    bind(host,false);
+    const add=root.document.getElementById('fjz4cAddReminder'),edit=root.document.getElementById('fjz4cEditWeekly');
+    if(add)add.onclick=()=>actions().openAddReminder?.();
+    if(edit)edit.onclick=()=>actions().openLegacySchedule?.();
   }
   async function renderCoachAthlete(force=false){
     const host=root.document?.getElementById('coachStudentBody');if(!host)return false;
-    const c=context();host.innerHTML='<div class="fjz4c-loading">Cargando agenda del alumno…</div>';
-    try{const data=await actions().loadAthlete?.(c.athlete?.id,force);host.innerHTML=studentView(data).replace('fjz4c-student','fjz4c-student fjz4c-coach-athlete');bind(host,false);const create=root.document.createElement('div');create.className='fjz4c-coach-create';create.innerHTML='<button type="button" class="btn primary" id="fjz4cAddReminder">+ Nuevo recordatorio</button><button type="button" class="btn" id="fjz4cEditWeekly">Editar programación semanal</button>';host.prepend(create);root.document.getElementById('fjz4cAddReminder').onclick=()=>actions().openAddReminder?.();root.document.getElementById('fjz4cEditWeekly').onclick=()=>actions().openLegacySchedule?.();return true}catch(err){host.innerHTML='<div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div>';return false}
+    const c=context();
+    mountCoachAthlete(host,'<div class="fjz4c-student fjz4c-coach-athlete"><div class="fjz4c-loading">Cargando agenda del alumno…</div></div>');
+    try{const data=await actions().loadAthlete?.(c.athlete?.id,force);mountCoachAthlete(host,studentView(data).replace('fjz4c-student','fjz4c-student fjz4c-coach-athlete'));return true}catch(err){mountCoachAthlete(host,'<div class="fjz4c-student fjz4c-coach-athlete"><div class="fjz4c-error"><strong>No pudimos cargar Agenda</strong><span>'+esc(err?.message||'Error de lectura')+'</span></div></div>');return false}
   }
   function homeCard(event){
     if(!event)return'';
