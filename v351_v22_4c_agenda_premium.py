@@ -189,20 +189,20 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   );
   window.__fjzRenderAthlete360V22=function(){
     const out=athlete360Render.apply(this,arguments);
-    if(athleteAgendaActive())coachAthleteAgenda4C();
+    if(athleteAgendaActive())queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
   const afterAthleteHydrate=window.__fjzAfterAthlete360HydrateV22;
   window.__fjzAfterAthlete360HydrateV22=function(payload){
     let out;try{out=afterAthleteHydrate?.apply(this,arguments)}catch(_e){}
-    if(payload?.ok!==false&&athleteAgendaActive())coachAthleteAgenda4C();
+    if(payload?.ok!==false&&athleteAgendaActive())queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
   const athleteNavigate=window.__fjzAthlete360NavigateV22;
   if(typeof athleteNavigate!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 navigation hook missing");
   window.__fjzAthlete360NavigateV22=function(tab){
     const out=athleteNavigate.apply(this,arguments);
-    if(String(tab||'')==='agenda')coachAthleteAgenda4C();
+    if(String(tab||'')==='agenda')queueMicrotask(()=>coachAthleteAgenda4C());
     return out;
   };
   const athleteHydrate=window.__fjzHydrateAthlete360V22;
