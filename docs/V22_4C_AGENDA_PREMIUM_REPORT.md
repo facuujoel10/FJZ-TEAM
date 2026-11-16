@@ -88,7 +88,7 @@ Los enlaces exactos de Integración y Browser se registran en el cierre de la et
 
 ## Nota de certificación
 
-La certificación final debe considerar únicamente un par de workflows `Integración + Browser` completados sobre el mismo SHA. Runs cancelados por la política de concurrencia de GitHub Actions no se consideran fallos funcionales ni evidencia de cierre.
+La certificación final debe considerar únicamente un par de workflows `Integración + Browser` completados sobre el mismo SHA. Runs cancelados por la política de concurrencia de GitHub Actions no se consideran fallos funcionales ni evidencia de cierre. La evidencia válida de cierre será la última ejecución completa y no cancelada del HEAD final.
 
 
 ## Revalidación final
