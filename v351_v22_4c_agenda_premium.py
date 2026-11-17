@@ -200,12 +200,14 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
   };
   const athleteNavigate=window.__fjzAthlete360NavigateV22;
   if(typeof athleteNavigate!=='function')throw new Error("TEAM FJZ V22 4C Athlete 360 navigation hook missing");
-  window.__fjzAthlete360NavigateV22=function(tab){
+  window.__fjzAthlete360NavigateV22=async function(tab){
     if(String(tab||'')==='agenda'&&currentProfile?.role==='coach'&&coachTab==='student'){
       coachStudentTab='agenda';
       const out=athlete360Render.apply(this,arguments);
-      queueMicrotask(()=>coachAthleteAgenda4C());
-      return out===false?false:true;
+      if(out===false)return false;
+      try{await athleteHydrate.apply(this,[true])}catch(_e){}
+      await coachAthleteAgenda4C();
+      return true;
     }
     return athleteNavigate.apply(this,arguments);
   };
