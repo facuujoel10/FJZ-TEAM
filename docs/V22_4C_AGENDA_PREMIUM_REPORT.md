@@ -33,6 +33,18 @@ El commit `91c006a542d81e283d18be99ebc9d5cead794190` estabilizó el frame de ide
 
 La revisión manual de las capturas de ese SHA confirmó nombre completo, avatar y composición correcta en 390×844 y 1440×900.
 
+## Incidente del capturador visual final
+El Browser `44347514473` sobre `e821fac6b19e90599cc8984b576c7379caeaff4b` completó SUCCESS en 390×844, 360×800, 430×932 y 1440×900, además del gate final de aislamiento. El único fallo fue el paso de captura 4C.
+
+Evidencia exacta:
+- script: `scripts/capture_4c_agenda.js`;
+- línea afectada: espera posterior a `closeModal()`;
+- locator: `#v165Title`;
+- error: timeout esperando `state:'detached'`;
+- estado real: el input permanecía en DOM pero oculto, que es el comportamiento válido del modal legacy.
+
+Causa raíz: condición incorrecta del capturador visual, no defecto del producto ni de Agenda 4C. La corrección mínima cambia sólo la espera de `detached` a `hidden`; no modifica lógica de producto, fixtures, timeouts funcionales ni aserciones E2E.
+
 ## Corrección de evidencia visual
 El artifact `14445433480` del Browser SUCCESS `44340225926` expuso que las imágenes etiquetadas `v224c-*-student-agenda` mostraban Home. El producto no estaba fallando: los E2E de Agenda Alumno usan navegación real por el botón `Agenda` y pasaron en 360/390/430/1440.
 

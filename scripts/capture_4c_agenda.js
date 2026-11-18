@@ -123,7 +123,7 @@ async function coach(p,u,l){
   await p.locator('#v165Title').waitFor({state:'visible',timeout:10000});
   await both(p,l+'-athlete360-new-reminder-form');
   await p.evaluate(()=>closeModal());
-  await p.locator('#v165Title').waitFor({state:'detached',timeout:10000});
+  await p.locator('#v165Title').waitFor({state:'hidden',timeout:10000});
 
   await p.locator('#fjz4cEditWeekly').click();
   await p.locator('.v81-config-row').first().waitFor({state:'visible',timeout:15000});
