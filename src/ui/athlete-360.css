@@ -8,7 +8,9 @@
 .fjz3b-back{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:4px 2px;font-size:10px;font-weight:850}
 .fjz3b-back:first-letter{font-size:20px}.fjz3b-product{text-align:center;color:#ff6a78;font-size:8px;font-weight:950;letter-spacing:.14em}.fjz3b-info-shortcut{min-height:34px;padding:6px 10px;border:1px solid #333741;border-radius:10px;font-size:9px;font-weight:850}
 .fjz3b-identity{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,.62fr);gap:14px;align-items:center}
-.fjz3b-legacy-hero{display:grid!important;grid-template-columns:68px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.fjz3b-legacy-hero{display:grid!important;grid-template-columns:68px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.fjz3b-legacy-hero .v175-coach-profile-info{width:auto!important;min-width:0!important;max-width:none!important}
+.fjz3b-legacy-hero .v175-coach-profile-info h2,.fjz3b-legacy-hero .v175-coach-profile-info p{word-break:normal!important;overflow-wrap:normal!important;white-space:normal!important}
 .fjz3b-legacy-hero #v175CoachAvatarSlot,.fjz3b-legacy-hero #v175CoachAvatarSlot .v70-avatar,.fjz3b-legacy-hero #v175CoachAvatarSlot img{width:68px!important;height:68px!important;border-radius:17px!important}
 .fjz3b-legacy-hero .v175-coach-profile-info h2{margin:0 0 4px!important;font-size:25px!important;line-height:1.05!important}.fjz3b-legacy-hero .v175-coach-profile-info p{margin:0!important;color:#9da2ad!important;font-size:11px!important;line-height:1.4!important}
 .fjz3b-legacy-hero .v266-profile-kicker,.fjz3b-legacy-hero .v266-profile-state{display:none!important}.fjz3b-legacy-actions{display:none!important}
