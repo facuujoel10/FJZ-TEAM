@@ -45,6 +45,17 @@ Evidencia exacta:
 
 Causa raíz: condición incorrecta del capturador visual, no defecto del producto ni de Agenda 4C. La corrección mínima cambia sólo la espera de `detached` a `hidden`; no modifica lógica de producto, fixtures, timeouts funcionales ni aserciones E2E.
 
+### Segundo incidente de captura — selector semanal obsoleto
+El Browser `44355715577` sobre `3f38cbf9e515df8cd59a84367135d45093a9b017` volvió a completar SUCCESS en 390×844, 360×800, 430×932 y 1440×900, incluido el gate final de aislamiento. El único fallo siguió restringido al paso de captura 4C.
+
+Evidencia exacta:
+- el botón `#fjz4cEditWeekly` delegó al editor semanal existente;
+- el capturador esperaba `.v81-config-row`;
+- la autoridad legacy vigente de agenda es V16.5 y `renderEditorV165()` genera `.v165-week-row`;
+- el timeout fue, por tanto, un selector de evidencia obsoleto y no una falla de producto ni de persistencia.
+
+La corrección mínima actualiza exclusivamente el selector de espera y foco del capturador de `.v81-config-row` a `.v165-week-row`. No cambia Agenda, Supabase, fixtures ni aserciones funcionales.
+
 ## Corrección de evidencia visual
 El artifact `14445433480` del Browser SUCCESS `44340225926` expuso que las imágenes etiquetadas `v224c-*-student-agenda` mostraban Home. El producto no estaba fallando: los E2E de Agenda Alumno usan navegación real por el botón `Agenda` y pasaron en 360/390/430/1440.
 

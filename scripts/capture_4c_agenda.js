@@ -126,8 +126,8 @@ async function coach(p,u,l){
   await p.locator('#v165Title').waitFor({state:'hidden',timeout:10000});
 
   await p.locator('#fjz4cEditWeekly').click();
-  await p.locator('.v81-config-row').first().waitFor({state:'visible',timeout:15000});
-  await focus(p,'.v81-config-row');
+  await p.locator('.v165-week-row').first().waitFor({state:'visible',timeout:15000});
+  await focus(p,'.v165-week-row');
   await both(p,l+'-athlete360-weekly-editor');
 }
 
