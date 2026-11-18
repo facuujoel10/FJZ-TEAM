@@ -1314,7 +1314,9 @@ test('Coach: acceso visible a Agenda mensual desde dashboard', async ({ page }, 
   const agendaButton = page.locator("button[onclick*=\"coachTab='agenda'\"], button[data-action='agenda-main']").filter({ hasText: /Agenda/i }).filter({ visible: true }).first();
   await expect(agendaButton, 'El dashboard Coach debe mantener una ruta visible a Agenda.').toBeVisible({ timeout: 10000 });
   await agendaButton.click({ timeout: 10000 });
-  await expect(page.getByText(/CALENDARIO DEL COACH|Chequeos y seguimiento/i).first()).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('.fjz4c-coach[data-4c-ready="true"]')).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Seguimientos en una sola vista', exact: true })).toBeVisible();
+  await expect(page.locator('.fjz4c-calendar')).toBeVisible();
   await assertNoHorizontalOverflow(page);
   console.log('E2E_FLOW_OK coach-agenda '+testInfo.project.name);
 });
