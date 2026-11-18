@@ -107,13 +107,13 @@ jobs:
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 360x800
-        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C"
+        run: npx playwright test --project=mobile-360 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V comentarios|2B-V.1 visual polish|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C|V22 Stage5"
 
       - name: Reset local data before mobile 430
         run: python scripts/dev_reset.py
 
       - name: Premium responsive — mobile 430x932
-        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C"
+        run: npx playwright test --project=mobile-430 --grep "2A Premium responsive|2B History responsive|2B-V visual system|2B-V historial|2B-V2 UX|2C |V22 3A|V22 3B|V22 3C|V22 4A|V22 4A-UX|V22 4B|V22 4C|V22 Stage5"
 
       - name: Reset local data before desktop
         if: always() && steps.mobile.outcome != 'skipped'
@@ -399,6 +399,15 @@ jobs:
         with:
           name: v22-4c-agenda-premium-screens
           path: artifacts/4c-comparison
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Stage 5 integral evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-stage5-integral-evidence
+          path: artifacts/stage5
           if-no-files-found: error
           retention-days: 14
 

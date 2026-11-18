@@ -90,6 +90,9 @@ jobs:
       - name: 2B session/comment integrity Auth/RLS contract
         run: python scripts/dev_session_comment_integrity_smoke.py
 
+      - name: Stage 5 cross-domain RLS/BOLA guard
+        run: python scripts/dev_stage5_security_smoke.py
+
       - name: Build application against local Supabase
         run: python scripts/dev_build.py
 
@@ -119,6 +122,9 @@ jobs:
 
       - name: Repeat 2B session/comment integrity after database recreation
         run: python scripts/dev_session_comment_integrity_smoke.py
+
+      - name: Repeat Stage 5 cross-domain RLS/BOLA guard after database recreation
+        run: python scripts/dev_stage5_security_smoke.py
 
       - name: Final generated-artifact isolation check
         run: python scripts/dev_guard.py --artifact
