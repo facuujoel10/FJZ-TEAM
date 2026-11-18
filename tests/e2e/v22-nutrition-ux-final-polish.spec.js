@@ -45,6 +45,7 @@ test.describe('V22 4A-UX Nutrition final polish',()=>{
 
   test('V22 4A-UX Coach: editor principal entra en primer viewport y no duplica cabeceras',async({page})=>{
     await login(page,'coach@test.local');await openAthlete(page);await openCoachNutrition(page);
+    await expect(page.locator('.fjz4a-meal-editor').first()).toBeVisible({timeout:15000});
     const geo=await page.evaluate(()=>{
       const meal=document.querySelector('.fjz4a-meal-editor'),settings=document.querySelector('.fjz4a-plan-settings'),save=document.querySelector('.fjz4a-coach-save'),title=document.querySelector('.fjz3b-section-title'),ctx=document.querySelector('#fjz3bSectionContext'),workspace=document.querySelector('#v266CoachWorkspace');
       const r=x=>x?x.getBoundingClientRect():null;
