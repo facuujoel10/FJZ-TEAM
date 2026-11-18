@@ -191,14 +191,22 @@
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
       hero.querySelector('.v266-profile-kicker')?.remove();
-      const info=hero.querySelector('.v175-coach-profile-info');
+      const actions=hero.querySelector('.v175-coach-profile-actions,.pill-row');
+      let slot=hero.querySelector('#v175CoachAvatarSlot');
+      if(!slot){
+        slot=document.createElement('div');slot.id='v175CoachAvatarSlot';
+        const initials=text(s.name||'AL').trim().slice(0,2).toUpperCase()||'AL';
+        slot.innerHTML='<div class="v70-avatar big">'+esc(initials)+'</div>';
+        hero.prepend(slot);
+      }
+      const info=hero.querySelector('.v175-coach-profile-info')||[...hero.children].find(node=>node!==slot&&node!==actions);
+      if(info)info.classList.add('v175-coach-profile-info');
       if(info&&goal){
         const p=info.querySelector('p');if(p)p.textContent=goal;
       }
       if(info&&!goal){
         const p=info.querySelector('p');if(p)p.textContent='Objetivo no cargado';
       }
-      const actions=hero.querySelector('.v175-coach-profile-actions,.pill-row');
       if(actions){actions.classList.add('fjz3b-legacy-actions');actions.hidden=true}
       identityBox.appendChild(hero);
     }
