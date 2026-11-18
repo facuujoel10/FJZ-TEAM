@@ -42,6 +42,10 @@ async function logout(page){
   }
   await expect(b).toBeVisible({timeout:10000});await b.click();await expect(page.locator('#authEmail')).toBeVisible({timeout:10000});
 }
+async function rootSession(page){
+  await page.goto('/');
+  await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
+}
 async function noOverflow(page){
   const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
   expect(d.sw).toBeLessThanOrEqual(d.cw+2);
@@ -125,8 +129,9 @@ test.describe('V22 Stage5 integral certification',()=>{
     await expect(historyBtn).toBeVisible();await historyBtn.click();
     await expect(page.getByText('Día QA A',{exact:false}).first()).toBeVisible({timeout:10000});
 
+    await rootSession(page);
     await timed(metrics,'nutrition_open_ms',async()=>{
-      await page.getByRole('button',{name:'Nutrición'}).first().click();
+      await page.getByRole('button',{name:'Nutrición',exact:true}).first().click();
       await expect(page.locator('.fjz4a-student-shell')).toBeVisible({timeout:20000});
     });
     const logsBefore=await page.evaluate(async()=>{
@@ -159,6 +164,7 @@ test.describe('V22 Stage5 integral certification',()=>{
     });
     expect(mealGroup).toBeTruthy();
 
+    await rootSession(page);
     await timed(metrics,'progress_open_ms',async()=>{
       await page.getByRole('button',{name:'Check-in',exact:true}).first().click();
       await expect(page.locator('.fjz4b-shell')).toBeVisible({timeout:20000});
@@ -187,6 +193,7 @@ test.describe('V22 Stage5 integral certification',()=>{
     },{measureDate,checkWeek});
     expect(Number(persisted.m.weight_kg)).toBe(73.9);expect(persisted.q.notes).toBe(checkNotes);
 
+    await rootSession(page);
     await timed(metrics,'agenda_open_ms',async()=>{
       await page.getByRole('button',{name:'Agenda',exact:true}).first().click();
       await expect(page.locator('.fjz4c-student')).toBeVisible({timeout:20000});
