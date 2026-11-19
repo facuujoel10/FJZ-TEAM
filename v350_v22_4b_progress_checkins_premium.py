@@ -45,8 +45,35 @@ bridge=r'''<script id="v22ProgressCheckinsAuthorityBridge">
     try{const prev=Array.isArray(trackingCache?.measurements)?trackingCache.measurements:[];trackingCache.measurements=[readBack,...prev.filter(x=>String(x?.id)!==String(readBack.id)&&String(x?.measured_on)!==String(date))].sort((a,b)=>String(b.measured_on||'').localeCompare(String(a.measured_on||'')));trackingLoadedFor=aid}catch(_e){}
     window.__fjzRecordConfirmedSaveV303?.('measurement','Medición guardada',{id:readBack.id,athleteId:aid,date});window.__fjzConfirmSavedV264?.('Medición guardada','La medición quedó confirmada en la nube.');return readBack;
   }
+  async function saveFeedback4B(id){
+    if(!cloudEnabled||!supabaseClient)throw new Error('La devolución requiere conexión con la nube.');
+    const aid=typeof trackingAthleteId==='function'?trackingAthleteId():null;if(!aid)throw new Error('No encuentro la ficha vinculada.');
+    const input=document.getElementById('fb_'+id);if(!input)throw new Error('No encuentro la devolución que querés guardar.');
+    const value=String(input.value||'').trim();if(!value)throw new Error('Escribí una devolución antes de guardar.');
+    try{const fresh=await window.__fjzEnsureFreshAuthV194?.(false);if(fresh===false)throw new Error('Tu sesión necesita actualizarse antes de guardar.')}catch(e){if(String(e?.message||'').includes('actualizarse'))throw e}
+    const reviewedAt=new Date().toISOString();
+    const {data:written,error}=await supabaseClient.from('weekly_checkins')
+      .update({coach_feedback:value,reviewed_at:reviewedAt})
+      .eq('id',id).eq('athlete_id',aid)
+      .select('id,athlete_id,coach_feedback,reviewed_at').single();
+    if(error)throw error;
+    if(!written?.id||String(written.athlete_id)!==String(aid)||String(written.coach_feedback||'')!==value||!written.reviewed_at)throw new Error('La nube no confirmó la devolución del check-in.');
+    const {data:readBack,error:readErr}=await supabaseClient.from('weekly_checkins')
+      .select('id,athlete_id,coach_feedback,reviewed_at')
+      .eq('id',id).eq('athlete_id',aid).single();
+    if(readErr)throw readErr;
+    if(!readBack?.id||String(readBack.coach_feedback||'')!==value||!readBack.reviewed_at)throw new Error('La nube no confirmó la devolución del check-in.');
+    try{
+      const row=Array.isArray(trackingCache?.checkins)?trackingCache.checkins.find(x=>String(x?.id)===String(id)):null;
+      if(row)Object.assign(row,readBack);
+      trackingLoadedFor=aid;
+    }catch(_e){}
+    window.__fjzRecordConfirmedSaveV303?.('checkin-feedback','Devolución guardada',{id:readBack.id,athleteId:aid});
+    try{toast?.('Devolución guardada')}catch(_e){}
+    return readBack;
+  }
   window.__fjzProgressCheckinsActionsV22={
-    load:force=>loadTracking(!!force),submitCheckin:()=>window.submitWeeklyCheckin?.(),submitMeasurement:()=>saveMeasurement4B(),uploadPhoto:()=>window.uploadProgressPhoto?.(),signedPhoto:path=>signedPhotoUrl(path),saveFeedback:id=>window.saveCheckinFeedback?.(id),editMeasurement:id=>window.openEditMeasurementV176?.(id),showModal:body=>showModal(body),showError:msg=>typeof toast==='function'?toast(String(msg||'Error')):false,today:()=>typeof dateInputToday==='function'?dateInputToday():new Date().toISOString().slice(0,10),weekStart:()=>typeof weekStartISO==='function'?weekStartISO():new Date().toISOString().slice(0,10),cloudError:e=>typeof cloudErr==='function'?cloudErr(e):String(e?.message||e||'Error')
+    load:force=>loadTracking(!!force),submitCheckin:()=>window.submitWeeklyCheckin?.(),submitMeasurement:()=>saveMeasurement4B(),uploadPhoto:()=>window.uploadProgressPhoto?.(),signedPhoto:path=>signedPhotoUrl(path),saveFeedback:id=>saveFeedback4B(id),editMeasurement:id=>window.openEditMeasurementV176?.(id),showModal:body=>showModal(body),showError:msg=>typeof toast==='function'?toast(String(msg||'Error')):false,today:()=>typeof dateInputToday==='function'?dateInputToday():new Date().toISOString().slice(0,10),weekStart:()=>typeof weekStartISO==='function'?weekStartISO():new Date().toISOString().slice(0,10),cloudError:e=>typeof cloudErr==='function'?cloudErr(e):String(e?.message||e||'Error')
   };
 })();
 </script>
@@ -70,7 +97,7 @@ runtime=bridge+'<script id="v22ProgressCheckinsPremiumRuntime">\n'+js+'\n</scrip
 </script>
 '''
 html=html.replace("</body>",runtime+"</body>",1)
-for marker in ['meta name="fjz-v22-4b-progress-checkins-premium" content="22.4B"','id="v22ProgressCheckinsAuthorityBridge"','id="v22ProgressCheckinsPremiumRuntime"','id="v22ProgressCheckinsPremiumInstall"',"VERSION='22.4B'","Check-in guardado correctamente.","Tu evolución, sin ruido","weekly_checkins","body_measurements","progress_photos","progress-photos","duplicateCheckinGuard:true","measurementReadBack:true","TeamFJZProgressCheckinsPremium.renderStudent","TeamFJZProgressCheckinsPremium.renderCoachSection"]:
+for marker in ['meta name="fjz-v22-4b-progress-checkins-premium" content="22.4B"','id="v22ProgressCheckinsAuthorityBridge"','id="v22ProgressCheckinsPremiumRuntime"','id="v22ProgressCheckinsPremiumInstall"',"VERSION='22.4B'","Check-in guardado correctamente.","Tu evolución, sin ruido","weekly_checkins","body_measurements","progress_photos","progress-photos","duplicateCheckinGuard:true","measurementReadBack:true","saveFeedback4B","La nube no confirmó la devolución del check-in.","TeamFJZProgressCheckinsPremium.renderStudent","TeamFJZProgressCheckinsPremium.renderCoachSection"]:
     if marker not in html: raise RuntimeError("V22 4B output marker missing: "+marker)
 p.write_text(html,encoding="utf-8")
 print("TEAM FJZ V22 4B Progress + Check-ins Premium injected",len(html))
