@@ -220,8 +220,15 @@ test.describe('V22 Stage5 integral certification',()=>{
     await timed(metrics,'coach_login_ms',()=>login(page,'coach@test.local'));
     await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:20000});
     await expect(page.locator('.fjz3a-sync span')).toContainText(/Actualizado/i,{timeout:20000});
-    const commentNode=page.getByText(comment,{exact:true}).first();
-    await expect(commentNode).toBeVisible({timeout:20000});
+    const groupWithComment=page.locator('.fjz3a-group').filter({hasText:comment}).first();
+    await expect(groupWithComment).toBeVisible({timeout:20000});
+    const groupToggle=groupWithComment.locator('.fjz3a-group-head').first();
+    const groupBody=groupWithComment.locator('.fjz3a-group-body').first();
+    if((await groupToggle.getAttribute('aria-expanded'))!=='true')await groupToggle.click();
+    await expect(groupToggle).toHaveAttribute('aria-expanded','true',{timeout:5000});
+    await expect(groupBody).toBeVisible({timeout:5000});
+    const commentNode=groupBody.getByText(comment,{exact:true}).first();
+    await expect(commentNode).toBeVisible({timeout:10000});
     const container=commentNode.locator('xpath=ancestor::*[self::article or contains(@class,"card") or contains(@class,"feedback-item")][1]');
     const open=container.getByRole('button',{name:/Abrir|Ver/i}).first();await expect(open).toBeVisible();await open.click();
     const exact=page.getByText(comment,{exact:true}).first();await expect(exact).toBeVisible({timeout:10000});
