@@ -63,12 +63,24 @@ async function dismissConfirmedSaveModal(page){
 async function section(page,key){
   const b=page.locator('.fjz3b-nav button[data-section="'+key+'"]');
   await expect(b).toBeVisible({timeout:10000});
+  if(key==='progress'||key==='checkins'){
+    await expect.poll(
+      ()=>page.evaluate(()=>{
+        const s=window.__fjzAthlete360StateV22;
+        return !!s&&s.loading===false&&!!s.athleteId&&s.loadedAthleteId===s.athleteId;
+      }),
+      {timeout:20000,message:'Athlete 360 debe completar su hidratación antes de montar Progress/Check-ins'}
+    ).toBeTruthy();
+  }
   let lastError=null;
   for(let attempt=0;attempt<3;attempt++){
     await dismissConfirmedSaveModal(page);
     try{
       await b.click({timeout:5000});
       await expect(b).toHaveAttribute('aria-current','page');
+      if(key==='progress'||key==='checkins'){
+        await expect(page.locator('.fjz4b-shell')).toBeVisible({timeout:20000});
+      }
       return;
     }catch(err){
       lastError=err;
@@ -176,7 +188,9 @@ test.describe('V22 Stage5 integral certification',()=>{
     await openAthlete(page,'TEST ALUMNO 01',testInfo);
     await section(page,'nutrition');
     await section(page,'progress');
+    await expect(page.locator('.fjz4b-progress')).toBeVisible({timeout:20000});
     await section(page,'checkins');
+    await expect(page.locator('.fjz4b-checkins')).toBeVisible({timeout:20000});
     await section(page,'agenda');
     await page.locator('[data-3b-action="back"]').first().click();
     await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});

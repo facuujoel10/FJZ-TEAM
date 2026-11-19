@@ -104,6 +104,29 @@ La regresión final:
 
 **Clasificación:** defecto de QA/test; **resuelto sin modificar Agenda productiva**.
 
+### 3.4 Sincronización Athlete 360 → Progress/Check-ins — carrera E2E reproducible
+
+Al recertificar el cierre documental sobre `31e8c6d50e87d34445911628d509df51cbac7232`, mobile 430×932 reprodujo dos veces el mismo fallo en el recorrido Stage5 integral: la pestaña Progreso ya tenía `aria-current="page"`, pero `.fjz4b-progress` todavía no se había montado.
+
+La evidencia descarta un defecto funcional de 4B:
+
+- el SHA de aplicación `c88988abcca2a8a609c3472ba6b1b4cb0c8aa4bd` había completado Stage5 en 430×932;
+- las pruebas dedicadas de 4B pasaron inmediatamente antes del fallo;
+- el test específico A → Command Center → B → refresh produjo `E2E_FLOW_OK`;
+- entre `c88988ab...` y `31e8c6d...` sólo se había agregado este archivo Markdown;
+- el módulo 4B monta la UI Coach de forma asíncrona después de la hidratación de Athlete 360.
+
+La corrección final es exclusivamente de QA:
+
+1. antes de entrar a Progreso/Check-ins, Stage5 espera que la hidratación certificada de Athlete 360 haya finalizado para la identidad activa;
+2. después del clic visible, espera el shell público `.fjz4b-shell`;
+3. mantiene las aserciones específicas `.fjz4b-progress` y `.fjz4b-checkins`;
+4. la regresión Coach A → Command Center → B ejecuta explícitamente ambas superficies.
+
+No se aumentaron timeouts, no se eliminó ninguna aserción y no se modificó código productivo.
+
+**Clasificación:** carrera de sincronización del test compuesto; corrección de QA, no defecto productivo.
+
 ## 4. Seguridad Supabase / Auth / RLS
 
 Stage5 encontró y corrigió un problema real de seguridad en el entorno de configuración V22: funciones RPC protegidas conservaban permisos heredados de ejecución para `anon`.
@@ -316,7 +339,7 @@ El lanzamiento debe permanecer separado de esta certificación y requerir autori
 
 ## 13. Criterio de cierre
 
-Etapa 5 queda técnicamente lista para cierre cuando el commit documental que contiene este informe conserve:
+Etapa 5 queda técnicamente lista para cierre cuando el commit final que contiene este informe y la regresión de sincronización conserve:
 
 - Integration **SUCCESS**;
 - Browser **SUCCESS**;
