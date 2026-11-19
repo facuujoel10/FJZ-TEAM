@@ -4,7 +4,7 @@
 **Rama auditada:** `dev/team-fjz-v22`  
 **Baseline certificado previo (Etapa 4C):** `64d3f4c6832e24593cb1bbd5ad97cdfb0f9f27ac`  
 **Primer bloque de hardening Stage5:** `96eb06f7d7f871161e4d3ceed78ef5f6ddf7e7fd`  
-**SHA de aplicación certificado antes del cierre documental:** `c88988abcca2a8a609c3472ba6b1b4cb0c8aa4bd`  
+**SHA de código/QA certificado antes de este ajuste documental final:** `745376ba719edf8b87666900945952032d2fe84a`  
 **Production/main verificada:** `3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807`
 
 > Este archivo es el cierre documental. El commit que agrega este informe no cambia código de aplicación. Su SHA exacto se registra en la entrega final y debe conservar Integration + Browser SUCCESS antes de declarar el cierre definitivo.
@@ -13,10 +13,10 @@
 
 Etapa 5 completó la auditoría integral de TEAM FJZ V22 sobre entorno aislado de desarrollo, Supabase local real, fixtures sintéticos y Playwright en múltiples viewports.
 
-La certificación previa al cierre documental quedó validada sobre `c88988abcca2a8a609c3472ba6b1b4cb0c8aa4bd`:
+La certificación más reciente de código/QA quedó validada sobre `745376ba719edf8b87666900945952032d2fe84a`:
 
-- Integration: **SUCCESS** — Run `44503658126`.
-- Browser: **SUCCESS** — Run `44503658137`.
+- Integration: **SUCCESS** — Run `44513162822`.
+- Browser: **SUCCESS** — Run `44513162815`.
 - Final isolation and QA gate: **SUCCESS**.
 - Errores del Browser final: **0**.
 - Errores del Integration final: **0**.
@@ -222,10 +222,10 @@ Métricas instrumentadas del recorrido integral, en milisegundos:
 
 | Viewport | Login alumno | Abrir entreno | Confirmar entreno | Nutrición | Progreso | Agenda | Login Coach | Total medido |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 390×844 | 511 | 163 | 282 | 186 | 206 | 187 | 440 | 1975 |
-| 360×800 | 524 | 118 | 284 | 234 | 126 | 316 | 535 | 2137 |
-| 430×932 | 499 | 164 | 306 | 219 | 254 | 296 | 443 | 2181 |
-| 1440×900 | 604 | 81 | 464 | 229 | 133 | 216 | 514 | 2241 |
+| 390×844 | 496 | 181 | 300 | 284 | 274 | 350 | 483 | 2368 |
+| 360×800 | 512 | 183 | 253 | 341 | 283 | 207 | 436 | 2215 |
+| 430×932 | 523 | 148 | 292 | 254 | 254 | 343 | 450 | 2264 |
+| 1440×900 | 504 | 272 | 577 | 218 | 192 | 161 | 512 | 2436 |
 
 Estas métricas son tiempos instrumentados dentro del flujo E2E local, no un benchmark de red productiva.
 
@@ -249,22 +249,22 @@ Todos los uploads obligatorios terminaron **SUCCESS**.
 
 | Artifact | ID |
 |---|---:|
-| `v22-stage5-integral-evidence` | `14521540055` |
-| `v22-2bv2-product-experience-screens` | `14521345660` |
-| `v22-4a-nutrition-premium-screens` | `14520866750` |
-| `v22-3c-ux-final-polish-screens` | `14520816841` |
-| `v22-3b-athlete-360-screens` | `14520737025` |
-| `v22-4c-agenda-premium-screens` | `14520512625` |
-| `v22-3c-coach-analytics-screens` | `14520477431` |
-| `v22-4b-progress-checkins-premium-screens` | `14520288683` |
-| `v22-4a-ux-nutrition-final-polish-screens` | `14520009446` |
+| `v22-stage5-integral-evidence` | `14525559210` |
+| `v22-2bv2-product-experience-screens` | `14525843885` |
+| `v22-4a-nutrition-premium-screens` | `14525279652` |
+| `v22-3c-ux-final-polish-screens` | `14525928672` |
+| `v22-3b-athlete-360-screens` | `14525638998` |
+| `v22-4c-agenda-premium-screens` | `14525649055` |
+| `v22-3c-coach-analytics-screens` | `14525629327` |
+| `v22-4b-progress-checkins-premium-screens` | `14525334522` |
+| `v22-4a-ux-nutrition-final-polish-screens` | `14525948618` |
 
-## 8. Workflows certificados antes del commit documental
+## 8. Workflows certificados del código/QA final antes de este ajuste documental
 
 ### Integration
 
-- Run: `44503658126`
-- SHA: `c88988abcca2a8a609c3472ba6b1b4cb0c8aa4bd`
+- Run: `44513162822`
+- SHA: `745376ba719edf8b87666900945952032d2fe84a`
 - Resultado: **SUCCESS**
 - Auth/RLS local: **PASS**
 - Cross-domain RLS/BOLA guard: **PASS**
@@ -274,8 +274,8 @@ Todos los uploads obligatorios terminaron **SUCCESS**.
 
 ### Browser
 
-- Run: `44503658137`
-- SHA: `c88988abcca2a8a609c3472ba6b1b4cb0c8aa4bd`
+- Run: `44513162815`
+- SHA: `745376ba719edf8b87666900945952032d2fe84a`
 - Resultado: **SUCCESS**
 - Stage5 integral: **PASS**
 - Stage5 Coach navigation: **PASS**
@@ -348,3 +348,18 @@ Etapa 5 queda técnicamente lista para cierre cuando el commit final que contien
 - `main` intacta.
 
 El SHA exacto del commit documental y sus runs finales se registran en la entrega final de Etapa 5.
+
+## 14. Nota de cierre documental final
+
+La última corrección posterior al primer cierre documental fue exclusivamente de QA en `tests/e2e/v22-stage5-integral.spec.js`: sincroniza el montaje de Progress/Check-ins después de la hidratación de Athlete 360, sin modificar código productivo.
+
+El SHA de código/QA `745376ba719edf8b87666900945952032d2fe84a` quedó certificado con:
+
+- Integration `44513162822`: **SUCCESS**.
+- Browser `44513162815`: **SUCCESS**.
+- 8 marcadores `E2E_FLOW_OK` confirmados para navegación Coach + recorrido integral en 390×844, 360×800, 430×932 y 1440×900.
+- Final isolation and QA gate: **SUCCESS**.
+- 9 artifacts obligatorios: **presentes**.
+- `main`: `3ffcf3efb1889dc3f915d063ffdf67d6c2ae5807`, sin cambios.
+
+Este ajuste documental no modifica la aplicación, los tests ni la configuración de Supabase. El SHA exacto del commit que contiene esta actualización se informa en la entrega final y debe conservar Integration + Browser SUCCESS antes de declarar Etapa 5 cerrada definitivamente.
