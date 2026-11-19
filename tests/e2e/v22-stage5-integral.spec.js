@@ -408,7 +408,8 @@ test.describe('V22 Stage5 integral certification',()=>{
     await page.locator('#v165Date').fill('2026-12-31');
     await page.locator('#v165Time').fill('18:15');
     await page.locator('[data-v165-action="save-reminder"]').click();
-    await expect(page.locator('#modalWrap')).toBeHidden({timeout:15000});
+    await expect(page.locator('#modal .v264-confirmed-save')).toBeVisible({timeout:15000});
+    expect(await dismissConfirmedSaveModal(page)).toBeTruthy();
     reminderId=await page.evaluate(async title=>{
       const a=__fjzAthlete360StateV22.athleteId;
       const {data,error}=await supabaseClient.from('athlete_reminders').select('id').eq('athlete_id',a).eq('title',title).single();
