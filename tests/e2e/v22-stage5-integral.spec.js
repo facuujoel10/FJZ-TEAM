@@ -56,7 +56,11 @@ async function section(page,key){
 }
 async function openAthlete(page,name){
   if(!(await page.locator('.fjz3a-command-center').isVisible().catch(()=>false))){
-    await page.evaluate(()=>{coachTab='dashboard';render()});
+    const coachMode=page.locator('#coachMode');
+    if(await coachMode.isVisible().catch(()=>false))await coachMode.click();
+    const studentsNav=page.locator('#bottomNav').getByRole('button',{name:'Alumnos',exact:true}).first();
+    await expect(studentsNav).toBeVisible({timeout:10000});
+    await studentsNav.click();
     await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
   }
   const search=page.locator('#fjz3aStudentSearch');if(await search.count())await search.fill(name.replace('TEST ',''));
