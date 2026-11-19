@@ -44,7 +44,7 @@ for sid,path in modules:
         raise RuntimeError("V22 source module cannot contain closing script markup: "+path)
     scripts.append('<script id="'+sid+'">\n'+code+'\n</script>')
 
-agenda_flag="enabled" if globals().get("APP_ENV") in {"development","test"} else "disabled"
+agenda_flag="enabled" if globals().get("APP_ENV") in {"development","test","staging"} else "disabled"
 head_payload="\n".join(scripts)+(
     '\n<meta name="fjz-v22-1a-architecture-foundation" content="date-pilot">'
     '\n<meta name="fjz-v22-agenda-repository-read" content="'+agenda_flag+'">'
