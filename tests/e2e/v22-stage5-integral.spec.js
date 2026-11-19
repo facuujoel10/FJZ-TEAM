@@ -105,6 +105,12 @@ async function ensureCoachCommandCenter(page,testInfo,label='return'){
     await studentsNav.click();
   }
   await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+  await expect.poll(
+    ()=>page.evaluate(()=>window.__fjzCoachCommandCenterStateV22?window.__fjzCoachCommandCenterStateV22.loading===false:true),
+    {timeout:20000,message:'Command Center debe terminar su hidratación antes de abrir otro alumno'}
+  ).toBeTruthy();
+  const sync=page.locator('.fjz3a-sync span').first();
+  if(await sync.count())await expect(sync).toContainText(/Actualizado/i,{timeout:20000});
   await coachNavigationSnapshot(page,label+'-after',testInfo);
   return true;
 }
@@ -112,7 +118,11 @@ async function openAthlete(page,name,testInfo){
   await ensureCoachCommandCenter(page,testInfo,'open-'+name.replace(/\s+/g,'-'));
   const search=page.locator('#fjz3aStudentSearch');if(await search.count())await search.fill(name.replace('TEST ',''));
   const row=page.locator('#studentList .student-row',{hasText:name}).first();
-  await expect(row).toBeVisible({timeout:15000});await row.getByRole('button',{name:/Abrir/i}).click();
+  await expect(row).toBeVisible({timeout:15000});
+  const open=row.getByRole('button',{name:/Abrir/i}).first();
+  await expect(open).toBeVisible({timeout:15000});
+  await expect(open).toBeEnabled({timeout:15000});
+  await open.click();
   await expect(page.locator('.fjz3b-header')).toContainText(name,{timeout:20000});
 }
 async function closeModal(page){
@@ -346,17 +356,24 @@ test.describe('V22 Stage5 integral certification',()=>{
     await closeModal(page);
 
     await section(page,'progress');
-    await expect(page.locator('.fjz4b-history-list')).toContainText('73.9');
+    await expect(page.locator('.fjz4b-progress')).toBeVisible({timeout:20000});
+    await expect(page.locator('.fjz3b-measure-list')).toContainText('73.9',{timeout:20000});
     await section(page,'checkins');
     const checkCard=page.locator('.fjz4b-check-card',{hasText:checkNotes}).first();
     await expect(checkCard).toBeVisible({timeout:15000});
-    await checkCard.locator('textarea').fill(coachFeedback);
-    await checkCard.getByRole('button',{name:/Guardar devolución/i}).click();
+    const feedbackBox=checkCard.locator('textarea').first();
+    const feedbackSave=checkCard.getByRole('button',{name:/Guardar devolución/i}).first();
+    await expect(feedbackBox).toBeVisible({timeout:15000});
+    await expect(feedbackSave).toBeVisible({timeout:15000});
+    await feedbackBox.fill(coachFeedback);
+    await feedbackSave.click();
     await expect(page.locator('.fjz4b-checkins')).toContainText(coachFeedback,{timeout:15000});
 
     await section(page,'agenda');
     await expect(page.locator('#fjz4cAddReminder')).toBeVisible({timeout:15000});
     await page.locator('#fjz4cAddReminder').click();
+    await expect(page.locator('#modalWrap')).toBeVisible({timeout:10000});
+    await expect(page.locator('#v165Title')).toBeVisible({timeout:10000});
     await page.locator('#v165Title').fill(reminderTitle);
     await page.locator('#v165Date').fill('2026-12-31');
     await page.locator('#v165Time').fill('18:15');
