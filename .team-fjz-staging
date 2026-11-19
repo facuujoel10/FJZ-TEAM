@@ -1,0 +1,5 @@
+TEAM_FJZ_STAGING_ONLY
+source_sha=c405fce51a716dc1d15b43d96028947ef5121c59
+supabase_project_ref=ztopsjzvxuvfsrqdhtvz
+production_deploys_forbidden=true
+production_backend_forbidden=true
