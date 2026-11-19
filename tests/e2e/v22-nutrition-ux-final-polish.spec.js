@@ -8,8 +8,16 @@ async function login(page,email='alumno01@test.local'){
 }
 async function openStudentNutrition(page){await page.getByRole('button',{name:'Nutrición'}).first().click();await expect(page.locator('.fjz4a-student-shell')).toBeVisible({timeout:20000})}
 async function openAthlete(page,name='TEST ALUMNO 01'){
+  await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:20000});
+  const sync=page.locator('.fjz3a-sync span').first();
+  if(await sync.count())await expect(sync).toContainText(/Actualizado/i,{timeout:20000});
   const search=page.locator('#fjz3aStudentSearch');if(await search.count())await search.fill(name.replace('TEST ',''));
-  const row=page.locator('#studentList .student-row',{hasText:name}).first();await expect(row).toBeVisible({timeout:15000});await row.getByRole('button',{name:/Abrir/i}).click();await expect(page.locator('.fjz3b-header')).toBeVisible({timeout:15000});
+  const row=page.locator('#studentList .student-row',{hasText:name}).first();
+  await expect(row).toBeVisible({timeout:20000});
+  const open=row.getByRole('button',{name:/Abrir/i}).first();
+  await expect(open).toBeVisible({timeout:10000});
+  await open.click();
+  await expect(page.locator('.fjz3b-header')).toBeVisible({timeout:15000});
 }
 async function openCoachNutrition(page){const b=page.locator('.fjz3b-nav button[data-section="nutrition"]');await b.click();await expect(b).toHaveAttribute('aria-current','page');await expect(page.locator('.fjz4a-coach-shell')).toBeVisible({timeout:20000})}
 async function noOverflow(page){const g=await page.evaluate(()=>{const r=document.scrollingElement||document.documentElement,ox=scrollX,oy=scrollY;scrollTo(100000,oy);const mx=scrollX;scrollTo(ox,oy);return{sw:r.scrollWidth,cw:r.clientWidth,mx}});expect(g.sw).toBeLessThanOrEqual(g.cw+2);expect(g.mx).toBeLessThanOrEqual(2)}

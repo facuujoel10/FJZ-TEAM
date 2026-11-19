@@ -61,11 +61,24 @@ async function dismissConfirmedSaveModal(page){
   return true;
 }
 async function section(page,key){
-  await dismissConfirmedSaveModal(page);
   const b=page.locator('.fjz3b-nav button[data-section="'+key+'"]');
   await expect(b).toBeVisible({timeout:10000});
-  await b.click();
-  await expect(b).toHaveAttribute('aria-current','page');
+  let lastError=null;
+  for(let attempt=0;attempt<3;attempt++){
+    await dismissConfirmedSaveModal(page);
+    try{
+      await b.click({timeout:5000});
+      await expect(b).toHaveAttribute('aria-current','page');
+      return;
+    }catch(err){
+      lastError=err;
+      const blocked=await page.locator('#modalWrap').isVisible().catch(()=>false)
+        &&await page.locator('#modal .v264-confirmed-save').isVisible().catch(()=>false);
+      if(!blocked)throw err;
+      await dismissConfirmedSaveModal(page);
+    }
+  }
+  throw lastError||new Error('No se pudo navegar a '+key);
 }
 async function coachNavigationSnapshot(page,label,testInfo){
   const snap=await page.evaluate(()=>{
