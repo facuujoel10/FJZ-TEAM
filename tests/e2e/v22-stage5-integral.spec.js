@@ -427,7 +427,12 @@ test.describe('V22 Stage5 integral certification',()=>{
 
     await logout(page);await login(page,'alumno01@test.local');
     await page.getByRole('button',{name:'Agenda',exact:true}).first().click();
-    await expect(page.locator('.fjz4c-student')).toContainText(reminderTitle,{timeout:20000});
+    await expect(page.locator('.fjz4c-student')).toBeVisible({timeout:20000});
+    await page.locator('[data-4c-action="shift-month"][data-delta="1"]').click();
+    const reminderDay=page.locator('[data-4c-date="2026-12-31"]');
+    await expect(reminderDay).toBeVisible({timeout:10000});
+    await reminderDay.click();
+    await expect(page.locator('.fjz4c-student')).toContainText(reminderTitle,{timeout:15000});
     await page.getByRole('button',{name:'Check-in',exact:true}).first().click();
     await page.locator('[data-4b-view="checkins"]').click();
     const finalCard=page.locator('.fjz4b-check-card',{hasText:checkNotes}).first();
