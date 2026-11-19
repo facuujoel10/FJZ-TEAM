@@ -237,8 +237,7 @@ test.describe('V22 Stage5 integral certification',()=>{
     await expect(review.getByText('Revisado',{exact:true})).toBeVisible({timeout:15000});
     await closeModal(page);
 
-    const students=page.getByRole('button',{name:/Alumnos/i}).filter({visible:true}).first();
-    if(await students.count())await students.click();
+    await rootSession(page);
     await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
     await openAthlete(page,'TEST ALUMNO 01');
 
