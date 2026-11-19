@@ -557,12 +557,13 @@ grant execute on function public.can_edit_athlete_as_coach(uuid) to authenticate
 grant execute on function public.can_access_athlete_student_pair(uuid,uuid) to authenticated;
 grant execute on function public.commit_workout_session_v202(uuid,text,jsonb,jsonb) to authenticated;
 
-revoke all on function public.current_profile_role() from public;
-revoke all on function public.are_linked(uuid,uuid) from public;
-revoke all on function public.is_coach_of(uuid) from public;
-revoke all on function public.can_access_athlete(uuid) from public;
-revoke all on function public.can_edit_athlete_as_coach(uuid) from public;
-revoke all on function public.can_access_athlete_student_pair(uuid,uuid) from public;
+revoke all on function public.current_profile_role() from public, anon;
+revoke all on function public.are_linked(uuid,uuid) from public, anon;
+revoke all on function public.is_coach_of(uuid) from public, anon;
+revoke all on function public.can_access_athlete(uuid) from public, anon;
+revoke all on function public.can_edit_athlete_as_coach(uuid) from public, anon;
+revoke all on function public.can_access_athlete_student_pair(uuid,uuid) from public, anon;
+revoke all on function public.commit_workout_session_v202(uuid,text,jsonb,jsonb) from public, anon;
 
 -- Local Storage policies mirror TEAM FJZ ownership concepts without using
 -- any production objects.
@@ -1195,7 +1196,7 @@ as $$
   limit 100;
 $$;
 
-revoke all on function public.get_coach_feed() from public;
+revoke all on function public.get_coach_feed() from public, anon;
 grant execute on function public.get_coach_feed() to authenticated;
 
 -- Same public return contract as production. This local-only implementation
@@ -1393,7 +1394,7 @@ order by
 limit 60;
 $student_alerts$;
 
-revoke all on function public.get_student_alerts() from public;
+revoke all on function public.get_student_alerts() from public, anon;
 grant execute on function public.get_student_alerts() to authenticated;
 
 
