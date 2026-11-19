@@ -10,6 +10,8 @@ PRODUCTION_SUPABASE_URL = "https://cujipwacwwpejhqjhnkr.supabase.co"
 PRODUCTION_SUPABASE_REF = "cujipwacwwpejhqjhnkr"
 PRODUCTION_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TWE-dICHv3QemUtM302CTg_8i2zVx3G"
 DEV_SENTINEL = pathlib.Path(".team-fjz-development")
+STAGING_SENTINEL = pathlib.Path(".team-fjz-staging")
+STAGING_BACKEND_URL = "https://ztopsjzvxuvfsrqdhtvz.supabase.co"
 RAW_APP_ENV = os.environ.get("TEAM_FJZ_ENV", "").strip().lower()
 
 # V22 development branch is fail-closed: an explicit non-production
@@ -20,7 +22,7 @@ if DEV_SENTINEL.exists():
             "TEAM FJZ V22 dev guard: TEAM_FJZ_ENV must be explicitly set "
             "to development or test."
         )
-    if RAW_APP_ENV not in {"development", "test"}:
+    if RAW_APP_ENV not in {"development", "test"} and not (RAW_APP_ENV == "staging" and STAGING_SENTINEL.exists()):
         raise RuntimeError(
             "TEAM FJZ V22 dev guard: this development branch refuses "
             f"TEAM_FJZ_ENV={RAW_APP_ENV!r}."
@@ -82,6 +84,12 @@ elif APP_ENV != "production":
         raise RuntimeError(
             "TEAM FJZ dev guard: production Supabase configuration detected."
         )
+
+    if APP_ENV == "staging":
+        if not STAGING_SENTINEL.exists() or staging_url != STAGING_BACKEND_URL:
+            raise RuntimeError("TEAM FJZ staging guard: only the isolated V22 staging Supabase project is allowed.")
+        if not staging_key.startswith(("sb_publishable_", "eyJ")):
+            raise RuntimeError("TEAM FJZ staging guard: use only a frontend publishable/anon key, never a secret or service-role key.")
 
     if APP_ENV in {"development", "test"}:
         parsed = urllib.parse.urlparse(staging_url)
@@ -1120,6 +1128,27 @@ if APP_ENV in {"development", "test"}:
         )
     if "fjz-environment" not in dev_artifact:
         raise RuntimeError("TEAM FJZ V22 dev guard: environment marker missing.")
+
+# Strict staging-only artifact guard after all historical patches.
+# Production references are removed from the generated public artifact;
+# the only allowed cloud origin is the dedicated staging Supabase project.
+if APP_ENV == "staging":
+    staging_artifact_path = pathlib.Path("public/index.html")
+    staging_artifact = staging_artifact_path.read_text(encoding="utf-8")
+    staging_artifact = staging_artifact.replace(PRODUCTION_SUPABASE_URL, STAGING_BACKEND_URL)
+    staging_artifact = staging_artifact.replace(PRODUCTION_SUPABASE_REF, "ztopsjzvxuvfsrqdhtvz")
+    staging_artifact = staging_artifact.replace(PRODUCTION_SUPABASE_PUBLISHABLE_KEY, staging_key)
+    prohibited = (PRODUCTION_SUPABASE_URL, PRODUCTION_SUPABASE_REF, PRODUCTION_SUPABASE_PUBLISHABLE_KEY)
+    leaked = [x for x in prohibited if x.lower() in staging_artifact.lower()]
+    if leaked:
+        raise RuntimeError("TEAM FJZ staging guard: production backend reference leaked into public artifact.")
+    if STAGING_BACKEND_URL not in staging_artifact:
+        raise RuntimeError("TEAM FJZ staging guard: staging backend missing from generated artifact.")
+    if "</head>" not in staging_artifact or "</body>" not in staging_artifact:
+        raise RuntimeError("TEAM FJZ staging guard: expected valid HTML document.")
+    staging_artifact = staging_artifact.replace("</head>", '<meta name="robots" content="noindex,nofollow,noarchive">\n<meta name="fjz-environment" content="staging">\n</head>', 1)
+    staging_artifact = staging_artifact.replace("</body>", '<div id="fjz-stage-notice" aria-label="Entorno de pruebas" style="position:fixed;right:8px;top:8px;z-index:99999;pointer-events:none;padding:6px 10px;border-radius:999px;background:#17171be8;border:1px solid #ff4354;color:#fff;font:800 10px system-ui">STAGING V22 · DATOS DE PRUEBA</div></body>', 1)
+    staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
 # Staging already runs preflight externally in its build command, so avoid duplicate work there.
