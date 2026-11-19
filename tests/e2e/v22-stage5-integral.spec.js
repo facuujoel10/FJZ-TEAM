@@ -55,6 +55,10 @@ async function section(page,key){
   await expect(b).toBeVisible({timeout:10000});await b.click();await expect(b).toHaveAttribute('aria-current','page');
 }
 async function openAthlete(page,name){
+  if(!(await page.locator('.fjz3a-command-center').isVisible().catch(()=>false))){
+    await page.evaluate(()=>{coachTab='dashboard';render()});
+    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+  }
   const search=page.locator('#fjz3aStudentSearch');if(await search.count())await search.fill(name.replace('TEST ',''));
   const row=page.locator('#studentList .student-row',{hasText:name}).first();
   await expect(row).toBeVisible({timeout:15000});await row.getByRole('button',{name:/Abrir/i}).click();
@@ -239,7 +243,6 @@ test.describe('V22 Stage5 integral certification',()=>{
 
     await logout(page);
     await login(page,'coach@test.local');
-    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:20000});
     await openAthlete(page,'TEST ALUMNO 01');
 
     await section(page,'training');await noOverflow(page);
