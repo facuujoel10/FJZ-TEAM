@@ -6,6 +6,7 @@ release=(root/"RELEASE").read_text(encoding="utf-8").strip()
 is_staging_local='id="fjzStagingLocalRuntime"' in html
 is_v22_dev=('meta name="fjz-environment" content="development"' in html or
             'meta name="fjz-environment" content="test"' in html)
+is_v22_staging='meta name="fjz-environment" content="staging"' in html
 v294_source=(root/"v294_session_resilience.py").read_text(encoding="utf-8")
 
 runtime_match=re.search(r'<script id="fjzReleaseRuntime">.*?</script>',html,re.S)
@@ -17,7 +18,9 @@ checks={
       "storageKey:'sb-team-fjz-v22-local-auth-token'" in html
       if is_v22_dev
       else (
-        "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in html
+        "storageKey:'sb-ztopsjzvxuvfsrqdhtvz-auth-token'" in html
+        if is_v22_staging
+        else "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in html
         if not is_staging_local
         else "storageKey:'sb-cujipwacwwpejhqjhnkr-auth-token'" in v294_source
       )
