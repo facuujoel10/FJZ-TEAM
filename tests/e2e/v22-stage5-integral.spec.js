@@ -54,15 +54,62 @@ async function section(page,key){
   const b=page.locator('.fjz3b-nav button[data-section="'+key+'"]');
   await expect(b).toBeVisible({timeout:10000});await b.click();await expect(b).toHaveAttribute('aria-current','page');
 }
-async function openAthlete(page,name){
-  if(!(await page.locator('.fjz3a-command-center').isVisible().catch(()=>false))){
-    await page.evaluate(()=>{
-      mode='coach';
-      if(typeof __fjzCoachNavigateV22==='function')__fjzCoachNavigateV22('dashboard','','');
-      else{coachTab='dashboard';render()}
-    });
-    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+async function coachNavigationSnapshot(page,label,testInfo){
+  const snap=await page.evaluate(()=>{
+    const visible=el=>!!el&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0;
+    let route=null;try{route=JSON.parse(sessionStorage.getItem('team-fjz-v22-athlete360-route')||'null')}catch(_e){}
+    const command=document.querySelector('.fjz3a-command-center'),athlete=document.querySelector('.fjz3b-header'),back=document.querySelector('[data-3b-action="back"]');
+    return {
+      role:currentProfile?.role||null,
+      mode:typeof mode==='undefined'?null:mode,
+      coachTab:typeof coachTab==='undefined'?null:coachTab,
+      coachStudentTab:typeof coachStudentTab==='undefined'?null:coachStudentTab,
+      selectedStudentId:state?.selectedStudentId||null,
+      route,
+      athlete360:window.__fjzAthlete360StateV22?{
+        studentId:window.__fjzAthlete360StateV22.studentId||null,
+        athleteId:window.__fjzAthlete360StateV22.athleteId||null,
+        sectionOverride:window.__fjzAthlete360StateV22.sectionOverride||null,
+        loading:!!window.__fjzAthlete360StateV22.loading,
+        loadedAthleteId:window.__fjzAthlete360StateV22.loadedAthleteId||null
+      }:null,
+      commandCenter:{exists:!!command,visible:visible(command),loading:!!window.__fjzCoachCommandCenterStateV22?.loading},
+      athleteHeader:{exists:!!athlete,visible:visible(athlete)},
+      backVisible:visible(back),
+      bottomNavClass:document.getElementById('bottomNav')?.className||'',
+      renderType:typeof render
+    };
+  });
+  console.log('STAGE5_COACH_NAV '+label+' '+JSON.stringify(snap));
+  if(testInfo){
+    fs.mkdirSync('artifacts/stage5',{recursive:true});
+    const suffix=testInfo.project.name+'-'+label.replace(/[^a-z0-9_-]+/gi,'-');
+    fs.writeFileSync('artifacts/stage5/coach-nav-'+suffix+'.json',JSON.stringify(snap,null,2));
+    const viewHtml=await page.locator('#view').evaluate(el=>el.outerHTML).catch(()=>'<div id="view" data-missing="true"></div>');
+    fs.writeFileSync('artifacts/stage5/coach-nav-'+suffix+'.html',viewHtml);
+    await page.screenshot({path:'artifacts/stage5/coach-nav-'+suffix+'.png',fullPage:true});
   }
+  return snap;
+}
+async function ensureCoachCommandCenter(page,testInfo,label='return'){
+  if(await page.locator('.fjz3a-command-center').isVisible().catch(()=>false))return true;
+  const before=await coachNavigationSnapshot(page,label+'-before',testInfo);
+  const back=page.locator('[data-3b-action="back"]').first();
+  if(await back.isVisible().catch(()=>false)){
+    expect(before.role).toBe('coach');
+    expect(before.route?.studentId||'').not.toBe('');
+    await back.click();
+  }else{
+    const studentsNav=page.locator('#bottomNav').getByRole('button',{name:'Alumnos',exact:true}).first();
+    await expect(studentsNav).toBeVisible({timeout:10000});
+    await studentsNav.click();
+  }
+  await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+  await coachNavigationSnapshot(page,label+'-after',testInfo);
+  return true;
+}
+async function openAthlete(page,name,testInfo){
+  await ensureCoachCommandCenter(page,testInfo,'open-'+name.replace(/\s+/g,'-'));
   const search=page.locator('#fjz3aStudentSearch');if(await search.count())await search.fill(name.replace('TEST ',''));
   const row=page.locator('#studentList .student-row',{hasText:name}).first();
   await expect(row).toBeVisible({timeout:15000});await row.getByRole('button',{name:/Abrir/i}).click();
@@ -80,6 +127,37 @@ async function timed(metrics,label,fn){
 
 test.describe('V22 Stage5 integral certification',()=>{
   test.setTimeout(150000);
+
+  test('V22 Stage5 Coach: navegación visible A → Command Center → B conserva identidad, aislamiento y refresh',async({page},testInfo)=>{
+    const state=await safety(page);
+    await login(page,'coach@test.local');
+    await ensureCoachCommandCenter(page,testInfo,'regression-login');
+
+    await openAthlete(page,'TEST ALUMNO 01',testInfo);
+    await section(page,'nutrition');
+    await section(page,'progress');
+    await section(page,'checkins');
+    await section(page,'agenda');
+    await page.locator('[data-3b-action="back"]').first().click();
+    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+
+    await openAthlete(page,'TEST ALUMNO 02',testInfo);
+    await expect(page.locator('.fjz3b-header')).toContainText('TEST ALUMNO 02');
+    await expect(page.locator('.fjz3b-header')).not.toContainText('TEST ALUMNO 01');
+    expect(await page.evaluate(()=>window.__fjzAthlete360StateV22?.athleteId)).toBe('10000000-0000-4000-8000-000000000002');
+    await section(page,'agenda');
+    await section(page,'checkins');
+    await page.locator('[data-3b-action="back"]').first().click();
+    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+
+    await page.reload();
+    await expect(page.locator('#authGate')).toBeHidden({timeout:15000});
+    await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
+    await noOverflow(page);
+    expect(state.prod).toEqual([]);
+    expect(state.pageErrors).toEqual([]);
+    console.log('E2E_FLOW_OK V22 Stage5 Coach navigation '+testInfo.project.name);
+  });
 
   test('V22 Stage5 recorrido integral Alumno → Coach con persistencia, A/B y reingreso',async({page},testInfo)=>{
     const state=await safety(page);
@@ -247,7 +325,7 @@ test.describe('V22 Stage5 integral certification',()=>{
 
     await logout(page);
     await login(page,'coach@test.local');
-    await openAthlete(page,'TEST ALUMNO 01');
+    await openAthlete(page,'TEST ALUMNO 01',testInfo);
 
     await section(page,'training');await noOverflow(page);
     await section(page,'nutrition');
@@ -294,7 +372,7 @@ test.describe('V22 Stage5 integral certification',()=>{
 
     await page.locator('[data-3b-action="back"]').first().click();
     await expect(page.locator('.fjz3a-command-center')).toBeVisible({timeout:15000});
-    await openAthlete(page,'TEST ALUMNO 02');
+    await openAthlete(page,'TEST ALUMNO 02',testInfo);
     expect(await page.evaluate(()=>__fjzAthlete360StateV22.athleteId)).toBe('10000000-0000-4000-8000-000000000002');
     await section(page,'agenda');await expect(page.locator('#coachStudentBody')).not.toContainText(reminderTitle);
     await section(page,'checkins');await expect(page.locator('#coachStudentBody')).not.toContainText(checkNotes);
@@ -307,7 +385,7 @@ test.describe('V22 Stage5 integral certification',()=>{
     const finalCard=page.locator('.fjz4b-check-card',{hasText:checkNotes}).first();
     await expect(finalCard).toContainText(coachFeedback,{timeout:15000});
 
-    await logout(page);await login(page,'coach@test.local');await openAthlete(page,'TEST ALUMNO 01');
+    await logout(page);await login(page,'coach@test.local');await openAthlete(page,'TEST ALUMNO 01',testInfo);
     await page.evaluate(async ({mealGroup,measureDate,checkWeek,reminderId})=>{
       const a=__fjzAthlete360StateV22.athleteId;
       const rs=await Promise.all([
