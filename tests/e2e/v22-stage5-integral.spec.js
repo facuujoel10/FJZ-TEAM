@@ -50,9 +50,22 @@ async function noOverflow(page){
   const d=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
   expect(d.sw).toBeLessThanOrEqual(d.cw+2);
 }
+async function dismissConfirmedSaveModal(page){
+  const wrap=page.locator('#modalWrap');
+  const confirmed=page.locator('#modal .v264-confirmed-save');
+  if(!(await wrap.isVisible().catch(()=>false))||!(await confirmed.isVisible().catch(()=>false)))return false;
+  const listo=confirmed.getByRole('button',{name:'Listo',exact:true}).first();
+  await expect(listo).toBeVisible({timeout:10000});
+  await listo.click();
+  await expect(wrap).toBeHidden({timeout:10000});
+  return true;
+}
 async function section(page,key){
+  await dismissConfirmedSaveModal(page);
   const b=page.locator('.fjz3b-nav button[data-section="'+key+'"]');
-  await expect(b).toBeVisible({timeout:10000});await b.click();await expect(b).toHaveAttribute('aria-current','page');
+  await expect(b).toBeVisible({timeout:10000});
+  await b.click();
+  await expect(b).toHaveAttribute('aria-current','page');
 }
 async function coachNavigationSnapshot(page,label,testInfo){
   const snap=await page.evaluate(()=>{
@@ -126,9 +139,13 @@ async function openAthlete(page,name,testInfo){
   await expect(page.locator('.fjz3b-header')).toContainText(name,{timeout:20000});
 }
 async function closeModal(page){
-  if(await page.locator('#modal').isVisible().catch(()=>false)){
+  if(await dismissConfirmedSaveModal(page))return;
+  const wrap=page.locator('#modalWrap');
+  if(await wrap.isVisible().catch(()=>false)){
     const b=page.locator('#modal').getByRole('button',{name:/Listo|Cerrar|✕/}).first();
-    if(await b.count())await b.click();else await page.keyboard.press('Escape');
+    if(await b.isVisible().catch(()=>false))await b.click();
+    else await page.keyboard.press('Escape');
+    await expect(wrap).toBeHidden({timeout:10000});
   }
 }
 async function timed(metrics,label,fn){
