@@ -50,9 +50,20 @@ def main():
     assert len(reread)==1 and reread[0]["athlete_id"]==A1 and reread[0]["student_id"]==uid1,reread
     rest(api,pub,s1,"DELETE","nutrition_habit_logs?id=eq."+hid,prefer="return=representation")
 
-    denied(lambda:http_json("POST",api+"/rest/v1/rpc/are_linked",pub,None,{
-      "a":uid1,"b":own[0]["coach_id"]
-    }),"anonymous SECURITY DEFINER helper execution")
+    anon_rpc_checks=[
+      ("current_profile_role",{}),
+      ("are_linked",{"a":uid1,"b":own[0]["coach_id"]}),
+      ("is_coach_of",{"p_student":uid1}),
+      ("can_access_athlete",{"p_athlete":A1}),
+      ("can_edit_athlete_as_coach",{"p_athlete":A1}),
+      ("can_access_athlete_student_pair",{"p_athlete":A1,"p_student":uid1}),
+      ("get_coach_feed",{}),
+      ("get_student_alerts",{}),
+    ]
+    for rpc,payload in anon_rpc_checks:
+        denied(lambda rpc=rpc,payload=payload:http_json(
+            "POST",api+"/rest/v1/rpc/"+rpc,pub,None,payload
+        ),"anonymous SECURITY DEFINER RPC "+rpc)
 
     print("TEAM FJZ V22 STAGE 5 CROSS-DOMAIN SECURITY SMOKE OK")
     print("Mismatched athlete/student writes: BLOCKED")
