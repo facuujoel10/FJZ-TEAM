@@ -69,7 +69,6 @@ bridge=r'''<script id="v22ProgressCheckinsAuthorityBridge">
       trackingLoadedFor=aid;
     }catch(_e){}
     window.__fjzRecordConfirmedSaveV303?.('checkin-feedback','Devolución guardada',{id:readBack.id,athleteId:aid});
-    try{toast?.('Devolución guardada')}catch(_e){}
     return readBack;
   }
   window.__fjzProgressCheckinsActionsV22={
