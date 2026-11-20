@@ -149,6 +149,7 @@ js=r"""
   // Make the Coach navigation explicit instead of relying on V12.2 winning the wrapper chain.
   const previousBottomV124=renderBottomNav;
   renderBottomNav=function(){
+    try{window.__fjzSyncCoachWorkspaceNavV22?.()}catch(_e){}
     if(mode==='coach'){
       const nav=el('bottomNav');
       if(nav){

@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const ID='fjzCoachGlobalNav';
-  let viewObserver=null,raf=0,lastDashboard='operations';
+  let raf=0,lastDashboard='operations';
   const doc=document;
   function context(){
     try{return typeof window.__fjzCoachContextV22==='function' ? window.__fjzCoachContextV22() : null}
@@ -35,7 +35,7 @@
         '<button type="button" data-coach-dest="payments">Finanzas</button>'+
         '<button type="button" data-coach-dest="notice">Avisos</button>'+
       '</div>';
-      bar.addEventListener('click',function(event){
+      bar.onclick=function(event){
         const btn=event.target.closest('[data-coach-dest]');
         if(!btn||!isCoach())return;
         const dest=btn.dataset.coachDest;
@@ -58,7 +58,7 @@
           const id=dest==='students'?'fjz3a-students':'fjz3a-reviews';
           requestAnimationFrame(function(){doc.getElementById(id)?.scrollIntoView?.({block:'start',behavior:'auto'})});
         }
-      });
+      };
     }
     if(bar.parentElement!==view.parentElement||bar.nextElementSibling!==view)
       view.parentElement.insertBefore(bar,view);
@@ -89,12 +89,7 @@
     const view=doc.getElementById('view');
     if(!view)return;
     synchronize();
-    if(!viewObserver){
-      viewObserver=new MutationObserver(schedule);
-      viewObserver.observe(view,{childList:true});
-    }
   }
-  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',initialize,{once:true});
-  else initialize();
-  window.addEventListener('pageshow',schedule);
+  window.__fjzSyncCoachWorkspaceNavV22=synchronize;
+  initialize();
 })();
