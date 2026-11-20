@@ -1688,3 +1688,88 @@ body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
   #view .v175-student-identity{padding:13px!important;max-width:100%}
   #view .v175-student-identity .v116-avatar-preview{width:68px!important;height:68px!important;flex-basis:68px}
 }
+
+
+/* V22 staging hotfix · restored Coach shell + structured student hero */
+#view:has(> .fjz3a-command-center) .fjz3a-command-center{
+  grid-template-columns:220px minmax(0,1fr)!important;
+  max-width:1640px!important;
+  margin-inline:auto!important;
+  border:1px solid #323944;
+  border-radius:20px;
+}
+#view:has(> .fjz3a-command-center) .fjz3a-sidebar{
+  display:flex!important;
+  position:sticky!important;
+  align-self:start;
+  height:calc(100vh - 140px);
+  min-height:460px;
+}
+#view:has(> .fjz3a-command-center) .fjz3a-main{
+  max-width:none!important;
+  padding:22px 25px!important;
+}
+#view .v224-student-hero{
+  width:100%!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:18px!important;
+  padding:24px 26px!important;
+}
+#view .v224-student-hero .v224-hero-copy{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%;
+  max-width:none!important;
+}
+#view .v224-student-hero .v224-hero-side{
+  grid-column:1!important;
+  grid-row:2!important;
+  display:flex!important;
+  width:100%!important;
+  min-width:0;
+  max-width:none!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  justify-self:stretch!important;
+  flex-wrap:wrap;
+  gap:12px!important;
+  padding:14px 16px;
+  background:#191d25!important;
+  border:1px solid #363d48;
+  border-radius:14px;
+}
+#view .v224-student-hero .v224-quick-actions{
+  display:flex!important;
+  flex-wrap:wrap;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:auto!important;
+  gap:9px!important;
+}
+#view .v224-student-hero .v224-quick-actions .btn{
+  min-height:43px;
+  padding:10px 15px!important;
+  font-size:14px!important;
+}
+#view .v224-student-hero > :not(.v224-hero-copy):not(.v224-hero-side){
+  grid-column:1!important;
+  justify-self:start!important;
+  max-width:100%;
+}
+#view .v224-student-hero .v224-goal strong{font-size:17px!important}
+#view .v224-student-hero h2{font-size:clamp(28px,3.2vw,37px)!important}
+@media(max-width:1120px){
+ #view:has(> .fjz3a-command-center) .fjz3a-command-center{grid-template-columns:minmax(0,1fr)!important}
+ #view:has(> .fjz3a-command-center) .fjz3a-sidebar{display:none!important}
+ #view:has(> .fjz3a-command-center) .fjz3a-main{padding:16px!important}
+}
+@media(max-width:600px){
+ #view .v224-student-hero{padding:17px!important}
+ #view .v224-student-hero .v224-hero-side{align-items:stretch!important;flex-direction:column!important}
+ #view .v224-student-hero .v224-quick-actions{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ #view .v224-student-hero .v224-quick-actions .btn{min-width:0;padding:10px 6px!important;font-size:12px!important}
+}

@@ -198,7 +198,7 @@ js=r"""
   const previousRenderV124=render;
   render=function(){
     const out=previousRenderV124.apply(this,arguments);
-    setTimeout(injectCoachAdminCardV124,60);
+    setTimeout(function(){injectCoachAdminCardV124();window.__fjzSyncCoachWorkspaceNavV22?.()},60);
     setTimeout(normalizeVersionV124,100);
     return out;
   };

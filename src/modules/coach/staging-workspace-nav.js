@@ -9,7 +9,7 @@
   }
   function isCoach(){
     const c=context();
-    return c?.profile?.role==='coach'&&c.mode==='coach';
+    return (c?.profile?.role==='coach'&&c.mode==='coach') || (c?.mode!=='student'&&!!doc.querySelector('#view > .fjz3a-command-center'));
   }
   function activeDestination(){
     const tab=context()?.coachTab||'dashboard';
@@ -54,6 +54,7 @@
             if(typeof window.__fjzCoachNavigateV22==='function')window.__fjzCoachNavigateV22('dashboard');
             else{window.coachTab='dashboard';window.render?.()}
           }
+          synchronize();
           schedule();
           const id=dest==='students'?'fjz3a-students':'fjz3a-reviews';
           requestAnimationFrame(function(){doc.getElementById(id)?.scrollIntoView?.({block:'start',behavior:'auto'})});
@@ -86,8 +87,7 @@
     raf=requestAnimationFrame(function(){raf=0;synchronize()});
   }
   function initialize(){
-    const view=doc.getElementById('view');
-    if(!view)return;
+    if(!doc.getElementById('view'))return;
     synchronize();
   }
   window.__fjzSyncCoachWorkspaceNavV22=synchronize;

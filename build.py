@@ -1280,7 +1280,7 @@ if APP_ENV == "staging":
         raise RuntimeError("TEAM FJZ staging preview transition injection failed.")
     # Staging-only presentation layer, deliberately appended after all legacy/V22
     # modules so existing !important geometry and mobile overrides stay auditable.
-    visual_css = pathlib.Path("src/ui/staging-visual-rhythm.css").read_text(encoding="utf-8").strip()
+    visual_css = (pathlib.Path("src/ui/staging-visual-rhythm.css").read_text(encoding="utf-8").strip() + "\n" + pathlib.Path("src/ui/staging-finance-center.css").read_text(encoding="utf-8").strip())
     if not visual_css or "<style" in visual_css.lower() or "</style" in visual_css.lower():
         raise RuntimeError("TEAM FJZ staging visual stylesheet is missing or contains HTML tags")
     consolidated_styles = list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>", staging_artifact, re.S | re.I))
@@ -1302,6 +1302,12 @@ if APP_ENV == "staging":
     staging_artifact = staging_artifact.replace(
         "</body>", '<script id="fjzStagingCoachGlobalNavV22">\n' + coach_nav_js + '\n</script>\n</body>', 1
     )
+    finance_js = pathlib.Path("src/modules/coach/staging-finance-center.js").read_text(encoding="utf-8").strip()
+    if not finance_js or "<script" in finance_js.lower() or "</script" in finance_js.lower():
+        raise RuntimeError("TEAM FJZ staging Finance script missing or contains script tags")
+    if staging_artifact.count("</body>") != 1:
+        raise RuntimeError("TEAM FJZ staging Finance body anchor mismatch")
+    staging_artifact = staging_artifact.replace("</body>", '<script id="fjzStagingCoachFinanceV22">\n' + finance_js + '\n</script>\n</body>', 1)
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
