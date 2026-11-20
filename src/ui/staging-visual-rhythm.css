@@ -1,0 +1,224 @@
+/* TEAM FJZ V22 / STAGING — typography + vertical rhythm.
+   No runtime/UI state/permissions changes; presentation-only, isolated from main.
+   Use explicit V22 surface scopes to avoid changing exercise inputs or legacy modals. */
+#view{
+  --fjz-read-copy:15px;
+  --fjz-read-secondary:13px;
+  --fjz-read-label:12px;
+  --fjz-read-heading:20px;
+  --fjz-read-gap:20px;
+  --fjz-read-padding:20px;
+}
+#view :is(.card,.fjz3b-panel,.fjz3c-panel,.fjz3a-panel,.fjz4b-panel,.fjz4b-form-panel,.fjz4b-checkin-form,.fjz4c-calendar-panel,.fjz4c-side,.fjz4c-upcoming){
+  box-sizing:border-box;
+  min-width:0;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) :is(.muted.tiny,.muted.micro){
+  font-size:var(--fjz-read-secondary)!important;
+  line-height:1.5!important;
+  color:#a7adb9!important;
+}
+#view .v225-section-kicker{
+  font-size:var(--fjz-read-label)!important;
+  line-height:1.4;
+  letter-spacing:.09em;
+  color:#ff6678;
+}
+#view .badge{
+  font-size:12px!important;
+  line-height:1.3!important;
+  white-space:normal;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) .section-title h3{
+  font-size:var(--fjz-read-heading)!important;
+  line-height:1.25!important;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) :is(input,select,textarea){
+  max-width:100%;
+  box-sizing:border-box;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) :is(.input,select,textarea){
+  font-size:14px;
+  min-width:0;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) :is(.btn,button){
+  line-height:1.35;
+}
+#view :is(.card,.fjz3b-panel,.fjz3a-panel) :is(.btn,button):not(.v290-action):not(.fjz3a-group-head){
+  font-size:14px;
+}
+
+/* Student home.  Explicit margins survive legacy render wrappers and adjacent cards. */
+#view :is(.v245-action-hub,.v253-week-flow,.v290-today,.v290-habits,.v290-achievements){
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+  margin-block:0 var(--fjz-read-gap)!important;
+  padding:var(--fjz-read-padding)!important;
+  border-radius:18px;
+}
+#view .v245-action-top h3{font-size:21px!important;line-height:1.25}
+#view .v245-action-top p{font-size:14px!important;line-height:1.5;color:#abb1bb}
+#view .v245-week{gap:12px;margin-top:16px}
+#view .v245-week>div{min-width:0;padding:14px}
+#view .v245-week strong{font-size:18px}
+#view .v245-week span,#view .v245-seen{font-size:12px!important;line-height:1.45;color:#a8aeb8}
+#view .v245-action-buttons{gap:10px;margin-top:16px}
+#view .v253-flow-head{margin-bottom:14px}
+#view .v253-flow-grid{gap:12px}
+#view .v253-flow-item{padding:15px 14px;border-radius:12px}
+#view .v253-flow-icon{width:30px;height:30px;font-size:12px}
+#view .v253-flow-item strong{font-size:15px!important;line-height:1.35}
+#view .v253-flow-item p{font-size:13px!important;line-height:1.45;color:#a7adb8}
+#view .v253-flow-actions{margin-top:16px;gap:10px}
+#view .v290-head h3{font-size:23px!important;line-height:1.2}
+#view .v290-head p{font-size:14px!important;line-height:1.45;color:#afb4be}
+#view .v290-ring{flex:0 0 64px}
+#view .v290-ring span{font-size:11px!important}
+#view .v290-today-grid{gap:12px;margin-top:17px}
+#view .v290-action{min-width:0;padding:16px 14px}
+#view .v290-action span{font-size:12px!important;color:#b5bbc5;line-height:1.35}
+#view .v290-action strong{font-size:15px!important;line-height:1.4}
+#view .v290-empty{padding:20px 14px;font-size:14px!important;line-height:1.5;color:#aeb4be}
+#view .v290-habit-list,#view .v290-achievement-grid{gap:12px}
+#view .v290-habit{padding:14px}
+#view .v290-habit strong,#view .v290-coach-habit strong,#view .v290-achievement strong{font-size:15px!important}
+#view .v290-habit small,#view .v290-coach-habit small,#view .v290-achievement small{font-size:12px!important;line-height:1.4}
+#view .v290-achievement{padding:14px}
+#view .v290-coach-habits .v290-habit-create{gap:10px;margin-top:16px}
+#view .v290-coach-habits .v290-habit-create :is(input,select){min-height:46px;font-size:14px}
+#view .v290-coach-habits .v290-habit-create .btn{min-height:46px}
+#view .v290-risk-row{padding:15px;gap:14px}
+#view .v290-risk-row strong{font-size:15px!important}
+#view .v290-risk-row small{font-size:13px!important;line-height:1.45}
+#view .v290-risk-row>span{font-size:12px!important}
+#view .v290-draft :is(strong,p){font-size:14px!important}
+
+/* Coach: Athlete 360 / old summary / profile / tracking / information. */
+#view.fjz3b-mounted>.fjz3b-header{margin-bottom:var(--fjz-read-gap)!important;padding:18px 20px}
+#view.fjz3b-mounted .fjz3b-layout{gap:var(--fjz-read-gap)}
+#view.fjz3b-mounted .fjz3b-main{min-width:0}
+#view.fjz3b-mounted #coachStudentBody > * + *{margin-top:var(--fjz-read-gap)!important}
+#view.fjz3b-mounted :is(.fjz3b-summary,.fjz3b-info){gap:var(--fjz-read-gap)!important}
+#view.fjz3b-mounted :is(.fjz3b-panel,.fjz3b-action-card,.fjz3b-info-grid>div:not(.fjz3b-empty)){padding:18px}
+#view.fjz3b-mounted :is(.fjz3b-measure-history,.fjz3b-measure-fallback){margin-bottom:var(--fjz-read-gap)!important}
+#view.fjz3b-mounted .fjz3b-section-title h2{font-size:26px!important;line-height:1.2}
+#view.fjz3b-mounted .fjz3b-panel-head h3{font-size:20px!important;line-height:1.3}
+#view.fjz3b-mounted :is(.fjz3b-panel-head span,.fjz3b-section-title>div>span,.fjz3b-header-context span,.fjz3b-product,.fjz3b-kicker,.fjz3b-context-card>span){font-size:12px!important;line-height:1.35;letter-spacing:.07em}
+#view.fjz3b-mounted :is(.fjz3b-header-context small,.fjz3b-context-card>small,.fjz3b-note,.fjz3b-neutral-change,.fjz3b-facts span,.fjz3b-keyline>span:not(.fjz3b-state),.fjz3b-comment-meta span,.fjz3b-comment-meta time,.fjz3b-measure-values span){font-size:12px!important;line-height:1.5}
+#view.fjz3b-mounted :is(.fjz3b-header-context strong,.fjz3b-facts strong,.fjz3b-measure-list article strong,.fjz3b-keyline strong){font-size:14px!important;line-height:1.4}
+#view.fjz3b-mounted :is(.fjz3b-action-card p,.fjz3b-comment p,.fjz3b-measure-list p,.fjz3b-info .muted,.fjz3b-error span){font-size:14px!important;line-height:1.5}
+#view.fjz3b-mounted .fjz3b-info-grid{gap:12px}
+#view.fjz3b-mounted .fjz3b-info-grid span{font-size:12px!important;line-height:1.4;color:#a7adba}
+#view.fjz3b-mounted .fjz3b-info-grid strong{font-size:15px!important;line-height:1.4}
+#view.fjz3b-mounted .fjz3b-empty strong{font-size:15px!important}
+#view.fjz3b-mounted .fjz3b-empty span{font-size:13px!important;line-height:1.45}
+#view.fjz3b-mounted .fjz3b-state{font-size:12px!important}
+#view.fjz3b-mounted .fjz3b-nav button{font-size:13px!important;line-height:1.25}
+#view.fjz3b-mounted :is(.fjz3b-subnav button,.fjz3b-back,.fjz3b-info-shortcut){font-size:13px!important}
+#view.fjz3b-mounted .fjz3b-legacy-hero .v175-coach-profile-info p{font-size:14px!important;line-height:1.45!important}
+#view.fjz3b-mounted .fjz3b-action-card h2{font-size:22px!important}
+
+/* Coach Command Center: indicators, filters, descriptions, student rows. */
+#view .fjz3a-command-center{min-width:0}
+#view .fjz3a-main{min-width:0;padding:20px}
+#view .fjz3a-header{gap:16px;margin-bottom:18px}
+#view .fjz3a-header h2{font-size:29px!important}
+#view .fjz3a-header p,#view .fjz3a-event-copy p{font-size:14px!important;line-height:1.5}
+#view .fjz3a-pulse{gap:12px;margin-bottom:18px}
+#view .fjz3a-pulse button{min-width:0;padding:15px}
+#view .fjz3a-pulse span{font-size:13px!important}
+#view :is(.fjz3a-section-head h3,.fjz3a-group-title strong){font-size:18px!important;line-height:1.3}
+#view :is(.fjz3a-filters button,.fjz3a-event-meta,.fjz3a-group-tags span,.fjz3a-state-guide span,.fjz3a-student-operational span,.fjz3a-sync span){font-size:12px!important;line-height:1.4}
+#view :is(.fjz3a-event-copy>strong,.fjz3a-agenda-row strong,.fjz3a-student-operational b){font-size:14px!important}
+#view .fjz3a-group-body{gap:12px}
+#view .fjz3a-event{gap:14px;padding:16px}
+#view .fjz3a-empty span,#view .fjz3a-error span{font-size:13px!important}
+#view .fjz3a-layout{gap:18px}
+#view .fjz3a-work,#view .fjz3a-students{padding:18px}
+
+/* Coach 3C analytics. */
+#view .fjz3c-host{margin-bottom:var(--fjz-read-gap)!important}
+#view .fjz3c-panel{padding:18px}
+#view .fjz3c-head h3{font-size:20px!important}
+#view .fjz3c-head p{font-size:14px!important;line-height:1.5}
+#view :is(.fjz3c-head span,.fjz3c-row span,.fjz3c-observed span,.fjz3c-observed em,.fjz3c-feature span,.fjz3c-metric-grid span,.fjz3c-check-grid span,.fjz3c-priority-list span,.fjz3c-dashboard-note span){font-size:12px!important;line-height:1.4}
+#view :is(.fjz3c-feature small,.fjz3c-metric-grid small,.fjz3c-check-grid small,.fjz3c-feature time,.fjz3c-metric-grid time,.fjz3c-check-grid time){font-size:12px!important;line-height:1.45}
+#view :is(.fjz3c-row strong,.fjz3c-priority-list strong,.fjz3c-exercise strong,.fjz3c-empty strong){font-size:14px!important}
+#view :is(.fjz3c-exercise p,.fjz3c-empty span,.fjz3c-dashboard-note strong,.fjz3c-evidence){font-size:13px!important;line-height:1.5}
+#view :is(.fjz3c-trend,.fjz3c-count,.fjz3c-priority-list b){font-size:12px!important}
+#view .fjz3c-metric-grid,#view .fjz3c-check-grid,#view .fjz3c-exercises{gap:13px}
+
+/* 4B progress/check-ins/measurements: better spacing inside and between surfaces. */
+#view .fjz4b-shell{--fjz4b-panel-space:20px;gap:20px}
+#view .fjz4b-overview,#view .fjz4b-content-grid,#view .fjz4b-check-layout{gap:20px}
+#view .fjz4b-panel,#view .fjz4b-form-panel,#view .fjz4b-checkin-form{padding:20px}
+#view .fjz4b-hero p{font-size:15px!important;line-height:1.5}
+#view .fjz4b-panel-head h3{font-size:20px!important;line-height:1.3}
+#view :is(.fjz4b-panel-head>small,.fjz4b-overview>article:first-child>span,.fjz4b-check-card>header span,.fjz4b-measure-chips small,.fjz4b-check-values small,.fjz4b-group-title small,.fjz4b-scale span,.fjz4b-photo-date header span,.fjz4b-empty span){font-size:12px!important;line-height:1.45;color:#afb4bf}
+#view :is(.fjz4b-panel-head span,.fjz4b-form-intro>span,.fjz4b-hero>div:first-child>span){font-size:12px!important;letter-spacing:.09em}
+#view :is(.fjz4b-check-card>header strong,.fjz4b-measure-chips b,.fjz4b-group-title strong,.fjz4b-scale strong,.fjz4b-check-values b){font-size:14px!important;line-height:1.35}
+#view .fjz4b-check-card{padding:16px}
+#view .fjz4b-empty-inline,#view .fjz4b-empty{font-size:14px!important;line-height:1.45}
+#view :is(.fjz4b-input-grid label,.fjz4b-photo-upload-grid label,.fjz4b-inline-fields label,.fjz4b-feedback label){font-size:13px!important}
+#view .fjz4b-form-panel>.fjz4b-panel-head>small{font-size:13px!important;max-width:45ch}
+#view .fjz4b-form-panel .input{font-size:15px!important}
+
+/* Nutrition + agenda: protect mobile fit while removing tiny labels. */
+#view .fjz4a-student-shell,#view .fjz4a-coach-shell{min-width:0}
+#view .fjz4a-section-heading h2{font-size:20px!important;line-height:1.25}
+#view :is(.fjz4a-section-heading p,.fjz4a-student-head p,.fjz4a-coach-head p,.fjz4a-food>div:first-child span,.fjz4a-option-note,.fjz4a-resource-list span,.fjz4a-empty-state span,.fjz4a-log-main span,.fjz4a-log-main small){font-size:13px!important;line-height:1.5}
+#view :is(.fjz4a-section-heading>span,.fjz4a-meal header p,.fjz4a-meal-index,.fjz4a-targets span,.fjz4a-macros span,.fjz4a-option-tabs button){font-size:12px!important;line-height:1.3}
+#view .fjz4a-targets strong,#view .fjz4a-macros strong{font-size:18px!important}
+#view :is(.fjz4a-targets small,.fjz4a-macros small,.fjz4a-food-macro,.fjz4a-alternatives em){font-size:12px!important}
+#view :is(.fjz4a-food>div:first-child strong,.fjz4a-empty-state strong,.fjz4a-log-main strong){font-size:14px!important}
+#view .fjz4a-meal{padding-block:16px}
+#view .fjz4a-option-tabs{gap:8px}
+#view .fjz4a-resource-list>div{gap:14px}
+#view .fjz4a-calc-form label,#view .fjz4a-settings-grid label{font-size:13px!important}
+#view .fjz4a-calc-form :is(input,select),#view .fjz4a-settings-grid :is(input,textarea){font-size:14px!important}
+#view .fjz4c-shell{gap:20px}
+#view .fjz4c-hero p,#view .fjz4c-detail p{font-size:14px!important;line-height:1.5}
+#view :is(.fjz4c-hero>div:first-child>span,.fjz4c-panel-head span,.fjz4c-side-head span,.fjz4c-weekdays span,.fjz4c-event-date small,.fjz4c-event-copy small,.fjz4c-detail-facts small,.fjz4c-coach-stats span){font-size:12px!important;line-height:1.35}
+#view :is(.fjz4c-event-copy strong,.fjz4c-detail-facts b,.fjz4c-home-next strong){font-size:14px!important;line-height:1.4}
+#view .fjz4c-calendar-panel,#view .fjz4c-side,#view .fjz4c-upcoming{padding:18px}
+#view .fjz4c-layout,#view .fjz4c-coach-grid{gap:18px}
+
+/* Tablet and phone: preserve scrollable Coach navigation and avoid fixed widths. */
+@media(max-width:900px){
+  #view{--fjz-read-gap:17px;--fjz-read-padding:17px}
+  #view .fjz3a-main{padding:15px}
+  #view .fjz4b-shell,#view .fjz4b-overview,#view .fjz4b-content-grid,#view .fjz4b-check-layout{gap:17px}
+  #view .fjz4b-panel,#view .fjz4b-form-panel,#view .fjz4b-checkin-form{padding:16px}
+  #view.fjz3b-mounted .fjz3b-nav{overflow-x:auto;overscroll-behavior-x:contain}
+  #view.fjz3b-mounted .fjz3b-nav button{flex:0 0 auto;min-width:116px}
+}
+@media(max-width:620px){
+  #view{--fjz-read-gap:15px;--fjz-read-padding:16px}
+  #view :is(.v245-action-hub,.v253-week-flow,.v290-today,.v290-habits,.v290-achievements){padding:16px!important;margin-bottom:15px!important}
+  #view .v245-action-top h3{font-size:19px!important}
+  #view .v245-week{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .v245-week>div:last-child{grid-column:1/-1}
+  #view .v253-flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .v290-head h3{font-size:20px!important}
+  #view .v290-today-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .v290-action{padding:12px}
+  #view.fjz3b-mounted .fjz3b-panel{padding:16px}
+  #view.fjz3b-mounted .fjz3b-info-grid{grid-template-columns:minmax(0,1fr)}
+  #view.fjz3b-mounted .fjz3b-nav button{min-width:114px}
+  #view .fjz4a-student-shell .fjz4a-targets,
+  #view .fjz4a-student-shell .fjz4a-macros{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+  #view .fjz4a-student-shell .fjz4a-targets>div,
+  #view .fjz4a-student-shell .fjz4a-macros>div{min-width:0;padding:9px!important}
+  #view .fjz4a-student-shell .fjz4a-targets span,
+  #view .fjz4a-student-shell .fjz4a-macros span{white-space:normal!important}
+}
+@media(max-width:390px){
+  #view .v253-flow-grid,#view .v290-today-grid{grid-template-columns:minmax(0,1fr)}
+  #view .v245-action-buttons{flex-wrap:wrap}
+  #view .v245-week{grid-template-columns:minmax(0,1fr)}
+  #view .v245-week>div:last-child{grid-column:auto}
+  #view .v290-ring{flex-basis:56px}
+  #view.fjz3b-mounted .fjz3b-header{padding:14px}
+  #view .fjz4b-hero h2{font-size:25px}
+}
