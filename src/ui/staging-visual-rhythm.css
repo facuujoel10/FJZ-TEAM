@@ -889,3 +889,404 @@
     grid-column:1/-1;
   }
 }
+
+/* V22 STAGING · Profile header + history session modal
+   Verified against captured defects 2026-11-20. Presentation-only. */
+
+/* Student header: keep intro, profile photo and actions as one readable group,
+   rather than pushing text to the right end of a wide desktop viewport. */
+#view .v224-student-hero{
+  box-sizing:border-box;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(210px,auto)!important;
+  align-items:center!important;
+  justify-content:start!important;
+  justify-items:start!important;
+  gap:16px 24px!important;
+  width:min(100%,1040px)!important;
+  max-width:1040px!important;
+  min-width:0;
+  margin:0 0 20px!important;
+  padding:18px 20px!important;
+}
+#view .v224-student-hero .v224-hero-copy{
+  grid-column:1!important;
+  grid-row:1!important;
+  min-width:0;
+  width:100%;
+  max-width:650px;
+  text-align:left!important;
+  justify-self:start!important;
+}
+#view .v224-student-hero .v224-hero-side{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0;
+  max-width:360px;
+  align-self:center;
+  justify-self:start!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+#view .v224-student-hero .v224-eyebrow{
+  margin-bottom:9px;
+  font-size:12px!important;
+  line-height:1.4;
+  letter-spacing:.1em;
+}
+#view .v224-student-hero h2{
+  margin:0 0 7px!important;
+  font-size:clamp(23px,2vw,30px)!important;
+  line-height:1.2!important;
+  letter-spacing:-.02em;
+  overflow-wrap:break-word;
+}
+#view .v224-student-hero p{
+  margin:0;
+  font-size:14px!important;
+  line-height:1.5!important;
+  color:#abb1bc;
+}
+#view .v224-student-hero .v224-goal{
+  display:flex;
+  min-width:0;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:6px 10px;
+  margin-top:14px;
+}
+#view .v224-student-hero .v224-goal span{
+  font-size:12px!important;
+  letter-spacing:.06em;
+}
+#view .v224-student-hero .v224-goal strong{
+  font-size:15px!important;
+  line-height:1.4!important;
+  white-space:normal!important;
+  overflow:visible;
+  overflow-wrap:break-word;
+  text-overflow:clip;
+}
+#view .v224-student-hero .v224-quick-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:flex-start!important;
+}
+#view .v224-student-hero .v224-quick-actions .btn{
+  font-size:14px!important;
+  min-height:42px;
+  padding:9px 13px;
+}
+/* Coach athlete identity: photo and identity remain adjacent. */
+#view.fjz3b-mounted .fjz3b-identity{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.3fr) minmax(250px,.7fr)!important;
+  gap:18px!important;
+  justify-items:start;
+  align-items:center;
+}
+#view.fjz3b-mounted .fjz3b-legacy-hero{
+  grid-template-columns:72px minmax(0,1fr)!important;
+  align-items:center!important;
+  justify-content:start!important;
+  gap:14px!important;
+  max-width:100%!important;
+}
+#view.fjz3b-mounted .fjz3b-header-context{
+  min-width:0;
+  width:100%;
+}
+#view.fjz3b-mounted .fjz3b-legacy-hero .v175-coach-profile-info{
+  text-align:left!important;
+  min-width:0;
+}
+#view.fjz3b-mounted .fjz3b-legacy-hero .v175-coach-profile-info h2{
+  font-size:24px!important;
+  line-height:1.25!important;
+  overflow-wrap:break-word;
+}
+#view.fjz3b-mounted .fjz3b-header-context strong{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+@media(max-width:900px){
+  #view .v224-student-hero{
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+    padding:16px!important;
+    gap:14px!important;
+  }
+  #view .v224-student-hero .v224-hero-copy,
+  #view .v224-student-hero .v224-hero-side{
+    grid-column:1!important;
+    grid-row:auto!important;
+    justify-self:stretch!important;
+    max-width:none;
+  }
+  #view.fjz3b-mounted .fjz3b-identity{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+}
+@media(max-width:430px){
+  #view .v224-student-hero .v224-quick-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    width:100%;
+  }
+  #view .v224-student-hero .v224-quick-actions .btn{
+    min-width:0!important;
+    width:100%;
+    padding:9px 6px;
+    font-size:12px!important;
+  }
+  #view.fjz3b-mounted .fjz3b-legacy-hero{
+    grid-template-columns:56px minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+  #view.fjz3b-mounted .fjz3b-legacy-hero .v175-coach-profile-info h2{
+    font-size:20px!important;
+  }
+}
+
+/* History modal: no sticky side KPI column when scrolling a narrow dialog.
+   One scroll container, normal vertical flow, and no row overlap. */
+#modal.v22v2-session-modal .v22v2-session-panel{
+  box-sizing:border-box!important;
+  container-name:fjz-session-detail;
+  container-type:inline-size;
+  position:relative;
+  min-width:0!important;
+  overscroll-behavior:contain;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+#modal.v22v2-session-modal .v22v2-session-head{
+  position:sticky;
+  top:0;
+  z-index:5;
+  min-width:0;
+  background:#0b0d10!important;
+}
+#modal.v22v2-session-modal .v22v2-session-layout{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:18px!important;
+  min-width:0!important;
+  width:100%!important;
+  position:relative;
+}
+#modal.v22v2-session-modal .v22v2-session-kpis{
+  grid-column:1!important;
+  grid-row:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-self:auto!important;
+  position:static!important;
+  top:auto!important;
+  z-index:auto!important;
+  min-width:0!important;
+  width:100%!important;
+  gap:10px!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+#modal.v22v2-session-modal .v22v2-session-kpis>div{
+  min-height:85px!important;
+  min-width:0!important;
+  border:1px solid #303640!important;
+  border-radius:12px!important;
+  padding:14px!important;
+  background:#13161c!important;
+}
+#modal.v22v2-session-modal .v22v2-session-kpis strong{
+  font-size:22px!important;
+  line-height:1.2!important;
+}
+#modal.v22v2-session-modal .v22v2-session-kpis span{
+  font-size:13px!important;
+  line-height:1.45!important;
+  white-space:normal!important;
+  overflow-wrap:break-word;
+}
+#modal.v22v2-session-modal .v22v2-session-flow{
+  grid-column:1!important;
+  grid-row:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-content:start;
+  min-width:0!important;
+  width:100%!important;
+  gap:16px!important;
+  position:relative;
+}
+#modal.v22v2-session-modal .v244-exercise-list{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:12px!important;
+  min-width:0!important;
+}
+#modal.v22v2-session-modal .v244-exercise.v22v2-history-exercise{
+  min-width:0!important;
+  padding:16px!important;
+  margin:0!important;
+  border:1px solid #303640!important;
+  border-radius:14px!important;
+  background:#111419!important;
+}
+#modal.v22v2-session-modal .v22v2-history-exercise:nth-child(2n){
+  padding-left:16px!important;
+  border-left:1px solid #303640!important;
+}
+#modal.v22v2-session-modal .v22v2-history-exercise-index{
+  grid-row:1/span 8;
+  align-self:start;
+  z-index:0;
+}
+#modal.v22v2-session-modal .v22v2-history-exercise>.v244-exercise-head,
+#modal.v22v2-session-modal .v22v2-history-exercise>.muted,
+#modal.v22v2-session-modal .v22v2-history-exercise>.v244-method{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+#modal.v22v2-session-modal .v22v2-coach-context{
+  grid-column:1!important;
+  position:static!important;
+  top:auto!important;
+  min-width:0!important;
+  width:100%!important;
+}
+/* Modal width—not desktop browser width—determines the responsive grid. */
+@container fjz-session-detail (min-width:860px){
+  #modal.v22v2-session-modal .v22v2-session-kpis{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+@container fjz-session-detail (max-width:420px){
+  #modal.v22v2-session-modal .v22v2-session-kpis{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  #modal.v22v2-session-modal .v22v2-session-kpis>div{
+    padding:12px!important;
+  }
+}
+#modal.v22v2-session-modal .v22v2-session-flow>.v244-timeline-block{
+  display:block!important;
+  box-sizing:border-box;
+  position:relative!important;
+  top:auto!important;
+  min-width:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:18px!important;
+  border:1px solid #343942!important;
+  border-left:3px solid #768394!important;
+  border-radius:14px!important;
+  background:#111419!important;
+  overflow-wrap:break-word;
+  overflow:visible;
+}
+#modal.v22v2-session-modal .v22v2-session-flow>.v244-timeline-block.student{
+  border-left-color:#f0b54d!important;
+}
+#modal.v22v2-session-modal .v22v2-session-flow>.v244-timeline-block.coach{
+  border-left-color:#57ca8c!important;
+}
+#modal.v22v2-session-modal .v244-block-head{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px 16px;
+  min-width:0;
+  margin-bottom:14px!important;
+}
+#modal.v22v2-session-modal .v244-block-head>div{
+  min-width:0;
+  flex:1 1 220px;
+}
+#modal.v22v2-session-modal .v244-block-head h4{
+  margin:5px 0 0!important;
+  color:#f6f7fa;
+  font-size:20px!important;
+  line-height:1.3!important;
+}
+#modal.v22v2-session-modal .v244-step{
+  font-size:12px!important;
+  color:#ff6e80!important;
+  line-height:1.3!important;
+  letter-spacing:.09em;
+}
+#modal.v22v2-session-modal .v244-block-head .badge{
+  font-size:12px!important;
+  line-height:1.35;
+  white-space:normal;
+  max-width:100%;
+}
+#modal.v22v2-session-modal .v244-feel{
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  margin:0 0 12px!important;
+  min-width:0;
+}
+#modal.v22v2-session-modal .v244-feel span{
+  font-size:13px!important;
+  line-height:1.5!important;
+  color:#b1b8c4!important;
+}
+#modal.v22v2-session-modal .v244-feel strong{
+  font-size:15px!important;
+  line-height:1.45!important;
+  color:#f3f5f7!important;
+}
+#modal.v22v2-session-modal .v244-timeline-block>p,
+#modal.v22v2-session-modal .v244-decision p,
+#modal.v22v2-session-modal .v244-internal p{
+  display:block;
+  max-width:100%;
+  margin:10px 0 0!important;
+  font-size:15px!important;
+  line-height:1.6!important;
+  color:#c6cbd4!important;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+#modal.v22v2-session-modal .v242-feedback-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0;
+}
+#modal.v22v2-session-modal .v242-feedback-tags span{
+  font-size:13px!important;
+  line-height:1.4!important;
+  padding:6px 9px!important;
+}
+#modal.v22v2-session-modal .v244-decision{
+  padding:14px!important;
+  border-radius:12px;
+}
+#modal.v22v2-session-modal .v244-decision strong{
+  font-size:15px!important;
+  line-height:1.4;
+}
+#modal.v22v2-session-modal .v244-internal{
+  padding:13px!important;
+}
+#modal.v22v2-session-modal .v244-internal strong{
+  font-size:12px!important;
+  line-height:1.35;
+}
+#modal.v22v2-session-modal .v244-method,
+#modal.v22v2-session-modal .v244-skipped{
+  font-size:13px!important;
+  line-height:1.5;
+}
