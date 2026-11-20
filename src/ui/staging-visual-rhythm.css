@@ -1290,3 +1290,401 @@
   font-size:13px!important;
   line-height:1.5;
 }
+
+/* TEAM FJZ V22 STAGING · Coach workspace visual coherence 2026-11-20
+   Presentation-only surfaces, no changes to plan state, data, or persistence. */
+
+/* One navigation outside #view survives re-rendered Coach routes. */
+#fjzCoachGlobalNav{
+  position:sticky;
+  top:0;
+  z-index:85;
+  box-sizing:border-box;
+  width:min(calc(100% - 20px),1510px);
+  margin:0 auto 18px;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border:1px solid #373b46;
+  border-radius:16px;
+  background:rgba(17,19,25,.97);
+  box-shadow:0 12px 34px rgba(0,0,0,.23);
+  backdrop-filter:blur(14px);
+}
+#fjzCoachGlobalNav[hidden]{display:none!important}
+#fjzCoachGlobalNav .fjz-coach-nav-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+  min-width:0;
+  color:#f4f5f8;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.035em;
+}
+#fjzCoachGlobalNav .fjz-coach-nav-logo{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  background:#db1b35;
+  color:#fff;
+  font-weight:950;
+}
+#fjzCoachGlobalNav .fjz-coach-nav-links{
+  display:flex;
+  gap:5px;
+  min-width:0;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+#fjzCoachGlobalNav button{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  min-width:0;
+  padding:9px 13px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;
+  color:#bbc0cb;
+  font:800 13px/1.3 inherit;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+#fjzCoachGlobalNav button:hover,
+#fjzCoachGlobalNav button:focus-visible{
+  border-color:#3c4653;
+  color:#fff;
+  background:#242831;
+}
+#fjzCoachGlobalNav button[aria-current="page"]{
+  border-color:rgba(249,57,82,.43);
+  background:rgba(248,42,69,.13);
+  color:#fff;
+  box-shadow:inset 0 -2px #ff4560;
+}
+#fjzCoachGlobalNav button[data-coach-dest="payments"]{
+  background:#202129;
+  border-color:#39404c;
+  color:#f3f4f6;
+}
+#fjzCoachGlobalNav button[data-coach-dest="notice"]{
+  color:#d9dde5;
+  border-color:#30353f;
+}
+#view:has(> .fjz3a-command-center) .fjz3a-command-center{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+#view:has(> .fjz3a-command-center) .fjz3a-sidebar{
+  display:none!important;
+}
+#view #v124CoachAdminCard{display:none!important}
+body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
+  display:none!important;
+}
+
+/* Nutrition Coach: each functional area gets a subdued gray surface. */
+#view .fjz4a-coach-shell{
+  --fjz4a-surface:#15171d;
+  --fjz4a-surface2:#111319;
+  --fjz4a-border:#333944;
+  max-width:100%;
+  min-width:0;
+}
+#view .fjz4a-coach-head{
+  margin:0 0 18px;
+  padding:14px 18px 18px!important;
+  border:1px solid var(--fjz4a-border)!important;
+  border-radius:16px;
+  background:linear-gradient(120deg,rgba(244,45,70,.07),transparent 45%),#14161c;
+  align-items:center;
+}
+#view .fjz4a-coach-head h1{
+  font-size:25px!important;
+  line-height:1.25!important;
+}
+#view .fjz4a-coach-head p,
+#view .fjz4a-section-heading p{
+  font-size:14px!important;
+  line-height:1.5!important;
+  color:#aeb4c0!important;
+}
+#view .fjz4a-coach-workspace{
+  align-items:start;
+  gap:18px!important;
+  padding-top:0!important;
+}
+#view .fjz4a-editor-rail,
+#view .fjz4a-editor-main > :is(section,div,article){
+  box-sizing:border-box;
+  min-width:0;
+  background:var(--fjz4a-surface2)!important;
+  border:1px solid var(--fjz4a-border)!important;
+  border-radius:16px!important;
+  padding:18px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.08);
+}
+#view .fjz4a-editor-rail{
+  top:76px;
+  background:linear-gradient(165deg,#191b22,#111319)!important;
+}
+#view .fjz4a-editor-main{
+  gap:18px!important;
+  align-items:start;
+}
+#view .fjz4a-editor-main > :is(section,div,article){
+  margin:0!important;
+  overflow-wrap:break-word;
+}
+#view .fjz4a-editor-main .fjz4a-meal-editor,
+#view .fjz4a-editor-main .fjz4a-plan-settings{
+  border-bottom:1px solid var(--fjz4a-border)!important;
+  padding-bottom:18px!important;
+}
+#view .fjz4a-editor-main .fjz4a-meal-editor-head{
+  align-items:flex-start;
+  gap:14px;
+  flex-wrap:wrap;
+}
+#view .fjz4a-editor-main .fjz4a-meal-editor-head h2,
+#view .fjz4a-editor-main .fjz4a-section-heading h2{
+  font-size:20px!important;
+  line-height:1.25!important;
+}
+#view .fjz4a-editor-main .fjz4a-meal-editor-head p{
+  font-size:14px!important;
+  color:#b4bac4;
+}
+#view .fjz4a-editor-rail nav{
+  margin:10px 0;
+  border-top:0;
+  gap:7px;
+}
+#view .fjz4a-editor-rail nav>button{
+  min-height:58px;
+  padding:10px!important;
+  border:1px solid #2e333d!important;
+  border-radius:11px;
+  background:#151820;
+  gap:10px;
+}
+#view .fjz4a-editor-rail nav>button.active{
+  background:rgba(234,40,64,.12)!important;
+  border-color:rgba(234,53,77,.4)!important;
+}
+#view .fjz4a-editor-rail nav>button>span,
+#view .fjz4a-editor-rail nav>button small,
+#view .fjz4a-coach-tools button{
+  font-size:12px!important;
+}
+#view .fjz4a-editor-rail nav>button strong{
+  font-size:14px!important;
+}
+#view .fjz4a-coach-tools{
+  gap:9px;
+  padding-top:14px;
+}
+#view .fjz4a-coach-tools button{
+  min-height:44px;
+}
+#view .fjz4a-coach-options .fjz4a-empty-block,
+#view .fjz4a-plan-settings .fjz4a-toggle{
+  padding:16px!important;
+  border:1px solid #363d48!important;
+  border-radius:12px!important;
+  background:#1a1d25!important;
+}
+#view .fjz4a-editor-main .fjz4a-resource-actions{
+  gap:12px;
+}
+#view .fjz4a-editor-main .fjz4a-resource-actions button{
+  min-height:78px;
+  padding:15px!important;
+  background:#1c2028!important;
+  border:1px solid #38404b!important;
+}
+#view .fjz4a-editor-main .fjz4a-resource-actions strong,
+#view .fjz4a-editor-main .fjz4a-resource-list strong{
+  font-size:14px!important;
+  line-height:1.4;
+}
+#view .fjz4a-editor-main .fjz4a-resource-actions span,
+#view .fjz4a-editor-main .fjz4a-resource-list span,
+#view .fjz4a-editor-main .fjz4a-resource-empty,
+#view .fjz4a-editor-main .fjz4a-unregistered span{
+  font-size:13px!important;
+  line-height:1.5!important;
+  color:#aeb5c1!important;
+}
+#view .fjz4a-resource-list{
+  border:1px solid #2e333d!important;
+  border-radius:12px!important;
+  background:#181b22;
+  padding:14px!important;
+  margin:14px 0 0!important;
+}
+#view .fjz4a-resource-list > div{
+  min-width:0;
+  align-items:flex-start;
+  padding:10px 0;
+}
+#view .fjz4a-resource-title h3{
+  font-size:16px!important;
+  line-height:1.3!important;
+}
+#view .fjz4a-plan-settings .fjz4a-settings-grid{
+  gap:12px!important;
+}
+#view .fjz4a-plan-settings .fjz4a-settings-grid label{
+  font-size:13px!important;
+  line-height:1.4;
+}
+#view .fjz4a-plan-settings .fjz4a-settings-grid :is(input,textarea){
+  background:#0e1117!important;
+  border:1px solid #363d49!important;
+  min-height:45px!important;
+  font-size:14px!important;
+}
+#view .fjz4a-consumption,
+#view .fjz4a-calculator{
+  border-top:1px solid var(--fjz4a-border)!important;
+}
+#view .fjz4a-editor-main :is(.fjz4a-consumption,.fjz4a-calculator) .fjz4a-section-heading{
+  margin-bottom:14px;
+}
+
+/* Student profile: occupy available width and keep avatar + identity together. */
+#view .v224-student-hero{
+  width:100%!important;
+  max-width:none!important;
+  grid-template-columns:minmax(0,1fr) minmax(260px,auto)!important;
+  padding:24px 26px!important;
+  min-height:210px!important;
+  gap:20px 28px!important;
+}
+#view .v224-student-hero .v224-hero-copy{
+  max-width:none;
+}
+#view .v224-student-hero h2{
+  font-size:clamp(27px,2.6vw,36px)!important;
+}
+#view .v224-student-hero .v224-hero-side{
+  max-width:390px;
+  min-width:0;
+  justify-self:end!important;
+}
+#view .v224-student-hero .v224-goal{
+  margin-top:16px;
+}
+#view .v224-student-hero .v224-goal strong{
+  font-size:16px!important;
+}
+#view .v115-student-profile,
+#view #v115StudentProfileCard,
+#view #v175StudentProfilePlaceholder{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding:22px!important;
+  border:1px solid #313641!important;
+  border-radius:18px!important;
+  background:#13161d!important;
+}
+#view .v175-student-identity{
+  display:flex!important;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:16px!important;
+  max-width:680px;
+  padding:16px!important;
+  background:#1b1e25!important;
+  border:1px solid #373d48!important;
+  border-radius:15px!important;
+}
+#view .v175-student-identity .v116-avatar-preview{
+  flex:0 0 88px;
+  width:88px!important;
+  height:88px!important;
+  border-radius:18px!important;
+}
+#view .v175-student-identity-main strong{
+  font-size:19px!important;
+  line-height:1.35!important;
+}
+#view .v175-student-identity-main .muted{
+  font-size:13px!important;
+  line-height:1.5;
+}
+#view .v175-student-profile-actions{gap:9px;margin-top:12px}
+#view .v175-student-profile-actions .btn{min-height:42px;font-size:13px!important}
+
+/* Mobile/compact display: keep surfaces contained, do not lock 3 columns. */
+@media(max-width:1050px){
+  #view .fjz4a-coach-workspace{grid-template-columns:minmax(0,1fr)!important}
+  #view .fjz4a-editor-rail{position:static!important}
+  #view .fjz4a-editor-main{grid-template-columns:minmax(0,1fr)!important}
+  #view .fjz4a-editor-main > *{grid-column:1!important;grid-row:auto!important}
+}
+@media(max-width:900px){
+  #view .v224-student-hero{
+    grid-template-columns:minmax(0,1fr)!important;
+    min-height:0!important;
+    padding:18px!important;
+  }
+  #view .v224-student-hero .v224-hero-copy,
+  #view .v224-student-hero .v224-hero-side{
+    grid-column:1!important;
+    grid-row:auto!important;
+    max-width:none;
+    justify-self:stretch!important;
+  }
+  #fjzCoachGlobalNav{
+    top:0;
+    flex-direction:column;
+    align-items:stretch;
+    gap:8px;
+    padding:10px 12px;
+  }
+  #fjzCoachGlobalNav .fjz-coach-nav-links{
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    flex-wrap:nowrap;
+    justify-content:flex-start;
+    scrollbar-width:thin;
+    padding-bottom:2px;
+  }
+  #fjzCoachGlobalNav button{
+    flex:0 0 auto;
+    min-height:44px;
+    padding:10px 12px;
+  }
+}
+@media(max-width:600px){
+  #view .fjz4a-editor-rail,
+  #view .fjz4a-editor-main > :is(section,div,article){
+    padding:14px!important;
+    border-radius:14px!important;
+  }
+  #view .fjz4a-coach-head{padding:15px!important}
+  #view .fjz4a-editor-main .fjz4a-resource-actions{grid-template-columns:minmax(0,1fr)}
+  #view .fjz4a-editor-main .fjz4a-meal-editor-head>div:last-child{justify-content:flex-start}
+  #view .fjz4a-plan-settings .fjz4a-settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .v224-student-hero{padding:18px!important}
+  #view .v115-student-profile,
+  #view #v115StudentProfileCard,
+  #view #v175StudentProfilePlaceholder{padding:16px!important}
+  #view .v175-student-identity{padding:13px!important;max-width:100%}
+  #view .v175-student-identity .v116-avatar-preview{width:68px!important;height:68px!important;flex-basis:68px}
+}

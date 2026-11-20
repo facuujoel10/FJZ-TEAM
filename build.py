@@ -1247,7 +1247,7 @@ if APP_ENV == "staging":
         view.style.setProperty('visibility','visible','important');
         view.style.setProperty('opacity','1','important');
         view.style.setProperty('min-height','300px','important');
-        home.style.setProperty('display','flex','important');
+        home.style.setProperty('display','grid','important');
         home.style.setProperty('visibility','visible','important');
         clean();
       }
@@ -1293,6 +1293,14 @@ if APP_ENV == "staging":
     )
     staging_artifact = staging_artifact.replace(
         "</head>", '<meta name="fjz-staging-visual-rhythm" content="22.global.1">\n</head>', 1
+    )
+    coach_nav_js = pathlib.Path("src/modules/coach/staging-workspace-nav.js").read_text(encoding="utf-8").strip()
+    if not coach_nav_js or "<script" in coach_nav_js.lower() or "</script" in coach_nav_js.lower():
+        raise RuntimeError("TEAM FJZ staging Coach navigation is absent or contains HTML tags")
+    if staging_artifact.count("</body>") != 1:
+        raise RuntimeError("TEAM FJZ staging Coach navigation body anchor mismatch")
+    staging_artifact = staging_artifact.replace(
+        "</body>", '<script id="fjzStagingCoachGlobalNavV22">\n' + coach_nav_js + '\n</script>\n</body>', 1
     )
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
