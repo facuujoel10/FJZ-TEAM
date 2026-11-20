@@ -24,8 +24,24 @@ required=[
 ]
 missing=[x for x in required if x not in html]
 
+# Scoped V22 Finance runs only on the Coach route and is injected into STAGING
+# after all legacy runtime cleanup. Exclude that one explicit on-demand module
+# from old always-on payment IO checks; never exempt production or other scripts.
+finance_pat = re.compile(r'<script[^>]*id=["\']fjzStagingCoachFinanceV22["\'][^>]*>.*?</script>',re.S|re.I)
+finance_sections = list(finance_pat.finditer(html))
+if len(finance_sections) > 1:
+    raise SystemExit("Duplicate staging Finance module")
+legacy_html = html
+if finance_sections:
+    if 'meta name="fjz-staging-visual-rhythm" content="22.global.1"' not in html:
+        raise SystemExit("Staging Finance script appeared outside staging artifact")
+    finance_script = finance_sections[0].group(0)
+    if "root.__fjzRenderCoachFinancesV22=enter;" not in finance_script or "function allowed()" not in finance_script:
+        raise SystemExit("Staging Finance module must be route and role scoped")
+    legacy_html = html[:finance_sections[0].start()] + html[finance_sections[0].end():]
+
 legacy={
- "coach_payments_refs":html.count("coach_payments"),
+ "coach_payments_refs":legacy_html.count("coach_payments"),
  "payment_route_assignments":len(re.findall(r"coachTab\s*=\s*\\?(['\"])payments\\?\1",html)),
  "music_route_assignments":len(re.findall(r"(?:coachTab|studentTab|coachStudentTab)\s*=\s*\\?(['\"])music\\?\1",html)),
  "music_channel_refs":html.count("fjz-v69-global-music"),
