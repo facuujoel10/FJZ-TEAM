@@ -1171,6 +1171,67 @@ if APP_ENV == "staging":
     for snippet in (coach_safe,student_safe):
         if snippet not in staging_artifact:
             raise RuntimeError("TEAM FJZ staging guard: snapshot normalization missing.")
+    # Staging-only Coach -> Student preview transition.
+    # Athlete 360 mounts its own view and hides the legacy HUD; the historical
+    # preview button did not call Athlete 360 leave() on this route.
+    preview_click = "onclick=\"mode='student';studentTab='home';render()\""
+    preview_hook = 'onclick="return window.__fjzStagingEnterStudentPreviewV22()"'
+    if staging_artifact.count(preview_click) < 1:
+        raise RuntimeError("TEAM FJZ staging preview guard: legacy Coach preview button not found.")
+    staging_artifact = staging_artifact.replace(preview_click, preview_hook)
+    preview_runtime = r'''
+<script id="fjzStagingCoachStudentPreviewTransitionV22">
+(function(){
+  'use strict';
+  window.__fjzStagingEnterStudentPreviewV22=function(){
+    // This UI is a Coach preview, not an authorization/role switch.
+    if(typeof currentProfile==='undefined'||currentProfile?.role!=='coach')return false;
+    const chosen=typeof student==='function'?student():null;
+    if(!chosen||!chosen.id){
+      try{toast('No se encontró un alumno seleccionado.')}catch(_e){}
+      return false;
+    }
+    const view=document.getElementById('view'),nav=document.getElementById('bottomNav');
+    const resetCoach360=()=>{
+      view?.classList.remove('fjz3b-mounted');
+      nav?.classList.remove('fjz3b-hide-legacy-nav','fjz3a-hide-legacy-nav');
+      // The saved Coach 360 route must not take over the Student preview.
+      try{sessionStorage.removeItem('team-fjz-v22-athlete360-route')}catch(_e){}
+    };
+    try{
+      state.selectedStudentId=chosen.id;
+      resetCoach360();
+      mode='student';
+      studentTab='home';
+      render();
+      resetCoach360();
+      // Detect a swallowed render error or blank view; do not leave a black screen.
+      if(!view||!view.querySelector('.v224-student-hero')){
+        if(typeof renderStudent!=='function')throw new Error('Student renderer unavailable.');
+        renderStudent();
+        if(typeof renderBottomNav==='function')renderBottomNav();
+        resetCoach360();
+      }
+      if(!view||!view.querySelector('.v224-student-hero'))
+        throw new Error('Student home did not render.');
+      window.__fjzEnsureCoachPreviewV271?.();
+      return false;
+    }catch(err){
+      console.error('TEAM FJZ staging Coach preview transition',err);
+      mode='coach';coachTab='student';coachStudentTab='summary';
+      resetCoach360();
+      if(view)view.innerHTML='<section role="alert" style="margin:18px;padding:22px;border:1px solid #ff4258;border-radius:12px;color:white;background:#17171b"><h2>No se pudo abrir la vista de Alumno</h2><p>Esta es una cuenta de prueba. Tus datos no se modificaron.</p><button type="button" class="btn primary" onclick="mode=\\'coach\\';coachTab=\\'student\\';render()">Volver al perfil Coach</button></section>';
+      return false;
+    }
+  };
+})();
+</script>
+'''
+    if staging_artifact.count('</body>') != 1:
+        raise RuntimeError("TEAM FJZ staging preview guard: body anchor mismatch.")
+    staging_artifact=staging_artifact.replace('</body>',preview_runtime+'</body>',1)
+    if "fjzStagingCoachStudentPreviewTransitionV22" not in staging_artifact:
+        raise RuntimeError("TEAM FJZ staging preview transition injection failed.")
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
