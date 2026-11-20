@@ -1190,47 +1190,86 @@ if APP_ENV == "staging":
 <script id="fjzStagingCoachStudentPreviewTransitionV22">
 (function(){
   'use strict';
-  window.__fjzStagingEnterStudentPreviewV22=function(){
-    // This UI is a Coach preview, not an authorization/role switch.
-    if(typeof currentProfile==='undefined'||currentProfile?.role!=='coach')return false;
-    const chosen=typeof student==='function'?student():null;
-    if(!chosen||!chosen.id){
-      try{toast('No se encontró un alumno seleccionado.')}catch(_e){}
-      return false;
+  let active=false;
+  const banner=(title,detail)=>{
+    let el=document.getElementById('fjz-staging-preview-diagnostic');
+    if(!el){
+      el=document.createElement('section');
+      el.id='fjz-staging-preview-diagnostic';
+      el.setAttribute('role','alert');
+      el.style.cssText='position:relative;z-index:110;max-width:920px;margin:18px auto;padding:18px;background:#1a1014;color:#fff;border:2px solid #ff3853;border-radius:14px;font:14px/1.5 system-ui;white-space:pre-wrap;';
+      const host=document.getElementById('view')?.parentElement||document.querySelector('.app')||document.body;
+      host.insertBefore(el,host.firstChild);
     }
+    el.replaceChildren();
+    const h=document.createElement('strong');h.textContent=title;
+    const p=document.createElement('p');p.textContent=detail;p.style.margin='8px 0 0';
+    const b=document.createElement('button');b.type='button';b.textContent='Volver a Coach';b.className='btn primary';b.style.marginTop='12px';
+    b.onclick=()=>{try{mode='coach';coachTab='student';document.body.classList.remove('fjz-stage-student-preview');el.remove();render()}catch(e){p.textContent=String(e?.message||e)}};
+    el.append(h,p,b);
+  };
+  function displayVisible(node){
+    if(!node)return false;
+    const cs=getComputedStyle(node);
+    return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity)!==0&&node.getClientRects().length>0;
+  }
+  window.__fjzStagingEnterStudentPreviewV22=function(){
+    if(active)return false;
+    if(typeof currentProfile==='undefined'||currentProfile?.role!=='coach')return false;
+    const selected=typeof student==='function'?student():null;
+    if(!selected?.id){banner('Alumno no seleccionado','No hay un alumno seleccionado en la cuenta Coach.');return false;}
+    active=true;
     const view=document.getElementById('view'),nav=document.getElementById('bottomNav');
-    const resetCoach360=()=>{
+    const clean=()=>{
       view?.classList.remove('fjz3b-mounted');
       nav?.classList.remove('fjz3b-hide-legacy-nav','fjz3a-hide-legacy-nav');
-      // The saved Coach 360 route must not take over the Student preview.
       try{sessionStorage.removeItem('team-fjz-v22-athlete360-route')}catch(_e){}
     };
     try{
-      state.selectedStudentId=chosen.id;
-      resetCoach360();
-      mode='student';
-      studentTab='home';
-      render();
-      resetCoach360();
-      // Detect a swallowed render error or blank view; do not leave a black screen.
-      if(!view||!view.querySelector('.v224-student-hero')){
-        if(typeof renderStudent!=='function')throw new Error('Student renderer unavailable.');
-        renderStudent();
-        if(typeof renderBottomNav==='function')renderBottomNav();
-        resetCoach360();
+      document.getElementById('fjz-staging-preview-diagnostic')?.remove();
+      state.selectedStudentId=selected.id;
+      clean();
+      mode='student';studentTab='home';
+      document.body.classList.add('fjz-stage-student-preview');
+      try{render();}catch(err){console.warn('TEAM FJZ staging render error',err)}
+      clean();
+      if(!view?.querySelector('.v224-student-hero')){
+        if(typeof renderStudent!=='function')throw new Error('renderStudent is unavailable');
+        renderStudent();renderBottomNav?.();
+        clean();
       }
-      if(!view||!view.querySelector('.v224-student-hero'))
-        throw new Error('Student home did not render.');
+      const home=view?.querySelector('.v224-student-hero');
+      if(!home)throw new Error('Student home missing from DOM after explicit rendering.');
+      if(!displayVisible(view)||!displayVisible(home)){
+        // Preserve rendered contents and bypass stale Coach-only visibility
+        // without modifying permanent styles for any other navigation.
+        view.style.setProperty('display','block','important');
+        view.style.setProperty('visibility','visible','important');
+        view.style.setProperty('opacity','1','important');
+        view.style.setProperty('min-height','300px','important');
+        home.style.setProperty('display','flex','important');
+        home.style.setProperty('visibility','visible','important');
+        clean();
+      }
+      if(!displayVisible(home))throw new Error('Student home is present but hidden by stylesheet; viewClass='+String(view.className));
       window.__fjzEnsureCoachPreviewV271?.();
       return false;
     }catch(err){
-      console.error('TEAM FJZ staging Coach preview transition',err);
-      mode='coach';coachTab='student';coachStudentTab='summary';
-      resetCoach360();
-      if(view)view.innerHTML='<section role="alert" style="margin:18px;padding:22px;border:1px solid #ff4258;border-radius:12px;color:white;background:#17171b"><h2>No se pudo abrir la vista de Alumno</h2><p>Esta es una cuenta de prueba. Tus datos no se modificaron.</p><button type="button" class="btn primary" onclick="mode=&quot;coach&quot;;coachTab=&quot;student&quot;;render()">Volver al perfil Coach</button></section>';
+      console.error('TEAM FJZ staging preview diagnosis',err);
+      banner('Error de vista de Alumno (staging)',
+        String(err?.message||err)+'\nAlumno: '+String(selected.id)+'\nModo: '+String(mode)+'\nVista visible: '+String(displayVisible(view))+
+        '\nContenido: '+String((view?.textContent||'').trim().slice(0,120)||'[vacío]'));
       return false;
-    }
+    }finally{active=false;}
   };
+  // Capture the header action before legacy runtime handlers: both direct
+  // profile preview and Coach/Alumno switch have the same guarded transition.
+  document.addEventListener('click',function(e){
+    const button=e.target?.closest?.('#studentMode');
+    if(!button||typeof currentProfile==='undefined'||currentProfile?.role!=='coach')return;
+    e.preventDefault();e.stopImmediatePropagation();
+    window.__fjzStagingEnterStudentPreviewV22();
+  },true);
 })();
 </script>
 '''
