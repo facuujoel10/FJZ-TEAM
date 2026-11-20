@@ -38,7 +38,7 @@ html=html[:sm.start("body")]+sm.group("body").rstrip()+"\n"+css+"\n"+html[sm.end
 html=html.replace("</head>",'<meta name="fjz-coach-command-center" content="22.3A">\n</head>',1)
 authority_bridge='''<script id="v22CoachCommandCenterAuthorityBridge">
 window.__fjzCoachContextV22=function(){
-  return {profile:currentProfile,coachTab:coachTab,state:state,cloudAthletes:cloudAthletes,supabase:supabaseClient};
+  return {profile:currentProfile,mode:mode,coachTab:coachTab,state:state,cloudAthletes:cloudAthletes,supabase:supabaseClient};
 };
 window.__fjzCoachNavigateV22=function(tab,studentId,studentTab){
   if(studentId){state.selectedStudentId=studentId;saveState();}

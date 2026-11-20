@@ -54,12 +54,13 @@ js=r"""
   }
 
   window.openPaymentsV124=function(){
+    if(currentProfile?.role!=='coach'||mode!=='coach')return;
     coachTab='payments';
     render();
   };
 
   window.openNoticePickerV124=function(){
-    if(currentProfile?.role!=='coach')return;
+    if(currentProfile?.role!=='coach'||mode!=='coach')return;
     showModal(
       '<div class="modal-head"><div><h3>Enviar alerta a alumno</h3><div class="muted tiny">Elegí a quién querés avisar.</div></div><button class="btn small" onclick="closeModal()">✕</button></div>'+
       '<div class="v81-reminders">'+
@@ -69,6 +70,7 @@ js=r"""
   };
 
   window.openNoticeForStudentV124=function(clientId){
+    if(currentProfile?.role!=='coach'||mode!=='coach')return;
     state.selectedStudentId=clientId;
     saveState();
     const s=state.students.find(x=>x.id===clientId);
@@ -87,6 +89,7 @@ js=r"""
   };
 
   window.sendNoticeV124=async function(clientId){
+    if(currentProfile?.role!=='coach'||mode!=='coach')return;
     const ath=cloudAthletes.get(clientId);
     if(!ath){toast('No encuentro la ficha del alumno');return}
     const title=(el('v124NoticeTitle')?.value||'').trim();
@@ -110,11 +113,16 @@ js=r"""
   };
 
   function injectCoachAdminCardV124(){
-    if(currentProfile?.role!=='coach'||coachTab!=='dashboard')return;
+    // A Coach previewing Student is still a Coach account, but NOT a Coach dashboard.
+    // A delayed legacy injection must never create finance controls in Student pages.
+    if(mode!=='coach'||currentProfile?.role!=='coach'||coachTab!=='dashboard'){
+      el('v124CoachAdminCard')?.remove();
+      return;
+    }
     if(el('v124CoachAdminCard'))return;
     const view=el('view');
     if(!view)return;
-    const hero=view.querySelector('.hero');
+    const hero=view.querySelector(':scope > .hero');
     if(!hero)return;
 
     const card=document.createElement('div');

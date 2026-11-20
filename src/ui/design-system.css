@@ -39,3 +39,16 @@
 @media(prefers-reduced-motion:reduce){
  .fjz-performance-section,.fjz-icon-button,.v22v2-progress-track i{scroll-behavior:auto!important;transition:none!important}
 }
+
+
+/* V22 staging · Student daily card rhythm, readable labels, no joined cards. */
+#view > #v290Today,#view > #v290Habits,#view > #v290Achievements{min-width:0;max-width:100%;box-sizing:border-box;margin:0 0 18px!important;padding:18px!important}
+#view > #v290Today .v290-head{gap:16px;align-items:center}
+#view > #v290Today .v290-head>div:first-child{min-width:0}
+#view > #v290Today .v290-head h3,#view > #v290Habits h3,#view > #v290Achievements h3{line-height:1.25}
+#view > #v290Today .v290-action{min-width:0;padding:13px;overflow-wrap:break-word}
+#view > #v290Today .v290-action span{font-size:11px;line-height:1.3;color:#adb2bd}
+#view > #v290Today .v290-action strong{font-size:13px;line-height:1.4;overflow-wrap:break-word}
+#view > #v290Habits .v290-empty,#view > #v290Achievements .v290-empty{padding:20px 12px;font-size:12px;line-height:1.5;color:#adb2bd}
+#view > #v290Habits .section-title,#view > #v290Achievements .section-title{gap:14px;align-items:flex-start}
+@media(max-width:520px){#view > #v290Today,#view > #v290Habits,#view > #v290Achievements{margin-bottom:15px!important;padding:15px!important}#view > #v290Today .v290-head{gap:10px}}
