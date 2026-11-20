@@ -21,3 +21,84 @@
 @media(max-width:430px){.fjz4b-hero,.fjz4b-panel,.fjz4b-form-panel,.fjz4b-checkin-form{border-radius:15px;padding:12px}.fjz4b-hero p{font-size:12px}.fjz4b-input-grid,.fjz4b-inline-fields,.fjz4b-photo-upload-grid{grid-template-columns:1fr}.fjz4b-photo-upload-grid .fjz4b-file{grid-column:auto}.fjz4b-scale{grid-template-columns:minmax(118px,1fr) minmax(80px,1fr) 24px}.fjz4b-photo-triptych{gap:5px}.fjz4b-photo,.fjz4b-photo-missing,.fjz4b-photo img{min-height:130px}.fjz4b-panel-head{align-items:flex-start}.fjz4b-panel-head>small{max-width:145px;font-size:9px}}
 @media(max-width:380px){.fjz4b-hero h2{font-size:23px}.fjz4b-photo,.fjz4b-photo-missing,.fjz4b-photo img{min-height:112px}.fjz4b-check-values{grid-template-columns:repeat(2,minmax(0,1fr))}.fjz4b-scale{grid-template-columns:minmax(105px,1fr) minmax(70px,1fr) 22px;gap:6px}}
 @media(min-width:1100px){.fjz4b-shell{padding-bottom:20px}.fjz4b-checkin-form{position:sticky;top:86px}.fjz4b-content-grid>.fjz4b-panel{min-width:0}}
+
+/* TEAM FJZ V22 · staging visual polish · 2026-11-19
+   Visual-only rhythm pass for Progress / Check-ins / Weight + measurements. */
+.fjz4b-shell{
+  --fjz4b-rhythm:16px;
+  gap:var(--fjz4b-rhythm);
+}
+.fjz4b-overview,
+.fjz4b-content-grid,
+.fjz4b-check-layout{gap:var(--fjz4b-rhythm)}
+.fjz4b-content-grid>div,
+.fjz4b-content-grid>aside{gap:var(--fjz4b-rhythm)}
+.fjz4b-overview>article,
+.fjz4b-panel,
+.fjz4b-form-panel,
+.fjz4b-checkin-form{padding:16px}
+.fjz4b-checkin-groups{gap:12px}
+.fjz4b-checkin-groups>section{padding:14px}
+.fjz4b-check-list{gap:12px}
+.fjz4b-check-card{padding:14px}
+.fjz4b-form-intro{margin-bottom:2px}
+
+#fjz4bMeasureForm .fjz4b-panel-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+  margin-bottom:17px;
+}
+#fjz4bMeasureForm .fjz4b-panel-head>div{min-width:0}
+#fjz4bMeasureForm .fjz4b-panel-head h3{
+  margin:4px 0 0;
+  font-size:20px;
+  line-height:1.14;
+}
+#fjz4bMeasureForm .fjz4b-panel-head>small{
+  max-width:42ch;
+  margin:0;
+  color:#9497a0;
+  text-align:left;
+  font-size:10px;
+  line-height:1.5;
+}
+#fjz4bMeasureForm .fjz4b-input-grid{
+  gap:12px 10px;
+  align-items:start;
+}
+#fjz4bMeasureForm .fjz4b-input-grid label{gap:7px}
+#fjz4bMeasureForm .fjz4b-primary{margin-top:14px}
+
+@media(max-width:800px){
+  .fjz4b-shell{--fjz4b-rhythm:14px}
+  .fjz4b-overview>article,
+  .fjz4b-panel,
+  .fjz4b-form-panel,
+  .fjz4b-checkin-form{padding:14px}
+  .fjz4b-checkin-groups{gap:12px}
+  .fjz4b-checkin-groups>section{padding:14px}
+  .fjz4b-check-layout>div,
+  .fjz4b-content-grid>div,
+  .fjz4b-content-grid>aside{min-width:0}
+}
+@media(max-width:430px){
+  #fjz4bMeasureForm{padding:14px}
+  #fjz4bMeasureForm .fjz4b-panel-head{
+    gap:7px;
+    margin-bottom:15px;
+  }
+  #fjz4bMeasureForm .fjz4b-panel-head h3{
+    font-size:19px;
+    line-height:1.12;
+  }
+  #fjz4bMeasureForm .fjz4b-panel-head>small{
+    max-width:none;
+    font-size:10px;
+    line-height:1.45;
+  }
+  #fjz4bMeasureForm .fjz4b-input-grid{gap:11px}
+  .fjz4b-checkin-groups>section{padding:13px}
+}
+

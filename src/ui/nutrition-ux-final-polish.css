@@ -325,3 +325,58 @@
   .fjz4a-coach-head{grid-template-columns:1fr}
   .fjz4a-coach-save{justify-content:space-between}
 }
+
+/* TEAM FJZ V22 · staging visual polish · 2026-11-19
+   Visual-only vertical rhythm for Resources / Habits. */
+.fjz4a-student-shell .fjz4a-resources{
+  padding-top:30px;
+}
+.fjz4a-student-shell .fjz4a-resources>.fjz4a-section-heading{
+  margin-bottom:18px;
+}
+.fjz4a-student-shell .fjz4a-resource-actions{
+  gap:12px;
+}
+.fjz4a-student-shell .fjz4a-resource-actions button{
+  padding:14px;
+}
+.fjz4a-student-shell .fjz4a-resource-list{
+  margin-top:18px;
+  padding-top:18px;
+}
+.fjz4a-student-shell .fjz4a-resource-list+.fjz4a-resource-list{
+  margin-top:18px;
+}
+.fjz4a-student-shell .fjz4a-resource-list>div{
+  align-items:flex-start;
+  gap:16px;
+  padding:11px 2px;
+}
+.fjz4a-student-shell .fjz4a-resource-list strong{
+  line-height:1.35;
+}
+.fjz4a-student-shell .fjz4a-resource-list span{
+  line-height:1.5;
+}
+
+@media(max-width:620px){
+  .fjz4a-student-shell .fjz4a-resources{padding-top:24px}
+  .fjz4a-student-shell .fjz4a-resources>.fjz4a-section-heading{margin-bottom:14px}
+  .fjz4a-student-shell .fjz4a-resource-actions{gap:10px}
+  .fjz4a-student-shell .fjz4a-resource-actions button{padding:13px}
+  .fjz4a-student-shell .fjz4a-resource-list{
+    margin-top:16px;
+    padding-top:16px;
+  }
+  .fjz4a-student-shell .fjz4a-resource-list+.fjz4a-resource-list{margin-top:16px}
+  .fjz4a-student-shell .fjz4a-resource-list>div{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:5px;
+    padding:11px 1px;
+  }
+  .fjz4a-student-shell .fjz4a-resource-list span{
+    text-align:left;
+  }
+}
+
