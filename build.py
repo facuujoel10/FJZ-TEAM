@@ -1179,6 +1179,13 @@ if APP_ENV == "staging":
     if staging_artifact.count(preview_click) < 1:
         raise RuntimeError("TEAM FJZ staging preview guard: legacy Coach preview button not found.")
     staging_artifact = staging_artifact.replace(preview_click, preview_hook)
+    # The header Coach / Alumno toggle is a second entry point, distinct from
+    # the legacy profile button. Route both through the same cleanup authority.
+    header_toggle = "el('studentMode').onclick=()=>{mode='student';render()};"
+    header_hook = "el('studentMode').onclick=()=>window.__fjzStagingEnterStudentPreviewV22();"
+    if staging_artifact.count(header_toggle) != 1:
+        raise RuntimeError("TEAM FJZ staging preview guard: Coach/Alumno toggle anchor mismatch.")
+    staging_artifact = staging_artifact.replace(header_toggle,header_hook,1)
     preview_runtime = r'''
 <script id="fjzStagingCoachStudentPreviewTransitionV22">
 (function(){
