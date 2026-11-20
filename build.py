@@ -1220,7 +1220,7 @@ if APP_ENV == "staging":
       console.error('TEAM FJZ staging Coach preview transition',err);
       mode='coach';coachTab='student';coachStudentTab='summary';
       resetCoach360();
-      if(view)view.innerHTML='<section role="alert" style="margin:18px;padding:22px;border:1px solid #ff4258;border-radius:12px;color:white;background:#17171b"><h2>No se pudo abrir la vista de Alumno</h2><p>Esta es una cuenta de prueba. Tus datos no se modificaron.</p><button type="button" class="btn primary" onclick="mode=\\'coach\\';coachTab=\\'student\\';render()">Volver al perfil Coach</button></section>';
+      if(view)view.innerHTML='<section role="alert" style="margin:18px;padding:22px;border:1px solid #ff4258;border-radius:12px;color:white;background:#17171b"><h2>No se pudo abrir la vista de Alumno</h2><p>Esta es una cuenta de prueba. Tus datos no se modificaron.</p><button type="button" class="btn primary" onclick="mode=&quot;coach&quot;;coachTab=&quot;student&quot;;render()">Volver al perfil Coach</button></section>';
       return false;
     }
   };
