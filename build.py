@@ -1148,6 +1148,29 @@ if APP_ENV == "staging":
         raise RuntimeError("TEAM FJZ staging guard: expected valid HTML document.")
     staging_artifact = staging_artifact.replace("</head>", '<meta name="robots" content="noindex,nofollow,noarchive">\n<meta name="fjz-environment" content="staging">\n</head>', 1)
     staging_artifact = staging_artifact.replace("</body>", '<div id="fjz-stage-notice" aria-label="Entorno de pruebas" style="position:fixed;right:8px;top:8px;z-index:99999;pointer-events:none;padding:6px 10px;border-radius:999px;background:#17171be8;border:1px solid #ff4354;color:#fff;font:800 10px system-ui">STAGING V22 · DATOS DE PRUEBA</div></body>', 1)
+    # Stage-only defensive normalization: imported synthetic snapshots can omit
+    # legacy arrays. The legacy Coach profile reads s.days.length synchronously
+    # before Athlete 360 mounts, so missing arrays crash both Coach and preview.
+    # Preserve every existing value when present; never modify production code.
+    coach_load = "const s=clone(by.get(r.id)||defaultStudent(r.client_id,r.name,r.goal));"
+    coach_safe = ("const s=Object.assign(defaultStudent(r.client_id,r.name,r.goal),"
+                  "clone(by.get(r.id)||{}));"
+                  "s.days=Array.isArray(s.days)?s.days:[];"
+                  "s.sessions=Array.isArray(s.sessions)?s.sessions:[];"
+                  "s.checkins=Array.isArray(s.checkins)?s.checkins:[];")
+    student_load = "const s=clone(snap?.data||defaultStudent(ath.client_id,ath.name,ath.goal));"
+    student_safe = ("const s=Object.assign(defaultStudent(ath.client_id,ath.name,ath.goal),"
+                    "clone(snap?.data||{}));"
+                    "s.days=Array.isArray(s.days)?s.days:[];"
+                    "s.sessions=Array.isArray(s.sessions)?s.sessions:[];"
+                    "s.checkins=Array.isArray(s.checkins)?s.checkins:[];")
+    for original,replacement in ((coach_load,coach_safe),(student_load,student_safe)):
+        if staging_artifact.count(original)!=1:
+            raise RuntimeError("TEAM FJZ staging guard: expected unique legacy cloud loader for normalization.")
+        staging_artifact=staging_artifact.replace(original,replacement,1)
+    for snippet in (coach_safe,student_safe):
+        if snippet not in staging_artifact:
+            raise RuntimeError("TEAM FJZ staging guard: snapshot normalization missing.")
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
