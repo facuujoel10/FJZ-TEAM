@@ -22,7 +22,6 @@ active_dispatcher="""window.renderCoach=function(){
     return baseRenderCoachV170.apply(this,arguments);
   };"""
 command_dispatcher="""window.renderCoach=function(){
-    if(coachTab==='payments'&&typeof window.__fjzRenderCoachFinancesV22==='function')return window.__fjzRenderCoachFinancesV22();
     if(coachTab==='dashboard'&&typeof window.__fjzRenderCoachCommandCenterV22==='function')return window.__fjzRenderCoachCommandCenterV22();
     if(coachTab==='dashboard')return renderCoachDashboardV170();
     return baseRenderCoachV170.apply(this,arguments);

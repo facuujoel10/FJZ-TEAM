@@ -140,6 +140,9 @@ js=r"""
   // Make Payments routing explicit using the real global binding.
   const previousRenderCoachV124=renderCoach;
   renderCoach=function(){
+    if(coachTab==='payments'&&typeof window.__fjzRenderCoachFinancesV22==='function'){
+      return window.__fjzRenderCoachFinancesV22();
+    }
     if(coachTab==='payments'&&typeof window.renderCoachPaymentsV122==='function'){
       return window.renderCoachPaymentsV122();
     }
