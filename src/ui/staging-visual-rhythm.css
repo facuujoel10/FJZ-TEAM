@@ -1858,6 +1858,7 @@ body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
    box-shadow:none!important;background:#111318!important;
  }
  #fjzCoachGlobalNav[hidden]{display:none!important}
+ #fjzCoachGlobalNav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transform:none!important;filter:none!important;contain:none!important}
  #fjzCoachGlobalNav .fjz-coach-nav-brand{flex:1 1 auto;min-width:0;padding:0;gap:10px}
  #fjzCoachGlobalNav .fjz-coach-nav-logo{flex-basis:44px;width:44px;height:44px}
  #fjzCoachGlobalNav .fjz-coach-nav-label strong{font-size:14px!important}

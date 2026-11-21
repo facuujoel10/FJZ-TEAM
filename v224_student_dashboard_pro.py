@@ -79,7 +79,7 @@ new=r"""function renderStudent(){
           <button class="btn small" onclick="studentTab='tracking';render()">Check-in</button>
           <button class="btn small" onclick="studentTab='progress';render()">Progreso</button>
           <button class="btn small" onclick="studentTab='history';render()">Historial</button>
-          <button class="btn small v224-routine-quick" onclick="document.querySelector('.v224-plan-card')?.scrollIntoView({behavior:'smooth',block:'start'})">Ver rutina</button>
+          <button class="btn small v224-routine-quick" onclick="document.querySelector('.v224-plan-card')?.scrollIntoView({block:'start'})">Ver rutina</button>
         </div>
       </div>
     </section>
