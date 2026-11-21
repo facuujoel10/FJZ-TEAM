@@ -1952,3 +1952,103 @@ body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
  #view .fjz3a-v21-mobile .v225-kpi-card{min-height:125px!important;padding:13px!important}
  #view .fjz3a-v21-mobile .v225-kpi-card>span:last-child{font-size:12px!important}
 }
+
+/* V22 STAGING · Athlete profile visual rhythm: no competing sticky layers.
+   Keep desktop profile workspace as one flowing page; leave mobile bottom menu intact. */
+@media(min-width:901px){
+ body:has(#view.fjz3b-mounted) .topbar{
+   position:relative!important;
+   top:auto!important;
+   z-index:30;
+ }
+ body:has(#view.fjz3b-mounted) #fjzCoachGlobalNav{
+   position:relative!important;
+   top:auto!important;
+   z-index:25!important;
+   backdrop-filter:none!important;
+   -webkit-backdrop-filter:none!important;
+   box-shadow:none!important;
+ }
+ #view.fjz3b-mounted .fjz3b-nav-wrap{
+   position:static!important;
+   top:auto!important;
+   align-self:start;
+   z-index:auto!important;
+ }
+ #view.fjz3b-mounted .fjz3b-header{
+   position:static!important;
+   top:auto!important;
+ }
+}
+/* A single predictable nav stack on smaller screens, not floating sidebars. */
+@media(max-width:900px){
+ #view.fjz3b-mounted .fjz3b-nav-wrap{
+   position:static!important;
+   top:auto!important;
+   z-index:auto!important;
+ }
+ #view.fjz3b-mounted .fjz3b-nav{
+   scroll-padding-inline:10px;
+ }
+}
+/* Info has one clear position in the sidebar; routine remains the contextual shortcut. */
+#view.fjz3b-mounted .fjz3b-nav button[data-section="info"]{
+  font-weight:900!important;
+}
+#view.fjz3b-mounted .fjz3b-header-actions{
+  display:flex!important;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+#view.fjz3b-mounted .fjz3b-header-top{
+  align-items:center;
+}
+#view.fjz3b-mounted .fjz3b-nav button{
+  font-size:13px!important;
+  line-height:1.35!important;
+  min-height:44px;
+}
+/* Student: header contains navigation, detail cards contain only relevant information. */
+#view .v224-student-hero .v224-hero-side{
+  align-items:center!important;
+}
+#view .v224-student-hero .v224-quick-actions{
+  gap:10px!important;
+}
+#view .v224-student-hero .v224-quick-actions>.btn{
+  min-height:44px!important;
+  font-size:14px!important;
+}
+#view .v224-side-stack .v224-coach-card,
+#view .v224-side-stack .v224-recent-card{
+  padding:19px!important;
+  border:1px solid #333943!important;
+  border-radius:16px!important;
+}
+#view .v224-side-stack :is(.v224-coach-message,.v224-recent-list){
+  margin-top:12px;
+}
+#view .v224-side-stack :is(.v224-coach-card,.v224-recent-card) .section-title h3{
+  font-size:19px!important;
+  line-height:1.3!important;
+}
+#view .v224-side-stack .v224-history-item{
+  padding:12px!important;
+}
+@media(max-width:620px){
+ #view .v224-student-hero .v224-hero-side{
+   align-items:stretch!important;
+ }
+ #view .v224-student-hero .v224-quick-actions{
+   display:grid!important;
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:9px!important;
+ }
+ #view .v224-student-hero .v224-quick-actions>.btn{
+   width:100%!important;
+   min-width:0!important;
+   font-size:13px!important;
+   padding:10px 6px!important;
+ }
+}

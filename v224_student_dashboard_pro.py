@@ -140,7 +140,6 @@ new=r"""function renderStudent(){
             <span class="badge red">FJZ</span>
           </div>
           <div class="coach-note v224-coach-message">${esc(s.coachMessage||'Sin mensaje nuevo.')}</div>
-          <button class="btn primary v224-checkin-cta" onclick="studentTab='tracking';render()">Completar check-in</button>
         </section>
 
         <section class="card v224-recent-card">
@@ -162,7 +161,6 @@ new=r"""function renderStudent(){
               </div>
             `).join(''):'<div class="empty">Todavía no hay sesiones guardadas.</div>'}
           </div>
-          ${sessions.length?`<button class="btn ghost v224-history-cta" onclick="studentTab='history';render()">Ver historial completo</button>`:''}
         </section>
       </aside>
     </div>`;

@@ -165,7 +165,7 @@
   function navHtml(){
     const active=activeSection();
     return '<nav class="fjz3b-nav" aria-label="Secciones del perfil 360">'+
-      [['summary','Resumen','◉'],['training','Entreno','▤'],['nutrition','Nutrición','◇'],['progress','Progreso','↗'],['checkins','Check-ins','✓'],['agenda','Agenda','□'],['info','Info','ⓘ']].map(([k,l,i])=>'<button type="button" data-3b-action="section" data-section="'+k+'" class="'+(active===k?'active':'')+'" aria-current="'+(active===k?'page':'false')+'"><i>'+i+'</i><span>'+l+'</span></button>').join('')+
+      [['info','Info','ⓘ'],['summary','Resumen','◉'],['training','Entreno','▤'],['nutrition','Nutrición','◇'],['progress','Progreso','↗'],['checkins','Check-ins','✓'],['agenda','Agenda','□']].map(([k,l,i])=>'<button type="button" data-3b-action="section" data-section="'+k+'" class="'+(active===k?'active':'')+'" aria-current="'+(active===k?'page':'false')+'"><i>'+i+'</i><span>'+l+'</span></button>').join('')+
       '</nav>';
   }
   function revealActiveNav(nav){
@@ -186,7 +186,7 @@
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
     const header=document.createElement('section');header.className='fjz3b-header';
-    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><div class="fjz3b-header-actions"><button type="button" class="fjz3b-routine-shortcut" data-3b-action="legacy-tab" data-tab="routine">Ver rutina</button><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div></div>';
+    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><div class="fjz3b-header-actions"><button type="button" class="fjz3b-routine-shortcut" data-3b-action="legacy-tab" data-tab="routine">Ver rutina</button></div></div>';
     const identityBox=document.createElement('div');identityBox.className='fjz3b-identity';
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
