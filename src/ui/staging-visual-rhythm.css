@@ -2052,3 +2052,90 @@ body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
    padding:10px 6px!important;
  }
 }
+
+/* Staging V22: V21.41-first mobile nutrition layout.
+   Only switches visible meals: existing option and register handlers remain authoritative. */
+@media(max-width:760px){
+ #view .fjz4a-student-shell{
+   min-width:0;
+   width:100%;
+   max-width:100%;
+ }
+ #view .fjz4a-student-shell .fjz4a-plan-overview,
+ #view .fjz4a-student-shell .fjz4a-student-meals-v21,
+ #view .fjz4a-student-shell .fjz4a-resources,
+ #view .fjz4a-student-shell .fjz4a-consumption{
+   min-width:0;
+   border:1px solid #323844;
+   background:linear-gradient(140deg,rgba(233,44,69,.055),transparent 52%),#16191f;
+   border-radius:17px;
+   padding:16px;
+   margin-bottom:16px;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-student-meal-nav{
+   display:flex;
+   align-items:stretch;
+   gap:8px;
+   overflow-x:auto;
+   scroll-snap-type:x proximity;
+   padding:4px 0 13px;
+   margin:12px 0 7px;
+   scrollbar-width:thin;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-student-meal-nav button{
+   flex:0 0 auto;
+   min-width:112px;
+   min-height:48px;
+   border:1px solid #3d4653;
+   border-radius:12px;
+   padding:10px 14px;
+   background:#20242d;
+   color:#c6cbd4;
+   font-size:14px;
+   font-weight:850;
+   line-height:1.3;
+   scroll-snap-align:start;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-student-meal-nav button.active{
+   background:linear-gradient(160deg,#f23150,#ba1230);
+   color:#fff;
+   border-color:#fb536c;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-student-meal-nav button:focus-visible{
+   outline:2px solid #ff6b83;
+   outline-offset:3px;
+ }
+ #view .fjz4a-student-meals-v21:has(.fjz4a-student-meal-nav)>.fjz4a-meal{
+   display:none!important;
+ }
+ #view .fjz4a-student-meals-v21:has(.fjz4a-student-meal-nav)>.fjz4a-meal.fjz4a-student-meal-active{
+   display:block!important;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-meal{
+   border:1px solid #363d49;
+   border-radius:14px;
+   background:#11141b;
+   padding:15px;
+   min-width:0;
+   margin:0;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-meal h2{
+   font-size:20px!important;
+   line-height:1.25!important;
+ }
+ #view .fjz4a-student-meals-v21 .fjz4a-option-tabs button{
+   font-size:13px!important;
+   min-height:42px;
+ }
+ #view .fjz4a-student-shell .fjz4a-section-heading h2{
+   font-size:20px!important;
+   line-height:1.3;
+ }
+ #view .fjz4a-student-shell .fjz4a-section-heading p{
+   font-size:14px!important;
+   line-height:1.5;
+ }
+}
+@media(min-width:761px){
+ #view .fjz4a-student-meal-nav{display:none!important}
+}

@@ -6,7 +6,7 @@
   'use strict';
   const VERSION='22.4A';
   const MARKER='FJZ4A_OPTION:';
-  const ui={identityKey:'',studentOptions:{},coachMealId:'',savedSignature:'',saving:false,registering:new Set(),lastSaveState:'idle'};
+  const ui={identityKey:'',studentOptions:{},studentMealId:'',coachMealId:'',savedSignature:'',saving:false,registering:new Set(),lastSaveState:'idle'};
   const text=v=>String(v??'').trim();
   const esc=v=>text(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const num=v=>{const n=Number(v);return Number.isFinite(n)?n:0};
@@ -19,7 +19,7 @@
   }
   function resetIdentity(c=context()){
     const key=identity(c);if(key===ui.identityKey)return;
-    ui.identityKey=key;ui.studentOptions={};ui.coachMealId='';ui.savedSignature='';ui.saving=false;ui.registering.clear();ui.lastSaveState='idle';
+    ui.identityKey=key;ui.studentOptions={};ui.studentMealId='';ui.coachMealId='';ui.savedSignature='';ui.saving=false;ui.registering.clear();ui.lastSaveState='idle';
   }
   function planData(c=context()){
     const p=c?.cache?.plan;if(!p)return null;
@@ -124,6 +124,27 @@
     host.innerHTML='<div class="fjz4a-coach-shell"><div class="fjz4a-loading">Cargando nutrición del alumno…</div></div>';
     try{await actions().load?.(force,c?.cache?.date);return renderCoach()}catch(err){host.innerHTML=loadErrorHtml('coach',actions().cloudError?.(err)||err?.message);bindHost(host);return false}
   }
+  function selectStudentMeal(button){
+    if(!button)return false;
+    const host=root.document?.getElementById('studentSubBody');
+    const shell=host?.querySelector('.fjz4a-student-shell');
+    const mid=text(button.dataset.meal);
+    if(!shell||!mid)return false;
+    const target=[...shell.querySelectorAll('.fjz4a-meal[data-4a-meal]')].find(el=>text(el.dataset['4aMeal'])===mid);
+    if(!target)return false;
+    ui.studentMealId=mid;
+    shell.querySelectorAll('[data-4a-action="student-meal"]').forEach(b=>{
+      const active=text(b.dataset.meal)===mid;
+      b.classList.toggle('active',active);
+      b.setAttribute('aria-selected',active?'true':'false');
+      b.tabIndex=active?0:-1;
+    });
+    shell.querySelectorAll('.fjz4a-meal[data-4a-meal]').forEach(section=>{
+      const active=section===target;
+      section.classList.toggle('fjz4a-student-meal-active',active);
+    });
+    return true;
+  }
   function renderStudent(){
     const c=context();resetIdentity(c);if(c?.profile?.role!=='student')return false;
     const host=root.document?.getElementById('studentSubBody');if(!host)return false;
@@ -131,11 +152,19 @@
     if(!p||p.active===false){host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><p>Tu espacio diario de nutrición.</p></div></header><section class="fjz4a-empty-state"><strong>Sin plan activo</strong><span>Tu coach todavía no publicó un plan nutricional activo.</span><button type="button" data-4a-action="recipes">Ver recetas disponibles</button></section>'+resourcesHtml(pd||{},true)+'</div>';bindHost(host);return true}
     if(!ui.savedSignature)ui.savedSignature=signature(c);
     const logging=p.student_logging_enabled!==false;
+    const meals=pd?.meals||[];
+    const selected=meals.find(m=>(text(m?.id)||'legacy-'+meals.indexOf(m))===ui.studentMealId)||meals[0]||null;
+    const selectedId=selected?(text(selected.id)||'legacy-'+meals.indexOf(selected)):'';
+    ui.studentMealId=selectedId;
+    const mobileMealTabs=meals.length>1?'<nav class="fjz4a-student-meal-nav" role="tablist" aria-label="Elegí una comida">'+meals.map((m,i)=>{
+      const id=text(m?.id)||'legacy-'+i,active=id===selectedId;
+      return '<button type="button" role="tab" data-4a-action="student-meal" data-meal="'+esc(id)+'" aria-selected="'+(active?'true':'false')+'" tabindex="'+(active?'0':'-1')+'" class="'+(active?'active':'')+'">'+esc(m.name||'Comida '+(i+1))+'</button>';
+    }).join('')+'</nav>':'';
     host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><strong class="fjz4a-plan-title">'+esc(p.title||'Plan nutricional')+'</strong><p>Revisión '+esc(p.revision||1)+(p.updated_at?' · actualizada '+esc(actions().formatDate?.(p.updated_at)||''):'')+'</p></div><div class="fjz4a-plan-state"><i></i><strong>'+(p.active===false?'Pausado':'Plan asignado')+'</strong></div></header>'+ 
       '<section class="fjz4a-plan-overview"><div><span>OBJETIVOS DEL PLAN</span><h2>Referencias diarias</h2><p>No representan consumo real.</p></div>'+targetsHtml(p)+(p.notes?'<aside><strong>Indicaciones del Coach</strong><p>'+esc(p.notes)+'</p></aside>':'')+'</section>'+ 
-      '<section class="fjz4a-meals"><div class="fjz4a-section-heading"><span>PLAN DEL DÍA</span><h2>Comidas y alternativas</h2><p>Elegí qué opción consultar. Cambiar de opción no registra nada.</p></div>'+((pd?.meals||[]).length?pd.meals.map((m,i)=>mealStudentHtml(m,i,logging,false)).join(''):'<div class="fjz4a-empty-block"><strong>Sin comidas cargadas</strong><span>Tu coach todavía no agregó comidas al plan.</span></div>')+'</section>'+ 
+      '<section class="fjz4a-meals fjz4a-student-meals-v21"><div class="fjz4a-section-heading"><span>PLAN DEL DÍA</span><h2>Comidas y alternativas</h2><p>Elegí qué opción consultar. Cambiar de opción no registra nada.</p></div>'+mobileMealTabs+(meals.length?meals.map((m,i)=>mealStudentHtml(m,i,logging,false)).join(''):'<div class="fjz4a-empty-block"><strong>Sin comidas cargadas</strong><span>Tu coach todavía no agregó comidas al plan.</span></div>')+'</section>'+ 
       resourcesHtml(pd,true)+calculatorHtml(c)+consumptionHtml(c,true)+'</div>';
-    bindHost(host);actions().previewMacro?.();return true;
+    bindHost(host);if(selectedId){const active=host.querySelector('.fjz4a-student-meal-nav [data-4a-action="student-meal"].active');if(active)selectStudentMeal(active)}actions().previewMacro?.();return true;
   }
   function coachMealSelected(pd){
     const meals=pd?.meals||[];if(!meals.length)return null;
@@ -206,6 +235,7 @@
   function bindHost(host){
     if(!host)return;host.onclick=async e=>{
       const b=e.target.closest?.('[data-4a-action]');if(!b)return;const a=b.dataset['4aAction'];
+      if(a==='student-meal'){selectStudentMeal(b);return}
       if(a==='select-option'){selectStudentOption(b);return}
       if(a==='register-option'){await registerOption(b.dataset.meal,b.dataset.option,b);return}
       if(a==='recipes'){actions().recipes?.();return}
