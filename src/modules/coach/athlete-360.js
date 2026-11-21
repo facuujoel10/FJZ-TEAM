@@ -186,7 +186,7 @@
   function headerShell(hero,identity){
     const s=identity.student||{},goal=text(s.goal);
     const header=document.createElement('section');header.className='fjz3b-header';
-    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div>';
+    header.innerHTML='<div class="fjz3b-header-top"><button type="button" class="fjz3b-back" data-3b-action="back" aria-label="Volver al Command Center">‹ <span>Command Center</span></button><div class="fjz3b-product">ATHLETE WORKSPACE · TEAM FJZ</div><div class="fjz3b-header-actions"><button type="button" class="fjz3b-routine-shortcut" data-3b-action="legacy-tab" data-tab="routine">Ver rutina</button><button type="button" class="fjz3b-info-shortcut" data-3b-action="section" data-section="info">Información</button></div></div>';
     const identityBox=document.createElement('div');identityBox.className='fjz3b-identity';
     if(hero){
       hero.classList.add('fjz3b-legacy-hero');
