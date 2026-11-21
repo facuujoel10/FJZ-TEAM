@@ -1,0 +1,387 @@
+/* TEAM FJZ V22 STAGING / V21.41-FIRST MOBILE
+   An isolated, opt-out-friendly presentation layer.
+   No data authority, session state, input event, or desktop behavior changes.
+   Goal: established V21.41 mobile hierarchy + premium V22 color and features. */
+@media(max-width:760px){
+  /* Foundation: readable, contained, and predictable app surfaces. */
+  #view{
+    --fjz-mobile-copy:#d1d5de;
+    --fjz-mobile-muted:#aeb5c2;
+    --fjz-mobile-card:#171a21;
+    --fjz-mobile-border:#373d47;
+    --fjz-mobile-red:#f33856;
+    min-width:0!important;
+    max-width:100%!important;
+    overflow-x:clip;
+  }
+  #view > .hero:not(.fjz3a-header),
+  #view .v224-student-hero{
+    box-sizing:border-box;
+    min-width:0!important;
+    width:100%!important;
+    border:1px solid #403440!important;
+    border-radius:19px!important;
+    background:linear-gradient(135deg,rgba(230,38,66,.11),transparent 68%),#17151b!important;
+    padding:20px 17px!important;
+    margin-bottom:16px!important;
+    align-items:start!important;
+  }
+  #view > .hero h2,#view .v224-student-hero h2{
+    font-size:clamp(26px,7vw,34px)!important;
+    letter-spacing:-.025em;
+    line-height:1.17!important;
+    margin:6px 0 12px!important;
+    overflow-wrap:break-word;
+  }
+  #view > .hero p,#view .v224-student-hero p{
+    color:var(--fjz-mobile-muted)!important;
+    font-size:14px!important;
+    line-height:1.6!important;
+    max-width:62ch;
+  }
+  #view .v224-student-hero .v224-goal{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:6px 10px;
+    margin-top:14px;
+  }
+  #view .v224-student-hero .v224-goal strong{
+    font-size:15px!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    overflow-wrap:break-word;
+  }
+  #view .v224-student-hero .v224-hero-side{
+    box-sizing:border-box;
+    padding:12px!important;
+    border:1px solid #373e4b!important;
+    border-radius:13px!important;
+    background:#1b2029!important;
+    gap:12px!important;
+  }
+  #view .v224-student-hero .v224-quick-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:100%!important;
+  }
+  #view .v224-student-hero .v224-quick-actions .btn{
+    min-width:0!important;
+    width:100%!important;
+    min-height:46px!important;
+    font-size:13px!important;
+    padding:10px 6px!important;
+    border-radius:11px!important;
+    white-space:normal;
+    text-align:center;
+  }
+  #view .v224-kpi-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    margin:0 0 17px!important;
+  }
+  #view .v224-kpi-grid .v224-kpi-card{
+    min-width:0!important;
+    min-height:120px!important;
+    display:flex!important;
+    align-items:flex-start!important;
+    flex-direction:column;
+    justify-content:center;
+    padding:16px!important;
+    border-radius:17px!important;
+    border:1px solid var(--fjz-mobile-border)!important;
+    background:var(--fjz-mobile-card)!important;
+  }
+  #view .v224-kpi-card .v224-kpi-label{
+    color:#ff788a!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+    letter-spacing:.08em!important;
+  }
+  #view .v224-kpi-card strong{
+    font-size:clamp(28px,8vw,39px)!important;
+    line-height:1.2!important;
+    margin:5px 0!important;
+  }
+  #view .v224-kpi-card>span:last-child{
+    color:var(--fjz-mobile-muted)!important;
+    font-size:12px!important;
+    line-height:1.4!important;
+  }
+  #view .v224-dashboard-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:15px!important;
+  }
+  #view .v224-plan-card,#view .v224-coach-card,#view .v224-recent-card{
+    box-sizing:border-box;
+    min-width:0!important;
+    background:var(--fjz-mobile-card)!important;
+    border:1px solid var(--fjz-mobile-border)!important;
+    border-radius:18px!important;
+    padding:17px!important;
+    margin:0!important;
+  }
+  #view .v224-side-stack{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:15px!important;
+    min-width:0!important;
+  }
+  #view .v224-plan-head{display:flex;flex-wrap:wrap;gap:10px;align-items:start!important}
+  #view .v224-plan-head h3,#view .v224-side-stack h3{
+    font-size:20px!important;
+    line-height:1.25!important;
+  }
+  #view .v224-plan-card .v224-day-row{
+    display:grid!important;
+    grid-template-columns:38px minmax(0,1fr) auto!important;
+    gap:10px!important;
+    padding:14px 0!important;
+    min-height:76px;
+    align-items:center!important;
+    border-color:#303741!important;
+  }
+  #view .v224-day-index{
+    width:36px!important;
+    height:41px!important;
+    font-size:12px!important;
+    border-radius:10px;
+  }
+  #view .v224-day-copy strong{
+    font-size:15px!important;
+    line-height:1.3;
+    overflow-wrap:break-word;
+  }
+  #view .v224-day-copy .tiny{
+    font-size:12px!important;
+    line-height:1.4!important;
+    color:var(--fjz-mobile-muted)!important;
+    white-space:normal!important;
+  }
+  #view .v224-day-action{
+    min-height:44px!important;
+    font-size:13px!important;
+    border-radius:10px!important;
+    padding:9px 12px!important;
+  }
+  #view .v224-history-item{
+    min-width:0;
+    padding:13px 0!important;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:9px;
+  }
+  #view .v224-history-item strong{
+    font-size:14px!important;
+    line-height:1.4!important;
+  }
+  /* Workout: keep V21 exercise/series flow and preserve V22 inputs and controls. */
+  #view > .session-progress{
+    margin-bottom:12px!important;
+    border-radius:999px;
+    overflow:hidden;
+  }
+  #view > .session-card,#view > .card.session-card{
+    box-sizing:border-box;
+    min-width:0!important;
+    width:100%!important;
+    margin:0 0 14px!important;
+    border-radius:18px!important;
+    background:var(--fjz-mobile-card)!important;
+    border:1px solid var(--fjz-mobile-border)!important;
+    padding:16px!important;
+    overflow-wrap:break-word;
+  }
+  #view .session-card .day-head{
+    display:flex!important;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:13px;
+  }
+  #view .session-card .day-head strong{
+    font-size:19px!important;
+    line-height:1.3!important;
+  }
+  #view .session-card .day-head .tiny{
+    font-size:13px!important;
+    line-height:1.5!important;
+    color:var(--fjz-mobile-muted)!important;
+  }
+  #view .session-card .coach-note{
+    padding:14px!important;
+    background:#1c222e!important;
+    border-left:3px solid #68a4ff!important;
+    font-size:13px!important;
+    line-height:1.6!important;
+    border-radius:10px;
+    margin:12px 0!important;
+  }
+  #view .session-card .set-grid{
+    display:grid!important;
+    grid-template-columns:34px repeat(3,minmax(0,1fr))!important;
+    min-width:0!important;
+    align-items:end;
+    gap:7px!important;
+    padding:12px 0!important;
+    border-top:1px solid #333945;
+  }
+  #view .session-card .set-grid>label{
+    min-width:0!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+  }
+  #view .session-card .set-grid input{
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    min-height:49px!important;
+    padding:10px 5px!important;
+    text-align:center;
+    border-radius:10px!important;
+    font-size:16px!important;
+    font-weight:850;
+    appearance:auto;
+  }
+  #view .session-card .set-grid .set-n{
+    display:grid;
+    place-items:center;
+    min-width:0;
+    min-height:49px;
+    border:1px solid #353b46;
+    border-radius:10px;
+    background:#10131b;
+    font-size:14px!important;
+    font-weight:850;
+    color:#fa6379;
+  }
+  /* Check-ins and progress: same V21 panel hierarchy and large usable inputs. */
+  #studentSubBody{
+    min-width:0!important;
+    display:grid;
+    gap:15px;
+  }
+  #studentSubBody > .card,
+  #studentSubBody > .grid > .card{
+    box-sizing:border-box;
+    min-width:0!important;
+    padding:17px!important;
+    border:1px solid var(--fjz-mobile-border)!important;
+    border-radius:18px!important;
+    background:var(--fjz-mobile-card)!important;
+    margin:0!important;
+  }
+  #studentSubBody .section-title{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:start;
+    justify-content:space-between;
+    gap:10px!important;
+  }
+  #studentSubBody .section-title h3{
+    font-size:20px!important;
+    line-height:1.3!important;
+  }
+  #studentSubBody .muted.tiny,#studentSubBody label.tiny{
+    font-size:13px!important;
+    line-height:1.45!important;
+  }
+  #studentSubBody .form-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+    min-width:0;
+  }
+  #studentSubBody .form-grid>label{
+    min-width:0!important;
+    max-width:100%;
+  }
+  #studentSubBody :is(input.input,textarea.input,select.input){
+    box-sizing:border-box;
+    min-width:0!important;
+    max-width:100%;
+    width:100%;
+    min-height:46px!important;
+    padding:10px 12px!important;
+    font-size:16px!important;
+    line-height:1.35;
+    background:#101319!important;
+    border:1px solid #3a424f!important;
+    border-radius:11px!important;
+  }
+  #studentSubBody .tracking-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:11px!important;
+    margin:13px 0!important;
+  }
+  #studentSubBody .track-score{
+    box-sizing:border-box;
+    min-width:0;
+    border:1px solid #323a47;
+    border-radius:12px;
+    padding:10px;
+    background:#1c2029;
+  }
+  #studentSubBody .track-score label{
+    display:block;
+    font-size:13px!important;
+    line-height:1.4;
+    margin-bottom:5px;
+  }
+  #studentSubBody .tracking-form>.btn.primary{
+    min-height:48px!important;
+    width:100%;
+    font-size:15px!important;
+  }
+  #studentSubBody .history-list .history-item{
+    min-width:0;
+    padding:14px 0!important;
+    flex-wrap:wrap;
+    gap:9px;
+  }
+  #studentSubBody .history-list strong{
+    font-size:15px!important;
+    line-height:1.35;
+  }
+  /* Premium modules are embedded inside the same established mobile rhythm. */
+  #studentSubBody .fjz4a-student-shell{
+    width:100%;
+    min-width:0;
+  }
+  #studentSubBody .fjz4a-student-head,
+  #studentSubBody .fjz4a-plan-overview,
+  #studentSubBody .fjz4a-meals,
+  #studentSubBody .fjz4a-resources{
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+  }
+  #studentSubBody .fjz4a-student-head h1{
+    font-size:27px!important;
+    line-height:1.2!important;
+  }
+}
+@media(max-width:380px){
+  #view .session-card .set-grid{
+    grid-template-columns:29px repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #view .session-card .set-grid input{padding:8px 2px!important}
+  #view .v224-plan-card .v224-day-row{
+    grid-template-columns:34px minmax(0,1fr)!important;
+  }
+  #view .v224-day-row .v224-day-action{
+    grid-column:2;
+    justify-self:start;
+  }
+  #studentSubBody .form-grid{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}

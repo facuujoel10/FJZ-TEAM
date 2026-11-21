@@ -1280,7 +1280,7 @@ if APP_ENV == "staging":
         raise RuntimeError("TEAM FJZ staging preview transition injection failed.")
     # Staging-only presentation layer, deliberately appended after all legacy/V22
     # modules so existing !important geometry and mobile overrides stay auditable.
-    visual_css = (pathlib.Path("src/ui/staging-visual-rhythm.css").read_text(encoding="utf-8").strip() + "\n" + pathlib.Path("src/ui/staging-finance-center.css").read_text(encoding="utf-8").strip())
+    visual_css = (pathlib.Path("src/ui/staging-visual-rhythm.css").read_text(encoding="utf-8").strip() + "\n" + pathlib.Path("src/ui/staging-finance-center.css").read_text(encoding="utf-8").strip() + "\n" + pathlib.Path("src/ui/staging-v21-mobile-first.css").read_text(encoding="utf-8").strip())
     if not visual_css or "<style" in visual_css.lower() or "</style" in visual_css.lower():
         raise RuntimeError("TEAM FJZ staging visual stylesheet is missing or contains HTML tags")
     consolidated_styles = list(re.finditer(r"<style(?P<attrs>[^>]*)>(?P<body>.*?)</style>", staging_artifact, re.S | re.I))
