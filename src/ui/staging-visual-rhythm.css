@@ -1773,3 +1773,64 @@ body:has(#fjzCoachGlobalNav:not([hidden])) #bottomNav{
  #view .v224-student-hero .v224-quick-actions{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
  #view .v224-student-hero .v224-quick-actions .btn{min-width:0;padding:10px 6px!important;font-size:12px!important}
 }
+
+/* V22 STAGING HYBRID COACH UI · MOBILE V21.41 REFERENCE · 2026-11-20
+   Visual and navigation geometry only. All V22 alerts, active students,
+   confirmation semantics and data sources retained. */
+.fjz3a-mobile-status,.fjz3a-mobile-templates,.fjz3a-add-mobile{display:none!important}
+@media(max-width:760px){
+  #view:has(> .fjz3a-command-center){padding:12px 12px 126px!important;max-width:100%!important}
+  #view:has(> .fjz3a-command-center) .fjz3a-command-center{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;display:block!important;min-height:0!important;overflow:visible!important}
+  #view:has(> .fjz3a-command-center) .fjz3a-sidebar{display:none!important}
+  #view:has(> .fjz3a-command-center) .fjz3a-main{min-width:0!important;padding:0 0 34px!important;width:100%!important}
+  #view .fjz3a-header{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:20px!important;
+    margin:0 0 22px!important;
+    padding:24px 20px 20px!important;
+    border:1px solid #51303b;
+    border-radius:21px;
+    background:radial-gradient(circle at 95% 0%,rgba(230,40,71,.13),transparent 58%),linear-gradient(135deg,#241117,#100f14 62%)!important;
+    align-items:start!important;
+  }
+  #view .fjz3a-header>div:first-child{min-width:0}
+  #view .fjz3a-header .v22v-label{color:#ff758b!important;font-size:12px!important;letter-spacing:.15em!important;line-height:1.4!important;font-weight:900!important}
+  #view .fjz3a-header h2{font-size:clamp(30px,7.5vw,39px)!important;line-height:1.15!important;letter-spacing:-.035em!important;margin:9px 0 12px!important}
+  #view .fjz3a-header p{max-width:none!important;font-size:16px!important;line-height:1.6!important;color:#b7b7c2!important}
+  #view .fjz3a-header-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:10px!important;width:100%!important}
+  #view .fjz3a-header-actions .btn{display:flex!important;align-items:center;justify-content:center;min-width:0!important;width:100%;min-height:49px!important;border-radius:12px!important;font-size:15px!important;line-height:1.3!important;padding:10px 9px!important;white-space:normal;text-align:center}
+  #view .fjz3a-header-actions .fjz3a-mobile-status,
+  #view .fjz3a-header-actions .fjz3a-mobile-templates{display:flex!important}
+  #view .fjz3a-header-actions .fjz3a-refresh-desktop{display:none!important}
+  #view .fjz3a-header-actions>.btn.primary{grid-column:1/-1!important;background:linear-gradient(180deg,#ff3453,#c9102d)!important;border-color:#f44360!important;min-height:53px!important;font-size:17px!important}
+  #view .fjz3a-add-desktop{display:none!important}
+  #view .fjz3a-add-mobile{display:inline!important}
+  #view .fjz3a-pulse{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin-bottom:20px!important}
+  #view .fjz3a-pulse button{display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0!important;min-height:128px!important;padding:17px!important;gap:4px;background:linear-gradient(145deg,rgba(255,255,255,.015),transparent),#14151a!important;border:1px solid #373b45!important;border-radius:18px!important;text-align:left}
+  #view .fjz3a-pulse .fjz3a-pulse-title{display:block!important;font-size:11px!important;letter-spacing:.105em;font-weight:900;color:#ff7287!important;line-height:1.4}
+  #view .fjz3a-pulse strong{font-size:clamp(29px,8vw,38px)!important;line-height:1.12!important;margin:2px 0!important;color:#fafbfc}
+  #view .fjz3a-pulse span{font-size:13px!important;line-height:1.45!important;margin:0!important;color:#afb3bd!important}
+  #view .fjz3a-work,#view .fjz3a-panel,#view .fjz3a-students{border-radius:19px!important;border:1px solid #383a43!important;background:#15151b!important;padding:17px!important}
+  #view .fjz3a-work{min-height:240px!important;border-left:3px solid #e83f58!important}
+  #view .fjz3a-section-head{gap:12px!important}
+  #view .fjz3a-section-head h3{font-size:21px!important;line-height:1.35!important}
+  #view .fjz3a-section-head .v22v-label{color:#ff7186!important;letter-spacing:.09em;font-size:11px!important}
+  #view .fjz3a-empty{min-height:135px!important;padding:23px!important;background:#101216;border-color:#343742}
+  #view .fjz3a-empty strong{font-size:16px!important}
+  #view .fjz3a-empty span{font-size:13px!important;line-height:1.5!important}
+  #view .fjz3a-filters button{font-size:12px!important;min-height:37px;padding:8px 12px!important}
+  #view .fjz3a-rail{display:grid!important;gap:12px!important;margin:14px 0!important}
+  #view .fjz3a-students{margin-top:14px!important}
+  #view .fjz3a-mobile-nav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;position:fixed!important;z-index:60;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));gap:4px!important;padding:7px!important;border:1px solid #383940!important;border-radius:22px!important;background:rgba(13,14,19,.97)!important;box-shadow:0 18px 44px rgba(0,0,0,.55)!important;backdrop-filter:blur(20px)}
+  #view .fjz3a-mobile-nav button{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:66px!important;min-width:0;padding:8px 3px!important;border:1px solid transparent!important;border-radius:15px!important;background:transparent!important;color:#9297a5!important;font-size:11px!important;font-weight:850!important;text-align:center}
+  #view .fjz3a-mobile-nav button.active{color:#fff!important;background:linear-gradient(160deg,rgba(209,34,60,.29),rgba(88,20,35,.16))!important;border-color:rgba(255,56,84,.45)!important}
+  #view .fjz3a-mobile-nav .fjz3a-nav-icon{display:block!important;color:inherit;font-size:25px!important;line-height:1!important;font-weight:800}
+}
+@media(max-width:390px){
+  #view .fjz3a-header{padding:18px 14px!important}
+  #view .fjz3a-pulse{gap:9px!important}
+  #view .fjz3a-pulse button{padding:13px!important;min-height:113px!important}
+  #view .fjz3a-pulse span{font-size:12px!important}
+  #view .fjz3a-mobile-nav button{font-size:10px!important}
+}
