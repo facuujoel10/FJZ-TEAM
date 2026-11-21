@@ -385,3 +385,191 @@
     grid-template-columns:minmax(0,1fr)!important;
   }
 }
+
+/* V22 staging geometry pass · 360/390/430 px
+   Explicit min-width and wrapping at real card boundaries. No altered behavior. */
+@media(max-width:760px){
+  #view .fjz3b-workspace,
+  #view .fjz3b-layout,
+  #view .fjz3b-main,
+  #view .fjz3b-content,
+  #view .fjz3b-section,
+  #view .fjz3b-header,
+  #view .fjz3b-header-top,
+  #view .fjz3b-identity,
+  #view .fjz3b-legacy-hero,
+  #view .fjz3b-section-context{
+    box-sizing:border-box;
+    min-width:0!important;
+    max-width:100%;
+  }
+  #view .fjz3b-layout{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:start;
+  }
+  #view .fjz3b-nav-wrap{
+    position:static!important;
+    width:100%;
+    min-width:0!important;
+    max-width:100%;
+    overflow:visible;
+  }
+  #view .fjz3b-nav{
+    min-width:0!important;
+    max-width:100%;
+  }
+  #view .fjz3b-nav button{
+    min-height:43px!important;
+    font-size:13px!important;
+  }
+  #view .fjz3b-header{
+    padding:17px!important;
+    margin-bottom:15px!important;
+    border-radius:18px!important;
+  }
+  #view .fjz3b-header-top{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center;
+    gap:11px!important;
+  }
+  #view .fjz3b-header-top > *{
+    min-width:0;
+    max-width:100%;
+  }
+  #view .fjz3b-header-actions{
+    display:flex!important;
+    gap:9px!important;
+    flex-wrap:wrap!important;
+    align-items:center;
+    justify-content:flex-start!important;
+    min-width:0!important;
+    max-width:100%;
+  }
+  #view .fjz3b-header-actions button{
+    min-height:44px!important;
+    white-space:normal;
+    overflow-wrap:break-word;
+  }
+  #view .fjz3b-legacy-hero{
+    min-width:0!important;
+    gap:12px!important;
+    align-items:center!important;
+  }
+  #view .fjz3b-legacy-hero :is(h2,h3,p,strong),
+  #view .fjz3b-section-context :is(h2,h3,p,strong){
+    min-width:0;
+    max-width:100%;
+    overflow-wrap:break-word;
+    line-height:1.45;
+  }
+  #view .fjz3b-main > :is(section,div,article){
+    min-width:0!important;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  #view .fjz3b-section-context,
+  #view .fjz3b-main .card{
+    border-radius:15px;
+  }
+  /* Nutrition: macronutrient chips and alternatives must not force viewport width. */
+  #studentSubBody,
+  #studentSubBody .fjz4a-student-shell,
+  #studentSubBody .fjz4a-student-shell > *,
+  #studentSubBody .fjz4a-meal,
+  #studentSubBody .fjz4a-meal > *,
+  #studentSubBody .fjz4a-option-tabs,
+  #studentSubBody .fjz4a-macros,
+  #studentSubBody .fjz4a-foods,
+  #studentSubBody .fjz4a-consumption{
+    box-sizing:border-box;
+    min-width:0!important;
+    max-width:100%;
+  }
+  #studentSubBody .fjz4a-student-shell{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:15px;
+    overflow:visible;
+  }
+  #studentSubBody .fjz4a-meal .fjz4a-option-tabs{
+    display:flex;
+    flex-wrap:nowrap;
+    gap:8px;
+    overflow-x:auto;
+    padding:8px 2px 12px;
+    scrollbar-width:thin;
+  }
+  #studentSubBody .fjz4a-meal .fjz4a-option-tabs button{
+    flex:0 0 auto;
+    min-height:43px;
+    padding:9px 13px;
+    font-size:13px!important;
+    white-space:normal;
+  }
+  #studentSubBody .fjz4a-meal .fjz4a-foods{
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+  #studentSubBody .fjz4a-meal .fjz4a-foods li{
+    min-width:0!important;
+    max-width:100%;
+  }
+  #studentSubBody .fjz4a-meal .fjz4a-foods li :is(strong,small,span){
+    max-width:100%;
+    overflow-wrap:break-word;
+    white-space:normal;
+  }
+  #studentSubBody .fjz4a-macros{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px!important;
+    align-items:stretch;
+  }
+  #studentSubBody .fjz4a-macros > *{
+    min-width:0!important;
+    max-width:100%;
+    overflow-wrap:break-word;
+  }
+  #studentSubBody .fjz4a-consumption .nutrition-log-row{
+    box-sizing:border-box;
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px 12px;
+    min-width:0;
+    max-width:100%;
+  }
+  #studentSubBody .fjz4a-consumption .nutrition-log-row > *{
+    min-width:0;
+    max-width:100%;
+    overflow-wrap:anywhere;
+  }
+  #studentSubBody .fjz4a-resource-actions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+  #studentSubBody .fjz4a-resource-actions button{
+    min-width:0!important;
+    min-height:57px!important;
+    text-align:left;
+    padding:12px!important;
+  }
+  #studentSubBody .fjz4a-resource-list{
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  #studentSubBody .fjz4a-consumption .fjz4a-log-date{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    align-items:center;
+    min-width:0;
+  }
+  #studentSubBody .fjz4a-consumption .fjz4a-log-date input{
+    max-width:100%;
+    min-width:0!important;
+    min-height:44px!important;
+  }
+}
