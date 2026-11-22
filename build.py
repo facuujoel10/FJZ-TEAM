@@ -1347,6 +1347,19 @@ if APP_ENV == "staging":
     if staging_artifact.count("</body>") != 1:
         raise RuntimeError("TEAM FJZ staging Finance body anchor mismatch")
     staging_artifact = staging_artifact.replace("</body>", '<script id="fjzStagingCoachFinanceV22">\n' + finance_js + '\n</script>\n</body>', 1)
+    for module in ("exercise-photos", "steps"):
+        source = pathlib.Path("src/modules/activity", module + ".js").read_text()
+        staging_artifact = staging_artifact.replace("</body>", "<script>" + source + "</script>\n</body>", 1)
+    library_card = """'<div class="library-item"><h4>'+esc(x.name)+'</h4><p>'"""
+    if library_card not in staging_artifact:
+        raise RuntimeError("Exercise library template missing")
+    staging_artifact = staging_artifact.replace(library_card, library_card.replace("</h4><p>", "</h4>'+exercisePhotoHtml(x.id)+'<p>"))
+    workout_anchor = "const prescription=parsePrescription(head);"
+    if staging_artifact.count(workout_anchor) != 1:
+        raise RuntimeError("Workout illustration anchor changed")
+    staging_artifact = staging_artifact.replace(workout_anchor, """const assigned=student()?.days?.[currentDay]?.exercises?.[index];
+    if(assigned)copy.insertAdjacentHTML('beforeend',exercisePhotoHtml(assigned.libId));
+    """ + workout_anchor)
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
