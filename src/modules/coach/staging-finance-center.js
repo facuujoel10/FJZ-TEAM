@@ -6,7 +6,8 @@
   const q=(v)=>String(v??'').trim();
   const esc=(v)=>q(v).replace(/[&<>"']/g,(ch)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const n=(v)=>Number(v)||0;
-  const ar=(v)=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n(v));
+  const money=(v,currency='ARS')=>new Intl.NumberFormat('es-AR',{style:'currency',currency,currencyDisplay:'code',minimumFractionDigits:0,maximumFractionDigits:2}).format(n(v));
+  const ar=v=>money(v);
   const dateAR=(v)=>{const p=q(v).slice(0,10).split('-');return p.length===3?p.reverse().join('/'):q(v)||'—'};
   function ctx(){try{return root.__fjzCoachContextV22?.()||null}catch(_e){return null}}
   function allowed(){const c=ctx();return c?.profile?.role==='coach'&&c?.mode==='coach'&&c?.coachTab==='payments'}
@@ -18,8 +19,9 @@
   const by=(items,fn)=>items.reduce((sum,x)=>sum+n(fn(x)),0);
   function totals(){
     const e=entriesMonth(),income=(scope)=>by(e.filter(x=>x.scope===scope&&x.kind==='income'),x=>x.amount),expense=(scope)=>by(e.filter(x=>x.scope===scope&&x.kind==='expense'),x=>x.amount);
-    const tuition=by(paidMonth(),x=>x.amount);
-    return {tuition,unpaid:by(openDues(),x=>x.amount),personalIncome:income('personal'),personalExpense:expense('personal'),businessIncome:income('business'),businessExpense:expense('business'),paid:paidMonth().length,pending:openDues().length};
+    const sumDues=(rows,currency)=>by(rows.filter(row=>(row.currency||'ARS')===currency),row=>row.amount);
+    const tuition=sumDues(paidMonth(),'ARS');
+    return {tuition,unpaid:sumDues(openDues(),'ARS'),eurPaid:sumDues(paidMonth(),'EUR'),eurDue:sumDues(openDues(),'EUR'),personalIncome:income('personal'),personalExpense:expense('personal'),businessIncome:income('business'),businessExpense:expense('business'),paid:paidMonth().length,pending:openDues().length};
   }
   function moneyStat(label,value,description,kind){
     return '<div class="fjzfin-stat '+(kind||'')+'"><span>'+esc(label)+'</span><strong>'+ar(value)+'</strong><small>'+esc(description)+'</small></div>';
@@ -34,15 +36,15 @@
     return '<div class="fjzfin-empty"><strong>'+esc(title)+'</strong><p>'+esc(desc)+'</p></div>';
   }
   function paymentRow(x){
-    const athlete=ui.athletes.find(a=>a.id===x.athlete_id),paid=x.status==='paid',overdue=!paid&&q(x.due_date)<nowLocal(),status=paid?'Cobrado':overdue?'Vencido':'Pendiente';
-    return '<tr><td><strong>'+esc(athlete?.name||'Alumno')+'</strong><small>'+esc(x.note||'Cuota de alumno')+'</small></td><td>'+dateAR(x.due_date)+'</td><td>'+ar(x.amount)+'</td><td><span class="fjzfin-status '+(paid?'paid':overdue?'late':'pending')+'">'+status+'</span></td><td>'+
-      (paid?'<small>'+dateAR(x.paid_on)+'</small>':'<div class="fjzfin-inline"><select aria-label="Método de cobro" data-fin-method="'+esc(x.id)+'">'+opt('transfer','Transferencia','transfer')+opt('cash','Efectivo','transfer')+opt('other','Otro','transfer')+'</select><button type="button" data-fin-action="paid" data-id="'+esc(x.id)+'">Marcar cobrado</button></div>')+'</td></tr>';
+    const athlete=ui.athletes.find(a=>a.id===x.athlete_id),paid=x.status==='paid',overdue=!paid&&q(x.due_date)<nowLocal(),status=x.status==='cancelled'?'Cancelada':paid?'Cobrado':overdue?'Vencido':'Pendiente';
+    return '<tr><td><strong>'+esc(athlete?.name||'Alumno')+'</strong><small>'+esc(x.note||'Cuota de alumno')+'</small></td><td>'+dateAR(x.due_date)+'</td><td>'+money(x.amount,x.currency||'ARS')+'</td><td><span class="fjzfin-status '+(paid?'paid':overdue?'late':'pending')+'">'+status+'</span></td><td>'+
+      (x.status==='cancelled'?'—':paid?'<small>'+dateAR(x.paid_on)+'</small>':'<div class="fjzfin-inline"><select aria-label="Método de cobro" data-fin-method="'+esc(x.id)+'">'+opt('transfer','Transferencia','transfer')+opt('cash','Efectivo','transfer')+opt('other','Otro','transfer')+'</select><button type="button" data-fin-action="paid" data-id="'+esc(x.id)+'">Marcar cobrado</button></div>')+'</td></tr>';
   }
   function duePanel(){
     const students=ui.athletes.map(a=>opt(a.id,a.name,'')).join('');
     const sorted=[...ui.payments].sort((a,b)=>q(b.due_date).localeCompare(q(a.due_date)));
     return '<div class="fjzfin-two"><section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">CUOTAS</span><h3>Nueva cobranza</h3><p>Vinculada al alumno; no se duplica en movimientos.</p></div></div>'+
-      '<form class="fjzfin-form" data-fin-form="due"><label>Alumno<select name="athlete_id" required><option value="">Seleccionar alumno</option>'+students+'</select></label><label>Importe (ARS)<input name="amount" type="number" min="0.01" step="0.01" required placeholder="Ej: 60000"></label><label>Vencimiento<input type="date" name="due_date" required value="'+nowLocal()+'"></label><label>Concepto<input name="note" maxlength="200" placeholder="Ej: mensualidad noviembre"></label><button class="fjzfin-primary" type="submit"'+(ui.busy?' disabled':'')+'>Guardar cuota</button></form></section>'+
+      '<form class="fjzfin-form" data-fin-form="due"><label>Alumno<select name="athlete_id" required><option value="">Seleccionar alumno</option>'+students+'</select></label><label>Moneda<select name="currency"><option>ARS</option><option>EUR</option></select></label><label>Importe<input name="amount" type="number" min="0.01" step="0.01" required placeholder="Ej: 60000"></label><label>Vencimiento<input type="date" name="due_date" required value="'+nowLocal()+'"></label><label>Concepto<input name="note" maxlength="200" placeholder="Ej: mensualidad noviembre"></label><button class="fjzfin-primary" type="submit"'+(ui.busy?' disabled':'')+'>Guardar cuota</button></form></section>'+
       '<section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">SEGUIMIENTO</span><h3>Estado de cobros</h3><p>Marcá los pagos confirmados cuando recibas el dinero.</p></div></div><div class="fjzfin-mini">'+pill('Pendientes',openDues().length)+pill('Cobradas este mes',paidMonth().length)+'</div>'+empty('Sin conexión bancaria','Los cobros se confirman manualmente y quedan asociados a la ficha del alumno.')+'</section></div>'+
       '<section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">HISTORIAL</span><h3>Cuotas y vencimientos</h3></div></div>'+table('<th>Alumno</th><th>Vencimiento</th><th>Importe</th><th>Estado</th><th>Acción</th>',sorted.map(paymentRow).join(''),5)+'</section>';
   }
@@ -76,7 +78,7 @@
     const t=totals(),latest=entriesMonth().slice().sort((a,b)=>q(b.occurred_on).localeCompare(q(a.occurred_on))).slice(0,5);
     const late=openDues().filter(x=>q(x.due_date)<nowLocal()).length;
     return '<div class="fjzfin-section-title"><span class="fjzfin-kicker">RESUMEN DEL MES</span><h3>Tu dinero, bien organizado</h3><p>Separá tus finanzas personales de los ingresos y gastos de TEAM FJZ.</p></div>'+
-      '<div class="fjzfin-stats">'+moneyStat('Cobrado a alumnos',t.tuition,'Cuotas confirmadas en el mes','accent')+moneyStat('Cuotas por cobrar',t.unpaid,t.pending+' pendientes · '+late+' vencidas','warning')+moneyStat('Resultado del negocio',t.tuition+t.businessIncome-t.businessExpense,'Cobrado + otros ingresos − gastos','')+moneyStat('Resultado personal',t.personalIncome-t.personalExpense,'Ingresos personales − gastos','')+'</div>'+
+      '<div class="fjzfin-stats">'+moneyStat('Cobrado a alumnos',t.tuition,'También en euros: '+money(t.eurPaid,'EUR'),'accent')+moneyStat('Cuotas por cobrar',t.unpaid,t.pending+' pendientes · '+late+' vencidas · '+money(t.eurDue,'EUR'),'warning')+moneyStat('Resultado del negocio',t.tuition+t.businessIncome-t.businessExpense,'Resultado en ARS · además '+money(t.eurPaid,'EUR'),'')+moneyStat('Resultado personal',t.personalIncome-t.personalExpense,'Ingresos personales − gastos','')+'</div>'+
       '<div class="fjzfin-two"><section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">NEGOCIO</span><h3>TEAM FJZ</h3></div><button type="button" data-fin-action="tab" data-tab="dues">Ver cuotas</button></div><div class="fjzfin-pairs"><div><span>Cuotas cobradas</span><strong>'+ar(t.tuition)+'</strong></div><div><span>Otros ingresos</span><strong>'+ar(t.businessIncome)+'</strong></div><div><span>Gastos del negocio</span><strong>'+ar(t.businessExpense)+'</strong></div></div></section>'+
       '<section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">PERSONAL</span><h3>Mis finanzas</h3></div><button type="button" data-fin-action="tab" data-tab="movements">Registrar</button></div><div class="fjzfin-pairs"><div><span>Ingresos personales</span><strong>'+ar(t.personalIncome)+'</strong></div><div><span>Gastos personales</span><strong>'+ar(t.personalExpense)+'</strong></div><div><span>Balance registrado</span><strong>'+ar(t.personalIncome-t.personalExpense)+'</strong></div></div></section></div>'+
       '<section class="fjzfin-card"><div class="fjzfin-head"><div><span class="fjzfin-kicker">ÚLTIMOS MOVIMIENTOS</span><h3>Actividad registrada</h3></div><button type="button" data-fin-action="tab" data-tab="movements">Ver todos</button></div>'+
@@ -86,7 +88,7 @@
     if(!allowed())return false;
     const view=document.getElementById('view');if(!view)return false;
     const tabs=[['overview','Resumen'],['dues','Cuotas de alumnos'],['movements','Movimientos'],['budgets','Presupuestos']];
-    view.innerHTML='<div class="fjzfin-root" id="fjzFinanceRoot"><header class="fjzfin-hero"><div><span class="fjzfin-kicker">GESTIÓN ECONÓMICA · TEAM FJZ</span><h1>Finanzas</h1><p>Cuotas de alumnos, ingresos, gastos y presupuestos. Todo en ARS y sin mezclar lo personal con el negocio.</p></div><div class="fjzfin-period"><label>Período <input type="month" id="fjzFinanceMonth" value="'+esc(ui.month)+'"></label><button type="button" data-fin-action="refresh">Actualizar</button><button type="button" data-fin-action="export">Exportar CSV</button></div></header>'+
+    view.innerHTML='<div class="fjzfin-root" id="fjzFinanceRoot"><header class="fjzfin-hero"><div><span class="fjzfin-kicker">GESTIÓN ECONÓMICA · TEAM FJZ</span><h1>Finanzas</h1><p>Cuotas de alumnos, ingresos, gastos y presupuestos. Cobros en ARS y EUR. Movimientos y presupuestos en pesos.</p></div><div class="fjzfin-period"><label>Período <input type="month" id="fjzFinanceMonth" value="'+esc(ui.month)+'"></label><button type="button" data-fin-action="refresh">Actualizar</button><button type="button" data-fin-action="export">Exportar CSV</button></div></header>'+
       '<nav class="fjzfin-tabs" aria-label="Secciones de Finanzas">'+tabs.map(x=>'<button type="button" data-fin-action="tab" data-tab="'+x[0]+'" class="'+(ui.tab===x[0]?'active':'')+'" aria-current="'+(ui.tab===x[0]?'page':'false')+'">'+x[1]+'</button>').join('')+'</nav>'+
       (ui.loading?'<div class="fjzfin-card fjzfin-loading">Cargando registros privados...</div>':ui.error?'<section class="fjzfin-card fjzfin-error"><strong>No se pudieron cargar tus finanzas</strong><p>'+esc(ui.error)+'</p><button type="button" data-fin-action="refresh">Reintentar</button></section>':!ui.loaded?'<div class="fjzfin-card fjzfin-loading">Preparando el módulo...</div>':ui.tab==='dues'?duePanel():ui.tab==='movements'?movements():ui.tab==='budgets'?budgetView():overview())+
       '<footer class="fjzfin-footer">Finanzas V22 · staging · Sin conexión automática a bancos. Los datos que registres aquí se guardan únicamente en el entorno de prueba.</footer></div>';
@@ -120,13 +122,14 @@
       const queries=await Promise.all([
         sb.from('coach_finance_entries').select('id,scope,kind,category,amount,occurred_on,account,description').eq('coach_id',uid).order('occurred_on',{ascending:false}).limit(1000),
         sb.from('coach_finance_budgets').select('id,month,scope,category,limit_amount').eq('coach_id',uid).limit(1000),
-        sb.from('coach_payments').select('id,athlete_id,due_date,amount,status,paid_on,payment_method,note').eq('coach_id',uid).order('due_date',{ascending:false}).limit(1000),
+        sb.from('coach_payments').select('id,athlete_id,due_date,amount,currency,status,paid_on,payment_method,note').eq('coach_id',uid).order('due_date',{ascending:false}).limit(1000),
         sb.from('athletes').select('id,name').eq('coach_id',uid).order('name').limit(1000)
       ]);
       for(const x of queries)if(x.error)throw Error(x.error.message||'Error de lectura');
+      if(ctx()?.profile?.id!==uid)return;
       ui.entries=queries[0].data||[];ui.budgets=queries[1].data||[];ui.payments=queries[2].data||[];ui.athletes=queries[3].data||[];ui.loaded=true;
     }catch(err){ui.error=q(err?.message)||'No fue posible leer los registros';ui.loaded=false}
-    finally{ui.loading=false;paint()}
+    finally{ui.loading=false;paint();if(allowed()&&ui.owner&&ctx()?.profile?.id!==ui.owner&&!ui.error)load()}
   }
   async function mutate(task){
     const c=ctx();if(!allowed()||ui.busy||!c?.supabase)return;
@@ -136,7 +139,7 @@
   }
   async function addDue(f){
     if(!ui.athletes.some(a=>a.id===f.athlete_id)||!(n(f.amount)>0)||!/^\d{4}-\d{2}-\d{2}$/.test(q(f.due_date)))return;
-    await mutate((sb,uid)=>sb.from('coach_payments').insert({coach_id:uid,athlete_id:f.athlete_id,due_date:f.due_date,amount:Number(f.amount),status:'pending',note:q(f.note).slice(0,200)}).select('id').single());
+    await mutate((sb,uid)=>sb.from('coach_payments').insert({coach_id:uid,athlete_id:f.athlete_id,due_date:f.due_date,amount:Number(f.amount),currency:f.currency==='EUR'?'EUR':'ARS',status:'pending',note:q(f.note).slice(0,200)}).select('id').single());
   }
   async function markPaid(id){
     if(!ui.payments.some(x=>x.id===id&&x.status==='pending'))return;
@@ -175,11 +178,15 @@
   }
   function enter(){
     if(!allowed())return false;
-    if(!ui.owner)ui.loaded=false;
+    if(ctx()?.profile?.id!==ui.owner)ui.loaded=false;
     paint();
     if(!ui.loaded&&!ui.loading)load();
     root.__fjzSyncCoachWorkspaceNavV22?.();
     return true;
   }
+  root.openPaymentsV124=function(){
+    const c=ctx();
+    if(c?.mode==='coach' && c.profile?.role==='coach')root.__fjzCoachNavigateV22('payments');
+  };
   root.__fjzRenderCoachFinancesV22=enter;
 })(window);

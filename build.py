@@ -1294,6 +1294,12 @@ if APP_ENV == "staging":
     staging_artifact = staging_artifact.replace(
         "</head>", '<meta name="fjz-staging-visual-rhythm" content="22.global.1">\n</head>', 1
     )
+    # Route Finanzas before the historical dispatcher normalizes unknown tabs.
+    guard = "const allowedCoach=new Set(['dashboard','agenda','student']);"
+    if staging_artifact.count(guard) != 1:
+        raise RuntimeError("Staging Coach route dispatcher changed")
+    staging_artifact = staging_artifact.replace(guard,
+        "if(coachTab==='payments' && window.__fjzRenderCoachFinancesV22?.())return;" + guard, 1)
     coach_nav_js = pathlib.Path("src/modules/coach/staging-workspace-nav.js").read_text(encoding="utf-8").strip()
     if not coach_nav_js or "<script" in coach_nav_js.lower() or "</script" in coach_nav_js.lower():
         raise RuntimeError("TEAM FJZ staging Coach navigation is absent or contains HTML tags")
