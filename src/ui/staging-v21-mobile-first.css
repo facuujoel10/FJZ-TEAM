@@ -868,3 +868,19 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 .fjz-tech-guide .fjz-tech-frames :is(img,svg){display:block;background:#f4f4f5;width:100%;height:clamp(114px,24vw,190px);object-fit:contain}
 .fjz-tech-guide figcaption{padding:5px 7px;color:#333a48;background:#e7e9ed;font:600 12px/1.4 system-ui;text-align:center}
 .fjz-tech-instructions{margin-top:8px}.fjz-tech-instructions ol{padding-inline-start:24px}.fjz-tech-instructions li,.fjz-tech-instructions p{font:400 15px/1.55 system-ui;margin-block:8px}.fjz-tech-instructions li::marker{color:#ff748b;font-weight:bold}
+#app .top-actions .fjz-activity-launch{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;min-height:44px!important;padding:6px 12px!important;border:1px solid #583640;border-radius:13px;background:#20191f;color:#faf4f5;font:700 14px/1.2 system-ui}
+.fjz-activity-launch svg{flex:none;width:25px;height:25px}
+#app #view:has(>#studentSubBody)>.hero.fjz-section-header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:start!important;justify-items:stretch!important;text-align:left!important;gap:10px!important;min-height:0!important;margin:8px 0 14px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+#app #view .fjz-section-header>.fjz-section-tools{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-width:0!important;gap:10px!important}
+#app #view .fjz-section-tools .btn{position:relative!important;inset:auto!important;transform:none!important;margin:0!important;width:auto!important;min-height:42px;padding:6px 12px;background:#171a20;border:1px solid #393d48;border-radius:11px}
+#app #view .fjz-section-title{justify-self:start;text-align:left}
+#app #view .fjz-section-title h2,#app #view .fjz-section-title p{margin:0!important;text-align:left}
+#app #view .fjz-section-title p{margin-top:4px!important}
+#app #view:has(.fjz4a-student-shell) .fjz-section-title{display:none!important}
+@media(max-width:760px){
+ #app #fjzPreviewSections{display:grid!important}
+ #app #fjzPreviewSections,#app #fjzCoachGlobalNav .fjz-coach-mobile-links{grid-auto-flow:column!important;grid-template-columns:none!important;grid-auto-columns:calc((100% - 8px)/5)!important;align-items:center!important;justify-content:start!important;inset:auto 6px calc(8px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:600px!important;margin:0 auto!important;height:66px!important;padding:5px!important;background:#101116!important;border:1px solid #363b44!important;border-radius:16px!important;overflow-x:auto!important;overflow-y:hidden!important}
+ #app #fjzCoachGlobalNav[hidden] .fjz-coach-mobile-links{display:none!important}
+ #app #fjzPreviewSections button,#app #fjzCoachGlobalNav .fjz-coach-mobile-links button{width:100%!important;max-width:100%!important;min-width:0!important;min-height:52px!important;height:52px!important;margin:0!important;transform:none!important}
+ #app #fjzPreviewSections button[aria-current],#app #fjzCoachGlobalNav .fjz-coach-mobile-links button[aria-current]{background:#2b1b23!important;border:1px solid #65313f!important;box-shadow:inset 0 -1px #c54760!important}
+}

@@ -1,6 +1,7 @@
 (() => {
  const button=document.createElement('button');
- button.type='button';button.className='btn small';button.textContent='◉  Pasos';button.setAttribute('aria-label','Abrir actividad de pasos');
+ button.type='button';button.className='btn fjz-activity-launch';
+ button.innerHTML='<svg viewBox="0 0 28 28" width="25" height="25" aria-hidden="true" fill="none" stroke-width="3" stroke-linecap="round"><circle cx="14" cy="14" r="10" stroke="#56313d"/><circle cx="14" cy="14" r="10" stroke="#ff4668" stroke-dasharray="49 64" transform="rotate(-90 14 14)"/><circle cx="14" cy="14" r="5" stroke="#f4b865" stroke-dasharray="23 32" transform="rotate(-90 14 14)"/></svg><span>Pasos</span>';button.setAttribute('aria-label','Abrir actividad de pasos');
  document.querySelector('.top-actions')?.prepend(button);
  button.onclick=async()=>{
    const id=trackingAthleteId(),coach=currentProfile?.role==='coach'&&mode==='coach',studentRole=currentProfile?.role==='student';

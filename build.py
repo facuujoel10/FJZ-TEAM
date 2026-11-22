@@ -1379,6 +1379,14 @@ if APP_ENV == "staging":
     staging_artifact = staging_artifact.replace(workout_anchor, """const assigned=student()?.days?.[currentDay]?.exercises?.[index];
     if(assigned)copy.insertAdjacentHTML('beforeend',exercisePhotoHtml(assigned.libId,assigned));
     """ + workout_anchor)
+    # Keep the existing home and alerts handlers in the shared section header.
+    old_header = """<section class="hero"><div><button class="btn ghost small" onclick="studentTab='home';render()">← Inicio</button><h2 style="margin-top:10px">${title}</h2><p>${esc(student().name)}</p></div></section><div id="studentSubBody">"""
+    new_header = """<section class="hero fjz-section-header"><div class="fjz-section-tools"><button type="button" class="btn ghost small" onclick="studentTab='home';render()">← Inicio</button></div><div class="fjz-section-title"><h2>${title}</h2><p>${esc(student().name)}</p></div></section><div id="studentSubBody">"""
+    if staging_artifact.count(old_header) != 1:
+        raise RuntimeError("Student section header changed")
+    staging_artifact = staging_artifact.replace(old_header, new_header)
+    staging_artifact = staging_artifact.replace("const actions=hero.querySelector('.pill-row');if(actions)actions.prepend(btn);else hero.appendChild(btn);", "const tools=hero.querySelector('.fjz-section-tools');const actions=hero.querySelector('.pill-row');if(tools)tools.append(btn);else if(actions)actions.prepend(btn);else hero.appendChild(btn);")
+    staging_artifact = staging_artifact.replace("hero.appendChild(btn);\n    updateStudentAlertsV96(false);", "(hero.querySelector('.fjz-section-tools')||hero).appendChild(btn);\n    updateStudentAlertsV96(false);")
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.
