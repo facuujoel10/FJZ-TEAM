@@ -1,0 +1,2223 @@
+{
+ "bench": {
+  "src": "rep",
+  "files": [
+   "bench-press-start.webp",
+   "bench-press-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate en el banco con los ojos bajo la barra.",
+   "Agarra la barra ligeramente más ancho que la anchura de los hombros.",
+   "Saca la barra del rack y bájala hasta el centro del pecho.",
+   "Empuja la barra de vuelta hasta la extensión completa de los brazos."
+  ],
+  "name": "Press banca plano",
+  "cue": "Escápulas estables y recorrido controlado."
+ },
+ "incline_bar": {
+  "src": "rep",
+  "files": [
+   "incline-bench-press-start.webp",
+   "incline-bench-press-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate en un banco inclinado a 30-45 grados.",
+   "Agarra la barra ligeramente más ancha que los hombros y desrackea.",
+   "Baja la barra hasta la parte superior del pecho.",
+   "Empuja la barra de vuelta hasta la extensión completa."
+  ],
+  "name": "Press inclinado con barra",
+  "cue": "Controlá la bajada y no pierdas tensión."
+ },
+ "incline_db": {
+  "src": "rep",
+  "files": [
+   "incline-db-press-start.webp",
+   "incline-db-press-peak.webp"
+  ],
+  "steps": [
+   "Ajusta el banco a 30 grados de inclinación y siéntate con las mancuernas a la altura de los hombros.",
+   "Empuja las mancuernas hacia arriba y juntas hasta que los brazos estén completamente extendidos.",
+   "Baja las mancuernas de vuelta a la altura de los hombros con control."
+  ],
+  "name": "Press inclinado con mancuernas",
+  "cue": "Bajá con control y mantené el pecho alto."
+ },
+ "chest_press": {
+  "src": "rep",
+  "files": [
+   "chest-press-machine-start.webp",
+   "chest-press-machine-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina con la espalda plana contra el respaldo.",
+   "Agarra los mangos a la altura del pecho.",
+   "Empuja los mangos hacia adelante hasta extender los brazos completamente.",
+   "Vuelve lentamente a la posición inicial."
+  ],
+  "name": "Press de pecho en máquina",
+  "cue": "Ajustá el asiento para alinear empuje y pecho."
+ },
+ "decline_press": {
+  "src": "rep",
+  "files": [
+   "decline-bench-press-barbell-start.webp",
+   "decline-bench-press-barbell-peak.webp"
+  ],
+  "steps": [
+   "Ajusta el banco en declinación. Túmbate y asegura los pies.",
+   "Agarra la barra ligeramente más ancha que la anchura de los hombros.",
+   "Baja la barra hasta el pecho inferior y luego empuja hacia arriba."
+  ],
+  "name": "Press declinado",
+  "cue": "Escápulas firmes y control del recorrido."
+ },
+ "cable_fly": {
+  "src": "rep",
+  "files": [
+   "cable-fly-start.webp",
+   "cable-fly-peak.webp"
+  ],
+  "steps": [
+   "Colócate entre dos columnas de cable con los agarres enganchados a las poleas altas.",
+   "Con una ligera flexión en los codos, abre los brazos hacia los lados.",
+   "Junta las manos frente al pecho en un movimiento de abrazo.",
+   "Vuelve lentamente a la posición inicial."
+  ],
+  "name": "Aperturas en polea",
+  "cue": "Abrazo amplio sin perder flexión de codo."
+ },
+ "low_high_fly": {
+  "src": "free",
+  "files": [
+   "Low_Cable_Crossover/0.jpg",
+   "Low_Cable_Crossover/1.jpg"
+  ],
+  "steps": [
+   "Colocá las poleas abajo y tomá ambas manijas con los codos ligeramente flexionados.",
+   "Juntá las manos en diagonal hacia arriba frente al pecho. Abrí los brazos siguiendo el mismo arco."
+  ],
+  "name": "Apertura polea baja a alta",
+  "cue": "Llevá las manos hacia arriba y adentro."
+ },
+ "pec_deck": {
+  "src": "rep",
+  "files": [
+   "pec-deck-start.webp",
+   "pec-deck-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina pec deck y agarra las asas con los brazos abiertos a los lados y los codos ligeramente flexionados.",
+   "Ajusta el asiento para que las asas queden a la altura media del pecho.",
+   "Junta las asas frente al pecho apretando.",
+   "Mantén la contracción brevemente en el centro.",
+   "Regresa con control a la posición inicial."
+  ],
+  "name": "Peck deck",
+  "cue": "No lleves los hombros hacia adelante."
+ },
+ "dips": {
+  "src": "rep",
+  "files": [
+   "dips-start.webp",
+   "dips-peak.webp"
+  ],
+  "steps": [
+   "Agarra las barras paralelas y súbete a la posición superior con los brazos extendidos.",
+   "Inclina el torso ligeramente hacia adelante.",
+   "Baja el cuerpo doblando los codos hasta que los hombros queden por debajo de los codos.",
+   "Vuelve a empujar hasta la posición inicial."
+  ],
+  "name": "Fondos en paralelas",
+  "cue": "Descenso controlado, sin colapsar hombros."
+ },
+ "ohp": {
+  "src": "rep",
+  "files": [
+   "ohp-start.webp",
+   "ohp-peak.webp"
+  ],
+  "steps": [
+   "De pie con los pies a la anchura de los hombros y la barra a la altura de las clavículas.",
+   "Contrae el core y empuja la barra por encima de la cabeza.",
+   "Bloquea los codos arriba con la barra sobre el punto medio del pie.",
+   "Baja la barra hasta la altura de las clavículas."
+  ],
+  "name": "Press militar",
+  "cue": "Glúteos y abdomen firmes."
+ },
+ "db_press": {
+  "src": "rep",
+  "files": [
+   "dumbbell-shoulder-press-start.webp",
+   "dumbbell-shoulder-press-peak.webp"
+  ],
+  "steps": [
+   "Siéntate o ponte de pie sujetando mancuernas a la altura de los hombros con las palmas mirando hacia adelante.",
+   "Empuja ambas mancuernas por encima de la cabeza hasta que los brazos queden completamente extendidos.",
+   "Mantén el core contraído y evita arquear la zona lumbar.",
+   "Baja las mancuernas de forma controlada hasta la altura de los hombros.",
+   "No dejes que las mancuernas se desplacen detrás de la cabeza."
+  ],
+  "name": "Press de hombros mancuernas",
+  "cue": "No hiperextiendas la zona lumbar."
+ },
+ "machine_shoulder": {
+  "src": "rep",
+  "files": [
+   "machine-shoulder-press-start.webp",
+   "machine-shoulder-press-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina con la espalda contra el rodillo.",
+   "Agarra las manijas a la altura de los hombros.",
+   "Presiona las manijas sobre la cabeza hasta que los brazos queden completamente extendidos.",
+   "Baja con control a la posición inicial."
+  ],
+  "name": "Press de hombros máquina",
+  "cue": "Alineá el agarre con hombros."
+ },
+ "lat_raise": {
+  "src": "rep",
+  "files": [
+   "lateral-raise-start.webp",
+   "lateral-raise-peak.webp"
+  ],
+  "steps": [
+   "Párate con mancuernas a los costados.",
+   "Eleva las mancuernas hacia los lados hasta que los brazos queden paralelos al suelo.",
+   "Baja de forma controlada."
+  ],
+  "name": "Elevaciones laterales",
+  "cue": "Subí con el codo y sin impulso."
+ },
+ "cable_lat": {
+  "src": "rep",
+  "files": [
+   "cable-lateral-raise-start.webp",
+   "cable-lateral-raise-peak.webp"
+  ],
+  "steps": [
+   "Colócate de lado a una polea baja y agarra el asa con la mano más alejada de la máquina.",
+   "Mantén una ligera flexión en el codo y deja que el cable cruce por delante del cuerpo.",
+   "Sube el brazo hacia el lado hasta quedar paralelo al suelo.",
+   "Baja con control. Repeticiones por lado, luego cambia.",
+   "Mantén la tensión — no dejes que el peso descanse abajo."
+  ],
+  "name": "Elevación lateral en polea",
+  "cue": "Tensión constante y recorrido limpio."
+ },
+ "machine_lat": {
+  "src": "rep",
+  "files": [
+   "plate-loaded-lateral-raise-start.webp",
+   "plate-loaded-lateral-raise-peak.webp"
+  ],
+  "steps": [
+   "Ajusta la altura del asiento para que el eje de giro de las almohadillas quede alineado con la punta de tus hombros al sentarte.",
+   "Carga los soportes de discos por igual en ambos lados y siéntate con la espalda apoyada en el respaldo.",
+   "Coloca la cara externa de los brazos contra las almohadillas, con los codos flexionados y los brazos colgando.",
+   "Empuja hacia fuera y hacia arriba contra las almohadillas hasta que los brazos queden aproximadamente a la altura de los hombros.",
+   "Baja de forma controlada hasta que los brazos vuelvan a los costados y repite el número de repeticiones deseado."
+  ],
+  "name": "Elevación lateral máquina",
+  "cue": "Controlá la excéntrica."
+ },
+ "rear_delt": {
+  "src": "rep",
+  "files": [
+   "dumbbell-reverse-fly-start.webp",
+   "dumbbell-reverse-fly-peak.webp"
+  ],
+  "steps": [
+   "Inclínate hacia adelante desde las caderas sujetando mancuernas con los brazos colgando.",
+   "Mantén la espalda recta y las rodillas ligeramente dobladas.",
+   "Sube las mancuernas hacia los lados hasta la altura de los hombros.",
+   "Aprieta los omóplatos en la parte superior.",
+   "Baja las mancuernas de forma controlada."
+  ],
+  "name": "Pájaros con mancuernas",
+  "cue": "Abrí con codos, no con manos."
+ },
+ "reverse_pec": {
+  "src": "rep",
+  "files": [
+   "machine-reverse-fly-start.webp",
+   "machine-reverse-fly-peak.webp"
+  ],
+  "steps": [
+   "Ajusta el asiento para que las empuñaduras queden a la altura de los hombros y siéntate de cara a la máquina con el pecho contra la almohadilla.",
+   "Agarra las empuñaduras con los brazos estirados al frente y una ligera flexión en los codos.",
+   "Mantén los hombros bajos y alejados de las orejas y aprieta el tronco.",
+   "Lleva las empuñaduras hacia fuera y atrás en un arco amplio, guiando el movimiento con los codos, hasta que los brazos queden aproximadamente en línea con los hombros.",
+   "Junta los omóplatos brevemente sin echarte hacia atrás separando el pecho de la almohadilla.",
+   "Devuelve las empuñaduras hacia delante despacio y repite el número de repeticiones previsto."
+  ],
+  "name": "Peck deck inverso",
+  "cue": "Pecho apoyado y escápulas controladas."
+ },
+ "face_pull": {
+  "src": "rep",
+  "files": [
+   "face-pull-start.webp",
+   "face-pull-peak.webp"
+  ],
+  "steps": [
+   "Engancha una cuerda en una polea alta.",
+   "Tira de la cuerda hacia tu cara, separando los extremos.",
+   "Aprieta los deltoides posteriores y los rotadores externos.",
+   "Regresa a la posición inicial de forma controlada."
+  ],
+  "name": "Face pull",
+  "cue": "Llevá la cuerda hacia la cara con rotación externa."
+ },
+ "pulldown": {
+  "src": "rep",
+  "files": [
+   "lat-pulldown-start.webp",
+   "lat-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de jalón con los muslos sujetos bajo los rodillos.",
+   "Agarra la barra ancha con un agarre en pronación.",
+   "Jala la barra hasta la parte superior del pecho apretando los dorsales.",
+   "Regresa la barra lentamente a la posición inicial."
+  ],
+  "name": "Jalón al pecho",
+  "cue": "Pecho alto, codos hacia abajo."
+ },
+ "neutral_pulldown": {
+  "src": "rep",
+  "files": [
+   "v-bar-lat-pulldown-start.webp",
+   "v-bar-lat-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Coloca una barra en V (mango doble-D) en el cable de jalón al pecho.",
+   "Siéntate con los muslos asegurados bajo el pad y agarra el mango con las palmas enfrentadas.",
+   "Comienza con los brazos completamente extendidos por encima de la cabeza.",
+   "Tira del mango hacia el esternón empujando los codos hacia abajo y ligeramente hacia atrás.",
+   "Aprieta los dorsales en la posición inferior y sube lentamente de forma controlada."
+  ],
+  "name": "Jalón agarre neutro",
+  "cue": "Evitá balancear el torso."
+ },
+ "single_pulldown": {
+  "src": "rep",
+  "files": [
+   "one-arm-lat-pulldown-start.webp",
+   "one-arm-lat-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Sujeta una manija individual al jalón de cable y siéntate con los muslos asegurados bajo el soporte.",
+   "Agarra la manija con una mano, brazo completamente extendido.",
+   "Tira de la manija hacia tu hombro llevando el codo hacia la cadera.",
+   "Pausa brevemente en la contracción máxima, luego vuelve con control.",
+   "Completa todas las repeticiones en un lado antes de cambiar."
+  ],
+  "name": "Jalón unilateral",
+  "cue": "Buscá depresión escapular antes de tirar."
+ },
+ "pullup": {
+  "src": "rep",
+  "files": [
+   "pull-up-start.webp",
+   "pull-up-peak.webp"
+  ],
+  "steps": [
+   "Cuélgate de una barra con agarre prono, ligeramente más ancho que el ancho de los hombros.",
+   "Súbete hasta que la barbilla quede por encima de la barra.",
+   "Baja con control hasta el cuelgue completo."
+  ],
+  "name": "Dominadas",
+  "cue": "Subí sin balanceo y controlá la bajada."
+ },
+ "row": {
+  "src": "rep",
+  "files": [
+   "seated-cable-row-start.webp",
+   "seated-cable-row-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la estación de remo y coloca los pies en los apoyos.",
+   "Sujeta la manija y siéntate erguido con una ligera inclinación hacia adelante.",
+   "Lleva los codos hacia atrás y tira de la manija hacia la parte baja del abdomen.",
+   "Contrae los omóplatos al final del tirón.",
+   "Extiende los brazos con control de vuelta a la posición inicial."
+  ],
+  "name": "Remo sentado en polea",
+  "cue": "No balancees el torso."
+ },
+ "bar_row": {
+  "src": "rep",
+  "files": [
+   "barbell-row-start.webp",
+   "barbell-row-peak.webp"
+  ],
+  "steps": [
+   "Inclínate en las caderas con una ligera flexión de rodillas.",
+   "Agarra la barra ligeramente más ancho que la anchura de los hombros.",
+   "Tira de la barra hacia el pecho inferior apretando los omóplatos.",
+   "Baja la barra de forma controlada."
+  ],
+  "name": "Remo con barra",
+  "cue": "Columna estable y tirá hacia el abdomen."
+ },
+ "db_row": {
+  "src": "rep",
+  "files": [
+   "single-arm-db-row-start.webp",
+   "single-arm-db-row-peak.webp"
+  ],
+  "steps": [
+   "Coloca una rodilla y una mano en un banco como apoyo.",
+   "Sostén una mancuerna en la otra mano con el brazo extendido.",
+   "Tira de la mancuerna hacia la cadera apretando el omóplato.",
+   "Baja la mancuerna con control.",
+   "Repite de ambos lados."
+  ],
+  "name": "Remo con mancuerna",
+  "cue": "Codo hacia la cadera, sin rotar torso."
+ },
+ "chest_row": {
+  "src": "rep",
+  "files": [
+   "chest-supported-db-row-start.webp",
+   "chest-supported-db-row-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca abajo en un banco inclinado con las mancuernas colgando por debajo.",
+   "Rema las mancuernas hacia los lados.",
+   "Aprieta en la parte superior y baja."
+  ],
+  "name": "Remo pecho apoyado",
+  "cue": "Pecho fijo y retracción controlada."
+ },
+ "machine_row": {
+  "src": "rep",
+  "files": [
+   "chest-supported-machine-row-start.webp",
+   "chest-supported-machine-row-peak.webp"
+  ],
+  "steps": [
+   "Ajusta el asiento para que las empuñaduras queden a la altura de la parte baja del pecho y siéntate con el pecho contra la almohadilla y los pies bien apoyados.",
+   "Estírate hacia delante y agarra las empuñaduras con los brazos extendidos y los hombros relajados.",
+   "Aprieta el tronco y tira de las empuñaduras hacia atrás llevando los codos detrás de ti.",
+   "Junta los omóplatos al final del tirón sin despegar el pecho de la almohadilla.",
+   "Haz una breve pausa y luego extiende los brazos para devolver las empuñaduras hacia delante de forma controlada."
+  ],
+  "name": "Remo en máquina",
+  "cue": "No encogas hombros al tirar."
+ },
+ "tbar": {
+  "src": "rep",
+  "files": [
+   "t-bar-row-start.webp",
+   "t-bar-row-peak.webp"
+  ],
+  "steps": [
+   "Colócate a horcajadas sobre la barra en T con los pies al ancho de los hombros.",
+   "Inclínate en las caderas hasta que el torso quede a unos 45 grados.",
+   "Agarra los mangos y mantén la espalda plana.",
+   "Tira de la barra hacia el pecho llevando los codos hacia atrás.",
+   "Aprieta los omóplatos en la parte superior.",
+   "Baja la barra de forma controlada y repite."
+  ],
+  "name": "Remo T",
+  "cue": "Mantené el torso firme."
+ },
+ "pullover": {
+  "src": "rep",
+  "files": [
+   "straight-arm-pulldown-start.webp",
+   "straight-arm-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Párate frente a una máquina de cable con una barra recta enganchada a la polea alta.",
+   "Con los brazos casi rectos, empuja la barra hacia abajo en un arco hacia los muslos.",
+   "Aprieta los dorsales en la parte inferior.",
+   "Devuelve la barra lentamente a la posición inicial."
+  ],
+  "name": "Pullover en polea",
+  "cue": "Brazos casi estirados, dorsales activos."
+ },
+ "machine_pullover": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Regulá el asiento para apoyar los codos en las almohadillas y mantener el torso contra el respaldo.",
+   "Llevá los codos en arco hacia el costado del tronco. Acompañá el retorno sin despegar la espalda."
+  ],
+  "name": "Pullover máquina",
+  "cue": "No compenses con lumbar."
+ },
+ "shrug": {
+  "src": "rep",
+  "files": [
+   "db-shrug-start.webp",
+   "db-shrug-peak.webp"
+  ],
+  "steps": [
+   "De pie, sujeta mancuernas a los costados.",
+   "Encoge los hombros hacia arriba lo más alto posible.",
+   "Mantén brevemente y luego baja."
+  ],
+  "name": "Encogimientos",
+  "cue": "Elevá hombros verticalmente sin rotar."
+ },
+ "curl": {
+  "src": "rep",
+  "files": [
+   "barbell-curl-start.webp",
+   "barbell-curl-peak.webp"
+  ],
+  "steps": [
+   "Párate sosteniendo una barra con agarre supino a la anchura de los hombros.",
+   "Sube la barra hacia los hombros.",
+   "Aprieta en la parte superior, luego baja de forma controlada."
+  ],
+  "name": "Curl con barra",
+  "cue": "Codos quietos y sin balanceo."
+ },
+ "ez_curl": {
+  "src": "rep",
+  "files": [
+   "ez-bar-curl-start.webp",
+   "ez-bar-curl-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie sujetando la barra Z con agarre supino en las partes anguladas.",
+   "Sube la barra hacia los hombros manteniendo los codos fijos.",
+   "Aprieta en la parte superior y luego baja de forma controlada."
+  ],
+  "name": "Curl barra EZ",
+  "cue": "Controlá la excéntrica."
+ },
+ "db_curl": {
+  "src": "rep",
+  "files": [
+   "bicep-curl-start.webp",
+   "bicep-curl-peak.webp"
+  ],
+  "steps": [
+   "Sostené una mancuerna en cada mano a los costados del cuerpo.",
+   "Flexioná un codo y girá la palma hacia arriba sin adelantar el hombro.",
+   "Bajá con control hasta la posición inicial y repetí del otro lado."
+  ],
+  "name": "Curl alterno",
+  "cue": "Supiná sin mover el hombro."
+ },
+ "incline_curl": {
+  "src": "rep",
+  "files": [
+   "incline-db-curl-start.webp",
+   "incline-db-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en un banco inclinado a 45 grados con mancuernas a los lados.",
+   "Deja que los brazos cuelguen rectos con las palmas hacia adelante.",
+   "Sube las mancuernas hacia los hombros.",
+   "Baja con control hasta la extensión completa."
+  ],
+  "name": "Curl inclinado",
+  "cue": "Hombro atrás y recorrido completo."
+ },
+ "hammer": {
+  "src": "rep",
+  "files": [
+   "hammer-curl-start.webp",
+   "hammer-curl-peak.webp"
+  ],
+  "steps": [
+   "De pie, sujeta las mancuernas a los lados con las palmas enfrentadas.",
+   "Sube las mancuernas manteniendo las palmas hacia adentro.",
+   "Aprieta en la parte alta y baja de forma controlada."
+  ],
+  "name": "Curl martillo",
+  "cue": "Muñeca neutra y codos quietos."
+ },
+ "preacher": {
+  "src": "rep",
+  "files": [
+   "machine-preacher-curl-start.webp",
+   "machine-preacher-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate y ajusta el asiento para que las axilas queden en la parte superior del almohadillado.",
+   "Coloca los brazos sobre el soporte y sujeta las asas.",
+   "Comienza con los brazos ligeramente flexionados, sin bloquear los codos.",
+   "Flexiona los codos hacia arriba y aprieta en la posición máxima.",
+   "Baja lentamente hasta la posición inicial y repite."
+  ],
+  "name": "Curl predicador",
+  "cue": "No rebotes abajo."
+ },
+ "cable_curl": {
+  "src": "rep",
+  "files": [
+   "cable-curl-start.webp",
+   "cable-curl-peak.webp"
+  ],
+  "steps": [
+   "Colócate de pie frente a una polea baja con una barra recta o barra Z.",
+   "Agarra la barra con agarre supino y los codos pegados a los costados.",
+   "Sube la barra hacia los hombros.",
+   "Baja de forma controlada."
+  ],
+  "name": "Curl en polea",
+  "cue": "Tensión continua."
+ },
+ "pushdown": {
+  "src": "rep",
+  "files": [
+   "tricep-pushdown-start.webp",
+   "tricep-pushdown-peak.webp"
+  ],
+  "steps": [
+   "Párate frente a una máquina de cable con un accesorio de barra recta.",
+   "Agarra la barra y pega los codos a los costados.",
+   "Empuja la barra hacia abajo hasta que los brazos estén completamente extendidos.",
+   "Regresa lentamente a la posición inicial."
+  ],
+  "name": "Extensión tríceps polea",
+  "cue": "Codos pegados al cuerpo."
+ },
+ "rope_pushdown": {
+  "src": "free",
+  "files": [
+   "Triceps_Pushdown_-_Rope_Attachment/0.jpg",
+   "Triceps_Pushdown_-_Rope_Attachment/1.jpg"
+  ],
+  "steps": [
+   "Frente a la polea alta, acercá los codos al torso y sujetá los extremos de la cuerda.",
+   "Extendé los codos hacia abajo y separá suavemente los extremos. Dejá que los antebrazos vuelvan a subir."
+  ],
+  "name": "Extensión tríceps con cuerda",
+  "cue": "Separá la cuerda al final sin mover hombros."
+ },
+ "overhead_tri": {
+  "src": "rep",
+  "files": [
+   "cable-overhead-tricep-extension-start.webp",
+   "cable-overhead-tricep-extension-peak.webp"
+  ],
+  "steps": [
+   "Engancha una cuerda a la polea baja y selecciona un peso ligero.",
+   "Agarra la cuerda con ambas manos, gírate de espaldas a la pila y da un paso al frente en posición escalonada para que el cable tire de ti hacia atrás.",
+   "Sube la cuerda por encima de la cabeza con los codos flexionados y la parte superior de los brazos cerca de las orejas, de modo que las manos queden detrás de la cabeza.",
+   "Aprieta el tronco y mantén quietos la parte superior de los brazos, luego extiende los codos para empujar la cuerda hacia arriba hasta que los brazos queden completamente estirados sobre la cabeza.",
+   "Haz una breve pausa arriba y luego flexiona los codos para bajar la cuerda de nuevo detrás de la cabeza de forma controlada."
+  ],
+  "name": "Extensión tríceps sobre cabeza",
+  "cue": "Codos altos y estables."
+ },
+ "skull": {
+  "src": "rep",
+  "files": [
+   "skull-crusher-start.webp",
+   "skull-crusher-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate en un banco plano sosteniendo una barra sobre el pecho con agarre estrecho.",
+   "Baja la barra hacia la frente flexionando los codos.",
+   "Extiende los brazos de vuelta a la posición inicial."
+  ],
+  "name": "Press francés",
+  "cue": "Flexioná codos sin abrirlos."
+ },
+ "db_overhead_tri": {
+  "src": "rep",
+  "files": [
+   "dumbbell-tricep-extension-start.webp",
+   "dumbbell-tricep-extension-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie sujetando una mancuerna en cada mano con los brazos extendidos por encima de la cabeza.",
+   "Baja las mancuernas detrás de la cabeza doblando los codos.",
+   "Extiende los brazos de vuelta a la posición inicial.",
+   "Mantén los codos cerca de la cabeza."
+  ],
+  "name": "Extensión tríceps mancuerna",
+  "cue": "Evitá arquear la espalda."
+ },
+ "close_bench": {
+  "src": "rep",
+  "files": [
+   "close-grip-bench-press-start.webp",
+   "close-grip-bench-press-peak.webp"
+  ],
+  "steps": [
+   "Túmbate en un banco plano y agarra la barra con las manos a la anchura de los hombros.",
+   "Baja la barra hasta el pecho inferior manteniendo los codos cerca de los costados.",
+   "Vuelve a empujar hasta la extensión completa."
+  ],
+  "name": "Press banca cerrado",
+  "cue": "Agarre cómodo y codos controlados."
+ },
+ "squat": {
+  "src": "rep",
+  "files": [
+   "squat-start.webp",
+   "squat-peak.webp"
+  ],
+  "steps": [
+   "Coloca la barra sobre tus trapecios superiores.",
+   "Desrackea y da un paso atrás, con los pies al ancho de los hombros.",
+   "Contrae el core y haz la sentadilla hasta que los muslos queden paralelos.",
+   "Empuja a través de los talones para volver a la posición de pie."
+  ],
+  "name": "Sentadilla",
+  "cue": "Brace abdominal y rodillas siguiendo pies."
+ },
+ "front_squat": {
+  "src": "rep",
+  "files": [
+   "front-squat-start.webp",
+   "front-squat-peak.webp"
+  ],
+  "steps": [
+   "Limpia o coloca la barra en los deltoides frontales con los codos altos.",
+   "Baja en sentadilla manteniendo el torso erguido hasta que los muslos estén paralelos al suelo.",
+   "Vuelve a subir."
+  ],
+  "name": "Sentadilla frontal",
+  "cue": "Torso erguido y codos altos."
+ },
+ "hack": {
+  "src": "rep",
+  "files": [
+   "hack-squat-start.webp",
+   "hack-squat-peak.webp"
+  ],
+  "steps": [
+   "Carga la máquina hack squat y colócate con la espalda y los hombros contra los almohadillados.",
+   "Sitúa los pies a la anchura de los hombros sobre la plataforma con los pies ligeramente girados hacia fuera.",
+   "Suelta los asideros de seguridad y baja el trineo flexionando rodillas y caderas.",
+   "Desciende hasta que los muslos estén al menos paralelos a la plataforma.",
+   "Empuja con los talones para extender las piernas y devolver el trineo a la posición inicial.",
+   "Vuelve a enganchar los asideros de seguridad al terminar la serie."
+  ],
+  "name": "Hack squat",
+  "cue": "Apoyá toda la planta del pie."
+ },
+ "pendulum": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Apoyá espalda y hombros en los soportes y ubicá los pies completos sobre la plataforma.",
+   "Flexioná rodillas y caderas siguiendo el arco de la máquina. Empujá la plataforma para volver a subir."
+  ],
+  "name": "Sentadilla péndulo",
+  "cue": "Controlá profundidad y trayectoria."
+ },
+ "leg_press": {
+  "src": "rep",
+  "files": [
+   "leg-press-start.webp",
+   "leg-press-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la prensa de piernas con los pies a la anchura de los hombros sobre la plataforma.",
+   "Suelta los seguros y baja la plataforma doblando las rodillas.",
+   "Empuja la plataforma hacia arriba hasta que las piernas queden casi rectas.",
+   "No bloquees las rodillas en la parte superior."
+  ],
+  "name": "Prensa",
+  "cue": "No despegues la pelvis del respaldo."
+ },
+ "split_squat": {
+  "src": "rep",
+  "files": [
+   "bulgarian-split-squat-start.webp",
+   "bulgarian-split-squat-peak.webp"
+  ],
+  "steps": [
+   "Colócate de pie frente a un banco y apoya un pie detrás sobre el banco.",
+   "Sujeta mancuernas a los lados.",
+   "Baja el cuerpo hasta que el muslo delantero quede paralelo al suelo.",
+   "Empuja con el talón delantero para volver a la posición de pie.",
+   "Repite en ambos lados."
+  ],
+  "name": "Búlgaras",
+  "cue": "Descenso vertical y pie delantero estable."
+ },
+ "lunge": {
+  "src": "rep",
+  "files": [
+   "db-lunge-start.webp",
+   "db-lunge-peak.webp"
+  ],
+  "steps": [
+   "De pie, sujeta mancuernas a los costados.",
+   "Da un paso adelante con un pie y baja la rodilla trasera hacia el suelo.",
+   "Empuja con el pie delantero para volver.",
+   "Alterna las piernas."
+  ],
+  "name": "Zancadas",
+  "cue": "Paso estable y rodilla alineada."
+ },
+ "leg_ext": {
+  "src": "rep",
+  "files": [
+   "leg-extension-start.webp",
+   "leg-extension-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de extensión de piernas con los tobillos detrás del rodillo.",
+   "Extiende las piernas hasta que queden rectas.",
+   "Aprieta los cuádriceps en la parte superior.",
+   "Baja con control."
+  ],
+  "name": "Extensión de cuádriceps",
+  "cue": "Pausa arriba y control abajo."
+ },
+ "sissy": {
+  "src": "rep",
+  "files": [
+   "sissy-squat-start.webp",
+   "sissy-squat-peak.webp"
+  ],
+  "steps": [
+   "De pie, sujetate a un soporte firme y separá los pies al ancho de las caderas.",
+   "Elévate sobre las plantas de los pies y mantén las caderas extendidas para que el cuerpo forme una línea recta.",
+   "Flexiona las rodillas y deja que avancen hacia adelante y hacia abajo mientras inclinas el torso hacia atrás, manteniendo la línea desde las rodillas hasta los hombros.",
+   "Baja hasta que las rodillas queden cerca del suelo, o hasta donde puedas controlar.",
+   "Empuja con la parte delantera de los pies y lleva las rodillas hacia atrás para estirar las piernas y volver a ponerte de pie.",
+   "Completa el número de repeticiones previsto."
+  ],
+  "name": "Sissy squat asistida",
+  "cue": "Mantené tensión y rango tolerable."
+ },
+ "rdl": {
+  "src": "rep",
+  "files": [
+   "romanian-deadlift-start.webp",
+   "romanian-deadlift-peak.webp"
+  ],
+  "steps": [
+   "Párate sosteniendo la barra a la altura de las caderas con agarre prono.",
+   "Bisagra en las caderas empujándolas hacia atrás mientras mantienes las piernas casi rectas.",
+   "Baja la barra a lo largo de las piernas hasta sentir el estiramiento de los isquiotibiales.",
+   "Empuja las caderas hacia adelante para volver a la posición de pie."
+  ],
+  "name": "Peso muerto rumano",
+  "cue": "Cadera atrás y columna neutra."
+ },
+ "db_rdl": {
+  "src": "rep",
+  "files": [
+   "dumbbell-romanian-deadlift-start.webp",
+   "dumbbell-romanian-deadlift-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie sujetando mancuernas frente a los muslos con una ligera flexión de rodillas.",
+   "Inclínate desde las caderas y empuja los glúteos hacia atrás.",
+   "Baja las mancuernas a lo largo de las piernas hasta sentir el estiramiento en los isquiotibiales.",
+   "Mantén la espalda recta y los hombros hacia atrás.",
+   "Empuja las caderas hacia adelante para volver a la posición de pie."
+  ],
+  "name": "Peso muerto rumano mancuernas",
+  "cue": "Buscá estiramiento sin redondear."
+ },
+ "leg_curl": {
+  "src": "rep",
+  "files": [
+   "seated-leg-curl-start.webp",
+   "seated-leg-curl-peak.webp"
+  ],
+  "steps": [
+   "Ajusta el respaldo y el cojín de tobillo para que las rodillas queden alineadas con el pivote de la máquina.",
+   "Siéntate erguido, coloca la parte posterior de los tobillos sobre el cojín y sujeta las asas.",
+   "Flexiona las piernas hacia abajo y atrás bajo el asiento hasta donde la máquina lo permita.",
+   "Pausa en la contracción máxima, luego vuelve lentamente a la posición inicial."
+  ],
+  "name": "Curl femoral sentado",
+  "cue": "Cadera pegada al asiento."
+ },
+ "lying_curl": {
+  "src": "rep",
+  "files": [
+   "leg-curl-start.webp",
+   "leg-curl-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca abajo en la máquina de curl de piernas con los tobillos bajo el rodillo.",
+   "Lleva los talones hacia los glúteos.",
+   "Aprieta los isquiotibiales en la parte superior.",
+   "Baja con control."
+  ],
+  "name": "Curl femoral acostado",
+  "cue": "No eleves la cadera."
+ },
+ "single_curl": {
+  "src": "rep",
+  "files": [
+   "single-leg-lying-leg-curl-start.webp",
+   "single-leg-lying-leg-curl-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate boca abajo en la máquina de curl de piernas tumbado.",
+   "Coloca un tobillo bajo el apoyo y deja el otro pie fuera de la máquina.",
+   "Flexiona la pierna de trabajo llevando el talón hacia el glúteo.",
+   "Aprieta los isquiotibiales en la parte superior.",
+   "Baja la pierna con control.",
+   "Completa las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Curl femoral unilateral",
+  "cue": "Controlá todo el recorrido."
+ },
+ "good_morning": {
+  "src": "rep",
+  "files": [
+   "good-morning-start.webp",
+   "good-morning-peak.webp"
+  ],
+  "steps": [
+   "De pie con una barra sobre la parte superior de la espalda.",
+   "Realiza una bisagra de cadera empujando las caderas hacia atrás mientras mantienes la espalda plana.",
+   "Baja el torso hasta que quede casi paralelo al suelo.",
+   "Impulsa las caderas hacia adelante para volver a la posición erguida."
+  ],
+  "name": "Buenos días",
+  "cue": "Bisagra de cadera con espalda neutra."
+ },
+ "hip_thrust": {
+  "src": "rep",
+  "files": [
+   "hip-thrust-start.webp",
+   "hip-thrust-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en el suelo con la parte superior de la espalda contra un banco y la barra sobre las caderas.",
+   "Empuja las caderas hacia arriba hasta que los muslos queden paralelos al suelo.",
+   "Aprieta los glúteos en la parte superior.",
+   "Baja las caderas de nuevo con control."
+  ],
+  "name": "Hip thrust",
+  "cue": "Retroversión pélvica arriba sin hiperextender."
+ },
+ "glute_bridge": {
+  "src": "rep",
+  "files": [
+   "barbell-glute-bridge-start.webp",
+   "barbell-glute-bridge-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate en el suelo con una barra sobre las caderas y las rodillas flexionadas.",
+   "Eleva las caderas apretando los glúteos.",
+   "Aguanta en la parte superior con las caderas completamente extendidas.",
+   "Baja con control."
+  ],
+  "name": "Puente de glúteo",
+  "cue": "Pausa arriba con pelvis estable."
+ },
+ "glute_kick": {
+  "src": "rep",
+  "files": [
+   "cable-kickback-start.webp",
+   "cable-kickback-peak.webp"
+  ],
+  "steps": [
+   "Coloca una correa de tobillo en la polea baja y sujétala alrededor de un tobillo.",
+   "De pie frente a la máquina, agárrate ligeramente al soporte e inclínate un poco desde las caderas.",
+   "Lleva la pierna con la correa hacia atrás extendiendo la cadera completamente y manteniendo la rodilla casi recta.",
+   "Aprieta el glúteo en la extensión máxima y regresa el pie lentamente a la posición inicial.",
+   "Completa todas las repeticiones de un lado antes de cambiar."
+  ],
+  "name": "Patada de glúteo",
+  "cue": "No rotes la pelvis."
+ },
+ "machine_glute": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Ajustá el apoyo del torso y colocá el pie de trabajo contra la plataforma móvil.",
+   "Empujá hacia atrás desde la cadera y frená antes de que la pelvis empiece a girar. Volvé despacio."
+  ],
+  "name": "Patada glúteo máquina",
+  "cue": "Recorrido controlado."
+ },
+ "abductor": {
+  "src": "rep",
+  "files": [
+   "hip-abduction-start.webp",
+   "hip-abduction-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de abducción de cadera con los apoyos contra la parte externa de los muslos.",
+   "Empuja las piernas hacia afuera contra la resistencia.",
+   "Mantén brevemente en el punto más amplio.",
+   "Vuelve a la posición inicial de forma controlada."
+  ],
+  "name": "Abductores en máquina",
+  "cue": "No rebotes, controlá apertura y cierre."
+ },
+ "adductor": {
+  "src": "rep",
+  "files": [
+   "hip-adduction-start.webp",
+   "hip-adduction-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de aducción de cadera con la espalda contra el respaldo.",
+   "Coloca las piernas contra las almohadillas con la máquina ajustada a un estiramiento cómodo.",
+   "Aprieta las piernas hasta que las almohadillas se junten en el centro.",
+   "Mantén brevemente la contracción en la posición completamente cerrada.",
+   "Deja que las piernas se abran de vuelta con control hasta el inicio."
+  ],
+  "name": "Aductores en máquina",
+  "cue": "Controlá el retorno."
+ },
+ "standing_calf": {
+  "src": "rep",
+  "files": [
+   "standing-calf-raise-start.webp",
+   "standing-calf-raise-peak.webp"
+  ],
+  "steps": [
+   "Párate en el borde de una plataforma o máquina de elevación de talones.",
+   "Baja los talones por debajo de la plataforma.",
+   "Empuja hacia arriba de puntillas.",
+   "Baja lentamente."
+  ],
+  "name": "Gemelos de pie",
+  "cue": "Pausa arriba y estiramiento abajo."
+ },
+ "seated_calf": {
+  "src": "rep",
+  "files": [
+   "seated-calf-raise-start.webp",
+   "seated-calf-raise-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de elevación de talones con los pads apoyados en los muslos.",
+   "Baja los talones lo más posible.",
+   "Elévate sobre las puntas de los pies.",
+   "Baja con control."
+  ],
+  "name": "Gemelos sentado",
+  "cue": "Recorrido completo sin rebotes."
+ },
+ "legpress_calf": {
+  "src": "free",
+  "files": [
+   "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
+   "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
+  ],
+  "steps": [
+   "Apoyá los antepiés sobre el borde de la plataforma con las rodillas estables.",
+   "Elevá y bajá los talones moviendo los tobillos, manteniendo el resto de la pierna quieta."
+  ],
+  "name": "Gemelos en prensa",
+  "cue": "Mové solo el tobillo."
+ },
+ "crunch": {
+  "src": "rep",
+  "files": [
+   "cable-crunch-start.webp",
+   "cable-crunch-peak.webp"
+  ],
+  "steps": [
+   "Arrodíllate frente a una máquina de cable con el accesorio de cuerda en la parte superior.",
+   "Sujeta la cuerda cerca de la frente con los codos flexionados.",
+   "Baja flexionando la columna y llevando los codos hacia los muslos.",
+   "Aprieta fuerte los abdominales en la parte inferior.",
+   "Vuelve a la posición inicial y repite."
+  ],
+  "name": "Crunch en polea",
+  "cue": "Flexioná columna sin tirar con brazos."
+ },
+ "machine_crunch": {
+  "src": "rep",
+  "files": [
+   "machine-seated-crunch-start.webp",
+   "machine-seated-crunch-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de abdominales y sujeta las manijas.",
+   "Coloca la almohadilla de pecho contra tu torso.",
+   "Contrae el abdomen para flexionar el torso hacia adelante y abajo.",
+   "Contrae al final del recorrido.",
+   "Vuelve a la posición inicial con control."
+  ],
+  "name": "Crunch máquina",
+  "cue": "Exhalá y cerrá costillas."
+ },
+ "plank": {
+  "src": "rep",
+  "files": [
+   "plank-main.webp"
+  ],
+  "steps": [
+   "Apoya los antebrazos en el suelo con los codos bajo los hombros.",
+   "Extiende las piernas hacia atrás y apóyate sobre los dedos de los pies.",
+   "Mantén el cuerpo en línea recta de la cabeza a los talones.",
+   "Contrae el core y aprieta los glúteos.",
+   "Mantén la posición durante el tiempo deseado.",
+   "Baja las rodillas para salir de la posición."
+  ],
+  "name": "Plancha",
+  "cue": "Pelvis neutra y abdomen activo."
+ },
+ "hanging_raise": {
+  "src": "rep",
+  "files": [
+   "hanging-leg-raise-start.webp",
+   "hanging-leg-raise-peak.webp"
+  ],
+  "steps": [
+   "Cuélgate de una barra de dominadas con agarre prono.",
+   "Sube las piernas hacia adelante hasta que queden paralelas al suelo.",
+   "Mantén brevemente y baja de forma controlada.",
+   "Evita balancearte."
+  ],
+  "name": "Elevación de piernas colgado",
+  "cue": "Evitá balancearte."
+ },
+ "ab_wheel": {
+  "src": "rep",
+  "files": [
+   "ab-wheel-rollout-start.webp",
+   "ab-wheel-rollout-peak.webp"
+  ],
+  "steps": [
+   "Arrodíllate en el suelo y agarra las asas de la rueda a la anchura de los hombros.",
+   "Activa fuertemente el core para que la zona lumbar quede neutra.",
+   "Rueda la rueda lentamente hacia adelante, extendiendo el cuerpo lo más lejos que puedas controlar.",
+   "Detente antes de que las caderas se hundan o la espalda se arquee.",
+   "Tira de la rueda de regreso hacia las rodillas contrayendo los abdominales."
+  ],
+  "name": "Rueda abdominal",
+  "cue": "No pierdas posición lumbar."
+ },
+ "press_conv": {
+  "src": "free",
+  "files": [
+   "Leverage_Chest_Press/0.jpg",
+   "Leverage_Chest_Press/1.jpg"
+  ],
+  "steps": [
+   "Ajustá el asiento de modo que las manijas queden a la altura media del pecho.",
+   "Empujá ambas manijas hacia delante siguiendo sus arcos convergentes. Regresá con los hombros apoyados."
+  ],
+  "name": "Press de pecho en máquina convergente",
+  "cue": "Ajustá el asiento y empujá sin despegar las escápulas."
+ },
+ "bench_smith": {
+  "src": "rep",
+  "files": [
+   "smith-machine-bench-press-start.webp",
+   "smith-machine-bench-press-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate en un banco plano dentro de la máquina Smith.",
+   "Agarra la barra ligeramente más ancho que el ancho de hombros y desbloquéala.",
+   "Baja la barra con control hasta el centro del pecho.",
+   "Haz una breve pausa sin rebotar.",
+   "Empuja la barra hacia arriba hasta extender completamente los brazos."
+  ],
+  "name": "Press banca en Smith",
+  "cue": "Alineá la barra con el pecho y controlá la bajada."
+ },
+ "incline_smith": {
+  "src": "rep",
+  "files": [
+   "smith-machine-incline-bench-press-start.webp",
+   "smith-machine-incline-bench-press-peak.webp"
+  ],
+  "steps": [
+   "Ajusta un banco inclinado a 30-45 grados dentro de la máquina Smith.",
+   "Recuéstate y agarra la barra ligeramente más ancho que el ancho de hombros.",
+   "Desbloquea y baja la barra hasta la parte superior del pecho.",
+   "Haz una breve pausa en la parte inferior.",
+   "Empuja la barra hacia arriba hasta extender los brazos."
+  ],
+  "name": "Press inclinado en Smith",
+  "cue": "Usá una inclinación moderada y mantené escápulas estables."
+ },
+ "decline_machine": {
+  "src": "free",
+  "files": [
+   "Leverage_Decline_Chest_Press/0.jpg",
+   "Leverage_Decline_Chest_Press/1.jpg"
+  ],
+  "steps": [
+   "Apoyá la espalda y ajustá el asiento para que las manijas queden frente a la parte baja del pecho.",
+   "Empujá en la trayectoria de la máquina y controlá el regreso sin adelantar los hombros."
+  ],
+  "name": "Press declinado en máquina",
+  "cue": "No pierdas apoyo de espalda y controlá el retorno."
+ },
+ "assisted_dips": {
+  "src": "rep",
+  "files": [
+   "assisted-dips-start.webp",
+   "assisted-dips-peak.webp"
+  ],
+  "steps": [
+   "Sube a la máquina de fondos asistidos con las rodillas en el pad.",
+   "Agarra las barras paralelas y soporta tu peso con los brazos extendidos.",
+   "Baja el cuerpo flexionando los codos hasta que los hombros queden por debajo de los codos.",
+   "Empuja de vuelta a la posición inicial."
+  ],
+  "name": "Fondos asistidos",
+  "cue": "Descendé controlado y evitá colapsar hombros."
+ },
+ "db_fly": {
+  "src": "rep",
+  "files": [
+   "db-fly-start.webp",
+   "db-fly-peak.webp"
+  ],
+  "steps": [
+   "Túmbate en un banco con las mancuernas sobre el pecho y las palmas mirándose entre sí.",
+   "Con una ligera flexión de codos, baja las mancuernas hacia los lados.",
+   "Regresa a la posición inicial apretando el pecho."
+  ],
+  "name": "Aperturas con mancuernas",
+  "cue": "Mantené leve flexión de codo y controlá el estiramiento."
+ },
+ "high_low_fly": {
+  "src": "rep",
+  "files": [
+   "cable-fly-start.webp",
+   "cable-fly-peak.webp"
+  ],
+  "steps": [
+   "Colócate entre dos columnas de cable con los agarres enganchados a las poleas altas.",
+   "Con una ligera flexión en los codos, abre los brazos hacia los lados.",
+   "Junta las manos frente al pecho en un movimiento de abrazo.",
+   "Vuelve lentamente a la posición inicial."
+  ],
+  "name": "Aperturas en polea alta a baja",
+  "cue": "Llevá las manos hacia abajo y adentro sin perder tensión."
+ },
+ "arnold_press": {
+  "src": "rep",
+  "files": [
+   "arnold-press-start.webp",
+   "arnold-press-peak.webp"
+  ],
+  "steps": [
+   "Sostén un par de mancuernas a la altura de los hombros con las palmas mirando hacia ti.",
+   "Empuja las mancuernas sobre la cabeza mientras rotas las palmas hacia adelante.",
+   "Extiende los brazos por completo en la parte superior sin bloquear los codos.",
+   "Invierte el movimiento y rota de vuelta a la posición inicial."
+  ],
+  "name": "Press Arnold",
+  "cue": "Rotá de forma controlada sin arquear la zona lumbar."
+ },
+ "front_raise_db": {
+  "src": "rep",
+  "files": [
+   "dumbbell-front-raise-start.webp",
+   "dumbbell-front-raise-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie con las mancuernas a los costados, palmas frente a los muslos.",
+   "Sube una o ambas mancuernas hacia adelante hasta la altura de los hombros.",
+   "Baja de forma controlada."
+  ],
+  "name": "Elevación frontal con mancuerna",
+  "cue": "Subí hasta la línea del hombro sin impulso."
+ },
+ "front_raise_cable": {
+  "src": "rep",
+  "files": [
+   "cable-front-raise-start.webp",
+   "cable-front-raise-peak.webp"
+  ],
+  "steps": [
+   "Colócate de espaldas a una polea baja con un agarre.",
+   "Sujeta el agarre con el brazo extendido a la altura del muslo.",
+   "Levanta el brazo hacia adelante hasta la altura del hombro manteniéndolo recto.",
+   "Pausa en la parte superior.",
+   "Baja de forma controlada y repite."
+  ],
+  "name": "Elevación frontal en polea",
+  "cue": "Mantené tensión continua y torso estable."
+ },
+ "rear_cable": {
+  "src": "rep",
+  "files": [
+   "cable-reverse-fly-start.webp",
+   "cable-reverse-fly-peak.webp"
+  ],
+  "steps": [
+   "Coloca ambas poleas aproximadamente a la altura de los hombros y sitúate en el centro, entre las dos torres de polea.",
+   "Agarra la empuñadura izquierda con la mano derecha y la empuñadura derecha con la mano izquierda, de modo que los cables se crucen delante de ti.",
+   "Ponte erguido con los brazos estirados al frente a la altura de los hombros y una ligera flexión en los codos.",
+   "Lleva los brazos hacia fuera y atrás en un arco amplio, guiando el movimiento con los codos, hasta que queden en línea con los hombros.",
+   "Junta los omóplatos brevemente sin arquear la zona lumbar.",
+   "Devuelve las empuñaduras despacio a la posición inicial cruzada y repite el número de repeticiones previsto."
+  ],
+  "name": "Pájaros en polea",
+  "cue": "Abrí los brazos sin encoger los hombros."
+ },
+ "upright_rope": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Enganchá una cuerda a la polea baja y sostené un extremo con cada mano delante de los muslos.",
+   "Guiá los codos hacia arriba y afuera, con las manos cerca del cuerpo. Bajá la cuerda sin balancearte."
+  ],
+  "name": "Remo al mentón con cuerda",
+  "cue": "Tirá con codos altos dentro de un rango cómodo."
+ },
+ "landmine_press": {
+  "src": "rep",
+  "files": [
+   "one-arm-landmine-press-start.webp",
+   "one-arm-landmine-press-peak.webp"
+  ],
+  "steps": [
+   "Ancla un extremo de la barra en el accesorio landmine y carga el extremo libre.",
+   "Arrodíllate en una rodilla o párate y sujeta el extremo libre a la altura del hombro con una mano.",
+   "Empuja la barra hacia arriba y adelante siguiendo su arco hasta extender completamente el brazo.",
+   "Baja la barra de regreso a la altura del hombro con control.",
+   "Completa todas las repeticiones antes de cambiar de lado."
+  ],
+  "name": "Press unilateral en landmine",
+  "cue": "Empujá en diagonal manteniendo costillas controladas."
+ },
+ "supine_pulldown": {
+  "src": "rep",
+  "files": [
+   "reverse-grip-lat-pulldown-start.webp",
+   "reverse-grip-lat-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Coloca una barra recta en una máquina de jalón al pecho.",
+   "Sujeta la barra con agarre supino, al ancho de los hombros.",
+   "Siéntate y asegura tus muslos bajo la almohadilla.",
+   "Tira de la barra hacia la parte superior del pecho.",
+   "Contrae el dorsal y el bíceps en la parte baja.",
+   "Vuelve la barra a la posición inicial con control."
+  ],
+  "name": "Jalón supino al pecho",
+  "cue": "Pecho alto y codos hacia abajo sin balanceo."
+ },
+ "close_neutral_pulldown": {
+  "src": "rep",
+  "files": [
+   "v-bar-lat-pulldown-start.webp",
+   "v-bar-lat-pulldown-peak.webp"
+  ],
+  "steps": [
+   "Coloca una barra en V (mango doble-D) en el cable de jalón al pecho.",
+   "Siéntate con los muslos asegurados bajo el pad y agarra el mango con las palmas enfrentadas.",
+   "Comienza con los brazos completamente extendidos por encima de la cabeza.",
+   "Tira del mango hacia el esternón empujando los codos hacia abajo y ligeramente hacia atrás.",
+   "Aprieta los dorsales en la posición inferior y sube lentamente de forma controlada."
+  ],
+  "name": "Jalón agarre cerrado neutro",
+  "cue": "Mantené torso estable y llevá el agarre al pecho."
+ },
+ "assisted_pullup": {
+  "src": "rep",
+  "files": [
+   "assisted-pull-ups-start.webp",
+   "assisted-pull-ups-peak.webp"
+  ],
+  "steps": [
+   "Coloca las rodillas en el pad de la máquina de dominadas asistidas.",
+   "Agarra la barra con las palmas mirando hacia afuera, ligeramente más ancho que los hombros.",
+   "Tira del pecho hacia la barra impulsando los codos hacia abajo.",
+   "Bájate de forma controlada hasta quedar colgado con los brazos extendidos."
+  ],
+  "name": "Dominadas asistidas",
+  "cue": "Usá la asistencia necesaria para un recorrido limpio."
+ },
+ "uni_machine_row": {
+  "src": "free",
+  "files": [
+   "Leverage_Iso_Row/0.jpg",
+   "Leverage_Iso_Row/1.jpg"
+  ],
+  "steps": [
+   "Apoyá el pecho y tomá una manija. Dejá que el brazo se extienda sin girar el tronco.",
+   "Llevá el codo hacia atrás y regresá con control. Repetí con el otro brazo."
+  ],
+  "name": "Remo unilateral en máquina",
+  "cue": "Mantené el pecho estable y llevá el codo hacia atrás."
+ },
+ "high_machine_row": {
+  "src": "free",
+  "files": [
+   "Leverage_High_Row/0.jpg",
+   "Leverage_High_Row/1.jpg"
+  ],
+  "steps": [
+   "Ajustá el apoyo de pecho y tomá las manijas altas con los brazos extendidos.",
+   "Tirá en diagonal hacia el torso guiando los codos hacia abajo y atrás. Volvé sin encoger los hombros."
+  ],
+  "name": "Remo alto en máquina",
+  "cue": "Tirá hacia la parte alta del torso sin elevar hombros."
+ },
+ "meadows_row": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Ubicate de costado al extremo libre de la barra anclada. Flexioná la cadera y apoyá la mano libre en el muslo.",
+   "Tirá de la manga de la barra con el codo hacia atrás. Extendé el brazo sin rotar el tronco."
+  ],
+  "name": "Remo Meadows",
+  "cue": "Torso firme y codo hacia atrás sin rotar de más."
+ },
+ "smith_row": {
+  "src": "rep",
+  "files": [
+   "smith-machine-bent-over-row-start.webp",
+   "smith-machine-bent-over-row-peak.webp"
+  ],
+  "steps": [
+   "De pie dentro de la máquina Smith con los pies al ancho de los hombros.",
+   "Agarra la barra en pronación ligeramente más ancho que los hombros.",
+   "Bisagra en las caderas hasta que el torso esté aproximadamente a 45 grados.",
+   "Tira de la barra hacia el pecho inferior llevando los codos hacia atrás.",
+   "Aprieta los omóplatos en la parte superior.",
+   "Baja la barra con control y repite."
+  ],
+  "name": "Remo en Smith",
+  "cue": "Mantené la columna neutra y el recorrido controlado."
+ },
+ "seal_row": {
+  "src": "rep",
+  "files": [
+   "bench-pull-start.webp",
+   "bench-pull-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate boca abajo en un banco elevado con los brazos colgando rectos hacia abajo.",
+   "Agarra una barra o mancuernas debajo de ti.",
+   "Rema el peso hasta la parte inferior del banco.",
+   "Aprieta los omóplatos en la parte superior.",
+   "Baja de forma controlada y repite."
+  ],
+  "name": "Remo seal",
+  "cue": "Pecho apoyado, tirá sin despegar el torso."
+ },
+ "bar_shrug": {
+  "src": "rep",
+  "files": [
+   "shrug-start.webp",
+   "shrug-peak.webp"
+  ],
+  "steps": [
+   "De pie, sostén una barra a lo largo de los brazos con agarre en pronación.",
+   "Encoge los hombros directamente hacia las orejas.",
+   "Mantén brevemente en la parte superior.",
+   "Baja los hombros con control."
+  ],
+  "name": "Encogimientos con barra",
+  "cue": "Elevá hombros verticalmente y pausá arriba."
+ },
+ "smith_shrug": {
+  "src": "rep",
+  "files": [
+   "smith-machine-shrug-start.webp",
+   "smith-machine-shrug-peak.webp"
+  ],
+  "steps": [
+   "Párate erguido dentro de una máquina Smith con la barra a la altura de los muslos.",
+   "Agarra la barra ligeramente más ancha que el ancho de los hombros con agarre prono.",
+   "Desrackea la barra y deja que cuelgue frente a tus muslos.",
+   "Encoge los hombros hacia arriba en dirección a las orejas.",
+   "Mantén la posición alta un momento, luego baja lentamente."
+  ],
+  "name": "Encogimientos en Smith",
+  "cue": "Subí y bajá los hombros sin hacer círculos."
+ },
+ "preacher_ez": {
+  "src": "free",
+  "files": [
+   "Preacher_Curl/0.jpg",
+   "Preacher_Curl/1.jpg"
+  ],
+  "steps": [
+   "Apoyá ambos brazos sobre el banco predicador y tomá la barra EZ por sus curvas.",
+   "Flexioná los codos sin despegar los brazos. Extendelos de forma controlada al bajar."
+  ],
+  "name": "Curl predicador con barra EZ",
+  "cue": "Apoyá bien el brazo y evitá rebotes abajo."
+ },
+ "preacher_machine": {
+  "src": "rep",
+  "files": [
+   "machine-preacher-curl-start.webp",
+   "machine-preacher-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate y ajusta el asiento para que las axilas queden en la parte superior del almohadillado.",
+   "Coloca los brazos sobre el soporte y sujeta las asas.",
+   "Comienza con los brazos ligeramente flexionados, sin bloquear los codos.",
+   "Flexiona los codos hacia arriba y aprieta en la posición máxima.",
+   "Baja lentamente hasta la posición inicial y repite."
+  ],
+  "name": "Curl predicador en máquina",
+  "cue": "Mantené hombros estables y controlá la excéntrica."
+ },
+ "bayesian_curl": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "De espaldas a una polea baja, sujetá la manija con el brazo ligeramente detrás del torso.",
+   "Flexioná el codo manteniendo el brazo en su lugar. Volvé hasta estirar el bíceps de forma controlada."
+  ],
+  "name": "Curl Bayesian",
+  "cue": "Brazo ligeramente detrás del torso y codo fijo."
+ },
+ "spider_curl": {
+  "src": "rep",
+  "files": [
+   "spider-curl-start.webp",
+   "spider-curl-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca abajo en un banco inclinado con los brazos colgando rectos hacia abajo.",
+   "Sostén una mancuerna en cada mano con agarre supino.",
+   "Mantén los brazos superiores verticales mientras curleas los pesos hacia arriba.",
+   "Aprieta fuerte los bíceps en la parte superior.",
+   "Baja las mancuernas de forma controlada hasta la extensión completa."
+  ],
+  "name": "Curl araña",
+  "cue": "Pecho apoyado y sin mover el hombro."
+ },
+ "concentration_curl": {
+  "src": "rep",
+  "files": [
+   "concentration-curl-start.webp",
+   "concentration-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en un banco con las piernas separadas y sujeta una mancuerna en una mano.",
+   "Apoya el codo en la cara interna del muslo.",
+   "Sube la mancuerna hacia el hombro.",
+   "Baja con control.",
+   "Repite en ambos lados."
+  ],
+  "name": "Curl concentración",
+  "cue": "Apoyá el brazo y evitá impulso."
+ },
+ "rope_hammer": {
+  "src": "rep",
+  "files": [
+   "cable-hammer-curl-start.webp",
+   "cable-hammer-curl-peak.webp"
+  ],
+  "steps": [
+   "Engancha una cuerda a la polea baja y párate frente a la máquina.",
+   "Agarra la cuerda con agarre neutro, palmas enfrentadas.",
+   "Sube la cuerda hacia los hombros manteniendo los codos fijos a los lados.",
+   "Aprieta arriba, luego baja lentamente hasta la extensión completa."
+  ],
+  "name": "Curl martillo en cuerda",
+  "cue": "Muñeca neutra y tensión continua."
+ },
+ "uni_pushdown": {
+  "src": "rep",
+  "files": [
+   "single-arm-tricep-pushdown-start.webp",
+   "single-arm-tricep-pushdown-peak.webp"
+  ],
+  "steps": [
+   "Coloca una manija individual en una polea alta.",
+   "Sujeta la manija con una mano y mantén el codo pegado al costado.",
+   "Empuja la manija hacia abajo hasta extender completamente el brazo.",
+   "Contrae el tríceps en la parte baja.",
+   "Vuelve lentamente a la posición inicial.",
+   "Completa las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Extensión de tríceps unilateral en polea",
+  "cue": "Fijá el codo y extendé sin mover el hombro."
+ },
+ "cable_kickback": {
+  "src": "rep",
+  "files": [
+   "cable-tricep-kickback-start.webp",
+   "cable-tricep-kickback-peak.webp"
+  ],
+  "steps": [
+   "Engancha un handle a la polea baja e inclínate hacia adelante desde las caderas.",
+   "Pega la parte superior del brazo al costado con el codo flexionado a 90 grados.",
+   "Extiende el codo para empujar el handle hacia atrás.",
+   "Aprieta el tríceps al final del movimiento.",
+   "Vuelve de forma controlada. Completa las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Patada de tríceps en polea",
+  "cue": "Brazo estable y pausa al extender."
+ },
+ "db_skull": {
+  "src": "rep",
+  "files": [
+   "db-skull-crusher-start.webp",
+   "db-skull-crusher-peak.webp"
+  ],
+  "steps": [
+   "Túmbate en un banco plano sosteniendo mancuernas sobre el pecho.",
+   "Baja las mancuernas hacia los lados de la cabeza.",
+   "Extiende los brazos hacia arriba."
+  ],
+  "name": "Press francés con mancuernas",
+  "cue": "Mantené codos estables y controlá la bajada."
+ },
+ "dip_machine": {
+  "src": "rep",
+  "files": [
+   "seated-dip-machine-start.webp",
+   "seated-dip-machine-peak.webp"
+  ],
+  "steps": [
+   "Selecciona el peso en la pila y ajusta el asiento para que las empuñaduras queden aproximadamente a la altura de los hombros cuando estés sentado.",
+   "Siéntate erguido con la espalda contra el respaldo y agarra las empuñaduras a tus costados con los codos flexionados.",
+   "Mantén los hombros bajos y el pecho alto, y empuja las empuñaduras hacia abajo extendiendo los codos.",
+   "Aprieta los tríceps abajo, con los brazos estirados pero sin bloquear los codos con fuerza.",
+   "Deja que las empuñaduras suban de nuevo de forma controlada hasta que los codos queden flexionados a unos 90 grados."
+  ],
+  "name": "Fondos en máquina",
+  "cue": "Codos cerca del cuerpo y recorrido controlado."
+ },
+ "smith_squat": {
+  "src": "rep",
+  "files": [
+   "smith-machine-squat-start.webp",
+   "smith-machine-squat-peak.webp"
+  ],
+  "steps": [
+   "Ajusta la barra de la máquina Smith a la altura de los hombros y colócate debajo de ella.",
+   "Apoya la barra sobre tus trapecios superiores y desrackéala.",
+   "Párate con los pies al ancho de los hombros, ligeramente por delante de la barra.",
+   "Desciende hasta que los muslos queden paralelos al suelo.",
+   "Empuja a través de los talones para volver a la posición de pie."
+  ],
+  "name": "Sentadilla en Smith",
+  "cue": "Ubicá los pies para mantener equilibrio y rango cómodo."
+ },
+ "belt_squat": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Fijá el cinturón sobre la cadera y alineate con el punto de tracción entre los pies.",
+   "Bajá flexionando rodillas y caderas con los talones apoyados. Extendé las piernas para volver a quedar de pie."
+  ],
+  "name": "Belt squat",
+  "cue": "Descendé manteniendo el tronco estable y pies firmes."
+ },
+ "goblet_squat": {
+  "src": "rep",
+  "files": [
+   "db-goblet-squat-start.webp",
+   "db-goblet-squat-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie con los pies algo más separados que el ancho de los hombros y las puntas ligeramente hacia fuera.",
+   "Sujeta una mancuerna en vertical a la altura del pecho, con ambas manos en forma de copa bajo el extremo superior y los codos apuntando hacia abajo.",
+   "Contrae el tronco y lleva las caderas hacia atrás y abajo, manteniendo el pecho elevado y la mancuerna cerca del cuerpo.",
+   "Baja hasta que los muslos queden al menos paralelos al suelo, con las rodillas en línea con las puntas de los pies y los talones apoyados.",
+   "Haz una breve pausa en la posición baja y luego empuja con todo el pie para volver a ponerte de pie."
+  ],
+  "name": "Sentadilla goblet",
+  "cue": "Sostené la carga cerca del pecho y mantené torso firme."
+ },
+ "horizontal_press": {
+  "src": "rep",
+  "files": [
+   "horizontal-leg-press-start.webp",
+   "horizontal-leg-press-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la prensa de piernas horizontal con la espalda apoyada en el respaldo y los pies a la anchura de los hombros sobre la plataforma.",
+   "Empuja con los pies para extender las piernas, sin llegar a bloquear las rodillas.",
+   "Flexiona las rodillas de forma controlada hasta acercarlas al pecho."
+  ],
+  "name": "Prensa horizontal",
+  "cue": "Controlá profundidad sin despegar la pelvis."
+ },
+ "uni_leg_ext": {
+  "src": "rep",
+  "files": [
+   "single-leg-extension-start.webp",
+   "single-leg-extension-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en una máquina de extensión de piernas y coloca un pie bajo la almohadilla.",
+   "Deja el otro pie apoyado en el suelo o colgando.",
+   "Extiende la pierna de trabajo hasta que quede casi recta.",
+   "Contrae el cuádriceps en la parte alta.",
+   "Baja la pierna con control.",
+   "Completa las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Extensión de cuádriceps unilateral",
+  "cue": "Pausa arriba y controlá la bajada."
+ },
+ "step_up": {
+  "src": "rep",
+  "files": [
+   "step-ups-start.webp",
+   "step-ups-peak.webp"
+  ],
+  "steps": [
+   "Párate frente a una caja o banco resistente.",
+   "Coloca un pie completamente sobre la superficie de la caja.",
+   "Empuja a través de ese talón para subir el cuerpo a la caja.",
+   "Sube el pie de atrás para quedar completamente sobre la caja.",
+   "Baja con el mismo pie que subió primero.",
+   "Alterna piernas o completa todas las repeticiones de un lado antes de cambiar."
+  ],
+  "name": "Step up",
+  "cue": "Empujá con la pierna de apoyo sin impulsarte con la otra."
+ },
+ "reverse_lunge": {
+  "src": "rep",
+  "files": [
+   "reverse-lunge-start.webp",
+   "reverse-lunge-peak.webp"
+  ],
+  "steps": [
+   "Párate sosteniendo mancuernas a los costados.",
+   "Da un paso hacia atrás con una pierna y baja la rodilla hacia el suelo.",
+   "Baja hasta que el muslo delantero quede paralelo al suelo.",
+   "Empuja con el talón delantero para volver a la posición de pie.",
+   "Repite en ambos lados."
+  ],
+  "name": "Zancada reversa",
+  "cue": "Paso atrás estable y rodilla delantera alineada."
+ },
+ "standing_leg_curl": {
+  "src": "free",
+  "files": [
+   "Standing_Leg_Curl/0.jpg",
+   "Standing_Leg_Curl/1.jpg"
+  ],
+  "steps": [
+   "Alineá la rodilla con el eje y colocá el rodillo detrás del tobillo. Fijá el muslo contra su apoyo.",
+   "Acercá el talón al glúteo y bajalo despacio sin mover la cadera."
+  ],
+  "name": "Curl femoral de pie",
+  "cue": "Mantené la cadera estable y flexioná sin impulso."
+ },
+ "nordic_assisted": {
+  "src": "rep",
+  "files": [
+   "nordic-hamstring-curl-start.webp",
+   "nordic-hamstring-curl-peak.webp"
+  ],
+  "steps": [
+   "Arrodillate sobre una colchoneta con los tobillos sujetos. Prepará el apoyo de manos o la banda de asistencia indicada por tu coach.",
+   "Con caderas extendidas, incliná el cuerpo desde las rodillas. Usá la asistencia para frenar la bajada y volver al inicio."
+  ],
+  "name": "Nordic curl asistido",
+  "cue": "Descendé lento y usá asistencia para mantener control."
+ },
+ "single_rdl": {
+  "src": "rep",
+  "files": [
+   "one-arm-single-leg-dumbbell-romanian-deadlift-start.webp",
+   "one-arm-single-leg-dumbbell-romanian-deadlift-peak.webp"
+  ],
+  "steps": [
+   "De pie sobre una pierna, sostén una mancuerna en la mano contraria.",
+   "Brazo libre al costado para equilibrarte, pierna libre suspendida justo por encima del suelo.",
+   "Bisagra en la cadera de apoyo empujándola hacia atrás mientras la pierna libre se extiende detrás para contrarrestar el peso.",
+   "Mantén las caderas cuadradas al suelo; no las abras hacia el lado.",
+   "Baja la mancuerna hacia el pie de la pierna de apoyo sintiendo un estiramiento profundo en los isquiotibiales.",
+   "Impulsa la cadera hacia adelante para volver a ponerte de pie con control.",
+   "Completa todas las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Peso muerto rumano unilateral",
+  "cue": "Cadera atrás y pelvis estable durante todo el recorrido."
+ },
+ "pull_through": {
+  "src": "rep",
+  "files": [
+   "cable-pull-through-start.webp",
+   "cable-pull-through-peak.webp"
+  ],
+  "steps": [
+   "Coloca una cuerda en la polea baja y ponte de espaldas a la máquina con la cuerda entre las piernas.",
+   "Avanza hasta tensar el cable, activa el tronco y flexiona ligeramente las rodillas.",
+   "Lleva las caderas hacia atrás manteniendo la columna neutra y los brazos largos.",
+   "Empuja las caderas hacia delante y contrae los glúteos hasta quedar erguido.",
+   "Vuelve de forma controlada a la siguiente bisagra sin dejar caer el bloque de pesas."
+  ],
+  "name": "Pull through en polea",
+  "cue": "Hacé bisagra de cadera y terminá con glúteos, no con lumbar."
+ },
+ "smith_hip_thrust": {
+  "src": "rep",
+  "files": [
+   "smith-machine-hip-thrust-start.webp",
+   "smith-machine-hip-thrust-peak.webp"
+  ],
+  "steps": [
+   "Coloca un banco plano dentro de la máquina Smith, paralelo a la barra y situado de forma que la barra quede sobre el pliegue de tu cadera.",
+   "Baja la barra lo suficiente para poder pasar por debajo sentado en el suelo, y apoya la parte alta de la espalda en el banco.",
+   "Desliza las caderas bajo la barra para que quede sobre el pliegue de la cadera, ponle una almohadilla si la necesitas y desengánchala, con los pies planos y a la anchura de las caderas.",
+   "Empuja con los talones y extiende las caderas hasta que muslos y torso formen una línea recta, apretando los glúteos arriba.",
+   "Baja las caderas de forma controlada hasta quedar justo por encima del suelo y repite el número de repeticiones deseado."
+  ],
+  "name": "Hip thrust en Smith",
+  "cue": "Pausa arriba con pelvis estable y costillas controladas."
+ },
+ "backext_glute": {
+  "src": "rep",
+  "files": [
+   "back-extension-start.webp",
+   "back-extension-peak.webp"
+  ],
+  "steps": [
+   "Acuéstate boca abajo en un banco de hiperextensión con las caderas en el borde del pad.",
+   "Baja el torso hacia el suelo.",
+   "Sube el torso hasta que el cuerpo quede recto."
+  ],
+  "name": "Extensión lumbar 45° sesgo glúteo",
+  "cue": "Foco en extender la cadera sin hiperextender la zona lumbar."
+ },
+ "cable_abduction": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "De costado a la polea baja, fijá la tobillera en la pierna más alejada y sujetate al soporte.",
+   "Separá esa pierna lateralmente manteniendo la pelvis nivelada. Volvé sin que el cable te arrastre."
+  ],
+  "name": "Abducción de cadera en polea",
+  "cue": "Pelvis quieta y recorrido controlado."
+ },
+ "cable_adduction": {
+  "src": "free",
+  "files": [
+   "Cable_Hip_Adduction/0.jpg",
+   "Cable_Hip_Adduction/1.jpg"
+  ],
+  "steps": [
+   "Fijá la tobillera en la pierna más cercana a la polea y sujetate a un soporte.",
+   "Acercá la pierna hacia la línea media con el torso quieto. Volvé hasta recuperar la posición inicial."
+  ],
+  "name": "Aductores en polea",
+  "cue": "Torso estable y llevá la pierna hacia la línea media."
+ },
+ "single_calf": {
+  "src": "rep",
+  "files": [
+   "single-leg-calf-raise-start.webp",
+   "single-leg-calf-raise-peak.webp"
+  ],
+  "steps": [
+   "Ponte de pie sobre una pierna y levanta el otro pie del suelo con la rodilla flexionada.",
+   "Deja los brazos relajados a los lados y activa el core para mantener el equilibrio.",
+   "Empuja hacia arriba sobre la punta del pie tan alto como puedas.",
+   "Baja el talón de nuevo al suelo con control.",
+   "Completa todas las repeticiones de un lado y luego cambia."
+  ],
+  "name": "Gemelo unilateral de pie",
+  "cue": "Estirá abajo y pausá arriba sin rebotes."
+ },
+ "donkey_calf": {
+  "src": "rep",
+  "files": [
+   "donkey-calf-raise-start.webp",
+   "donkey-calf-raise-peak.webp"
+  ],
+  "steps": [
+   "Flexiona las caderas y apoya las manos en el suelo delante de ti, con la cadera alta y las piernas casi rectas.",
+   "Separa los pies a la anchura de las caderas, con el peso sobre las puntas.",
+   "Baja los talones todo lo que puedas (por debajo del borde si estás sobre una plataforma elevada) para un estiramiento completo.",
+   "Empuja arriba sobre las puntas tanto como puedas, contrayendo las pantorrillas.",
+   "Baja con control hasta el estiramiento profundo."
+  ],
+  "name": "Gemelos tipo burro",
+  "cue": "Mové solo el tobillo y buscá recorrido completo."
+ },
+ "tibialis_raise": {
+  "src": "diagram",
+  "files": [],
+  "steps": [
+   "Apoyá la espalda en una pared, adelantá los pies y mantené los talones firmes en el suelo.",
+   "Levantá las puntas de ambos pies hacia las espinillas. Pausá arriba y bajalas sin golpear el piso."
+  ],
+  "name": "Elevación de tibial anterior",
+  "cue": "Apoyá talones y elevá la punta del pie de forma controlada."
+ },
+ "floor_crunch": {
+  "src": "rep",
+  "files": [
+   "crunches-start.webp",
+   "crunches-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca arriba con las rodillas dobladas y las manos detrás de la cabeza.",
+   "Enrolla el tronco superior hacia las rodillas levantando los omóplatos del suelo.",
+   "Aprieta el abdomen en la posición superior.",
+   "Baja con control."
+  ],
+  "name": "Crunch en suelo",
+  "cue": "Acercá costillas a pelvis sin tirar del cuello."
+ },
+ "decline_crunch": {
+  "src": "rep",
+  "files": [
+   "decline-crunch-start.webp",
+   "decline-crunch-peak.webp"
+  ],
+  "steps": [
+   "Asegura los pies en la parte superior del banco declinado.",
+   "Recuéstate con las manos cruzadas sobre el pecho o detrás de la cabeza.",
+   "Sube contrayendo la columna hacia las rodillas.",
+   "Aprieta el abdomen en la posición superior.",
+   "Baja de forma controlada y repite."
+  ],
+  "name": "Crunch declinado",
+  "cue": "Controlá la bajada y evitá usar impulso."
+ },
+ "reverse_crunch": {
+  "src": "rep",
+  "files": [
+   "reverse-crunches-start.webp",
+   "reverse-crunches-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca arriba con los brazos a los lados.",
+   "Eleva las piernas con las rodillas flexionadas a 90 grados.",
+   "Despega las caderas del suelo contrayendo el abdomen inferior.",
+   "Lleva las rodillas hacia el pecho.",
+   "Baja las caderas con control."
+  ],
+  "name": "Crunch inverso",
+  "cue": "Llevá la pelvis hacia el torso sin balancear piernas."
+ },
+ "hanging_knee": {
+  "src": "rep",
+  "files": [
+   "hanging-knee-raise-start.webp",
+   "hanging-knee-raise-peak.webp"
+  ],
+  "steps": [
+   "Cuélgate de una barra con agarre prono y los brazos completamente extendidos.",
+   "Activa el core y sube las rodillas hacia el pecho.",
+   "Mantén brevemente arriba.",
+   "Baja las piernas despacio a la posición inicial."
+  ],
+  "name": "Elevación de rodillas colgado",
+  "cue": "Subí rodillas sin balanceo y terminá con pelvis en retroversión."
+ },
+ "lying_leg_raise": {
+  "src": "rep",
+  "files": [
+   "lying-leg-raise-start.webp",
+   "lying-leg-raise-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca arriba con las piernas rectas y las manos bajo la zona lumbar o sujetando una superficie estable detrás de la cabeza.",
+   "Con las piernas juntas y el core activado, eleva las piernas hasta la vertical.",
+   "Pausa brevemente arriba.",
+   "Baja las piernas despacio hacia el suelo sin llegar a apoyarlas."
+  ],
+  "name": "Elevación de piernas en suelo",
+  "cue": "Mantené la zona lumbar controlada durante el recorrido."
+ },
+ "captain_knee": {
+  "src": "rep",
+  "files": [
+   "captains-chair-knee-raise-start.webp",
+   "captains-chair-knee-raise-peak.webp"
+  ],
+  "steps": [
+   "Colócate en la silla romana con la espalda plana contra el respaldo y los antebrazos en los apoyos.",
+   "Deja las piernas colgando rectas hacia abajo.",
+   "Activa el core y sube las rodillas hacia el pecho.",
+   "Mantén brevemente arriba, luego baja despacio a la posición inicial."
+  ],
+  "name": "Elevación de rodillas en paralelas",
+  "cue": "Apoyá bien hombros y evitá balancearte."
+ },
+ "ab_machine_v65": {
+  "src": "rep",
+  "files": [
+   "machine-seated-crunch-start.webp",
+   "machine-seated-crunch-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en la máquina de abdominales y sujeta las manijas.",
+   "Coloca la almohadilla de pecho contra tu torso.",
+   "Contrae el abdomen para flexionar el torso hacia adelante y abajo.",
+   "Contrae al final del recorrido.",
+   "Vuelve a la posición inicial con control."
+  ],
+  "name": "Abdominal en máquina",
+  "cue": "Exhalá al cerrar y no tires con brazos."
+ },
+ "ab_wheel_knees": {
+  "src": "rep",
+  "files": [
+   "ab-wheel-rollout-start.webp",
+   "ab-wheel-rollout-peak.webp"
+  ],
+  "steps": [
+   "Arrodíllate en el suelo y agarra las asas de la rueda a la anchura de los hombros.",
+   "Activa fuertemente el core para que la zona lumbar quede neutra.",
+   "Rueda la rueda lentamente hacia adelante, extendiendo el cuerpo lo más lejos que puedas controlar.",
+   "Detente antes de que las caderas se hundan o la espalda se arquee.",
+   "Tira de la rueda de regreso hacia las rodillas contrayendo los abdominales."
+  ],
+  "name": "Rueda abdominal de rodillas",
+  "cue": "Avanzá solo hasta donde puedas mantener pelvis y lumbar estables."
+ },
+ "dead_bug": {
+  "src": "rep",
+  "files": [
+   "dead-bug-start.webp",
+   "dead-bug-peak.webp"
+  ],
+  "steps": [
+   "Túmbate boca arriba con los brazos extendidos hacia el techo y las rodillas a 90 grados.",
+   "Baja el brazo derecho y la pierna izquierda hacia el suelo manteniendo la zona lumbar presionada contra el suelo.",
+   "Regresa a la posición inicial.",
+   "Repite del otro lado.",
+   "Alterna."
+  ],
+  "name": "Dead bug",
+  "cue": "Mantené la zona lumbar estable mientras alternás brazos y piernas."
+ },
+ "hollow_hold": {
+  "src": "rep",
+  "files": [
+   "hollow-body-hold-main.webp"
+  ],
+  "steps": [
+   "Acuéstate boca arriba con los brazos extendidos sobre la cabeza y las piernas rectas.",
+   "Presiona la zona lumbar firmemente contra el suelo.",
+   "Levanta ligeramente los hombros, la cabeza y las piernas del suelo.",
+   "Mantén la posición con brazos y piernas extendidos, cuerpo en forma de plátano poco profundo.",
+   "Sostén durante el tiempo indicado."
+  ],
+  "name": "Hollow hold",
+  "cue": "Pegá la zona lumbar al suelo y sostené sin perder postura."
+ },
+ "side_plank": {
+  "src": "rep",
+  "files": [
+   "side-plank-main.webp"
+  ],
+  "steps": [
+   "Acuéstate de lado con el antebrazo en el suelo y el codo bajo el hombro.",
+   "Levanta las caderas del suelo formando una línea recta de la cabeza a los pies.",
+   "Mantén la posición con el core apretado.",
+   "Respira con regularidad.",
+   "Repite de ambos lados."
+  ],
+  "name": "Plancha lateral",
+  "cue": "Mantené cadera alineada y cuerpo en una línea."
+ },
+ "pallof": {
+  "src": "rep",
+  "files": [
+   "cable-pallof-press-start.webp",
+   "cable-pallof-press-peak.webp"
+  ],
+  "steps": [
+   "Coloca la polea a la altura del pecho y toma el agarre con ambas manos, situado de lado respecto a la máquina.",
+   "Sepárate hasta que haya tensión real en el cable, con los pies a la anchura de los hombros y las rodillas ligeramente flexionadas.",
+   "Lleva el agarre al centro del pecho y aprieta el tronco y los glúteos.",
+   "Empuja el agarre recto hacia delante hasta extender los brazos, resistiendo el tirón que quiere rotarte hacia la máquina.",
+   "Mantén un instante la posición extendida y devuelve después el agarre al pecho de forma controlada.",
+   "Completa las repeticiones deseadas, luego date la vuelta y repite hacia el otro lado."
+  ],
+  "name": "Pallof press",
+  "cue": "Resistí la rotación mientras extendés los brazos."
+ },
+ "woodchop": {
+  "src": "free",
+  "files": [
+   "Standing_Cable_Wood_Chop/0.jpg",
+   "Standing_Cable_Wood_Chop/1.jpg"
+  ],
+  "steps": [
+   "De costado a una polea alta, sujetá la manija con ambas manos y afirmá los pies.",
+   "Guiá la manija en diagonal hacia la cadera contraria. Controlá la vuelta y cambiá de lado."
+  ],
+  "name": "Woodchop en polea",
+  "cue": "Rotá desde el tronco sin perder estabilidad de pelvis."
+ },
+ "wrist_curl_bar": {
+  "src": "rep",
+  "files": [
+   "barbell-wrist-curl-start.webp",
+   "barbell-wrist-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en un banco con los antebrazos sobre los muslos, palmas hacia arriba.",
+   "Sujeta una barra con las manos a la anchura de los hombros, muñecas fuera de las rodillas.",
+   "Deja que la barra ruede hasta las puntas de los dedos.",
+   "Sube la barra flexionando las muñecas.",
+   "Baja con control."
+  ],
+  "name": "Curl de muñeca con barra",
+  "cue": "Apoyá antebrazos y mové solo la muñeca."
+ },
+ "wrist_ext_bar": {
+  "src": "free",
+  "files": [
+   "Palms-Down_Wrist_Curl_Over_A_Bench/0.jpg",
+   "Palms-Down_Wrist_Curl_Over_A_Bench/1.jpg"
+  ],
+  "steps": [
+   "Apoyá los antebrazos con las palmas hacia abajo y dejá las muñecas libres por el borde.",
+   "Elevá los nudillos extendiendo las muñecas. Bajá la barra sin despegar los antebrazos."
+  ],
+  "name": "Extensión de muñeca con barra",
+  "cue": "Antebrazos apoyados y recorrido controlado."
+ },
+ "wrist_curl_db": {
+  "src": "rep",
+  "files": [
+   "dumbbell-wrist-curl-start.webp",
+   "dumbbell-wrist-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en un banco con el antebrazo sobre el muslo, palma hacia arriba.",
+   "Sujeta una mancuerna con la muñeca fuera de la rodilla.",
+   "Deja que la mancuerna ruede hasta las puntas de los dedos.",
+   "Sube la mancuerna flexionando la muñeca.",
+   "Baja con control. Repeticiones por lado."
+  ],
+  "name": "Curl de muñeca con mancuernas",
+  "cue": "Mové solo la muñeca y evitá rebotes."
+ },
+ "wrist_ext_db": {
+  "src": "rep",
+  "files": [
+   "db-reverse-wrist-curl-start.webp",
+   "db-reverse-wrist-curl-peak.webp"
+  ],
+  "steps": [
+   "Siéntate en un banco con el antebrazo sobre el muslo, palma hacia abajo.",
+   "Sujeta una mancuerna con la muñeca fuera de la rodilla.",
+   "Deja caer la muñeca, bajando la mancuerna.",
+   "Levanta el dorso de la mano hacia el techo extendiendo la muñeca.",
+   "Baja con control. Repeticiones por lado."
+  ],
+  "name": "Extensión de muñeca con mancuernas",
+  "cue": "Controlá la bajada y mantené antebrazo fijo."
+ },
+ "reverse_ez": {
+  "src": "rep",
+  "files": [
+   "ez-bar-reverse-curl-start.webp",
+   "ez-bar-reverse-curl-peak.webp"
+  ],
+  "steps": [
+   "Sujeta una barra Z con agarre prono.",
+   "Sube la barra hacia tus hombros.",
+   "Baja de forma controlada."
+  ],
+  "name": "Curl inverso con barra EZ",
+  "cue": "Muñecas firmes y codos quietos."
+ },
+ "cross_hammer": {
+  "src": "rep",
+  "files": [
+   "cross-body-hammer-curl-start.webp",
+   "cross-body-hammer-curl-peak.webp"
+  ],
+  "steps": [
+   "De pie, sujeta una mancuerna en cada mano con agarre neutro.",
+   "Sube una mancuerna cruzando el cuerpo hacia el hombro opuesto.",
+   "Mantén el codo fijo a tu costado.",
+   "Baja de forma controlada y repite del otro lado.",
+   "Continúa alternando el número de repeticiones deseado."
+  ],
+  "name": "Curl martillo cruzado",
+  "cue": "Llevá la mancuerna hacia el hombro opuesto sin balancear."
+ },
+ "farmer_walk": {
+  "src": "rep",
+  "files": [
+   "dumbbell-farmers-walk-main.webp"
+  ],
+  "steps": [
+   "Párate erguido con una mancuerna en cada mano, los brazos extendidos a los lados.",
+   "Retrae tus escápulas y activa tu core, manteniendo una columna vertebral neutra.",
+   "Camina lenta y deliberadamente por una distancia o duración establecida, dando pasos cortos y controlados.",
+   "Mantén el pecho erguido y evita inclinarte hacia un lado mientras caminas.",
+   "Concéntrate en mantener una postura fuerte y estable durante todo el movimiento."
+  ],
+  "name": "Farmer walk",
+  "cue": "Caminá erguido con agarre firme y pasos controlados."
+ },
+ "plate_pinch": {
+  "src": "rep",
+  "files": [
+   "plate-pinch-start.webp",
+   "plate-pinch-peak.webp"
+  ],
+  "steps": [
+   "Coloca un disco de canto en el suelo.",
+   "Baja en sentadilla y pellizca el disco por el borde entre los dedos y el pulgar de una mano — sin agarraderas, solo pellizca.",
+   "Levántate y sostén el disco al costado durante el tiempo deseado, manteniendo el brazo recto.",
+   "Devuélvelo al suelo con control."
+  ],
+  "name": "Pinza de discos",
+  "cue": "Sostené los discos con dedos y pulgar sin compensar."
+ },
+ "wrist_roller": {
+  "src": "rep",
+  "files": [
+   "wrist-roller-start.webp",
+   "wrist-roller-peak.webp"
+  ],
+  "steps": [
+   "Agarra el mango del rodillo con los codos flexionados a los costados y los antebrazos al frente a la altura de la cintura.",
+   "Deja que el peso cuelgue del cordón.",
+   "Enrolla el mango hacia adelante con movimientos alternos de muñeca para subir el peso.",
+   "Mantén los codos pegados a los costados durante todo el movimiento.",
+   "Una vez enrollado por completo, invierte la rotación para bajar el peso."
+  ],
+  "name": "Rodillo de muñeca",
+  "cue": "Enrollá y desenrollá lentamente sin mover los hombros."
+ },
+ "pron_sup_db": {
+  "src": "free",
+  "files": [
+   "Dumbbell_Lying_Supination/0.jpg",
+   "Dumbbell_Lying_Supination/1.jpg"
+  ],
+  "steps": [
+   "Apoyá el antebrazo con el codo flexionado y sujetá la mancuerna de forma que puedas controlar el giro.",
+   "Girá la palma hacia arriba y después hacia abajo. El movimiento sale del antebrazo, con el codo quieto."
+  ],
+  "name": "Pronación y supinación con mancuerna",
+  "cue": "Codo apoyado y rotación lenta dentro de un rango cómodo."
+ },
+ "wrist_cable": {
+  "src": "rep",
+  "files": [
+   "cable-wrist-curl-start.webp",
+   "cable-wrist-curl-peak.webp"
+  ],
+  "steps": [
+   "Engancha una barra recta corta a una polea baja y siéntate en un banco plano mirando hacia la polea, con los pies apoyados en el suelo.",
+   "Agarra la barra en supinación, con las palmas hacia arriba y las manos más o menos a la anchura de los hombros.",
+   "Apoya los antebrazos en los muslos de forma que las muñecas y las manos sobresalgan justo por delante de las rodillas.",
+   "Deja que el cable lleve las muñecas hacia abajo hasta notar un estiramiento en los antebrazos.",
+   "Sube la barra flexionando las muñecas, manteniendo los antebrazos sobre los muslos.",
+   "Baja la barra con control y repite el número de repeticiones previsto."
+  ],
+  "name": "Flexión de muñeca en polea",
+  "cue": "Mantené antebrazo fijo y controlá el retorno."
+ },
+ "dead_hang": {
+  "src": "rep",
+  "files": [
+   "dead-hang-main.webp"
+  ],
+  "steps": [
+   "Agarra la barra de dominadas con las palmas mirando hacia afuera, a la anchura de los hombros.",
+   "Cuélgate con los brazos completamente extendidos y los pies sin tocar el suelo.",
+   "Relaja los hombros y deja que el cuerpo cuelgue.",
+   "Mantén el core ligeramente activo.",
+   "Aguanta el tiempo deseado."
+  ],
+  "name": "Dead hang",
+  "cue": "Colgate con hombros activos y agarre firme dentro de un tiempo cómodo."
+ }
+}

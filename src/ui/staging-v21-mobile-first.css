@@ -861,3 +861,10 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
  #app #fjzPreviewSections svg,#app #fjzCoachGlobalNav .fjz-coach-mobile-links svg{width:20px!important;height:20px!important}
  #app #fjzPreviewSections button[aria-current],#app #fjzCoachGlobalNav .fjz-coach-mobile-links button[aria-current]{background:#301a23!important;border-color:#743045!important;color:#fff!important;box-shadow:inset 0 -2px #c83a54!important}
 }
+.fjz-tech-guide{box-sizing:border-box;min-width:0;padding:9px 12px;background:#171a22;border:1px solid #383d49;border-radius:14px;color:#e9edf5}
+.fjz-tech-guide>summary,.fjz-tech-instructions>summary{min-height:38px;align-content:center;cursor:pointer;font-size:14px;line-height:1.35}
+.fjz-tech-guide>.fjz-tech-frames{gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(105px,100%),1fr))}
+.fjz-tech-guide .fjz-tech-frames figure{overflow:hidden;border-radius:10px;background:#f4f4f5}
+.fjz-tech-guide .fjz-tech-frames :is(img,svg){display:block;background:#f4f4f5;width:100%;height:clamp(114px,24vw,190px);object-fit:contain}
+.fjz-tech-guide figcaption{padding:5px 7px;color:#333a48;background:#e7e9ed;font:600 12px/1.4 system-ui;text-align:center}
+.fjz-tech-instructions{margin-top:8px}.fjz-tech-instructions ol{padding-inline-start:24px}.fjz-tech-instructions li,.fjz-tech-instructions p{font:400 15px/1.55 system-ui;margin-block:8px}.fjz-tech-instructions li::marker{color:#ff748b;font-weight:bold}

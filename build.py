@@ -1360,6 +1360,14 @@ if APP_ENV == "staging":
     staging_artifact = staging_artifact[:macro_start] + """</div><small>Por porción · aprox.</small><div class="v70-recipe-meta">${[['kcal_per_serving','kcal'],['protein_g','g proteína'],['carbs_g','g carbos'],['fat_g','g grasas']].map(([key,unit])=>`<span class="v70-recipe-pill">${r[key]==null?'—':nFmt(r[key],1)} ${unit}</span>`).join('')}""" + staging_artifact[macro_end:]
     for module in ("exercise-photos", "steps"):
         source = pathlib.Path("src/modules/activity", module + ".js").read_text()
+        if module == "exercise-photos":
+            guides = json.loads(pathlib.Path("src/modules/activity/exercise-guides.json").read_text())
+            from scripts.staging_exercise_assets import package
+            package(guides, staging_artifact_path.parent)
+            staging_artifact = staging_artifact.replace("modal?.classList.add('v269-exercise-modal');", "installExerciseGuidePicker(modal,e); modal?.classList.add('v269-exercise-modal');")
+            staging_artifact = staging_artifact.replace("libId:libId||old?.libId||'custom',", "libId:libId||old?.libId||'custom', techniqueGuideId:el('fjzGuidePicker')?.value ?? old?.techniqueGuideId ?? '',")
+            source = "const exerciseGuides=" + json.dumps(guides, ensure_ascii=False).replace("<", r"\u003c") + ";\n" + source
+            staging_artifact = staging_artifact.replace('<div class="footer-note">', '<div class="footer-note"><a href="https://repdb.co" rel="nofollow">Exercise data by RepDB (repdb.co)</a> · ', 1)
         staging_artifact = staging_artifact.replace("</body>", "<script>" + source + "</script>\n</body>", 1)
     library_card = """'<div class="library-item"><h4>'+esc(x.name)+'</h4><p>'"""
     if library_card not in staging_artifact:
