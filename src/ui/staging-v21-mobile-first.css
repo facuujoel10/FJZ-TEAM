@@ -843,3 +843,21 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 #modal:has(.v244-timeline) .v244-timeline-block{padding:18px!important}
 #modal:has(.v244-timeline) .v244-exercise-list{display:grid;gap:14px}
 #modal:has(.v244-timeline){padding:clamp(12px,3vw,24px)!important}
+#modal:has(#stepPanel) .modal-head .step-close{min-width:40px!important;width:40px!important;height:40px!important;padding:0!important;flex:0 0 40px;display:grid;place-items:center;font:22px/1 system-ui;box-sizing:border-box}
+.meal-shortcuts{display:flex;gap:6px;flex-wrap:wrap}
+.meal-shortcuts button{background:#222630;color:#eee;border:1px solid #424955;border-radius:8px;padding:9px;cursor:pointer}
+#app #view .fjz4a-resource-actions button{position:relative;min-height:54px;text-align:left;padding:12px 42px 12px 16px!important;background:#20232c!important;border:1px solid #414754!important;border-radius:12px;cursor:pointer}
+#app #view .fjz4a-resource-actions button::after{content:'›';position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#ff6178;font-size:24px}
+@media(max-width:760px){
+ #app #view:has(>#studentSubBody)>.hero{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:0!important;padding:4px 0!important;margin:4px 0 10px!important;border:0!important;background:none!important;box-shadow:none!important}
+ #app #view:has(>#studentSubBody)>.hero>div{margin:0!important;padding:0!important}
+ #app #fjzPreviewSections,#app #fjzCoachGlobalNav .fjz-coach-mobile-links{box-sizing:border-box!important;inset-inline:6px!important;gap:2px!important;padding:5px!important;border-radius:16px!important;scrollbar-width:none}
+ #app #fjzPreviewSections::-webkit-scrollbar{display:none}
+ #app #fjzPreviewSections button,#app #fjzCoachGlobalNav .fjz-coach-mobile-links button{box-sizing:border-box!important;min-height:54px!important;height:54px!important;border:1px solid transparent!important;border-radius:11px!important;padding:4px 2px!important;gap:4px!important;font:700 11px/1.15 system-ui!important;box-shadow:none!important}
+ #app #fjzPreviewSections button{flex:0 0 calc((100% - 8px)/5);min-width:0}
+ #app #fjzPreviewSections button span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+ #app #fjzPreviewSections button[data-tab=training] span{font-size:0}
+ #app #fjzPreviewSections button[data-tab=training] span::after{content:'Entrenar';font-size:11px}
+ #app #fjzPreviewSections svg,#app #fjzCoachGlobalNav .fjz-coach-mobile-links svg{width:20px!important;height:20px!important}
+ #app #fjzPreviewSections button[aria-current],#app #fjzCoachGlobalNav .fjz-coach-mobile-links button[aria-current]{background:#301a23!important;border-color:#743045!important;color:#fff!important;box-shadow:inset 0 -2px #c83a54!important}
+}

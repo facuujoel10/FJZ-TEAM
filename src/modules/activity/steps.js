@@ -6,7 +6,7 @@
    const id=trackingAthleteId(),coach=currentProfile?.role==='coach'&&mode==='coach',studentRole=currentProfile?.role==='student';
    if(!id){toast('Seleccioná una ficha vinculada.');return}
    const day=new Intl.DateTimeFormat('sv-SE').format(new Date());
-   showModal('<div class="modal-head"><h3>Pasos diarios</h3><button class="btn" onclick="closeModal()">Cerrar</button></div><section id="stepPanel" aria-live="polite">Cargando…</section>');
+   showModal('<div class="modal-head"><h3>Pasos diarios</h3><button class="btn step-close" type="button" aria-label="Cerrar pasos" onclick="closeModal()">×</button></div><section id="stepPanel" aria-live="polite">Cargando…</section>');
    const panel=document.getElementById('stepPanel');
    const load=async()=>{
      const [target,logs]=await Promise.all([supabaseClient.from('step_targets').select('target').eq('athlete_id',id).maybeSingle(),supabaseClient.from('daily_steps').select('day,steps').eq('athlete_id',id).order('day',{ascending:false}).limit(7)]);

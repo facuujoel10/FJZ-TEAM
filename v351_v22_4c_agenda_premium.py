@@ -162,6 +162,7 @@ runtime=bridge+'<script id="v22AgendaPremiumRuntime">\n'+js+'\n</script>\n'+r'''
 
   const studentAgenda4C=function(){return window.TeamFJZAgendaPremium.renderStudent(true)};
   const coachAgenda4C=function(){
+    document.getElementById('view')?.classList.remove('fjz3b-mounted');
     document.getElementById('bottomNav')?.classList.add('fjz3a-hide-legacy-nav');
     return window.TeamFJZAgendaPremium.renderCoach(true);
   };
