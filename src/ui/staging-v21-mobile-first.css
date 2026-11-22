@@ -780,10 +780,20 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 #app #view .fjz4b-photo{border-radius:12px;overflow:hidden;background:#212633}
 #app #view .fjz4b-photo img{width:100%;object-fit:contain}
 @media(max-width:760px){
- #app #fjzPreviewSections{position:sticky;top:0;bottom:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:5px;margin:8px 0;background:#1b1e27;overflow:visible}
- #app #fjzPreviewSections button{min-width:0;padding:4px 1px;font-size:12px;min-height:40px;overflow-wrap:anywhere}
+ #app #fjzPreviewSections{position:fixed;inset:auto 8px max(6px,env(safe-area-inset-bottom)) 8px;display:grid;grid-template-columns:auto 1.5fr 1.1fr auto;align-items:center;gap:2px;padding:5px;margin:0;background:#191c23;overflow:visible;box-shadow:0 4px 22px #0008}
+ #app #fjzPreviewSections::before{content:attr(data-athlete);grid-column:1/-1;padding:2px 8px;color:#c6c9d1;font-size:12px}
+ #app #fjzPreviewSections :is(button,summary){box-sizing:border-box;min-width:0;min-height:44px;display:grid;place-items:center;padding:4px 6px;font:600 14px/1.2 system-ui;background:transparent;border:0;border-radius:9px;color:#d8dbe2;cursor:pointer}
+ #app #fjzPreviewSections :is([aria-current],details:has([aria-current]) summary){background:#9e1931;color:white}
+ #app .fjz-preview-more>div{position:absolute;bottom:calc(100% + 6px);right:0;min-width:155px;padding:6px;border:1px solid #424653;border-radius:12px;background:#1c1f27;box-shadow:0 6px 24px #0008}
+ #app .fjz-preview-more>div button{width:100%}
+ body.fjz-stage-student-preview #app{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
  #app #studentSubBody :is(small,label,.muted,.tiny){font-size:14px!important;line-height:1.45!important;color:#cbd0dc}
  #app #studentSubBody :is(select,input){font-size:16px!important;max-width:100%}
  #app #studentSubBody .fjz4a-calc-form{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
  #app #studentSubBody .fjz4a-calc-form>label:first-child{grid-column:1/-1}
+}
+
+@media(min-width:761px){
+ #fjzPreviewSections .fjz-preview-more,#fjzPreviewSections .fjz-preview-more>div{display:contents}
+ #fjzPreviewSections .fjz-preview-more summary{display:none}
 }

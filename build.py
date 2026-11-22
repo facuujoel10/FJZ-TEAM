@@ -1277,6 +1277,12 @@ if APP_ENV == "staging":
       menu.id='fjzPreviewSections';
       menu.setAttribute('aria-label','Secciones de la vista Alumno');
       const sections={home:'Inicio',training:'Entrenamiento',nutrition:'Nutrición',tracking:'Check-in',progress:'Progreso',history:'Historial',agenda:'Agenda'};
+      const picker=document.createElement('details');
+      picker.className='fjz-preview-more';
+      const summary=document.createElement('summary');
+      summary.textContent='Más';
+      const options=document.createElement('div');
+      picker.append(summary,options);
       for(const [tab,label] of Object.entries(sections)){
         const button=document.createElement('button');
         button.type='button';
@@ -1284,13 +1290,18 @@ if APP_ENV == "staging":
         button.dataset.tab=tab;
         button.onclick=()=>{
           if(mode!=='student'||currentProfile?.role!=='coach')return;
-          studentTab=tab;render();window.__fjzEnsureCoachPreviewV271();
+          picker.open=desktop.matches;studentTab=tab;render();window.__fjzEnsureCoachPreviewV271();
         };
-        menu.append(button);
+        (['home','training','nutrition'].includes(tab)?menu:options).append(button);
       }
+      const desktop=matchMedia('(min-width:761px)');
+      picker.open=desktop.matches;
+      desktop.onchange=()=>{picker.open=desktop.matches};
+      menu.append(picker);
       view.before(menu);
     }
-    for(const button of menu.children){
+    menu.dataset.athlete=student()?.name||'Vista alumno';
+    for(const button of menu.querySelectorAll('button[data-tab]')){
       if(button.dataset.tab===(studentTab==='workout'?'training':studentTab))button.setAttribute('aria-current','page');
       else button.removeAttribute('aria-current');
     }
