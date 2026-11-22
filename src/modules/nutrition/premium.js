@@ -162,7 +162,28 @@
     const c=context();resetIdentity(c);if(!studentScreen(c))return false;
     const host=root.document?.getElementById('studentSubBody');if(!host)return false;
     const p=c?.cache?.plan,pd=planData(c);
-    if(!p||p.active===false){host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><p>Tu espacio diario de nutrición.</p></div></header><section class="fjz4a-empty-state"><strong>Sin plan activo</strong><span>Tu coach todavía no publicó un plan nutricional activo.</span><button type="button" data-4a-action="recipes">Ver recetas disponibles</button></section>'+resourcesHtml(pd||{},true)+calculatorHtml(c)+portionCalculator()+'</div>';bindHost(host);return true}
+    if(!p||p.active===false){
+      host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><h1>Mi alimentación</h1><p>Sin plan asignado. Podés explorar el recetario por comida.</p></header><section class="fjz4a-student-meals-v21" data-library-meals></section>'+resourcesHtml(pd||{},true)+calculatorHtml(c)+portionCalculator()+'</div>';
+      const library=host.querySelector('[data-library-meals]');
+      const categories=['Desayuno','Almuerzo','Merienda','Cena'];
+      library.innerHTML='<h2>Recetas por comida</h2><nav class="fjz4a-student-meal-nav" aria-label="Comidas"></nav><div class="v70-recipe-grid" aria-live="polite">Cargando recetas…</div>';
+      const nav=library.querySelector('nav'),grid=library.lastElementChild;
+      loadRecipesV70().then(rows=>{
+        if(!library.isConnected)return;
+        for(const category of categories){
+          const tab=root.document.createElement('button');
+          tab.type='button';tab.textContent=category;
+          tab.onclick=()=>{
+            for(const other of nav.children)other.setAttribute('aria-pressed',String(other===tab));
+            const matching=rows.filter(r=>text(r.category).toLowerCase()===category.toLowerCase());
+            grid.innerHTML=matching.map(recipeCardV70).join('')||'Sin recetas en esta categoría.';
+          };
+          nav.append(tab);
+        }
+        nav.firstElementChild.click();
+      }).catch(()=>{grid.textContent='No se pudo cargar el recetario.'});
+      bindHost(host);return true;
+    }
     if(!ui.savedSignature)ui.savedSignature=signature(c);
     const logging=c.profile.role==='student'&&p.student_logging_enabled!==false;
     const meals=pd?.meals||[];

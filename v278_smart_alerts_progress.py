@@ -1339,7 +1339,7 @@ runtime=r"""
   }
   function chartSvgV278(points,{target=null,unit='',trend=true}={}){
     if(!points?.length)return '<div class="v278-empty">Todavía no hay suficientes registros para graficar.</div>';
-    const W=640,H=220,L=48,R=16,T=18,B=34;
+    const W=window.innerWidth<760?360:640,H=220,L=42,R=24,T=24,B=34;
     const vals=points.map(x=>Number(x.value)).filter(Number.isFinite);
     if(Number.isFinite(target))vals.push(target);
     let min=Math.min(...vals),max=Math.max(...vals);
@@ -1435,6 +1435,7 @@ runtime=r"""
     if(!row){body.innerHTML='<div class="v278-empty">Todavía no hay sesiones suficientes para analizar ejercicios.</div>';return}
     selectedExerciseV278=row.key;
     const items=row.items.slice(-10);
+    if(!items.some(x=>x.weighted)&&selectedMetricV278==='load'){selectedMetricV278='reps';if(metricSel)metricSel.value='reps'}
     const metric=selectedMetricV278;
     const pts=items.map(x=>({date:x.date,value:metricValueV278(x,metric)})).filter(x=>Number.isFinite(x.value));
     const cur=pts[pts.length-1],prev=pts[pts.length-2];
@@ -1456,7 +1457,7 @@ runtime=r"""
 
   function performanceSectionV278(s){
     const rows=exerciseSeriesV278(s).filter(x=>x.items.length>=1).sort((a,b)=>b.items.length-a.items.length);
-    if(!rows.length)return '<div class="v278-empty">Todavía no hay resultados por ejercicio para graficar.</div>';
+    if(!rows.length)return '<p>Tu primera sesión registrada va a aparecer acá.</p><details><summary>Ver gráfico de ejemplo</summary><figure><figcaption>Ejemplo · Dominadas · repeticiones totales por sesión</figcaption><div class="v278-chart-shell">'+chartSvgV278([16,24,18,18,22,16].map((value,i)=>({value,date:'2026-11-'+String(1+i*3).padStart(2,'0')})),{trend:false})+'</div></figure></details>';
     if(!selectedExerciseV278||!rows.some(x=>x.key===selectedExerciseV278))selectedExerciseV278=rows[0].key;
     const options=rows.map(x=>'<option value="'+esc(x.key)+'" '+(x.key===selectedExerciseV278?'selected':'')+'>'+esc(x.name)+'</option>').join('');
     const metrics=[['load','Carga'],['reps','Reps'],['volume','Volumen'],['rir','RIR promedio']]

@@ -1277,27 +1277,24 @@ if APP_ENV == "staging":
       menu.id='fjzPreviewSections';
       menu.setAttribute('aria-label','Secciones de la vista Alumno');
       const sections={home:'Inicio',training:'Entrenamiento',nutrition:'Nutrición',tracking:'Check-in',progress:'Progreso',history:'Historial',agenda:'Agenda'};
-      const picker=document.createElement('details');
-      picker.className='fjz-preview-more';
-      const summary=document.createElement('summary');
-      summary.textContent='Más';
-      const options=document.createElement('div');
-      picker.append(summary,options);
+      const brand=document.querySelector('#fjzCoachGlobalNav .fjz-coach-nav-brand')?.cloneNode(true)||document.createElement('strong');
+      if(!brand.textContent)brand.textContent='TEAM FJZ';
+      brand.classList.add('student-menu-brand');
+      const subtitle=brand.querySelector('small');
+      if(subtitle)subtitle.textContent='ALUMNO';
+      menu.append(brand);
+      const paths={home:'M3 11l9-8 9 8v10h-6v-7H9v7H3z',training:'M3 9v6m3-9v12m0-6h12m0-6v12m3-9v6',nutrition:'M4 3v6q3 4 6 0V3M7 3v18m12-18q-6 5-4 10h4m0-10v18',tracking:'M7 5H4v16h16V5h-3M8 3h8v4H8zM7 14l3 3 6-7',progress:'M3 3v18h18M6 16l5-6 4 3 6-8',history:'M3 5v5h5M3 10a9 9 0 1 1 1 8m8-12v6l4 2',agenda:'M3 6h18v15H3zM7 3v6m10-6v6M3 11h18'};
       for(const [tab,label] of Object.entries(sections)){
         const button=document.createElement('button');
         button.type='button';
-        button.textContent=label;
+        button.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="'+paths[tab]+'"/></svg><span>'+label+'</span>';
         button.dataset.tab=tab;
         button.onclick=()=>{
           if(mode!=='student'||currentProfile?.role!=='coach')return;
-          picker.open=desktop.matches;studentTab=tab;render();window.__fjzEnsureCoachPreviewV271();
+          studentTab=tab;render();window.__fjzEnsureCoachPreviewV271();
         };
-        (['home','training','nutrition'].includes(tab)?menu:options).append(button);
+        menu.append(button);
       }
-      const desktop=matchMedia('(min-width:761px)');
-      picker.open=desktop.matches;
-      desktop.onchange=()=>{picker.open=desktop.matches};
-      menu.append(picker);
       view.before(menu);
     }
     menu.dataset.athlete=student()?.name||'Vista alumno';
@@ -1358,6 +1355,9 @@ if APP_ENV == "staging":
     if staging_artifact.count("</body>") != 1:
         raise RuntimeError("TEAM FJZ staging Finance body anchor mismatch")
     staging_artifact = staging_artifact.replace("</body>", '<script id="fjzStagingCoachFinanceV22">\n' + finance_js + '\n</script>\n</body>', 1)
+    macro_start = staging_artifact.index('${r.protein_g!=null?', staging_artifact.index('function recipeCardV70('))
+    macro_end = staging_artifact.index('</div>', macro_start)
+    staging_artifact = staging_artifact[:macro_start] + """</div><small>Por porción · aprox.</small><div class="v70-recipe-meta">${[['kcal_per_serving','kcal'],['protein_g','g proteína'],['carbs_g','g carbos'],['fat_g','g grasas']].map(([key,unit])=>`<span class="v70-recipe-pill">${r[key]==null?'—':nFmt(r[key],1)} ${unit}</span>`).join('')}""" + staging_artifact[macro_end:]
     for module in ("exercise-photos", "steps"):
         source = pathlib.Path("src/modules/activity", module + ".js").read_text()
         staging_artifact = staging_artifact.replace("</body>", "<script>" + source + "</script>\n</body>", 1)

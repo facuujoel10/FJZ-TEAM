@@ -797,3 +797,30 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
  #fjzPreviewSections .fjz-preview-more,#fjzPreviewSections .fjz-preview-more>div{display:contents}
  #fjzPreviewSections .fjz-preview-more summary{display:none}
 }
+
+#app #fjzPreviewSections{background:#101116;border:1px solid #383d49;padding:12px;box-sizing:border-box}
+#app #fjzPreviewSections button{display:flex;align-items:center;gap:10px;color:#bdc1cc;background:transparent;font-weight:700}
+#app #fjzPreviewSections button[aria-current]{color:white;background:#351821;box-shadow:inset 0 -2px #ff3756}
+#fjzPreviewSections svg{width:20px;height:20px;flex:none}
+.student-menu-brand{display:flex;align-items:center;gap:10px;padding:4px 0 12px}
+.student-menu-brand img{width:42px;height:42px;object-fit:contain}
+.student-menu-brand small{display:block;color:#b7bdc7}
+@media(min-width:761px){
+ #app:has(>#fjzPreviewSections){display:grid!important;grid-template-columns:clamp(155px,16vw,218px) minmax(0,1fr);align-items:start;gap:16px}
+ #app:has(>#fjzPreviewSections)>:is(.topbar,.footer-note){grid-column:1/-1}
+ #app #fjzPreviewSections{grid-column:1;display:grid;position:sticky;top:12px;width:100%;gap:5px;margin:0}
+ #app #fjzPreviewSections+#view{grid-column:2;min-width:0}
+}
+@media(max-width:760px){
+ #app #fjzPreviewSections{display:flex;flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;padding:4px;gap:2px}
+ #app #fjzPreviewSections::before,#app #fjzPreviewSections .student-menu-brand{display:none}
+ #app #fjzPreviewSections button{flex:0 0 auto;flex-direction:column;justify-content:center;min-width:65px;min-height:55px;font-size:12px;gap:3px;scroll-snap-align:start}
+}
+#app #studentSubBody .fjz4a-student-meals-v21 .fjz4a-student-meal-nav{display:flex!important;gap:8px;overflow:auto;min-width:0}
+#app #studentSubBody .fjz4a-student-meal-nav button{min-height:44px;flex:none;padding:8px 16px;background:#21252d;border:1px solid #444955;border-radius:10px;color:#eee;font:inherit}
+#app #studentSubBody .fjz4a-student-meal-nav button[aria-selected=true]{background:#a71835;color:white}
+#app #studentSubBody .fjz4a-student-meals-v21:has(.fjz4a-student-meal-nav){grid-template-columns:minmax(0,1fr)}
+#app #studentSubBody .fjz4a-student-meals-v21:has(.fjz4a-student-meal-nav)>.fjz4a-meal:not(.fjz4a-student-meal-active){display:none!important}
+#app #studentSubBody .fjz4a-student-meal-active{display:block!important}
+#view .v278-chart-shell svg.v278-chart{height:clamp(200px,30vw,290px);width:100%}
+#app #studentSubBody .fjz4a-student-meal-nav button[aria-pressed=true]{background:#a71835;color:white}
