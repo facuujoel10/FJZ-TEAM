@@ -758,3 +758,32 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
  #fjzPreviewSections button{flex:none;padding:8px 10px}
  body.fjz-stage-student-preview #view{padding-bottom:100px!important}
 }
+
+/* Keep student pages readable on wide displays, including Coach preview. */
+#app #view:has(.fjz4a-student-shell),body.fjz-stage-student-preview #app #view{
+ width:min(100%,1200px)!important;max-width:1200px!important;margin-inline:auto!important;box-sizing:border-box;padding-inline:clamp(12px,2vw,28px)!important
+}
+#app #studentSubBody .fjz4a-student-shell{display:grid!important;grid-template-columns:minmax(0,1fr);gap:18px!important}
+#app #studentSubBody .fjz4a-student-shell>:is(header,section,details){
+ box-sizing:border-box;min-width:0;margin:0!important;padding:clamp(15px,2vw,24px)!important;background:#151820!important;border:1px solid #363b46!important;border-radius:16px!important
+}
+#app #studentSubBody .fjz4a-student-shell>.fjz4a-student-head{background:linear-gradient(115deg,#321c25,#181a22 58%)!important;border-left:3px solid #ed3654!important}
+#app #studentSubBody .fjz4a-student-meals-v21{display:grid!important;gap:14px!important}
+#app #studentSubBody .fjz4a-student-meals-v21>.fjz4a-meal{padding:16px!important;border:1px solid #393f4c!important;border-radius:12px!important;background:#1b1e27!important;margin:0!important}
+#app #studentSubBody .fjz4a-student-shell :is(p,small){font-size:clamp(13px,1vw,15px)!important;line-height:1.5!important}
+@media(min-width:761px){
+ #app #studentSubBody .fjz4a-student-meals-v21{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #app #studentSubBody .fjz4a-student-meals-v21>:not(.fjz4a-meal){grid-column:1/-1}
+}
+#app #view :is(.tiny,.micro,.v271-preview-copy small,.v275-training-kpi small,.v275-training-kpi span){font-size:13px!important;line-height:1.45!important}
+#app #view .fjz4b-photo-triptych{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#app #view .fjz4b-photo{border-radius:12px;overflow:hidden;background:#212633}
+#app #view .fjz4b-photo img{width:100%;object-fit:contain}
+@media(max-width:760px){
+ #app #fjzPreviewSections{position:sticky;top:0;bottom:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:5px;margin:8px 0;background:#1b1e27;overflow:visible}
+ #app #fjzPreviewSections button{min-width:0;padding:4px 1px;font-size:12px;min-height:40px;overflow-wrap:anywhere}
+ #app #studentSubBody :is(small,label,.muted,.tiny){font-size:14px!important;line-height:1.45!important;color:#cbd0dc}
+ #app #studentSubBody :is(select,input){font-size:16px!important;max-width:100%}
+ #app #studentSubBody .fjz4a-calc-form{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ #app #studentSubBody .fjz4a-calc-form>label:first-child{grid-column:1/-1}
+}
