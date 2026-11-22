@@ -36,12 +36,12 @@
         '<button type="button" data-coach-dest="payments">Finanzas</button>'+
         '<button type="button" data-coach-dest="notice">Avisos</button>'+
       '</div>'+
-      '<details class="fjz-coach-more"><summary aria-label="Más herramientas del Coach">Más</summary><div class="fjz-coach-more-menu"><button type="button" data-coach-dest="templates">Plantillas</button><button type="button" data-coach-dest="payments">Finanzas</button><button type="button" data-coach-dest="notice">Avisos</button></div></details>'+
+      '<div class="fjz-coach-header-tools"><button type="button" data-coach-dest="notice">Avisos</button><button type="button" data-coach-dest="templates">Plantillas</button></div>'+
       '<div class="fjz-coach-mobile-links" aria-label="Navegación móvil Coach">'+
         '<button type="button" data-coach-dest="operations"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Panel</span></button>'+
         '<button type="button" data-coach-dest="agenda"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h3m3 0h3m-9 4h3"/></svg><span>Agenda</span></button>'+
         '<button type="button" data-coach-dest="students"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.5-5 3-7.5 7.5-7.5s7 2.5 7.5 7.5"/></svg><span>Alumno</span></button>'+
-        '<button type="button" data-coach-dest="new-student"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="10" cy="8" r="4"/><path d="M2.5 21c.5-5 3-7.5 7.5-7.5m8-3v9m-4.5-4.5h9"/></svg><span>Nuevo</span></button>'+
+        '<button type="button" data-coach-dest="payments"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18m-5 5h2m-11 0h3"/></svg><span>Finanzas</span></button>'+'<button type="button" data-coach-dest="new-student"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="10" cy="8" r="4"/><path d="M2.5 21c.5-5 3-7.5 7.5-7.5m8-3v9m-4.5-4.5h9"/></svg><span>Nuevo</span></button>'+
       '</div>';
       bar.onclick=function(event){
         const btn=event.target.closest('[data-coach-dest]');
@@ -58,10 +58,16 @@
         }
         if(dest==='operations'||dest==='students'){
           lastDashboard=dest;
+          window.__fjzMobileCoachDestination=dest;
           const c=context();
           if(c?.coachTab!=='dashboard'){
             if(typeof window.__fjzCoachNavigateV22==='function')window.__fjzCoachNavigateV22('dashboard');
             else{window.coachTab='dashboard';window.render?.()}
+          }
+          if(window.matchMedia('(max-width:760px)').matches){
+            window.TeamFJZCoachCommandCenter?.showMobileDestination?.(dest);
+            window.scrollTo(0,0);
+            synchronize();schedule();return;
           }
           synchronize();
           schedule();

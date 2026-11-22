@@ -573,3 +573,44 @@
     min-height:44px!important;
   }
 }
+
+/* Staging mobile restructure: direct destinations and a single contextual dock. */
+#fjzCoachGlobalNav .fjz-coach-header-tools{display:none}
+@media(max-width:760px){
+ #fjzCoachGlobalNav{box-sizing:border-box;flex-wrap:wrap!important}
+ #fjzCoachGlobalNav .fjz-coach-header-tools{display:flex;gap:6px;flex-wrap:wrap}
+ #fjzCoachGlobalNav .fjz-coach-header-tools button{min-height:36px;padding:7px 9px;font-size:11px;border:1px solid #414957;border-radius:9px;background:#202630;color:#fff}
+ #fjzCoachGlobalNav .fjz-coach-mobile-links{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:2px!important;padding:5px!important}
+ #fjzCoachGlobalNav .fjz-coach-mobile-links button{font-size:10px!important;padding:6px 1px!important;min-height:59px!important}
+ #fjzCoachGlobalNav .fjz-coach-mobile-links svg{width:21px;height:21px}
+ #fjz-stage-notice{position:relative!important;inset:auto!important;display:block;width:max-content;max-width:100%;margin:8px auto 100px!important;font-size:9px!important}
+ .fjz-mobile-directory{min-width:0!important;padding:14px!important;border-radius:18px!important}
+ .fjz-mobile-directory-list{display:grid;gap:12px;margin-top:14px}
+ .fjz-mobile-student{min-width:0!important;border:1px solid #39414d;border-radius:14px;background:#161b24}
+ .fjz-mobile-student.pending{border-left:3px solid #eab354}
+ .fjz-mobile-student .fjz3a-group-head{display:grid!important;grid-template-columns:38px minmax(0,1fr) 18px!important;align-items:center;gap:10px!important;width:100%;padding:13px!important;text-align:left}
+ .fjz-mobile-student .fjz3a-group-title{min-width:0!important;overflow-wrap:anywhere}
+ .fjz-mobile-student .fjz-mobile-pending{color:#e3ba73;font-size:12px}
+ .fjz-mobile-student .fjz3a-group-body:not([hidden]){display:grid;gap:12px;padding:12px}
+ .fjz-mobile-student .fjz3a-group-body[hidden]{display:none!important}
+ body:has(#view.fjz3b-mounted) #fjzCoachGlobalNav .fjz-coach-mobile-links{display:none!important}
+ #view.fjz3b-mounted .fjz3b-nav-wrap{position:fixed!important;inset:auto 8px calc(8px + env(safe-area-inset-bottom))!important;z-index:91!important;width:auto!important;max-width:none!important;margin:0!important;padding:5px!important;background:#11151d!important;border:1px solid #414957;border-radius:17px;box-shadow:0 8px 30px #0008}
+ #view.fjz3b-mounted .fjz3b-nav{display:flex!important;overflow-x:auto!important;gap:4px!important;scrollbar-width:thin;padding:0!important;max-width:100%}
+ #view.fjz3b-mounted .fjz3b-nav button{flex:0 0 72px;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:61px!important;padding:5px!important;font-size:10px!important;white-space:nowrap}
+ #view.fjz3b-mounted .fjz3b-nav button i{font-size:19px}
+ #view.fjz3b-mounted{padding-bottom:calc(116px + env(safe-area-inset-bottom))!important}
+ #view .fjz3b-panel-head button{min-height:40px!important;padding:8px 12px!important;border:1px solid #414957!important;border-radius:10px!important;background:#222834!important;color:white!important}
+ #view .fjz3b-legacy-hero{padding:13px!important;border:1px solid #3c424e!important;border-radius:14px!important;background:#151923!important}
+ #view .fjz3b-summary-grid>.fjz3b-panel:nth-child(1){border-left:3px solid #f34b65!important}
+ #view .fjz3b-summary-grid>.fjz3b-panel:nth-child(2){border-left:3px solid #eab354!important}
+ #view .fjz3b-summary-grid>.fjz3b-panel:nth-child(3){border-left:3px solid #67a1f0!important}
+ #view .fjz3b-summary-grid>.fjz3b-panel:nth-child(4){border-left:3px solid #78c9a6!important}
+ #studentSubBody .fjz4a-plan-overview{border-left:3px solid #78c9a6!important}
+ #studentSubBody .fjz4a-consumption{border-left:3px solid #eab354!important;background:linear-gradient(125deg,#25221d,#16191f 65%)!important}
+ #studentSubBody .fjz4a-resources{border-left:3px solid #67a1f0!important}
+ .modal-wrap{box-sizing:border-box!important;padding:10px!important}
+ .modal-wrap .modal{box-sizing:border-box!important;width:100%!important;max-width:100%!important;max-height:calc(100dvh - 20px)!important;overflow-y:auto!important;overflow-x:hidden!important}
+ .modal label:has(>input[type="checkbox"]){display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;text-align:left!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important}
+ .modal label>input[type="checkbox"]{flex:0 0 18px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;margin:0!important;padding:0!important}
+ .modal label:has(>input[type="checkbox"])>*:not(input){min-width:0!important;flex:1!important;word-break:normal!important;overflow-wrap:break-word!important}
+}
