@@ -94,9 +94,8 @@
   }
   function resourcesHtml(pd,student=true){
     const supp=Array.isArray(pd?.supplements)?pd.supplements:[],habits=Array.isArray(pd?.habits)?pd.habits.filter(x=>x?.enabled!==false):[];
-    return '<section class="fjz4a-resources"><div class="fjz4a-section-heading"><span>RECURSOS</span><h2>Herramientas de tu plan</h2></div><div class="fjz4a-resource-actions">'+
-      '<button type="button" data-4a-action="'+(student?'recipes':'coach-recipes')+'"><strong>Recetas</strong><span>Biblioteca TEAM FJZ</span></button><button type="button" data-4a-action="'+(student?'calculator-focus':'coach-calculator')+'"><strong>Calculadora</strong><span>Estimá una porción</span></button>'+
-      (!student?'<button type="button" data-4a-action="coach-recipes"><strong>Gestionar recetas</strong><span>Biblioteca del Coach</span></button><button type="button" data-4a-action="coach-calculator"><strong>Calculadora Coach</strong><span>Objetivos del plan</span></button>':'')+'</div>'+ 
+    return '<section class="fjz4a-resources"><div class="fjz4a-section-heading"><span>RECURSOS</span><h2>Herramientas de tu plan</h2></div>'+
+      (student?'<div class="fjz4a-resource-actions"><button type="button" data-4a-action="recipes"><strong>Recetas</strong></button><button type="button" data-4a-action="calculator-focus"><strong>Calcular un alimento</strong><span>Por gramos o unidades</span></button></div>':'')+
       (supp.length||!student?'<div class="fjz4a-resource-list"><div class="fjz4a-resource-title"><h3>Suplementación indicada</h3>'+(!student?'<button type="button" data-4a-action="add-supplement">+ Suplemento</button>':'')+'</div>'+(supp.length?supp.map((s,i)=>'<div><strong>'+esc(s.name||'Suplemento')+'</strong><span>'+esc([s.amount&&s.unit?(s.amount+' '+s.unit):'',s.timing||'',s.notes||''].filter(Boolean).join(' · '))+'</span>'+(!student?'<div class="fjz4a-mini-actions"><button type="button" data-4a-action="edit-supplement" data-index="'+i+'">Editar</button><button type="button" data-4a-action="remove-supplement" data-index="'+i+'">Quitar</button></div>':'')+'</div>').join(''):'<p class="fjz4a-resource-empty">Sin suplementos cargados.</p>')+'</div>':'')+
       (habits.length||!student?'<div class="fjz4a-resource-list"><div class="fjz4a-resource-title"><h3>Hábitos y recordatorios</h3>'+(!student?'<button type="button" data-4a-action="add-habit">+ Hábito</button>':'')+'</div>'+(habits.length?habits.map(h=>'<div><strong>'+esc(h.title||h.name||'Hábito')+'</strong><span>'+esc(h.text||h.description||'')+'</span>'+(!student&&h.id?'<label class="fjz4a-mini-toggle"><input type="checkbox" data-4a-action="toggle-habit" data-habit="'+esc(h.id)+'" '+(h.enabled!==false?'checked':'')+'><span>Activo</span></label>':'')+(!student&&h.custom&&h.id?'<div class="fjz4a-mini-actions"><button type="button" data-4a-action="delete-habit" data-habit="'+esc(h.id)+'">Eliminar</button></div>':'')+'</div>').join(''):'<p class="fjz4a-resource-empty">Sin hábitos configurados.</p>')+'</div>':'')+'</section>';
   }
@@ -108,7 +107,7 @@
   }
   function portionCalculator(){
     const fields=[['protein','Proteínas (g)'],['carbs','Carbohidratos (g)'],['fat','Grasas (g)'],['servings','Porciones']];
-    return '<details class="fjz4a-calculator"><summary>Calcular macros por porción</summary><p>Ingresá los gramos de cada macronutriente de la receta completa y cuántas porciones rinde.</p><div class="fjz4a-calc-form" data-portion-calc>'+
+    return '<details class="fjz4a-calculator"><summary>Macros de una receta por porción</summary><p>Ingresá los gramos de cada macronutriente de la receta completa y cuántas porciones rinde.</p><div class="fjz4a-calc-form" data-portion-calc>'+
       fields.map(([key,label])=>'<label>'+label+'<input type="number" data-macro="'+key+'" min="'+(key==='servings'?'1':'0')+'" step="'+(key==='servings'?'1':'any')+'" value="'+(key==='servings'?'1':'')+'"></label>').join('')+
       '<output aria-live="polite">Completá los cuatro campos.</output></div></details>';
   }
@@ -120,12 +119,13 @@
     output.textContent=per(4*protein+4*carbs+9*fat)+' kcal por porción · P '+per(protein)+' g · C '+per(carbs)+' g · G '+per(fat)+' g';
   }
   function calculatorHtml(c){
-    const foods=c?.cache?.foods||[],logging=c?.cache?.plan?.student_logging_enabled!==false&&c?.cache?.plan?.active!==false;
+    const foods=c?.cache?.foods||[],logging=c?.profile?.role==='student'&&c?.cache?.plan?.student_logging_enabled!==false&&c?.cache?.plan?.active!==false;
     return '<section class="fjz4a-calculator" id="fjz4aCalculator" tabindex="-1"><div class="fjz4a-section-heading"><span>CALCULADORA</span><h2>Calculadora de alimentos y comidas</h2><p>Estimá una porción desde la biblioteca existente. No modifica tu plan.</p></div><div class="fjz4a-calc-form"><label>Alimento<select id="macroFood">'+foods.map(f=>'<option value="'+esc(f.id)+'">'+esc(f.name)+' · '+esc(f.category||'')+'</option>').join('')+'</select></label><label>Medir por<select id="macroMeasure"><option value="grams">Gramos</option><option value="units">Unidades</option></select></label><label id="macroGramsWrap">Gramos<input id="macroGrams" type="number" min="1" step="1" value="100"></label><label id="macroUnitsWrap" style="display:none">Cantidad de <span id="macroUnitLabel">unidades</span><input id="macroUnits" type="number" min="0.25" step="0.25" value="1"></label><label>Comida<select id="macroMeal"><option>Desayuno</option><option>Media mañana</option><option>Almuerzo</option><option>Merienda</option><option>Pre entreno</option><option>Post entreno</option><option>Cena</option><option>Colación</option><option>Otra</option></select></label></div><div id="macroPreview" class="macro-preview fjz4a-preview"></div><div class="fjz4a-inline-actions">'+(logging?'<button type="button" class="primary" data-4a-action="calculator-add">Agregar al registro</button><button type="button" data-4a-action="custom-log">+ Personalizado</button>':'<span class="fjz4a-disabled-note">El registro diario está desactivado. La calculadora sigue disponible como referencia.</span>')+'</div></section>';
   }
   function loadErrorHtml(role,message){return '<div class="fjz4a-'+(role==='coach'?'coach':'student')+'-shell"><section class="fjz4a-error-state"><span>NUTRICIÓN</span><strong>No pudimos cargar la información</strong><p>'+esc(message||'Error de lectura')+'</p><button type="button" data-4a-action="retry-load" data-role="'+role+'">Reintentar</button></section></div>'}
+  function studentScreen(c){return c?.profile?.role==='student'||(c?.profile?.role==='coach'&&c.mode==='student'&&c.studentTab==='nutrition')}
   async function startStudent(force=false){
-    const c=context();resetIdentity(c);if(c?.profile?.role!=='student')return false;
+    const c=context();resetIdentity(c);if(!studentScreen(c))return false;
     if(text(c?.nutritionStudentView)==='recipes'&&typeof actions().renderRecipesStudent==='function')return actions().renderRecipesStudent();
     const host=root.document?.getElementById('studentSubBody');if(!host)return false;
     host.innerHTML='<div class="fjz4a-student-shell"><div class="fjz4a-loading">Cargando tu alimentación…</div></div>';
@@ -159,12 +159,12 @@
     return true;
   }
   function renderStudent(){
-    const c=context();resetIdentity(c);if(c?.profile?.role!=='student')return false;
+    const c=context();resetIdentity(c);if(!studentScreen(c))return false;
     const host=root.document?.getElementById('studentSubBody');if(!host)return false;
     const p=c?.cache?.plan,pd=planData(c);
     if(!p||p.active===false){host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><p>Tu espacio diario de nutrición.</p></div></header><section class="fjz4a-empty-state"><strong>Sin plan activo</strong><span>Tu coach todavía no publicó un plan nutricional activo.</span><button type="button" data-4a-action="recipes">Ver recetas disponibles</button></section>'+resourcesHtml(pd||{},true)+calculatorHtml(c)+portionCalculator()+'</div>';bindHost(host);return true}
     if(!ui.savedSignature)ui.savedSignature=signature(c);
-    const logging=p.student_logging_enabled!==false;
+    const logging=c.profile.role==='student'&&p.student_logging_enabled!==false;
     const meals=pd?.meals||[];
     const selected=meals.find(m=>(text(m?.id)||'legacy-'+meals.indexOf(m))===ui.studentMealId)||meals[0]||null;
     const selectedId=selected?(text(selected.id)||'legacy-'+meals.indexOf(selected)):'';
@@ -176,7 +176,7 @@
     host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><div><span>NUTRICIÓN</span><h1>Mi alimentación</h1><strong class="fjz4a-plan-title">'+esc(p.title||'Plan nutricional')+'</strong><p>Revisión '+esc(p.revision||1)+(p.updated_at?' · actualizada '+esc(actions().formatDate?.(p.updated_at)||''):'')+'</p></div><div class="fjz4a-plan-state"><i></i><strong>'+(p.active===false?'Pausado':'Plan asignado')+'</strong></div></header>'+ 
       '<section class="fjz4a-plan-overview"><div><span>OBJETIVOS DEL PLAN</span><h2>Referencias diarias</h2><p>No representan consumo real.</p></div>'+targetsHtml(p)+(p.notes?'<aside><strong>Indicaciones del Coach</strong><p>'+esc(p.notes)+'</p></aside>':'')+'</section>'+ 
       '<section class="fjz4a-meals fjz4a-student-meals-v21"><div class="fjz4a-section-heading"><span>PLAN DEL DÍA</span><h2>Comidas y alternativas</h2><p>Elegí qué opción consultar. Cambiar de opción no registra nada.</p></div>'+mobileMealTabs+(meals.length?meals.map((m,i)=>mealStudentHtml(m,i,logging,false)).join(''):'<div class="fjz4a-empty-block"><strong>Sin comidas cargadas</strong><span>Tu coach todavía no agregó comidas al plan.</span></div>')+'</section>'+ 
-      resourcesHtml(pd,true)+calculatorHtml(c)+portionCalculator()+consumptionHtml(c,true)+'</div>';
+      resourcesHtml(pd,true)+calculatorHtml(c)+portionCalculator()+consumptionHtml(c,c.profile.role==='student')+'</div>';
     bindHost(host);if(selectedId){const active=host.querySelector('.fjz4a-student-meal-nav [data-4a-action="student-meal"].active');if(active)selectStudentMeal(active)}actions().previewMacro?.();return true;
   }
   function coachMealSelected(pd){
@@ -192,7 +192,7 @@
     const label=state==='saving'?'Guardando…':state==='error'?'Error al guardar':state==='dirty'?'Cambios pendientes':'Guardado';
     return '<span id="fjz4aSaveState" class="fjz4a-save-state '+state+'"><i></i>'+label+'</span>';
   }
-  function coachToolsHtml(){return '<div class="fjz4a-coach-tools"><button type="button" data-4a-action="preview">Vista Alumno</button><button type="button" data-4a-action="coach-calculator">Calculadora</button><button type="button" data-4a-action="coach-recipes">Recetas</button><button type="button" data-4a-action="templates">Plantillas</button><button type="button" data-4a-action="save-template">Guardar plantilla</button></div>'}
+  function coachToolsHtml(){return '<div class="fjz4a-coach-tools"><button type="button" data-4a-action="preview">Vista Alumno</button><button type="button" data-4a-action="coach-calculator">Objetivos diarios de macros</button><button type="button" data-4a-action="coach-recipes">Recetas</button><button type="button" data-4a-action="templates">Plantillas</button><button type="button" data-4a-action="save-template">Guardar plantilla</button></div>'}
   function renderCoach(){
     const c=context();resetIdentity(c);if(c?.profile?.role!=='coach')return false;
     const host=root.document?.getElementById('coachStudentBody');if(!host)return false;

@@ -1229,7 +1229,7 @@ if APP_ENV == "staging":
       document.getElementById('fjz-staging-preview-diagnostic')?.remove();
       state.selectedStudentId=selected.id;
       clean();
-      mode='student';studentTab='home';
+      coachTab='preview';mode='student';studentTab='home';
       document.body.classList.add('fjz-stage-student-preview');
       try{render();}catch(err){console.warn('TEAM FJZ staging render error',err)}
       clean();
@@ -1261,6 +1261,39 @@ if APP_ENV == "staging":
         '\nContenido: '+String((view?.textContent||'').trim().slice(0,120)||'[vacío]'));
       return false;
     }finally{active=false;}
+  };
+  const standardPreview=window.__fjzEnsureCoachPreviewV271;
+  window.__fjzEnsureCoachPreviewV271=function(){
+    standardPreview?.();
+    const preview=currentProfile?.role==='coach'&&mode==='student';
+    const view=document.getElementById('view');
+    if(!view)return;
+    document.body.classList.toggle('fjz-stage-student-preview',preview);
+    window.__fjzSyncCoachWorkspaceNavV22?.();
+    let menu=document.getElementById('fjzPreviewSections');
+    if(!preview){menu?.remove();return}
+    if(!menu){
+      menu=document.createElement('nav');
+      menu.id='fjzPreviewSections';
+      menu.setAttribute('aria-label','Secciones de la vista Alumno');
+      const sections={home:'Inicio',training:'Entrenamiento',nutrition:'Nutrición',tracking:'Check-in',progress:'Progreso',history:'Historial',agenda:'Agenda'};
+      for(const [tab,label] of Object.entries(sections)){
+        const button=document.createElement('button');
+        button.type='button';
+        button.textContent=label;
+        button.dataset.tab=tab;
+        button.onclick=()=>{
+          if(mode!=='student'||currentProfile?.role!=='coach')return;
+          studentTab=tab;render();window.__fjzEnsureCoachPreviewV271();
+        };
+        menu.append(button);
+      }
+      view.before(menu);
+    }
+    for(const button of menu.children){
+      if(button.dataset.tab===(studentTab==='workout'?'training':studentTab))button.setAttribute('aria-current','page');
+      else button.removeAttribute('aria-current');
+    }
   };
   // Capture the header action before legacy runtime handlers: both direct
   // profile preview and Coach/Alumno switch have the same guarded transition.

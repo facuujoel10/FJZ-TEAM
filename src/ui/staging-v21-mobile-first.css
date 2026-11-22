@@ -735,3 +735,26 @@
 #view .fjz3b-summary-grid,#view .fjz4b-content-grid{gap:clamp(14px,2vw,24px)!important}
 #view .fjz3b-keyline{padding:12px;background:#20232b;border-radius:10px}
 #view .fjz-mobile-student>[data-action="open-student"]{margin:0 12px 12px;min-height:44px}
+
+#view.fjz3b-mounted .fjz3b-main:has(.fjz4b-shell) > #coachStudentBody{margin-top:clamp(16px,2vw,24px)!important;padding-inline:0!important}
+#view.fjz3b-mounted #coachStudentBody>.fjz4b-shell{width:100%!important;max-width:none!important;margin-inline:0!important;padding-inline:0!important}
+#view .day-card .exercise-row h4{font-size:16px!important}
+#view .day-card .exercise-row p,#view .day-card .v113-tech div,#view .day-card .v113-tech strong{font-size:14px!important;line-height:1.55!important}
+#view .day-card .day-head>div>strong{font-size:18px!important}
+#view .v22-premium-history.v22v2-history{border:1px solid #383e49!important;background:#15181e!important;border-radius:16px!important;padding:clamp(14px,2vw,24px)!important}
+#view .v22v2-history-list:has(>:only-child){grid-template-columns:minmax(0,1fr)!important}
+#app #view .v224-student-hero{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;align-items:center!important;gap:14px 18px!important;border:1px solid #383e49!important;border-radius:18px!important;background:linear-gradient(115deg,#24191f,#15171d 50%)!important}
+#app #view .v224-student-hero>#v268StudentAvatarPanel{grid-area:1/1!important;order:0;width:auto!important;padding:0!important;border:0!important;background:transparent!important}
+#view .v224-student-hero #v268StudentAvatarPanel>div:not(.v268-student-avatar),#view .v224-student-hero :is(.v266-profile-kicker,.v268-avatar-state,.v267-avatar-note,#v175CoachAvatarSlot,.v116-avatar-preview){display:none!important}
+#app #view .v224-student-hero>.v224-hero-copy{grid-area:1/2!important}
+#app #view .v224-student-hero>.v224-hero-side{grid-area:2/1/auto/-1!important}
+#view .v224-student-hero .v224-hero-copy>.badge{display:none!important}
+#fjzPreviewSections{display:flex;gap:6px;flex-wrap:wrap;max-width:1200px;margin:12px auto;padding:8px;border:1px solid #393e48;border-radius:14px;background:#15171d}
+#fjzPreviewSections button{padding:9px 14px;min-height:42px;border:1px solid transparent;border-radius:9px;background:#22252d;color:#eee;font:inherit;cursor:pointer}
+#fjzPreviewSections [aria-current]{background:#a71b35;border-color:#e84561;color:white}
+body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTabs){display:none!important}
+@media(max-width:760px){
+ #fjzPreviewSections{position:fixed;bottom:env(safe-area-inset-bottom,0);inset-inline:6px;z-index:92;flex-wrap:nowrap;overflow-x:auto;margin:0}
+ #fjzPreviewSections button{flex:none;padding:8px 10px}
+ body.fjz-stage-student-preview #view{padding-bottom:100px!important}
+}

@@ -49,6 +49,7 @@ bridge=r'''<script id="v22NutritionPremiumAuthorityBridge">
       coachTab:typeof coachTab!=='undefined'?coachTab:null,
       coachStudentTab:typeof coachStudentTab!=='undefined'?coachStudentTab:null,
       studentTab:typeof studentTab!=='undefined'?studentTab:null,
+      mode:typeof mode!=='undefined'?mode:null,
       nutritionStudentView:typeof nutritionStudentViewV70!=='undefined'?nutritionStudentViewV70:'plan',
       student:s,
       athleteId:aid,
