@@ -1369,7 +1369,7 @@ if APP_ENV == "staging":
     if staging_artifact.count(workout_anchor) != 1:
         raise RuntimeError("Workout illustration anchor changed")
     staging_artifact = staging_artifact.replace(workout_anchor, """const assigned=student()?.days?.[currentDay]?.exercises?.[index];
-    if(assigned)copy.insertAdjacentHTML('beforeend',exercisePhotoHtml(assigned.libId));
+    if(assigned)copy.insertAdjacentHTML('beforeend',exercisePhotoHtml(assigned.libId,assigned));
     """ + workout_anchor)
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 

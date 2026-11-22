@@ -824,3 +824,22 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 #app #studentSubBody .fjz4a-student-meal-active{display:block!important}
 #view .v278-chart-shell svg.v278-chart{height:clamp(200px,30vw,290px);width:100%}
 #app #studentSubBody .fjz4a-student-meal-nav button[aria-pressed=true]{background:#a71835;color:white}
+#modal:has(#stepPanel){padding:clamp(16px,4vw,28px)!important;box-sizing:border-box}
+#modal:has(#stepPanel) .modal-head button{width:auto!important;min-width:68px;white-space:nowrap}
+#stepPanel{display:grid;gap:16px}
+#stepPanel h4,#stepPanel p{margin:0}
+.step-hero{display:flex;align-items:center;gap:20px;padding:16px;border-radius:16px;background:#191a22}
+.step-hero>div+div{display:grid;gap:4px}.step-hero strong{font-size:clamp(19px,5vw,32px)}
+.step-ring{width:90px;aspect-ratio:1;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#ff395c var(--angle),#422332 0)}
+.step-ring span{display:grid;place-items:center;width:73%;aspect-ratio:1;background:#191a22;border-radius:50%;font-weight:800}
+.step-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.step-week>div{display:grid;gap:5px}.step-week small{font-size:11px}.step-week i{height:48px;border-radius:4px;background:linear-gradient(to top,#ec3455 var(--height),#252833 0)}
+#stepPanel form{display:grid;gap:10px}#stepPanel label{display:grid;gap:6px}
+.exercise-demo{width:100%;margin-block:10px}.exercise-demo summary{cursor:pointer;font-weight:650}
+.exercise-demo>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.exercise-demo figure{margin:0;min-width:0}.exercise-demo img{width:100%;height:clamp(85px,18vw,145px);object-fit:contain;background:#fff;border-radius:9px}.exercise-demo figcaption{font-size:13px}
+#modal:has(.v244-timeline) .v244-summary-grid{margin-block:16px!important}
+#modal:has(.v244-timeline) .v244-timeline{display:grid;gap:20px!important}
+#modal:has(.v244-timeline) .v244-timeline-block{padding:18px!important}
+#modal:has(.v244-timeline) .v244-exercise-list{display:grid;gap:14px}
+#modal:has(.v244-timeline){padding:clamp(12px,3vw,24px)!important}
