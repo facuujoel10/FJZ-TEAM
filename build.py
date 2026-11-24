@@ -1366,6 +1366,10 @@ if APP_ENV == "staging":
                 raise RuntimeError("Student route for check-in reminders changed")
             staging_artifact = staging_artifact.replace(route, """function renderStudent(){
   const reminderUrl=new URL(location.href);
+  if(currentProfile?.role==='student' && reminderUrl.searchParams.get('checkin')==='message'){
+    reminderUrl.searchParams.delete('checkin');window.history.replaceState(null,'',reminderUrl);
+    queueMicrotask(()=>document.getElementById('fjzNoticeCenter')?.click());
+  }
   if(currentProfile?.role==='student' && ['weekly','monthly'].includes(reminderUrl.searchParams.get('checkin'))){
     studentTab='tracking';reminderUrl.searchParams.delete('checkin');window.history.replaceState(null,'',reminderUrl);
   }

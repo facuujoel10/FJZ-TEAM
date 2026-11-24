@@ -40,7 +40,16 @@ def main():
             select athlete_id,kind,period from due on conflict do nothing
             returning athlete_id,kind,period)
             select due.* from due join claimed using(athlete_id,kind,period)"""
-        for athlete,kind,period,endpoint,p256dh,auth in db.execute(claim).fetchall():
+        messages = """with pending as (
+            update public.coach_messages m set push_claimed_at=now()
+            from public.checkin_push_devices d, public.athletes a
+            where a.id=m.athlete_id and d.athlete_id=a.id and d.owner_id=a.user_id
+              and m.recipient_id=a.user_id and m.sender_id=a.coach_id
+              and m.push_claimed_at is null and m.created_at>now()-interval '15 minutes'
+            returning m.athlete_id,'message',m.id,d.endpoint,d.p256dh,d.auth_key)
+            select * from pending"""
+        deliveries=db.execute(claim).fetchall()+db.execute(messages).fetchall()
+        for athlete,kind,period,endpoint,p256dh,auth in deliveries:
             if not supported(endpoint):
                 continue
             try:
