@@ -1,0 +1,2 @@
+# Install only on the staging scheduler. Load credentials from its secret store.
+*/5 * * * * cd /srv/team-fjz && .venv/bin/python scripts/checkin_push_worker.py

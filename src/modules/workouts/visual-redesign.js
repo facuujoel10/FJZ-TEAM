@@ -162,7 +162,7 @@ function ensureExerciseHeader(card,index){
     const action=findButton(card,/comentario/i);
     if(action){
       action.classList.add('v22-comment-action','v22v-icon-action','v22v2-comment-action');
-      action.textContent='Comentar';
+      action.textContent='+ Comentario';
       action.setAttribute('aria-label','Comentario de '+t(strong?.textContent||'ejercicio'));
     }
     top.append(number,copy);

@@ -1358,8 +1358,12 @@ if APP_ENV == "staging":
     macro_start = staging_artifact.index('${r.protein_g!=null?', staging_artifact.index('function recipeCardV70('))
     macro_end = staging_artifact.index('</div>', macro_start)
     staging_artifact = staging_artifact[:macro_start] + """</div><small>Por porción · aprox.</small><div class="v70-recipe-meta">${[['kcal_per_serving','kcal'],['protein_g','g proteína'],['carbs_g','g carbos'],['fat_g','g grasas']].map(([key,unit])=>`<span class="v70-recipe-pill">${r[key]==null?'—':nFmt(r[key],1)} ${unit}</span>`).join('')}""" + staging_artifact[macro_end:]
-    for module in ("exercise-photos", "steps"):
+    for module in ("exercise-photos", "steps", "checkin-reminders"):
         source = pathlib.Path("src/modules/activity", module + ".js").read_text()
+        if module == "checkin-reminders":
+            source = "const fjzPushPublicKey=" + json.dumps(os.environ.get("FJZ_VAPID_PUBLIC_KEY", "")).replace("<", r"\u003c") + ";\n" + source
+            with (staging_artifact_path.parent / "sw.js").open("a") as worker:
+                worker.write(pathlib.Path("src/modules/activity/checkin-push-sw.js").read_text())
         if module == "exercise-photos":
             guides = json.loads(pathlib.Path("src/modules/activity/exercise-guides.json").read_text())
             from scripts.staging_exercise_assets import package

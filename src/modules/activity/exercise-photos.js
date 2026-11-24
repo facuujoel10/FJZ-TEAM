@@ -39,8 +39,14 @@ function exercisePhotoHtml(id,assigned){
 }
 
 function installExerciseGuidePicker(modal,exercise){
- if(!modal || Object.hasOwn(exerciseGuides,exercise?.libId||exercise?.id))return;
+ if(!modal)return;
  const cue=modal.querySelector('#fCue');if(!cue)return;
+ const field=cue.closest('label')||cue;
+ const preview=document.createElement('div');preview.className='span2 fjz-coach-guide';
+ field.after(preview);
+ const id=exercise?.libId||exercise?.id;
+ preview.innerHTML=exercisePhotoHtml(id,exercise);
+ if(Object.hasOwn(exerciseGuides,id))return;
  const label=document.createElement('label');label.textContent='Demostración del ejercicio';
  const select=document.createElement('select');select.id='fjzGuidePicker';select.className='input';
  select.add(new Option('Elegir una guía de la biblioteca',''));
@@ -48,5 +54,6 @@ function installExerciseGuidePicker(modal,exercise){
    select.add(new Option(guide.name,id));
  }
  select.value=exerciseGuideId(exercise?.libId,exercise)||'';
- label.append(select);(cue.closest('label')||cue).after(label);
+ select.addEventListener('change',()=>{preview.innerHTML=exercisePhotoHtml(id,{...exercise,techniqueGuideId:select.value})});
+ label.append(select);field.after(label);
 }

@@ -156,7 +156,7 @@ runtime=r"""
       const host=el('libraryGrid');if(!host)return;
       host.innerHTML=arr.length?arr.map(x=>
         '<div class="library-item v269-library-item">'+
-          '<div class="v269-library-copy"><h4>'+esc(x.name)+'</h4><p>'+esc(x.muscle||'')+' · '+esc(x.equipment||'')+'</p></div>'+
+          '<div class="v269-library-copy"><h4>'+esc(x.name)+'</h4><p>'+esc(x.muscle||'')+' · '+esc(x.equipment||'')+'</p>'+(typeof exercisePhotoHtml==='function'?exercisePhotoHtml(x.id):'')+'</div>'+
           '<button class="btn primary small" onclick="configureExercise('+dayIndex+',\''+esc(x.id)+'\')">Agregar</button>'+
         '</div>'
       ).join(''):'<div class="empty">No encontré ejercicios con esos filtros.</div>';

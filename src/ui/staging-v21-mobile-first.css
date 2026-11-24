@@ -884,3 +884,7 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
  #app #fjzPreviewSections button,#app #fjzCoachGlobalNav .fjz-coach-mobile-links button{width:100%!important;max-width:100%!important;min-width:0!important;min-height:52px!important;height:52px!important;margin:0!important;transform:none!important}
  #app #fjzPreviewSections button[aria-current],#app #fjzCoachGlobalNav .fjz-coach-mobile-links button[aria-current]{background:#2b1b23!important;border:1px solid #65313f!important;box-shadow:inset 0 -1px #c54760!important}
 }
+
+.fjz-coach-guide:empty{display:none}
+.fjz-coach-guide,.v269-library-copy{min-width:0}
+#view.v22v2-workout-active .v22v2-exercise-actions .v22v2-comment-action::before{content:none}
