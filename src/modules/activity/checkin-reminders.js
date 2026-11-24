@@ -61,10 +61,16 @@
  };
  const kind=new URL(location.href).searchParams.get('checkin');
  if(['weekly','monthly'].includes(kind)){
-   const open=()=>{if(typeof currentProfile==='undefined'||currentProfile?.role!=='student'||!trackingAthleteId())return;
-     observer.disconnect();studentTab='tracking';render();
+   let remaining=40;
+   const open=()=>{
+     if(typeof currentProfile==='undefined'||!currentProfile||!trackingAthleteId()){
+       if(--remaining>0)setTimeout(open,500);
+       return;
+     }
+     if(currentProfile.role!=='student')return;
+     studentTab='tracking';render();
      const url=new URL(location.href);url.searchParams.delete('checkin');history.replaceState(null,'',url);
    };
-   const observer=new MutationObserver(open);observer.observe(document.body,{childList:true,subtree:true});open();
+   open();
  }
 })();
