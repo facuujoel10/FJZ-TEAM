@@ -54,6 +54,6 @@ function installExerciseGuidePicker(modal,exercise){
    select.add(new Option(guide.name,id));
  }
  select.value=exerciseGuideId(exercise?.libId,exercise)||'';
- select.addEventListener('change',()=>{preview.innerHTML=exercisePhotoHtml(id,{...exercise,techniqueGuideId:select.value})});
+ select.onchange=()=>{preview.innerHTML=exercisePhotoHtml(id,{...exercise,techniqueGuideId:select.value})};
  label.append(select);field.after(label);
 }
