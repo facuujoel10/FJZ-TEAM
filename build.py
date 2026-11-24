@@ -1361,6 +1361,15 @@ if APP_ENV == "staging":
     for module in ("exercise-photos", "steps", "checkin-reminders"):
         source = pathlib.Path("src/modules/activity", module + ".js").read_text()
         if module == "checkin-reminders":
+            route = "function renderStudent(){\n  if(studentTab==='workout')"
+            if staging_artifact.count(route) != 1:
+                raise RuntimeError("Student route for check-in reminders changed")
+            staging_artifact = staging_artifact.replace(route, """function renderStudent(){
+  const reminderUrl=new URL(location.href);
+  if(currentProfile?.role==='student' && ['weekly','monthly'].includes(reminderUrl.searchParams.get('checkin'))){
+    studentTab='tracking';reminderUrl.searchParams.delete('checkin');window.history.replaceState(null,'',reminderUrl);
+  }
+  if(studentTab==='workout')""")
             source = "const fjzPushPublicKey=" + json.dumps(os.environ.get("FJZ_VAPID_PUBLIC_KEY", "")).replace("<", r"\u003c") + ";\n" + source
             with (staging_artifact_path.parent / "sw.js").open("a") as worker:
                 worker.write(pathlib.Path("src/modules/activity/checkin-push-sw.js").read_text())

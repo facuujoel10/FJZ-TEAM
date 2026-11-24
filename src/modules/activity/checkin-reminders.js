@@ -59,18 +59,4 @@
      };
    }catch{host.textContent='No se pudieron cargar los recordatorios.'}
  };
- const kind=new URL(location.href).searchParams.get('checkin');
- if(['weekly','monthly'].includes(kind)){
-   let remaining=40;
-   const open=()=>{
-     if(typeof currentProfile==='undefined'||!currentProfile||!trackingAthleteId()){
-       if(--remaining>0)setTimeout(open,500);
-       return;
-     }
-     if(currentProfile.role!=='student')return;
-     studentTab='tracking';render();
-     const url=new URL(location.href);url.searchParams.delete('checkin');history.replaceState(null,'',url);
-   };
-   open();
- }
 })();
