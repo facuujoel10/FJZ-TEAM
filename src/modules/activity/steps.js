@@ -27,7 +27,7 @@
        '<p role="status"></p>';
      const estimate=document.createElement('section');
      estimate.className='step-estimate';
-     estimate.innerHTML='<h4>Calorías activas de hoy</h4><p>Estimación para caminata en terreno llano. Medí diez pasos y dividí la distancia por diez.</p><div class="form-grid"><label>Peso (kg)<input class="input" type="number" min="1" step="0.1"></label><label>Longitud de un paso (cm)<input class="input" type="number" min="1" max="200" step="0.1" placeholder="Ej. 70"></label></div><output aria-live="polite"></output>';
+     estimate.innerHTML='<h4>Calorías activas de hoy</h4><p>Estimación para caminata en terreno llano. Medí diez pasos y dividí la distancia por diez.</p><div class="form-grid"><label>Peso (kg)<input class="input" type="number" min="1" step="0.1"></label><label>Paso (cm)<input class="input" type="number" min="1" max="200" step="0.1" placeholder="Ej. 70"></label></div><output aria-live="polite"></output>';
      panel.querySelector('.step-hero').after(estimate);
      const [weight,length]=estimate.querySelectorAll('input');
      weight.value=measurement.data?.[0]?.weight_kg||'';

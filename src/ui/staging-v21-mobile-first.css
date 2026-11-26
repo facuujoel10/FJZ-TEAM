@@ -901,3 +901,10 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 .step-estimate h4,.step-estimate p{margin:0 0 8px}
 .step-estimate p{font-size:.85rem;color:#bec0c9}
 .step-estimate output{display:block;margin-top:12px;font-weight:700;color:#ffd0d8}
+#stepPanel .step-estimate .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:12px;margin-top:12px}
+#stepPanel .step-estimate label{display:grid;gap:6px;min-width:0}
+#stepPanel .step-estimate input{width:100%;min-width:0;height:44px;margin:0;box-sizing:border-box}
+#fjz4aCalculator .calc-modes{display:flex;gap:4px;margin:14px 0;padding:4px;border-radius:12px;background:#101117}
+#fjz4aCalculator .calc-modes button{flex:1;min-height:40px;color:#cbced8;background:transparent;border:1px solid transparent;border-radius:9px}
+#fjz4aCalculator .calc-modes button[aria-pressed=true]{color:white;background:#40202b;border-color:#ad3750}
+#fjz4aCalculator [data-calc-pane][hidden]{display:none!important}
