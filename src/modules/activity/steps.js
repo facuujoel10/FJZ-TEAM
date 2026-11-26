@@ -10,7 +10,7 @@
    showModal('<div class="modal-head"><h3>Pasos diarios</h3><button class="btn step-close" type="button" aria-label="Cerrar pasos" onclick="closeModal()">×</button></div><section id="stepPanel" aria-live="polite">Cargando…</section>');
    const panel=document.getElementById('stepPanel');
    const load=async()=>{
-     const [target,logs]=await Promise.all([supabaseClient.from('step_targets').select('target').eq('athlete_id',id).maybeSingle(),supabaseClient.from('daily_steps').select('day,steps').eq('athlete_id',id).order('day',{ascending:false}).limit(7)]);
+     const [target,logs,measurement]=await Promise.all([supabaseClient.from('step_targets').select('target').eq('athlete_id',id).maybeSingle(),supabaseClient.from('daily_steps').select('day,steps').eq('athlete_id',id).order('day',{ascending:false}).limit(7),supabaseClient.from('body_measurements').select('weight_kg').eq('athlete_id',id).lte('measured_on',day).not('weight_kg','is',null).order('measured_on',{ascending:false}).limit(1)]);
      if(target.error||logs.error){panel.textContent='No se pudieron cargar los pasos.';return}
      const today=logs.data.find(r=>r.day===day)?.steps;
      const goal=target.data?.target,format=value=>Number(value).toLocaleString('es-AR');
@@ -25,6 +25,27 @@
        '<h4>Últimos 7 días</h4><div class="step-week">'+week.map(row=>'<div><small>'+(row.steps==null?'—':format(row.steps))+'</small><i style="--height:'+Math.round((row.steps||0)/highest*100)+'%"></i><span>'+row.label+'</span></div>').join('')+'</div>'+
        (coach||studentRole?'<form><label>'+(coach?'Objetivo de pasos diarios':'Pasos de hoy según tu celular o reloj')+'<input class="input" type="number" required step="1" min="'+(coach?1:0)+'" max="150000" value="'+(coach?target.data?.target??'':today??'')+'"></label><button class="btn primary">Guardar</button></form>':'')+
        '<p role="status"></p>';
+     const estimate=document.createElement('section');
+     estimate.className='step-estimate';
+     estimate.innerHTML='<h4>Calorías activas de hoy</h4><p>Estimación para caminata en terreno llano. Medí diez pasos y dividí la distancia por diez.</p><div class="form-grid"><label>Peso (kg)<input class="input" type="number" min="1" step="0.1"></label><label>Longitud de un paso (cm)<input class="input" type="number" min="1" max="200" step="0.1" placeholder="Ej. 70"></label></div><output aria-live="polite"></output>';
+     panel.querySelector('.step-hero').after(estimate);
+     const [weight,length]=estimate.querySelectorAll('input');
+     weight.value=measurement.data?.[0]?.weight_kg||'';
+     const lengthKey='fjz-step-length:'+id;
+     try{length.value=localStorage.getItem(lengthKey)||''}catch{}
+     const output=estimate.querySelector('output');
+     const refreshEstimate=()=>{
+       const input=studentRole?panel.querySelector('form input'):null;
+       const steps=input?.value!=='' && input?input.valueAsNumber:today;
+       const kg=weight.valueAsNumber,cm=length.valueAsNumber;
+       output.textContent=steps==null?'Sin pasos registrados hoy.':!Number.isFinite(steps)||steps<0?'Revisá los pasos.':
+         !(kg>0 && cm>0 && cm<=200)?'Ingresá peso y longitud de paso para estimar.':
+         '≈ '+Math.round(0.5*kg*steps*cm/100000).toLocaleString('es-AR')+' kcal activas';
+     };
+     weight.oninput=refreshEstimate;
+     length.oninput=()=>{try{if(length.validity.valid)localStorage.setItem(lengthKey,length.value)}catch{}refreshEstimate()};
+     if(studentRole && panel.querySelector('form input'))panel.querySelector('form input').oninput=refreshEstimate;
+     refreshEstimate();
      const form=panel.querySelector('form');
      if(form)form.onsubmit=async e=>{
        e.preventDefault();const save=form.querySelector('button');save.disabled=true;

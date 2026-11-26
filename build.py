@@ -1404,6 +1404,8 @@ if APP_ENV == "staging":
     staging_artifact = staging_artifact.replace(old_header, new_header)
     staging_artifact = staging_artifact.replace("const actions=hero.querySelector('.pill-row');if(actions)actions.prepend(btn);else hero.appendChild(btn);", "const tools=hero.querySelector('.fjz-section-tools');const actions=hero.querySelector('.pill-row');if(tools)tools.append(btn);else if(actions)actions.prepend(btn);else hero.appendChild(btn);")
     staging_artifact = staging_artifact.replace("hero.appendChild(btn);\n    updateStudentAlertsV96(false);", "(hero.querySelector('.fjz-section-tools')||hero).appendChild(btn);\n    updateStudentAlertsV96(false);")
+    from scripts.staging_student_views import update as update_student_views
+    staging_artifact = update_student_views(staging_artifact)
     staging_artifact_path.write_text(staging_artifact, encoding="utf-8")
 
 # Production must pass the same artifact audits as staging before Render can publish it.

@@ -888,3 +888,16 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 .fjz-coach-guide:empty{display:none}
 .fjz-coach-guide,.v269-library-copy{min-width:0}
 #view.v22v2-workout-active .v22v2-exercise-actions .v22v2-comment-action::before{content:none}
+#view .fjz3a-group-head .fjz-fold{display:grid;place-items:center;width:28px;height:28px;background:#242630;border:1px solid #424550;border-radius:50%;font-style:normal;transform:none}
+.fjz-fold::before{content:"+";font:500 18px/1 system-ui;color:#fafafa}
+[aria-expanded=true]>.fjz-fold::before{content:"−"}
+#app #studentSubBody .fjz4a-student-head:has(>h1){display:flex!important;flex-direction:column;align-items:flex-start;gap:8px;height:auto!important;min-height:0}
+#app #studentSubBody .fjz4a-student-head:has(>h1)>:is(h1,p){position:static!important;margin:0!important;height:auto;white-space:normal}
+#view .fjz4b-scale input[type=range]{padding:0!important;border:0!important;margin:0;width:100%;min-width:0;accent-color:#ec2946;box-shadow:none;background:transparent}
+#app #fjz4aCalculator{border:1px solid #41303a;border-top:3px solid #ee3554;border-radius:16px;background:linear-gradient(145deg,#261920,#161820 48%);padding:clamp(16px,3vw,24px)}
+#app #fjz4aCalculator .fjz4a-section-heading>span{color:#ff7c90}
+#app #fjz4aCalculator :is(input,select):focus-visible{outline:2px solid #ff617e;outline-offset:2px}
+.step-estimate{margin:14px 0;padding:14px;border-radius:12px;background:#191b23}
+.step-estimate h4,.step-estimate p{margin:0 0 8px}
+.step-estimate p{font-size:.85rem;color:#bec0c9}
+.step-estimate output{display:block;margin-top:12px;font-weight:700;color:#ffd0d8}

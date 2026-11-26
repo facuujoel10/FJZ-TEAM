@@ -163,25 +163,7 @@
     const host=root.document?.getElementById('studentSubBody');if(!host)return false;
     const p=c?.cache?.plan,pd=planData(c);
     if(!p||p.active===false){
-      host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><h1>Mi alimentación</h1><p>Sin plan asignado. Podés explorar el recetario por comida.</p></header><section class="fjz4a-student-meals-v21" data-library-meals></section>'+resourcesHtml(pd||{},true)+calculatorHtml(c)+portionCalculator()+'</div>';
-      const library=host.querySelector('[data-library-meals]');
-      const categories=['Desayuno','Almuerzo','Merienda','Cena'];
-      library.innerHTML='<h2>Recetas por comida</h2><nav class="fjz4a-student-meal-nav" aria-label="Comidas"></nav><div class="v70-recipe-grid" aria-live="polite">Cargando recetas…</div>';
-      const nav=library.querySelector('nav'),grid=library.lastElementChild;
-      loadRecipesV70().then(rows=>{
-        if(!library.isConnected)return;
-        for(const category of categories){
-          const tab=root.document.createElement('button');
-          tab.type='button';tab.textContent=category;
-          tab.onclick=()=>{
-            for(const other of nav.children)other.setAttribute('aria-pressed',String(other===tab));
-            const matching=rows.filter(r=>text(r.category).toLowerCase()===category.toLowerCase());
-            grid.innerHTML=matching.map(recipeCardV70).join('')||'Sin recetas en esta categoría.';
-          };
-          nav.append(tab);
-        }
-        nav.firstElementChild.click();
-      }).catch(()=>{grid.textContent='No se pudo cargar el recetario.'});
+      host.innerHTML='<div class="fjz4a-student-shell"><header class="fjz4a-student-head"><h1>Mi alimentación</h1><p>Todavía no tenés un plan de comidas asignado.</p></header>'+resourcesHtml(pd||{},true)+calculatorHtml(c)+portionCalculator()+'</div>';
       bindHost(host);return true;
     }
     if(!ui.savedSignature)ui.savedSignature=signature(c);
@@ -224,7 +206,7 @@
     const dirty=signature(c)!==ui.savedSignature||ui.lastSaveState==='dirty';
     const meal=coachMealSelected(pd),meals=pd?.meals||[];
     host.innerHTML='<div class="fjz4a-coach-shell"><header class="fjz4a-coach-head"><div><span>EDITOR NUTRICIONAL</span><h1>'+esc(p.title||'Plan nutricional')+'</h1><p>Revisión '+esc(p.revision||1)+' · edición del plan</p></div><div class="fjz4a-coach-save">'+saveStateHtml(dirty)+'<button type="button" class="primary" data-4a-action="save-plan" '+(ui.saving?'disabled':'')+'>Guardar cambios</button></div></header>'+ 
-      '<div class="fjz4a-coach-workspace"><aside class="fjz4a-editor-rail"><div class="fjz4a-rail-head"><span>COMIDAS</span><button type="button" data-4a-action="add-meal">+ Agregar</button></div><div class="meal-shortcuts"><button type="button" data-4a-action="optional-meal" data-name="Colación">+ Colación</button><button type="button" data-4a-action="optional-meal" data-name="Pre entreno">+ Pre entreno</button></div><nav aria-label="Comidas del plan">'+meals.map((m,i)=>'<button type="button" class="'+(text(m.id)===text(meal?.id)?'active':'')+'" data-4a-action="coach-meal" data-meal="'+esc(text(m.id))+'"><span>'+String(i+1).padStart(2,'0')+'</span><div><strong>'+esc(m.name||'Comida')+'</strong><small>'+((m.options||[]).length)+' opciones</small></div></button>').join('')+'</nav>'+coachToolsHtml()+'</aside><main class="fjz4a-editor-main">'+ 
+      '<div class="fjz4a-coach-workspace"><aside class="fjz4a-editor-rail"><div class="fjz4a-rail-head"><span>COMIDAS</span><button type="button" data-4a-action="add-meal">+ Agregar</button></div><div class="meal-shortcuts"><button type="button" data-4a-action="optional-meal" data-name="Colación">+ Colación</button><button type="button" data-4a-action="optional-meal" data-name="Pre entreno">+ Pre entreno</button><button type="button" data-4a-action="optional-meal" data-name="Post entreno">+ Post entreno</button></div><nav aria-label="Comidas del plan">'+meals.map((m,i)=>'<button type="button" class="'+(text(m.id)===text(meal?.id)?'active':'')+'" data-4a-action="coach-meal" data-meal="'+esc(text(m.id))+'"><span>'+String(i+1).padStart(2,'0')+'</span><div><strong>'+esc(m.name||'Comida')+'</strong><small>'+((m.options||[]).length)+' opciones</small></div></button>').join('')+'</nav>'+coachToolsHtml()+'</aside><main class="fjz4a-editor-main">'+
       (meal?'<section class="fjz4a-meal-editor"><div class="fjz4a-meal-editor-head"><div><span>COMIDA SELECCIONADA</span><h2>'+esc(meal.name||'Comida')+'</h2><p>'+((meal.options||[]).length)+' alternativa'+((meal.options||[]).length===1?'':'s')+'</p></div><div><button type="button" data-4a-action="meal-macros" data-meal="'+esc(text(meal.id))+'">Macros comida</button><button type="button" data-4a-action="rename-meal" data-meal="'+esc(text(meal.id))+'">Renombrar</button><button type="button" data-4a-action="add-option" data-meal="'+esc(text(meal.id))+'">+ Opción</button><button type="button" class="danger" data-4a-action="delete-meal" data-meal="'+esc(text(meal.id))+'">Eliminar</button></div></div><div class="fjz4a-coach-options">'+((meal.options||[]).length?meal.options.map((o,i)=>coachOptionHtml(meal,o,i)).join(''):'<div class="fjz4a-empty-block"><strong>Sin alternativas</strong><span>Agregá la primera opción para esta comida.</span></div>')+'</div></section>':'<section class="fjz4a-empty-block"><strong>Sin comidas</strong><span>Agregá una comida para comenzar el plan.</span></section>')+
       '<section class="fjz4a-plan-settings"><div class="fjz4a-section-heading"><span>CONFIGURACIÓN DEL PLAN</span><h2>Prescripción</h2><p>Los objetivos del plan se mantienen separados del consumo registrado.</p></div><div class="fjz4a-settings-grid"><label class="span2">Nombre del plan<input id="nutTitle" value="'+esc(p.title||'Plan nutricional')+'"></label><label>Calorías<input id="nutKcal" type="number" min="0" step="1" value="'+esc(p.target_kcal??'')+'"></label><label>Proteínas (g)<input id="nutProtein" type="number" min="0" step="1" value="'+esc(p.target_protein_g??'')+'"></label><label>Carbohidratos (g)<input id="nutCarbs" type="number" min="0" step="1" value="'+esc(p.target_carbs_g??'')+'"></label><label>Grasas (g)<input id="nutFat" type="number" min="0" step="1" value="'+esc(p.target_fat_g??'')+'"></label><label class="span2">Indicaciones<textarea id="nutNotes" rows="3">'+esc(p.notes||'')+'</textarea></label><label class="fjz4a-toggle span2"><input id="nutLoggingEnabled" type="checkbox" '+(p.student_logging_enabled!==false?'checked':'')+'><span><strong>Registro diario del alumno</strong><small>'+(p.student_logging_enabled!==false?'Habilitado con persistencia real':'Desactivado · el alumno sólo consulta el plan')+'</small></span></label></div></section>'+ 
       resourcesHtml(pd,false)+portionCalculator()+consumptionHtml(c,false)+(typeof actions().historyHtml==='function'?actions().historyHtml():'')+'</main></div></div>';
