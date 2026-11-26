@@ -908,3 +908,25 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 #fjz4aCalculator .calc-modes button{flex:1;min-height:40px;color:#cbced8;background:transparent;border:1px solid transparent;border-radius:9px}
 #fjz4aCalculator .calc-modes button[aria-pressed=true]{color:white;background:#40202b;border-color:#ad3750}
 #fjz4aCalculator [data-calc-pane][hidden]{display:none!important}
+
+@media(max-width:760px){
+  #app #view .v224-student-hero{
+    grid-template-columns:minmax(0,1fr) 48px!important;
+    align-items:start!important;gap:12px!important;padding:18px!important;
+  }
+  #app #view .v224-student-hero>.v224-hero-copy{display:contents!important}
+  #app #view .v224-student-hero>.v224-hero-copy>.v224-eyebrow{grid-area:1/1;align-self:end}
+  #app #view .v224-student-hero>.v224-hero-copy>h2{grid-area:2/1;margin:0!important;line-height:1.12!important;overflow-wrap:anywhere}
+  #app #view .v224-student-hero>#v268StudentAvatarPanel{grid-area:1/2/3/3!important;min-width:0!important;width:48px!important;align-self:center}
+  #app #view #v268StudentAvatarPanel .v268-student-avatar{width:48px!important;height:48px!important;min-width:0!important;border-radius:14px}
+  #app #view .v224-student-hero>.v224-hero-copy>p{grid-area:3/1/4/-1;margin:0!important}
+  #app #view .v224-student-hero>.v224-hero-copy>.v224-goal{grid-area:4/1/5/-1;display:grid!important;gap:4px;margin:0!important;padding-top:10px;border-top:1px solid #383039;overflow-wrap:anywhere}
+  #app #view .v224-student-hero>.v224-hero-side{grid-area:5/1/6/-1!important;box-sizing:border-box}
+  #app #view .fjz4b-hero .fjz4b-hero-stat{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 12px}
+  #app #view .fjz4b-hero-stat small{grid-area:1/1}
+  #app #view .fjz4b-hero-stat strong{grid-area:2/1;margin:0;line-height:1.2}
+  #app #view .fjz4b-hero-stat span{grid-area:1/2/3/3;text-align:right}
+}
+@media(max-width:760px){
+  #app #view #v268StudentAvatarPanel .v268-student-avatar>:is(.v268-avatar-fallback,.v268-avatar-img){width:100%!important;height:100%!important;max-width:100%;object-fit:cover}
+}
