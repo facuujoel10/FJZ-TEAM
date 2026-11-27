@@ -1147,7 +1147,7 @@ if APP_ENV == "staging":
     if "</head>" not in staging_artifact or "</body>" not in staging_artifact:
         raise RuntimeError("TEAM FJZ staging guard: expected valid HTML document.")
     staging_artifact = staging_artifact.replace("</head>", '<meta name="robots" content="noindex,nofollow,noarchive">\n<meta name="fjz-environment" content="staging">\n</head>', 1)
-    staging_artifact = staging_artifact.replace("</body>", '<div id="fjz-stage-notice" aria-label="Entorno de pruebas" style="position:fixed;right:8px;top:8px;z-index:99999;pointer-events:none;padding:6px 10px;border-radius:999px;background:#17171be8;border:1px solid #ff4354;color:#fff;font:800 10px system-ui">STAGING V22 · DATOS DE PRUEBA</div></body>', 1)
+    staging_artifact = staging_artifact.replace('<div class="footer-note">', '<div class="footer-note"><span id="fjz-stage-notice" aria-label="Entorno de pruebas">STAGING V22 · DATOS DE PRUEBA</span>', 1)
     # Stage-only defensive normalization: imported synthetic snapshots can omit
     # legacy arrays. The legacy Coach profile reads s.days.length synchronously
     # before Athlete 360 mounts, so missing arrays crash both Coach and preview.

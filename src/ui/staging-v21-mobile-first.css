@@ -930,3 +930,33 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 @media(max-width:760px){
   #app #view #v268StudentAvatarPanel .v268-student-avatar>:is(.v268-avatar-fallback,.v268-avatar-img){width:100%!important;height:100%!important;max-width:100%;object-fit:cover}
 }
+
+/* Shared meal summary for prescribed options and the coach editor. */
+#app #view .fjz4a-macros {
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ width:100%!important;gap:10px 14px!important;padding:12px!important;
+ box-sizing:border-box;background:#191c24!important;border:1px solid #323540!important;border-radius:12px!important;
+}
+#app #view .fjz4a-macros>div {
+ display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+ justify-content:flex-start!important;gap:3px!important;grid-column:auto!important;
+ min-width:0!important;width:auto!important;background:transparent!important;border:0!important;padding:0!important;
+}
+#app #view .fjz4a-macros>div>span {font-size:.7rem!important;letter-spacing:.02em!important;text-transform:none!important}
+#app #view .fjz4a-macros>div>strong {font-size:1rem!important;line-height:1.25!important;white-space:nowrap}
+#app #view .fjz4a-macros strong small {display:inline!important;font-size:.8rem!important;font-weight:450;color:#bfc4cf}
+#app .footer-note #fjz-stage-notice {position:static!important;display:block;margin:0 auto 8px!important;color:#b9bdc7;font:650 10px system-ui}
+@media(max-width:800px){
+ body #modalWrap:has(#stepPanel){position:fixed!important;inset:0!important;z-index:2147483500!important;overflow:hidden!important}
+ body #modalWrap #modal:has(#stepPanel){box-sizing:border-box;max-height:calc(100dvh - 24px - env(safe-area-inset-bottom))!important;overflow-y:auto!important;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+ #app .footer-note{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
+ #app #fjzCoachGlobalNav{position:static!important;inset:auto!important;transform:none!important}
+ #app #view .fjzfin-period{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ #app #view .fjzfin-period label{grid-column:1/-1!important;min-width:0}
+ #app #view .fjzfin-period input,#app #fjz4aCalculator :is(input,select){box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:100%!important;font-size:16px!important}
+ #app #fjz4aCalculator label{min-width:0}
+ #app #view.fjz3b-mounted .fjz3b-nav-wrap{inset:auto 6px calc(8px + env(safe-area-inset-bottom))!important;padding:5px!important;border-radius:16px!important;background:#101116!important;box-sizing:border-box!important}
+ #app #view.fjz3b-mounted .fjz3b-nav{display:grid!important;grid-auto-flow:column;grid-auto-columns:calc((100% - 16px)/5);scrollbar-width:none;scroll-snap-type:x proximity}
+ #app #view.fjz3b-mounted .fjz3b-nav button{min-width:0!important;width:100%!important;min-height:54px!important;scroll-snap-align:center;font-size:11px!important}
+ #app #view.fjz3b-mounted .fjz3b-nav button[aria-current=page]{background:#301921!important;border-radius:12px!important;color:#fff!important}
+}

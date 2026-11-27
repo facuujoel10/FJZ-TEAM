@@ -178,7 +178,7 @@ runtime=r"""
 
       const payload={
         athlete_id:aid,
-        student_id:currentUser.id,
+        student_id:trackingStudentUserId(),
         week_start:document.getElementById('ciWeek')?.value||weekStart(),
         weight_kg:weight,
         notes:(document.getElementById('ciNotes')?.value||'').trim(),

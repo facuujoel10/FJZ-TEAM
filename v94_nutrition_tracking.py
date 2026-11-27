@@ -166,7 +166,8 @@ js=r"""
 
   window.openSupplementPickerV94=async function(){
     try{
-      const arr=await loadSupplementsV94();
+      const arr=await loadSupplementsV94().catch(error=>{if(["PGRST205","42P01"].includes(error?.code))return [];throw error});
+      if(!arr.length)return window.chooseSupplementV94("custom");
       showModal('<div class="modal-head"><div><h3>Agregar suplemento</h3><div class="muted tiny">Elegí uno de la biblioteca o cargá otro manualmente.</div></div><button class="btn small" onclick="closeModal()">✕</button></div><div class="library">'+arr.map(s=>'<button class="food-choice" onclick="chooseSupplementV94(\''+s.id+'\')"><strong>'+esc(s.name)+'</strong><small>'+esc(s.category)+'</small></button>').join('')+'</div><button class="btn" style="width:100%;margin-top:10px" onclick="chooseSupplementV94(\'custom\')">+ Otro suplemento</button>');
     }catch(e){toast(cloudErr(e))}
   };
