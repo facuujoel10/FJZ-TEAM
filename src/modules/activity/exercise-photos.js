@@ -22,16 +22,36 @@ const techniqueDiagrams={
 };
 function techniqueDiagram(id,index){
  const d=techniqueDiagrams[id],head=d.head||d.heads[index];
- return '<svg viewBox="0 0 112 106" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="#738096" stroke-width="3" d="'+d.frame+'"/><circle cx="'+head[0]+'" cy="'+head[1]+'" r="7" fill="#424d62"/>'+
- (d.body?'<path stroke="#424d62" stroke-width="7" d="'+d.body+'"/>':'')+'<path stroke="#bf254b" stroke-width="6" d="'+(d.limbs||d.poses)[index]+'"/></svg>';
+ return '<svg viewBox="0 0 112 106" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="#73747b" stroke-width="3" d="'+d.frame+'"/><circle cx="'+head[0]+'" cy="'+head[1]+'" r="7" fill="#393a40"/>'+
+ (d.body?'<path stroke="#393a40" stroke-width="7" d="'+d.body+'"/>':'')+'<path stroke="#cc2442" stroke-width="6" d="'+(d.limbs||d.poses)[index]+'"/></svg>';
+}
+// One shared palette for licensed images, TEAM FJZ illustrations and movement diagrams.
+function installTechniquePalette(){
+ if(typeof document==='undefined'||!document.body||document.getElementById('fjz-tech-palette'))return;
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.id='fjz-tech-palette';
+ svg.setAttribute('aria-hidden','true');
+ svg.setAttribute('width','0');svg.setAttribute('height','0');
+ svg.style.position='absolute';svg.style.pointerEvents='none';
+ // Keep luminance for grips, cables and machine detail. Separate chromatic
+ // clothing from low-saturation surfaces before applying the brand red.
+ const filters=[['fjz-tech-cool','-3 0 3 0 -0.52'],['fjz-tech-warm','3 -3 0 0 -0.68']];
+ svg.innerHTML='<defs>'+filters.map(([id,mask])=>
+   '<filter id="'+id+'" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">'+
+   '<feColorMatrix type="saturate" values="0" result="neutral"/>'+
+   '<feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  '+mask+'" result="mask"/>'+
+   '<feComponentTransfer in="neutral" result="fabric"><feFuncR type="linear" slope=".80" intercept=".30"/><feFuncG type="linear" slope=".24" intercept=".025"/><feFuncB type="linear" slope=".30" intercept=".055"/></feComponentTransfer>'+
+   '<feComposite in="fabric" in2="mask" operator="in"/><feComposite in2="neutral" operator="over"/></filter>').join('')+'</defs>';
+ document.body.appendChild(svg);
 }
 function exercisePhotoHtml(id,assigned){
  const key=exerciseGuideId(id,assigned),guide=exerciseGuides[key];
  if(!guide)return '';
+ installTechniquePalette();
  const base=guide.src==='fjz'?'':'./exercise-media/';
  const labels=guide.src==='diagram'?['Preparación','Movimiento']:guide.files.length===1?['Posición']:['Inicio','Posición de trabajo'];
  const figures=labels.map((label,i)=>{
-   const visual=guide.src==='diagram'?techniqueDiagram(key,i):'<img loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
+   const visual=guide.src==='diagram'?techniqueDiagram(key,i):'<img class="fjz-tech-'+(['local','fjz'].includes(guide.src)?'warm':'cool')+'" loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
    return '<figure>'+visual+'<figcaption>'+label+'</figcaption></figure>';
  }).join('');
  return '<details class="exercise-demo fjz-tech-guide" '+(assigned?'open':'')+'><summary>Guía de técnica</summary>'+(guide.attachment?'<p>'+esc(guide.attachment)+'</p>':'')+'<div class="fjz-tech-frames">'+figures+'</div>'+
