@@ -8,50 +8,13 @@ function exerciseGuideId(id,assigned){
  return guideIdsByName.get(guideNameKey(assigned?.name)) || (guideNameKey(assigned?.name)==='facepull'?'face_pull':undefined);
 }
 
-// Movement diagrams show the moving segment in red against the fixed supports.
-const techniqueDiagrams={
- machine_pullover:{frame:'M38 34v51h45m-45-2v16',body:'M46 39l4 39 28 1 3 19',limbs:['M46 43l3-24 18-8','M46 43l12 24 15-8'],head:[44,28]},
- pendulum:{frame:'M24 97h75m-8-70L65 45',poses:['M66 36l-2 29 4 17-13 14','M63 45l-13 26 22 6-17 19'],heads:[[68,26],[66,35]]},
- machine_glute:{frame:'M27 46h34m-14 0v49',body:'M45 42l23 19-3 32m-20-49-13 8',limbs:['M68 61l8 16-13 10','M68 61l21 4 12-6'],head:[39,32]},
- upright_rope:{frame:'M55 97h33m-8-3L58 65',body:'M52 35v31l-7 29m7-29 8 29',limbs:['M52 38l4 16 3 13','M52 38l20 1-13 11'],head:[52,23]},
- meadows_row:{frame:'M10 95l55-13m-5-7 3 14',body:'M46 45l28 15-9 16 7 17',limbs:['M48 47l6 17 8 16','M48 47l21 4-5 12'],head:[35,40]},
- bayesian_curl:{frame:'M15 28v61l32-22',body:'M57 36l1 31-6 28m6-28 11 27',limbs:['M56 39l-9 15-5 18','M56 39l-9 15 14-12'],head:[57,24]},
- belt_squat:{frame:'M22 96h77m-40-2v-18',poses:['M55 31l3 32 4 16-8 15','M51 46l-4 26 22 5-15 17'],heads:[[55,20],[53,35]]},
- cable_abduction:{frame:'M18 24v66l39-4',body:'M55 34v32l-6 29m6-58-23 8',limbs:['M56 66l6 28','M56 66l27 22'],head:[55,22]},
- tibialis_raise:{frame:'M36 18v78h62',body:'M42 37l3 29 22 26',limbs:['M66 92l18 1','M66 92l14-10'],head:[42,25]}
-};
-function techniqueDiagram(id,index){
- const d=techniqueDiagrams[id],head=d.head||d.heads[index];
- return '<svg viewBox="0 0 112 106" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="#73747b" stroke-width="3" d="'+d.frame+'"/><circle cx="'+head[0]+'" cy="'+head[1]+'" r="7" fill="#393a40"/>'+
- (d.body?'<path stroke="#393a40" stroke-width="7" d="'+d.body+'"/>':'')+'<path stroke="#cc2442" stroke-width="6" d="'+(d.limbs||d.poses)[index]+'"/></svg>';
-}
-// One shared palette for licensed images, TEAM FJZ illustrations and movement diagrams.
-function installTechniquePalette(){
- if(typeof document==='undefined'||!document.body||document.getElementById('fjz-tech-palette'))return;
- const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
- svg.id='fjz-tech-palette';
- svg.setAttribute('aria-hidden','true');
- svg.setAttribute('width','0');svg.setAttribute('height','0');
- svg.style.position='absolute';svg.style.pointerEvents='none';
- // Keep luminance for grips, cables and machine detail. Separate chromatic
- // clothing from low-saturation surfaces before applying the brand red.
- const filters=[['fjz-tech-cool','-3 0 3 0 -0.52'],['fjz-tech-warm','3 -3 0 0 -0.68']];
- svg.innerHTML='<defs>'+filters.map(([id,mask])=>
-   '<filter id="'+id+'" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">'+
-   '<feColorMatrix type="saturate" values="0" result="neutral"/>'+
-   '<feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  '+mask+'" result="mask"/>'+
-   '<feComponentTransfer in="neutral" result="fabric"><feFuncR type="linear" slope=".80" intercept=".30"/><feFuncG type="linear" slope=".24" intercept=".025"/><feFuncB type="linear" slope=".30" intercept=".055"/></feComponentTransfer>'+
-   '<feComposite in="fabric" in2="mask" operator="in"/><feComposite in2="neutral" operator="over"/></filter>').join('')+'</defs>';
- document.body.appendChild(svg);
-}
 function exercisePhotoHtml(id,assigned){
  const key=exerciseGuideId(id,assigned),guide=exerciseGuides[key];
  if(!guide)return '';
- installTechniquePalette();
  const base=guide.src==='fjz'?'':'./exercise-media/';
- const labels=guide.src==='diagram'?['Preparación','Movimiento']:guide.files.length===1?['Posición']:['Inicio','Posición de trabajo'];
+ const labels=guide.files.length===1?['Posición']:['Inicio','Posición de trabajo'];
  const figures=labels.map((label,i)=>{
-   const visual=guide.src==='diagram'?techniqueDiagram(key,i):'<img class="fjz-tech-'+(['local','fjz'].includes(guide.src)?'warm':'cool')+'" loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
+   const visual='<img loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
    return '<figure>'+visual+'<figcaption>'+label+'</figcaption></figure>';
  }).join('');
  return '<details class="exercise-demo fjz-tech-guide" '+(assigned?'open':'')+'><summary>Guía de técnica</summary>'+(guide.attachment?'<p>'+esc(guide.attachment)+'</p>':'')+'<div class="fjz-tech-frames">'+figures+'</div>'+

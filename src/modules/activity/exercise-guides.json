@@ -1,9 +1,9 @@
 {
  "bench": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "bench-press-start.webp",
-   "bench-press-peak.webp"
+   "bench-0.webp",
+   "bench-1.webp"
   ],
   "steps": [
    "Acuéstate en el banco con los ojos bajo la barra.",
@@ -15,10 +15,10 @@
   "cue": "Escápulas estables y recorrido controlado."
  },
  "incline_bar": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "incline-bench-press-start.webp",
-   "incline-bench-press-peak.webp"
+   "incline_bar-0.webp",
+   "incline_bar-1.webp"
   ],
   "steps": [
    "Acuéstate en un banco inclinado a 30-45 grados.",
@@ -30,10 +30,10 @@
   "cue": "Controlá la bajada y no pierdas tensión."
  },
  "incline_db": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "incline-db-press-start.webp",
-   "incline-db-press-peak.webp"
+   "incline_db-0.webp",
+   "incline_db-1.webp"
   ],
   "steps": [
    "Ajusta el banco a 30 grados de inclinación y siéntate con las mancuernas a la altura de los hombros.",
@@ -44,10 +44,10 @@
   "cue": "Bajá con control y mantené el pecho alto."
  },
  "chest_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "chest-press-machine-start.webp",
-   "chest-press-machine-peak.webp"
+   "chest_press-0.webp",
+   "chest_press-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina con la espalda plana contra el respaldo.",
@@ -59,10 +59,10 @@
   "cue": "Ajustá el asiento para alinear empuje y pecho."
  },
  "decline_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "decline-bench-press-barbell-start.webp",
-   "decline-bench-press-barbell-peak.webp"
+   "decline_press-0.webp",
+   "decline_press-1.webp"
   ],
   "steps": [
    "Ajusta el banco en declinación. Túmbate y asegura los pies.",
@@ -73,10 +73,10 @@
   "cue": "Escápulas firmes y control del recorrido."
  },
  "cable_fly": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-fly-start.webp",
-   "cable-fly-peak.webp"
+   "cable_fly-0.webp",
+   "cable_fly-1.webp"
   ],
   "steps": [
    "Colócate entre dos columnas de cable con los agarres enganchados a las poleas altas.",
@@ -88,10 +88,10 @@
   "cue": "Abrazo amplio sin perder flexión de codo."
  },
  "low_high_fly": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Low_Cable_Crossover/0.jpg",
-   "Low_Cable_Crossover/1.jpg"
+   "low_high_fly-0.webp",
+   "low_high_fly-1.webp"
   ],
   "steps": [
    "Colocá las poleas abajo y tomá ambas manijas con los codos ligeramente flexionados.",
@@ -101,10 +101,10 @@
   "cue": "Llevá las manos hacia arriba y adentro."
  },
  "pec_deck": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "pec-deck-start.webp",
-   "pec-deck-peak.webp"
+   "pec_deck-0.webp",
+   "pec_deck-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina pec deck y agarra las asas con los brazos abiertos a los lados y los codos ligeramente flexionados.",
@@ -117,10 +117,10 @@
   "cue": "No lleves los hombros hacia adelante."
  },
  "dips": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dips-start.webp",
-   "dips-peak.webp"
+   "dips-0.webp",
+   "dips-1.webp"
   ],
   "steps": [
    "Agarra las barras paralelas y súbete a la posición superior con los brazos extendidos.",
@@ -132,10 +132,10 @@
   "cue": "Descenso controlado, sin colapsar hombros."
  },
  "ohp": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "ohp-start.webp",
-   "ohp-peak.webp"
+   "ohp-0.webp",
+   "ohp-1.webp"
   ],
   "steps": [
    "De pie con los pies a la anchura de los hombros y la barra a la altura de las clavículas.",
@@ -147,10 +147,10 @@
   "cue": "Glúteos y abdomen firmes."
  },
  "db_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-shoulder-press-start.webp",
-   "dumbbell-shoulder-press-peak.webp"
+   "db_press-0.webp",
+   "db_press-1.webp"
   ],
   "steps": [
    "Siéntate o ponte de pie sujetando mancuernas a la altura de los hombros con las palmas mirando hacia adelante.",
@@ -163,10 +163,10 @@
   "cue": "No hiperextiendas la zona lumbar."
  },
  "machine_shoulder": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-shoulder-press-start.webp",
-   "machine-shoulder-press-peak.webp"
+   "machine_shoulder-0.webp",
+   "machine_shoulder-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina con la espalda contra el rodillo.",
@@ -178,10 +178,10 @@
   "cue": "Alineá el agarre con hombros."
  },
  "lat_raise": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "lateral-raise-start.webp",
-   "lateral-raise-peak.webp"
+   "lat_raise-0.webp",
+   "lat_raise-1.webp"
   ],
   "steps": [
    "Párate con mancuernas a los costados.",
@@ -192,10 +192,10 @@
   "cue": "Subí con el codo y sin impulso."
  },
  "cable_lat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-lateral-raise-start.webp",
-   "cable-lateral-raise-peak.webp"
+   "cable_lat-0.webp",
+   "cable_lat-1.webp"
   ],
   "steps": [
    "Colócate de lado a una polea baja y agarra el asa con la mano más alejada de la máquina.",
@@ -208,10 +208,10 @@
   "cue": "Tensión constante y recorrido limpio."
  },
  "machine_lat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "plate-loaded-lateral-raise-start.webp",
-   "plate-loaded-lateral-raise-peak.webp"
+   "machine_lat-0.webp",
+   "machine_lat-1.webp"
   ],
   "steps": [
    "Ajusta la altura del asiento para que el eje de giro de las almohadillas quede alineado con la punta de tus hombros al sentarte.",
@@ -224,10 +224,10 @@
   "cue": "Controlá la excéntrica."
  },
  "rear_delt": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-reverse-fly-start.webp",
-   "dumbbell-reverse-fly-peak.webp"
+   "rear_delt-0.webp",
+   "rear_delt-1.webp"
   ],
   "steps": [
    "Inclínate hacia adelante desde las caderas sujetando mancuernas con los brazos colgando.",
@@ -240,10 +240,10 @@
   "cue": "Abrí con codos, no con manos."
  },
  "reverse_pec": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-reverse-fly-start.webp",
-   "machine-reverse-fly-peak.webp"
+   "reverse_pec-0.webp",
+   "reverse_pec-1.webp"
   ],
   "steps": [
    "Ajusta el asiento para que las empuñaduras queden a la altura de los hombros y siéntate de cara a la máquina con el pecho contra la almohadilla.",
@@ -272,10 +272,10 @@
   "attachment": "Soga · polea a la altura de la cara"
  },
  "pulldown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "lat-pulldown-start.webp",
-   "lat-pulldown-peak.webp"
+   "pulldown-0.webp",
+   "pulldown-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de jalón con los muslos sujetos bajo los rodillos.",
@@ -287,10 +287,10 @@
   "cue": "Pecho alto, codos hacia abajo."
  },
  "neutral_pulldown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "v-bar-lat-pulldown-start.webp",
-   "v-bar-lat-pulldown-peak.webp"
+   "neutral_pulldown-0.webp",
+   "neutral_pulldown-1.webp"
   ],
   "steps": [
    "Coloca una barra en V (mango doble-D) en el cable de jalón al pecho.",
@@ -303,10 +303,10 @@
   "cue": "Evitá balancear el torso."
  },
  "single_pulldown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "one-arm-lat-pulldown-start.webp",
-   "one-arm-lat-pulldown-peak.webp"
+   "single_pulldown-0.webp",
+   "single_pulldown-1.webp"
   ],
   "steps": [
    "Sujeta una manija individual al jalón de cable y siéntate con los muslos asegurados bajo el soporte.",
@@ -319,10 +319,10 @@
   "cue": "Buscá depresión escapular antes de tirar."
  },
  "pullup": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "pull-up-start.webp",
-   "pull-up-peak.webp"
+   "pullup-0.webp",
+   "pullup-1.webp"
   ],
   "steps": [
    "Cuélgate de una barra con agarre prono, ligeramente más ancho que el ancho de los hombros.",
@@ -348,10 +348,10 @@
   "attachment": "Agarre V · polea baja"
  },
  "bar_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "barbell-row-start.webp",
-   "barbell-row-peak.webp"
+   "bar_row-0.webp",
+   "bar_row-1.webp"
   ],
   "steps": [
    "Inclínate en las caderas con una ligera flexión de rodillas.",
@@ -363,10 +363,10 @@
   "cue": "Columna estable y tirá hacia el abdomen."
  },
  "db_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "single-arm-db-row-start.webp",
-   "single-arm-db-row-peak.webp"
+   "db_row-0.webp",
+   "db_row-1.webp"
   ],
   "steps": [
    "Coloca una rodilla y una mano en un banco como apoyo.",
@@ -379,10 +379,10 @@
   "cue": "Codo hacia la cadera, sin rotar torso."
  },
  "chest_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "chest-supported-db-row-start.webp",
-   "chest-supported-db-row-peak.webp"
+   "chest_row-0.webp",
+   "chest_row-1.webp"
   ],
   "steps": [
    "Túmbate boca abajo en un banco inclinado con las mancuernas colgando por debajo.",
@@ -393,10 +393,10 @@
   "cue": "Pecho fijo y retracción controlada."
  },
  "machine_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "chest-supported-machine-row-start.webp",
-   "chest-supported-machine-row-peak.webp"
+   "machine_row-0.webp",
+   "machine_row-1.webp"
   ],
   "steps": [
    "Ajusta el asiento para que las empuñaduras queden a la altura de la parte baja del pecho y siéntate con el pecho contra la almohadilla y los pies bien apoyados.",
@@ -409,10 +409,10 @@
   "cue": "No encogas hombros al tirar."
  },
  "tbar": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "t-bar-row-start.webp",
-   "t-bar-row-peak.webp"
+   "tbar-0.webp",
+   "tbar-1.webp"
   ],
   "steps": [
    "Colócate a horcajadas sobre la barra en T con los pies al ancho de los hombros.",
@@ -426,10 +426,10 @@
   "cue": "Mantené el torso firme."
  },
  "pullover": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "straight-arm-pulldown-start.webp",
-   "straight-arm-pulldown-peak.webp"
+   "pullover-0.webp",
+   "pullover-1.webp"
   ],
   "steps": [
    "Párate frente a una máquina de cable con una barra recta enganchada a la polea alta.",
@@ -441,8 +441,11 @@
   "cue": "Brazos casi estirados, dorsales activos."
  },
  "machine_pullover": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "machine_pullover-0.webp",
+   "machine_pullover-1.webp"
+  ],
   "steps": [
    "Regulá el asiento para apoyar los codos en las almohadillas y mantener el torso contra el respaldo.",
    "Llevá los codos en arco hacia el costado del tronco. Acompañá el retorno sin despegar la espalda."
@@ -451,10 +454,10 @@
   "cue": "No compenses con lumbar."
  },
  "shrug": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-shrug-start.webp",
-   "db-shrug-peak.webp"
+   "shrug-0.webp",
+   "shrug-1.webp"
   ],
   "steps": [
    "De pie, sujeta mancuernas a los costados.",
@@ -465,10 +468,10 @@
   "cue": "Elevá hombros verticalmente sin rotar."
  },
  "curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "barbell-curl-start.webp",
-   "barbell-curl-peak.webp"
+   "curl-0.webp",
+   "curl-1.webp"
   ],
   "steps": [
    "Párate sosteniendo una barra con agarre supino a la anchura de los hombros.",
@@ -479,10 +482,10 @@
   "cue": "Codos quietos y sin balanceo."
  },
  "ez_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "ez-bar-curl-start.webp",
-   "ez-bar-curl-peak.webp"
+   "ez_curl-0.webp",
+   "ez_curl-1.webp"
   ],
   "steps": [
    "Ponte de pie sujetando la barra Z con agarre supino en las partes anguladas.",
@@ -493,10 +496,10 @@
   "cue": "Controlá la excéntrica."
  },
  "db_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "bicep-curl-start.webp",
-   "bicep-curl-peak.webp"
+   "db_curl-0.webp",
+   "db_curl-1.webp"
   ],
   "steps": [
    "Sostené una mancuerna en cada mano a los costados del cuerpo.",
@@ -507,10 +510,10 @@
   "cue": "Supiná sin mover el hombro."
  },
  "incline_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "incline-db-curl-start.webp",
-   "incline-db-curl-peak.webp"
+   "incline_curl-0.webp",
+   "incline_curl-1.webp"
   ],
   "steps": [
    "Siéntate en un banco inclinado a 45 grados con mancuernas a los lados.",
@@ -522,10 +525,10 @@
   "cue": "Hombro atrás y recorrido completo."
  },
  "hammer": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hammer-curl-start.webp",
-   "hammer-curl-peak.webp"
+   "hammer-0.webp",
+   "hammer-1.webp"
   ],
   "steps": [
    "De pie, sujeta las mancuernas a los lados con las palmas enfrentadas.",
@@ -536,10 +539,10 @@
   "cue": "Muñeca neutra y codos quietos."
  },
  "preacher": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-preacher-curl-start.webp",
-   "machine-preacher-curl-peak.webp"
+   "preacher-0.webp",
+   "preacher-1.webp"
   ],
   "steps": [
    "Siéntate y ajusta el asiento para que las axilas queden en la parte superior del almohadillado.",
@@ -567,10 +570,10 @@
   "attachment": "Barra recta corta · polea baja"
  },
  "pushdown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "tricep-pushdown-start.webp",
-   "tricep-pushdown-peak.webp"
+   "pushdown-0.webp",
+   "pushdown-1.webp"
   ],
   "steps": [
    "Párate frente a una máquina de cable con un accesorio de barra recta.",
@@ -597,10 +600,10 @@
   "attachment": "Soga · polea alta"
  },
  "overhead_tri": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-overhead-tricep-extension-start.webp",
-   "cable-overhead-tricep-extension-peak.webp"
+   "overhead_tri-0.webp",
+   "overhead_tri-1.webp"
   ],
   "steps": [
    "Engancha una cuerda a la polea baja y selecciona un peso ligero.",
@@ -613,10 +616,10 @@
   "cue": "Codos altos y estables."
  },
  "skull": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "skull-crusher-start.webp",
-   "skull-crusher-peak.webp"
+   "skull-0.webp",
+   "skull-1.webp"
   ],
   "steps": [
    "Acuéstate en un banco plano sosteniendo una barra sobre el pecho con agarre estrecho.",
@@ -627,10 +630,10 @@
   "cue": "Flexioná codos sin abrirlos."
  },
  "db_overhead_tri": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-tricep-extension-start.webp",
-   "dumbbell-tricep-extension-peak.webp"
+   "db_overhead_tri-0.webp",
+   "db_overhead_tri-1.webp"
   ],
   "steps": [
    "Ponte de pie sujetando una mancuerna en cada mano con los brazos extendidos por encima de la cabeza.",
@@ -642,10 +645,10 @@
   "cue": "Evitá arquear la espalda."
  },
  "close_bench": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "close-grip-bench-press-start.webp",
-   "close-grip-bench-press-peak.webp"
+   "close_bench-0.webp",
+   "close_bench-1.webp"
   ],
   "steps": [
    "Túmbate en un banco plano y agarra la barra con las manos a la anchura de los hombros.",
@@ -656,10 +659,10 @@
   "cue": "Agarre cómodo y codos controlados."
  },
  "squat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "squat-start.webp",
-   "squat-peak.webp"
+   "squat-0.webp",
+   "squat-1.webp"
   ],
   "steps": [
    "Coloca la barra sobre tus trapecios superiores.",
@@ -671,10 +674,10 @@
   "cue": "Brace abdominal y rodillas siguiendo pies."
  },
  "front_squat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "front-squat-start.webp",
-   "front-squat-peak.webp"
+   "front_squat-0.webp",
+   "front_squat-1.webp"
   ],
   "steps": [
    "Limpia o coloca la barra en los deltoides frontales con los codos altos.",
@@ -685,10 +688,10 @@
   "cue": "Torso erguido y codos altos."
  },
  "hack": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hack-squat-start.webp",
-   "hack-squat-peak.webp"
+   "hack-0.webp",
+   "hack-1.webp"
   ],
   "steps": [
    "Carga la máquina hack squat y colócate con la espalda y los hombros contra los almohadillados.",
@@ -702,8 +705,11 @@
   "cue": "Apoyá toda la planta del pie."
  },
  "pendulum": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "pendulum-0.webp",
+   "pendulum-1.webp"
+  ],
   "steps": [
    "Apoyá espalda y hombros en los soportes y ubicá los pies completos sobre la plataforma.",
    "Flexioná rodillas y caderas siguiendo el arco de la máquina. Empujá la plataforma para volver a subir."
@@ -712,10 +718,10 @@
   "cue": "Controlá profundidad y trayectoria."
  },
  "leg_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "leg-press-start.webp",
-   "leg-press-peak.webp"
+   "leg_press-0.webp",
+   "leg_press-1.webp"
   ],
   "steps": [
    "Siéntate en la prensa de piernas con los pies a la anchura de los hombros sobre la plataforma.",
@@ -727,10 +733,10 @@
   "cue": "No despegues la pelvis del respaldo."
  },
  "split_squat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "bulgarian-split-squat-start.webp",
-   "bulgarian-split-squat-peak.webp"
+   "split_squat-0.webp",
+   "split_squat-1.webp"
   ],
   "steps": [
    "Colócate de pie frente a un banco y apoya un pie detrás sobre el banco.",
@@ -743,10 +749,10 @@
   "cue": "Descenso vertical y pie delantero estable."
  },
  "lunge": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-lunge-start.webp",
-   "db-lunge-peak.webp"
+   "lunge-0.webp",
+   "lunge-1.webp"
   ],
   "steps": [
    "De pie, sujeta mancuernas a los costados.",
@@ -758,10 +764,10 @@
   "cue": "Paso estable y rodilla alineada."
  },
  "leg_ext": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "leg-extension-start.webp",
-   "leg-extension-peak.webp"
+   "leg_ext-0.webp",
+   "leg_ext-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de extensión de piernas con los tobillos detrás del rodillo.",
@@ -773,10 +779,10 @@
   "cue": "Pausa arriba y control abajo."
  },
  "sissy": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "sissy-squat-start.webp",
-   "sissy-squat-peak.webp"
+   "sissy-0.webp",
+   "sissy-1.webp"
   ],
   "steps": [
    "De pie, sujetate a un soporte firme y separá los pies al ancho de las caderas.",
@@ -790,10 +796,10 @@
   "cue": "Mantené tensión y rango tolerable."
  },
  "rdl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "romanian-deadlift-start.webp",
-   "romanian-deadlift-peak.webp"
+   "rdl-0.webp",
+   "rdl-1.webp"
   ],
   "steps": [
    "Párate sosteniendo la barra a la altura de las caderas con agarre prono.",
@@ -805,10 +811,10 @@
   "cue": "Cadera atrás y columna neutra."
  },
  "db_rdl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-romanian-deadlift-start.webp",
-   "dumbbell-romanian-deadlift-peak.webp"
+   "db_rdl-0.webp",
+   "db_rdl-1.webp"
   ],
   "steps": [
    "Ponte de pie sujetando mancuernas frente a los muslos con una ligera flexión de rodillas.",
@@ -821,10 +827,10 @@
   "cue": "Buscá estiramiento sin redondear."
  },
  "leg_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "seated-leg-curl-start.webp",
-   "seated-leg-curl-peak.webp"
+   "leg_curl-0.webp",
+   "leg_curl-1.webp"
   ],
   "steps": [
    "Ajusta el respaldo y el cojín de tobillo para que las rodillas queden alineadas con el pivote de la máquina.",
@@ -836,10 +842,10 @@
   "cue": "Cadera pegada al asiento."
  },
  "lying_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "leg-curl-start.webp",
-   "leg-curl-peak.webp"
+   "lying_curl-0.webp",
+   "lying_curl-1.webp"
   ],
   "steps": [
    "Túmbate boca abajo en la máquina de curl de piernas con los tobillos bajo el rodillo.",
@@ -851,10 +857,10 @@
   "cue": "No eleves la cadera."
  },
  "single_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "single-leg-lying-leg-curl-start.webp",
-   "single-leg-lying-leg-curl-peak.webp"
+   "single_curl-0.webp",
+   "single_curl-1.webp"
   ],
   "steps": [
    "Acuéstate boca abajo en la máquina de curl de piernas tumbado.",
@@ -868,10 +874,10 @@
   "cue": "Controlá todo el recorrido."
  },
  "good_morning": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "good-morning-start.webp",
-   "good-morning-peak.webp"
+   "good_morning-0.webp",
+   "good_morning-1.webp"
   ],
   "steps": [
    "De pie con una barra sobre la parte superior de la espalda.",
@@ -883,10 +889,10 @@
   "cue": "Bisagra de cadera con espalda neutra."
  },
  "hip_thrust": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hip-thrust-start.webp",
-   "hip-thrust-peak.webp"
+   "hip_thrust-0.webp",
+   "hip_thrust-1.webp"
   ],
   "steps": [
    "Siéntate en el suelo con la parte superior de la espalda contra un banco y la barra sobre las caderas.",
@@ -898,10 +904,10 @@
   "cue": "Retroversión pélvica arriba sin hiperextender."
  },
  "glute_bridge": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "barbell-glute-bridge-start.webp",
-   "barbell-glute-bridge-peak.webp"
+   "glute_bridge-0.webp",
+   "glute_bridge-1.webp"
   ],
   "steps": [
    "Acuéstate en el suelo con una barra sobre las caderas y las rodillas flexionadas.",
@@ -913,10 +919,10 @@
   "cue": "Pausa arriba con pelvis estable."
  },
  "glute_kick": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-kickback-start.webp",
-   "cable-kickback-peak.webp"
+   "glute_kick-0.webp",
+   "glute_kick-1.webp"
   ],
   "steps": [
    "Coloca una correa de tobillo en la polea baja y sujétala alrededor de un tobillo.",
@@ -929,8 +935,11 @@
   "cue": "No rotes la pelvis."
  },
  "machine_glute": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "machine_glute-0.webp",
+   "machine_glute-1.webp"
+  ],
   "steps": [
    "Ajustá el apoyo del torso y colocá el pie de trabajo contra la plataforma móvil.",
    "Empujá hacia atrás desde la cadera y frená antes de que la pelvis empiece a girar. Volvé despacio."
@@ -939,10 +948,10 @@
   "cue": "Recorrido controlado."
  },
  "abductor": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hip-abduction-start.webp",
-   "hip-abduction-peak.webp"
+   "abductor-0.webp",
+   "abductor-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de abducción de cadera con los apoyos contra la parte externa de los muslos.",
@@ -954,10 +963,10 @@
   "cue": "No rebotes, controlá apertura y cierre."
  },
  "adductor": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hip-adduction-start.webp",
-   "hip-adduction-peak.webp"
+   "adductor-0.webp",
+   "adductor-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de aducción de cadera con la espalda contra el respaldo.",
@@ -970,10 +979,10 @@
   "cue": "Controlá el retorno."
  },
  "standing_calf": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "standing-calf-raise-start.webp",
-   "standing-calf-raise-peak.webp"
+   "standing_calf-0.webp",
+   "standing_calf-1.webp"
   ],
   "steps": [
    "Párate en el borde de una plataforma o máquina de elevación de talones.",
@@ -985,10 +994,10 @@
   "cue": "Pausa arriba y estiramiento abajo."
  },
  "seated_calf": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "seated-calf-raise-start.webp",
-   "seated-calf-raise-peak.webp"
+   "seated_calf-0.webp",
+   "seated_calf-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de elevación de talones con los pads apoyados en los muslos.",
@@ -1000,10 +1009,10 @@
   "cue": "Recorrido completo sin rebotes."
  },
  "legpress_calf": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
-   "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
+   "legpress_calf-0.webp",
+   "legpress_calf-1.webp"
   ],
   "steps": [
    "Apoyá los antepiés sobre el borde de la plataforma con las rodillas estables.",
@@ -1013,10 +1022,10 @@
   "cue": "Mové solo el tobillo."
  },
  "crunch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-crunch-start.webp",
-   "cable-crunch-peak.webp"
+   "crunch-0.webp",
+   "crunch-1.webp"
   ],
   "steps": [
    "Arrodíllate frente a una máquina de cable con el accesorio de cuerda en la parte superior.",
@@ -1029,10 +1038,10 @@
   "cue": "Flexioná columna sin tirar con brazos."
  },
  "machine_crunch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-seated-crunch-start.webp",
-   "machine-seated-crunch-peak.webp"
+   "machine_crunch-0.webp",
+   "machine_crunch-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de abdominales y sujeta las manijas.",
@@ -1045,9 +1054,9 @@
   "cue": "Exhalá y cerrá costillas."
  },
  "plank": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "plank-main.webp"
+   "plank-0.webp"
   ],
   "steps": [
    "Apoya los antebrazos en el suelo con los codos bajo los hombros.",
@@ -1061,10 +1070,10 @@
   "cue": "Pelvis neutra y abdomen activo."
  },
  "hanging_raise": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hanging-leg-raise-start.webp",
-   "hanging-leg-raise-peak.webp"
+   "hanging_raise-0.webp",
+   "hanging_raise-1.webp"
   ],
   "steps": [
    "Cuélgate de una barra de dominadas con agarre prono.",
@@ -1076,10 +1085,10 @@
   "cue": "Evitá balancearte."
  },
  "ab_wheel": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "ab-wheel-rollout-start.webp",
-   "ab-wheel-rollout-peak.webp"
+   "ab_wheel-0.webp",
+   "ab_wheel-1.webp"
   ],
   "steps": [
    "Arrodíllate en el suelo y agarra las asas de la rueda a la anchura de los hombros.",
@@ -1092,10 +1101,10 @@
   "cue": "No pierdas posición lumbar."
  },
  "press_conv": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Leverage_Chest_Press/0.jpg",
-   "Leverage_Chest_Press/1.jpg"
+   "press_conv-0.webp",
+   "press_conv-1.webp"
   ],
   "steps": [
    "Ajustá el asiento de modo que las manijas queden a la altura media del pecho.",
@@ -1105,10 +1114,10 @@
   "cue": "Ajustá el asiento y empujá sin despegar las escápulas."
  },
  "bench_smith": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-bench-press-start.webp",
-   "smith-machine-bench-press-peak.webp"
+   "bench_smith-0.webp",
+   "bench_smith-1.webp"
   ],
   "steps": [
    "Acuéstate en un banco plano dentro de la máquina Smith.",
@@ -1121,10 +1130,10 @@
   "cue": "Alineá la barra con el pecho y controlá la bajada."
  },
  "incline_smith": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-incline-bench-press-start.webp",
-   "smith-machine-incline-bench-press-peak.webp"
+   "incline_smith-0.webp",
+   "incline_smith-1.webp"
   ],
   "steps": [
    "Ajusta un banco inclinado a 30-45 grados dentro de la máquina Smith.",
@@ -1137,10 +1146,10 @@
   "cue": "Usá una inclinación moderada y mantené escápulas estables."
  },
  "decline_machine": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Leverage_Decline_Chest_Press/0.jpg",
-   "Leverage_Decline_Chest_Press/1.jpg"
+   "decline_machine-0.webp",
+   "decline_machine-1.webp"
   ],
   "steps": [
    "Apoyá la espalda y ajustá el asiento para que las manijas queden frente a la parte baja del pecho.",
@@ -1150,10 +1159,10 @@
   "cue": "No pierdas apoyo de espalda y controlá el retorno."
  },
  "assisted_dips": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "assisted-dips-start.webp",
-   "assisted-dips-peak.webp"
+   "assisted_dips-0.webp",
+   "assisted_dips-1.webp"
   ],
   "steps": [
    "Sube a la máquina de fondos asistidos con las rodillas en el pad.",
@@ -1165,10 +1174,10 @@
   "cue": "Descendé controlado y evitá colapsar hombros."
  },
  "db_fly": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-fly-start.webp",
-   "db-fly-peak.webp"
+   "db_fly-0.webp",
+   "db_fly-1.webp"
   ],
   "steps": [
    "Túmbate en un banco con las mancuernas sobre el pecho y las palmas mirándose entre sí.",
@@ -1179,10 +1188,10 @@
   "cue": "Mantené leve flexión de codo y controlá el estiramiento."
  },
  "high_low_fly": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-fly-start.webp",
-   "cable-fly-peak.webp"
+   "high_low_fly-0.webp",
+   "high_low_fly-1.webp"
   ],
   "steps": [
    "Colócate entre dos columnas de cable con los agarres enganchados a las poleas altas.",
@@ -1194,10 +1203,10 @@
   "cue": "Llevá las manos hacia abajo y adentro sin perder tensión."
  },
  "arnold_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "arnold-press-start.webp",
-   "arnold-press-peak.webp"
+   "arnold_press-0.webp",
+   "arnold_press-1.webp"
   ],
   "steps": [
    "Sostén un par de mancuernas a la altura de los hombros con las palmas mirando hacia ti.",
@@ -1209,10 +1218,10 @@
   "cue": "Rotá de forma controlada sin arquear la zona lumbar."
  },
  "front_raise_db": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-front-raise-start.webp",
-   "dumbbell-front-raise-peak.webp"
+   "front_raise_db-0.webp",
+   "front_raise_db-1.webp"
   ],
   "steps": [
    "Ponte de pie con las mancuernas a los costados, palmas frente a los muslos.",
@@ -1223,10 +1232,10 @@
   "cue": "Subí hasta la línea del hombro sin impulso."
  },
  "front_raise_cable": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-front-raise-start.webp",
-   "cable-front-raise-peak.webp"
+   "front_raise_cable-0.webp",
+   "front_raise_cable-1.webp"
   ],
   "steps": [
    "Colócate de espaldas a una polea baja con un agarre.",
@@ -1239,10 +1248,10 @@
   "cue": "Mantené tensión continua y torso estable."
  },
  "rear_cable": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-reverse-fly-start.webp",
-   "cable-reverse-fly-peak.webp"
+   "rear_cable-0.webp",
+   "rear_cable-1.webp"
   ],
   "steps": [
    "Coloca ambas poleas aproximadamente a la altura de los hombros y sitúate en el centro, entre las dos torres de polea.",
@@ -1256,8 +1265,11 @@
   "cue": "Abrí los brazos sin encoger los hombros."
  },
  "upright_rope": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "upright_rope-0.webp",
+   "upright_rope-1.webp"
+  ],
   "steps": [
    "Enganchá una cuerda a la polea baja y sostené un extremo con cada mano delante de los muslos.",
    "Guiá los codos hacia arriba y afuera, con las manos cerca del cuerpo. Bajá la cuerda sin balancearte."
@@ -1266,10 +1278,10 @@
   "cue": "Tirá con codos altos dentro de un rango cómodo."
  },
  "landmine_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "one-arm-landmine-press-start.webp",
-   "one-arm-landmine-press-peak.webp"
+   "landmine_press-0.webp",
+   "landmine_press-1.webp"
   ],
   "steps": [
    "Ancla un extremo de la barra en el accesorio landmine y carga el extremo libre.",
@@ -1282,10 +1294,10 @@
   "cue": "Empujá en diagonal manteniendo costillas controladas."
  },
  "supine_pulldown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "reverse-grip-lat-pulldown-start.webp",
-   "reverse-grip-lat-pulldown-peak.webp"
+   "supine_pulldown-0.webp",
+   "supine_pulldown-1.webp"
   ],
   "steps": [
    "Coloca una barra recta en una máquina de jalón al pecho.",
@@ -1299,10 +1311,10 @@
   "cue": "Pecho alto y codos hacia abajo sin balanceo."
  },
  "close_neutral_pulldown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "v-bar-lat-pulldown-start.webp",
-   "v-bar-lat-pulldown-peak.webp"
+   "close_neutral_pulldown-0.webp",
+   "close_neutral_pulldown-1.webp"
   ],
   "steps": [
    "Coloca una barra en V (mango doble-D) en el cable de jalón al pecho.",
@@ -1315,10 +1327,10 @@
   "cue": "Mantené torso estable y llevá el agarre al pecho."
  },
  "assisted_pullup": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "assisted-pull-ups-start.webp",
-   "assisted-pull-ups-peak.webp"
+   "assisted_pullup-0.webp",
+   "assisted_pullup-1.webp"
   ],
   "steps": [
    "Coloca las rodillas en el pad de la máquina de dominadas asistidas.",
@@ -1330,10 +1342,10 @@
   "cue": "Usá la asistencia necesaria para un recorrido limpio."
  },
  "uni_machine_row": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Leverage_Iso_Row/0.jpg",
-   "Leverage_Iso_Row/1.jpg"
+   "uni_machine_row-0.webp",
+   "uni_machine_row-1.webp"
   ],
   "steps": [
    "Apoyá el pecho y tomá una manija. Dejá que el brazo se extienda sin girar el tronco.",
@@ -1343,10 +1355,10 @@
   "cue": "Mantené el pecho estable y llevá el codo hacia atrás."
  },
  "high_machine_row": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Leverage_High_Row/0.jpg",
-   "Leverage_High_Row/1.jpg"
+   "high_machine_row-0.webp",
+   "high_machine_row-1.webp"
   ],
   "steps": [
    "Ajustá el apoyo de pecho y tomá las manijas altas con los brazos extendidos.",
@@ -1356,8 +1368,11 @@
   "cue": "Tirá hacia la parte alta del torso sin elevar hombros."
  },
  "meadows_row": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "meadows_row-0.webp",
+   "meadows_row-1.webp"
+  ],
   "steps": [
    "Ubicate de costado al extremo libre de la barra anclada. Flexioná la cadera y apoyá la mano libre en el muslo.",
    "Tirá de la manga de la barra con el codo hacia atrás. Extendé el brazo sin rotar el tronco."
@@ -1366,10 +1381,10 @@
   "cue": "Torso firme y codo hacia atrás sin rotar de más."
  },
  "smith_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-bent-over-row-start.webp",
-   "smith-machine-bent-over-row-peak.webp"
+   "smith_row-0.webp",
+   "smith_row-1.webp"
   ],
   "steps": [
    "De pie dentro de la máquina Smith con los pies al ancho de los hombros.",
@@ -1383,10 +1398,10 @@
   "cue": "Mantené la columna neutra y el recorrido controlado."
  },
  "seal_row": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "bench-pull-start.webp",
-   "bench-pull-peak.webp"
+   "seal_row-0.webp",
+   "seal_row-1.webp"
   ],
   "steps": [
    "Acuéstate boca abajo en un banco elevado con los brazos colgando rectos hacia abajo.",
@@ -1399,10 +1414,10 @@
   "cue": "Pecho apoyado, tirá sin despegar el torso."
  },
  "bar_shrug": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "shrug-start.webp",
-   "shrug-peak.webp"
+   "bar_shrug-0.webp",
+   "bar_shrug-1.webp"
   ],
   "steps": [
    "De pie, sostén una barra a lo largo de los brazos con agarre en pronación.",
@@ -1414,10 +1429,10 @@
   "cue": "Elevá hombros verticalmente y pausá arriba."
  },
  "smith_shrug": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-shrug-start.webp",
-   "smith-machine-shrug-peak.webp"
+   "smith_shrug-0.webp",
+   "smith_shrug-1.webp"
   ],
   "steps": [
    "Párate erguido dentro de una máquina Smith con la barra a la altura de los muslos.",
@@ -1430,10 +1445,10 @@
   "cue": "Subí y bajá los hombros sin hacer círculos."
  },
  "preacher_ez": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Preacher_Curl/0.jpg",
-   "Preacher_Curl/1.jpg"
+   "preacher_ez-0.webp",
+   "preacher_ez-1.webp"
   ],
   "steps": [
    "Apoyá ambos brazos sobre el banco predicador y tomá la barra EZ por sus curvas.",
@@ -1443,10 +1458,10 @@
   "cue": "Apoyá bien el brazo y evitá rebotes abajo."
  },
  "preacher_machine": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-preacher-curl-start.webp",
-   "machine-preacher-curl-peak.webp"
+   "preacher_machine-0.webp",
+   "preacher_machine-1.webp"
   ],
   "steps": [
    "Siéntate y ajusta el asiento para que las axilas queden en la parte superior del almohadillado.",
@@ -1459,8 +1474,11 @@
   "cue": "Mantené hombros estables y controlá la excéntrica."
  },
  "bayesian_curl": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "bayesian_curl-0.webp",
+   "bayesian_curl-1.webp"
+  ],
   "steps": [
    "De espaldas a una polea baja, sujetá la manija con el brazo ligeramente detrás del torso.",
    "Flexioná el codo manteniendo el brazo en su lugar. Volvé hasta estirar el bíceps de forma controlada."
@@ -1469,10 +1487,10 @@
   "cue": "Brazo ligeramente detrás del torso y codo fijo."
  },
  "spider_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "spider-curl-start.webp",
-   "spider-curl-peak.webp"
+   "spider_curl-0.webp",
+   "spider_curl-1.webp"
   ],
   "steps": [
    "Túmbate boca abajo en un banco inclinado con los brazos colgando rectos hacia abajo.",
@@ -1485,10 +1503,10 @@
   "cue": "Pecho apoyado y sin mover el hombro."
  },
  "concentration_curl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "concentration-curl-start.webp",
-   "concentration-curl-peak.webp"
+   "concentration_curl-0.webp",
+   "concentration_curl-1.webp"
   ],
   "steps": [
    "Siéntate en un banco con las piernas separadas y sujeta una mancuerna en una mano.",
@@ -1501,10 +1519,10 @@
   "cue": "Apoyá el brazo y evitá impulso."
  },
  "rope_hammer": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-hammer-curl-start.webp",
-   "cable-hammer-curl-peak.webp"
+   "rope_hammer-0.webp",
+   "rope_hammer-1.webp"
   ],
   "steps": [
    "Engancha una cuerda a la polea baja y párate frente a la máquina.",
@@ -1516,10 +1534,10 @@
   "cue": "Muñeca neutra y tensión continua."
  },
  "uni_pushdown": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "single-arm-tricep-pushdown-start.webp",
-   "single-arm-tricep-pushdown-peak.webp"
+   "uni_pushdown-0.webp",
+   "uni_pushdown-1.webp"
   ],
   "steps": [
    "Coloca una manija individual en una polea alta.",
@@ -1533,10 +1551,10 @@
   "cue": "Fijá el codo y extendé sin mover el hombro."
  },
  "cable_kickback": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-tricep-kickback-start.webp",
-   "cable-tricep-kickback-peak.webp"
+   "cable_kickback-0.webp",
+   "cable_kickback-1.webp"
   ],
   "steps": [
    "Engancha un handle a la polea baja e inclínate hacia adelante desde las caderas.",
@@ -1549,10 +1567,10 @@
   "cue": "Brazo estable y pausa al extender."
  },
  "db_skull": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-skull-crusher-start.webp",
-   "db-skull-crusher-peak.webp"
+   "db_skull-0.webp",
+   "db_skull-1.webp"
   ],
   "steps": [
    "Túmbate en un banco plano sosteniendo mancuernas sobre el pecho.",
@@ -1563,10 +1581,10 @@
   "cue": "Mantené codos estables y controlá la bajada."
  },
  "dip_machine": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "seated-dip-machine-start.webp",
-   "seated-dip-machine-peak.webp"
+   "dip_machine-0.webp",
+   "dip_machine-1.webp"
   ],
   "steps": [
    "Selecciona el peso en la pila y ajusta el asiento para que las empuñaduras queden aproximadamente a la altura de los hombros cuando estés sentado.",
@@ -1579,10 +1597,10 @@
   "cue": "Codos cerca del cuerpo y recorrido controlado."
  },
  "smith_squat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-squat-start.webp",
-   "smith-machine-squat-peak.webp"
+   "smith_squat-0.webp",
+   "smith_squat-1.webp"
   ],
   "steps": [
    "Ajusta la barra de la máquina Smith a la altura de los hombros y colócate debajo de ella.",
@@ -1595,8 +1613,11 @@
   "cue": "Ubicá los pies para mantener equilibrio y rango cómodo."
  },
  "belt_squat": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "belt_squat-0.webp",
+   "belt_squat-1.webp"
+  ],
   "steps": [
    "Fijá el cinturón sobre la cadera y alineate con el punto de tracción entre los pies.",
    "Bajá flexionando rodillas y caderas con los talones apoyados. Extendé las piernas para volver a quedar de pie."
@@ -1605,10 +1626,10 @@
   "cue": "Descendé manteniendo el tronco estable y pies firmes."
  },
  "goblet_squat": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-goblet-squat-start.webp",
-   "db-goblet-squat-peak.webp"
+   "goblet_squat-0.webp",
+   "goblet_squat-1.webp"
   ],
   "steps": [
    "Ponte de pie con los pies algo más separados que el ancho de los hombros y las puntas ligeramente hacia fuera.",
@@ -1621,10 +1642,10 @@
   "cue": "Sostené la carga cerca del pecho y mantené torso firme."
  },
  "horizontal_press": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "horizontal-leg-press-start.webp",
-   "horizontal-leg-press-peak.webp"
+   "horizontal_press-0.webp",
+   "horizontal_press-1.webp"
   ],
   "steps": [
    "Siéntate en la prensa de piernas horizontal con la espalda apoyada en el respaldo y los pies a la anchura de los hombros sobre la plataforma.",
@@ -1635,10 +1656,10 @@
   "cue": "Controlá profundidad sin despegar la pelvis."
  },
  "uni_leg_ext": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "single-leg-extension-start.webp",
-   "single-leg-extension-peak.webp"
+   "uni_leg_ext-0.webp",
+   "uni_leg_ext-1.webp"
   ],
   "steps": [
    "Siéntate en una máquina de extensión de piernas y coloca un pie bajo la almohadilla.",
@@ -1652,10 +1673,10 @@
   "cue": "Pausa arriba y controlá la bajada."
  },
  "step_up": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "step-ups-start.webp",
-   "step-ups-peak.webp"
+   "step_up-0.webp",
+   "step_up-1.webp"
   ],
   "steps": [
    "Párate frente a una caja o banco resistente.",
@@ -1669,10 +1690,10 @@
   "cue": "Empujá con la pierna de apoyo sin impulsarte con la otra."
  },
  "reverse_lunge": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "reverse-lunge-start.webp",
-   "reverse-lunge-peak.webp"
+   "reverse_lunge-0.webp",
+   "reverse_lunge-1.webp"
   ],
   "steps": [
    "Párate sosteniendo mancuernas a los costados.",
@@ -1685,10 +1706,10 @@
   "cue": "Paso atrás estable y rodilla delantera alineada."
  },
  "standing_leg_curl": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Standing_Leg_Curl/0.jpg",
-   "Standing_Leg_Curl/1.jpg"
+   "standing_leg_curl-0.webp",
+   "standing_leg_curl-1.webp"
   ],
   "steps": [
    "Alineá la rodilla con el eje y colocá el rodillo detrás del tobillo. Fijá el muslo contra su apoyo.",
@@ -1698,10 +1719,10 @@
   "cue": "Mantené la cadera estable y flexioná sin impulso."
  },
  "nordic_assisted": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "nordic-hamstring-curl-start.webp",
-   "nordic-hamstring-curl-peak.webp"
+   "nordic_assisted-0.webp",
+   "nordic_assisted-1.webp"
   ],
   "steps": [
    "Arrodillate sobre una colchoneta con los tobillos sujetos. Prepará el apoyo de manos o la banda de asistencia indicada por tu coach.",
@@ -1711,10 +1732,10 @@
   "cue": "Descendé lento y usá asistencia para mantener control."
  },
  "single_rdl": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "one-arm-single-leg-dumbbell-romanian-deadlift-start.webp",
-   "one-arm-single-leg-dumbbell-romanian-deadlift-peak.webp"
+   "single_rdl-0.webp",
+   "single_rdl-1.webp"
   ],
   "steps": [
    "De pie sobre una pierna, sostén una mancuerna en la mano contraria.",
@@ -1729,10 +1750,10 @@
   "cue": "Cadera atrás y pelvis estable durante todo el recorrido."
  },
  "pull_through": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-pull-through-start.webp",
-   "cable-pull-through-peak.webp"
+   "pull_through-0.webp",
+   "pull_through-1.webp"
   ],
   "steps": [
    "Coloca una cuerda en la polea baja y ponte de espaldas a la máquina con la cuerda entre las piernas.",
@@ -1745,10 +1766,10 @@
   "cue": "Hacé bisagra de cadera y terminá con glúteos, no con lumbar."
  },
  "smith_hip_thrust": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "smith-machine-hip-thrust-start.webp",
-   "smith-machine-hip-thrust-peak.webp"
+   "smith_hip_thrust-0.webp",
+   "smith_hip_thrust-1.webp"
   ],
   "steps": [
    "Coloca un banco plano dentro de la máquina Smith, paralelo a la barra y situado de forma que la barra quede sobre el pliegue de tu cadera.",
@@ -1761,10 +1782,10 @@
   "cue": "Pausa arriba con pelvis estable y costillas controladas."
  },
  "backext_glute": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "back-extension-start.webp",
-   "back-extension-peak.webp"
+   "backext_glute-0.webp",
+   "backext_glute-1.webp"
   ],
   "steps": [
    "Acuéstate boca abajo en un banco de hiperextensión con las caderas en el borde del pad.",
@@ -1775,8 +1796,11 @@
   "cue": "Foco en extender la cadera sin hiperextender la zona lumbar."
  },
  "cable_abduction": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "cable_abduction-0.webp",
+   "cable_abduction-1.webp"
+  ],
   "steps": [
    "De costado a la polea baja, fijá la tobillera en la pierna más alejada y sujetate al soporte.",
    "Separá esa pierna lateralmente manteniendo la pelvis nivelada. Volvé sin que el cable te arrastre."
@@ -1785,10 +1809,10 @@
   "cue": "Pelvis quieta y recorrido controlado."
  },
  "cable_adduction": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Cable_Hip_Adduction/0.jpg",
-   "Cable_Hip_Adduction/1.jpg"
+   "cable_adduction-0.webp",
+   "cable_adduction-1.webp"
   ],
   "steps": [
    "Fijá la tobillera en la pierna más cercana a la polea y sujetate a un soporte.",
@@ -1798,10 +1822,10 @@
   "cue": "Torso estable y llevá la pierna hacia la línea media."
  },
  "single_calf": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "single-leg-calf-raise-start.webp",
-   "single-leg-calf-raise-peak.webp"
+   "single_calf-0.webp",
+   "single_calf-1.webp"
   ],
   "steps": [
    "Ponte de pie sobre una pierna y levanta el otro pie del suelo con la rodilla flexionada.",
@@ -1814,10 +1838,10 @@
   "cue": "Estirá abajo y pausá arriba sin rebotes."
  },
  "donkey_calf": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "donkey-calf-raise-start.webp",
-   "donkey-calf-raise-peak.webp"
+   "donkey_calf-0.webp",
+   "donkey_calf-1.webp"
   ],
   "steps": [
    "Flexiona las caderas y apoya las manos en el suelo delante de ti, con la cadera alta y las piernas casi rectas.",
@@ -1830,8 +1854,11 @@
   "cue": "Mové solo el tobillo y buscá recorrido completo."
  },
  "tibialis_raise": {
-  "src": "diagram",
-  "files": [],
+  "src": "catalog",
+  "files": [
+   "tibialis_raise-0.webp",
+   "tibialis_raise-1.webp"
+  ],
   "steps": [
    "Apoyá la espalda en una pared, adelantá los pies y mantené los talones firmes en el suelo.",
    "Levantá las puntas de ambos pies hacia las espinillas. Pausá arriba y bajalas sin golpear el piso."
@@ -1840,10 +1867,10 @@
   "cue": "Apoyá talones y elevá la punta del pie de forma controlada."
  },
  "floor_crunch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "crunches-start.webp",
-   "crunches-peak.webp"
+   "floor_crunch-0.webp",
+   "floor_crunch-1.webp"
   ],
   "steps": [
    "Túmbate boca arriba con las rodillas dobladas y las manos detrás de la cabeza.",
@@ -1855,10 +1882,10 @@
   "cue": "Acercá costillas a pelvis sin tirar del cuello."
  },
  "decline_crunch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "decline-crunch-start.webp",
-   "decline-crunch-peak.webp"
+   "decline_crunch-0.webp",
+   "decline_crunch-1.webp"
   ],
   "steps": [
    "Asegura los pies en la parte superior del banco declinado.",
@@ -1871,10 +1898,10 @@
   "cue": "Controlá la bajada y evitá usar impulso."
  },
  "reverse_crunch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "reverse-crunches-start.webp",
-   "reverse-crunches-peak.webp"
+   "reverse_crunch-0.webp",
+   "reverse_crunch-1.webp"
   ],
   "steps": [
    "Túmbate boca arriba con los brazos a los lados.",
@@ -1887,10 +1914,10 @@
   "cue": "Llevá la pelvis hacia el torso sin balancear piernas."
  },
  "hanging_knee": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hanging-knee-raise-start.webp",
-   "hanging-knee-raise-peak.webp"
+   "hanging_knee-0.webp",
+   "hanging_knee-1.webp"
   ],
   "steps": [
    "Cuélgate de una barra con agarre prono y los brazos completamente extendidos.",
@@ -1902,10 +1929,10 @@
   "cue": "Subí rodillas sin balanceo y terminá con pelvis en retroversión."
  },
  "lying_leg_raise": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "lying-leg-raise-start.webp",
-   "lying-leg-raise-peak.webp"
+   "lying_leg_raise-0.webp",
+   "lying_leg_raise-1.webp"
   ],
   "steps": [
    "Túmbate boca arriba con las piernas rectas y las manos bajo la zona lumbar o sujetando una superficie estable detrás de la cabeza.",
@@ -1917,10 +1944,10 @@
   "cue": "Mantené la zona lumbar controlada durante el recorrido."
  },
  "captain_knee": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "captains-chair-knee-raise-start.webp",
-   "captains-chair-knee-raise-peak.webp"
+   "captain_knee-0.webp",
+   "captain_knee-1.webp"
   ],
   "steps": [
    "Colócate en la silla romana con la espalda plana contra el respaldo y los antebrazos en los apoyos.",
@@ -1932,10 +1959,10 @@
   "cue": "Apoyá bien hombros y evitá balancearte."
  },
  "ab_machine_v65": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "machine-seated-crunch-start.webp",
-   "machine-seated-crunch-peak.webp"
+   "ab_machine_v65-0.webp",
+   "ab_machine_v65-1.webp"
   ],
   "steps": [
    "Siéntate en la máquina de abdominales y sujeta las manijas.",
@@ -1948,10 +1975,10 @@
   "cue": "Exhalá al cerrar y no tires con brazos."
  },
  "ab_wheel_knees": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "ab-wheel-rollout-start.webp",
-   "ab-wheel-rollout-peak.webp"
+   "ab_wheel_knees-0.webp",
+   "ab_wheel_knees-1.webp"
   ],
   "steps": [
    "Arrodíllate en el suelo y agarra las asas de la rueda a la anchura de los hombros.",
@@ -1964,10 +1991,10 @@
   "cue": "Avanzá solo hasta donde puedas mantener pelvis y lumbar estables."
  },
  "dead_bug": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dead-bug-start.webp",
-   "dead-bug-peak.webp"
+   "dead_bug-0.webp",
+   "dead_bug-1.webp"
   ],
   "steps": [
    "Túmbate boca arriba con los brazos extendidos hacia el techo y las rodillas a 90 grados.",
@@ -1980,9 +2007,9 @@
   "cue": "Mantené la zona lumbar estable mientras alternás brazos y piernas."
  },
  "hollow_hold": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "hollow-body-hold-main.webp"
+   "hollow_hold-0.webp"
   ],
   "steps": [
    "Acuéstate boca arriba con los brazos extendidos sobre la cabeza y las piernas rectas.",
@@ -1995,9 +2022,9 @@
   "cue": "Pegá la zona lumbar al suelo y sostené sin perder postura."
  },
  "side_plank": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "side-plank-main.webp"
+   "side_plank-0.webp"
   ],
   "steps": [
    "Acuéstate de lado con el antebrazo en el suelo y el codo bajo el hombro.",
@@ -2010,10 +2037,10 @@
   "cue": "Mantené cadera alineada y cuerpo en una línea."
  },
  "pallof": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-pallof-press-start.webp",
-   "cable-pallof-press-peak.webp"
+   "pallof-0.webp",
+   "pallof-1.webp"
   ],
   "steps": [
    "Coloca la polea a la altura del pecho y toma el agarre con ambas manos, situado de lado respecto a la máquina.",
@@ -2027,10 +2054,10 @@
   "cue": "Resistí la rotación mientras extendés los brazos."
  },
  "woodchop": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Standing_Cable_Wood_Chop/0.jpg",
-   "Standing_Cable_Wood_Chop/1.jpg"
+   "woodchop-0.webp",
+   "woodchop-1.webp"
   ],
   "steps": [
    "De costado a una polea alta, sujetá la manija con ambas manos y afirmá los pies.",
@@ -2040,10 +2067,10 @@
   "cue": "Rotá desde el tronco sin perder estabilidad de pelvis."
  },
  "wrist_curl_bar": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "barbell-wrist-curl-start.webp",
-   "barbell-wrist-curl-peak.webp"
+   "wrist_curl_bar-0.webp",
+   "wrist_curl_bar-1.webp"
   ],
   "steps": [
    "Siéntate en un banco con los antebrazos sobre los muslos, palmas hacia arriba.",
@@ -2056,10 +2083,10 @@
   "cue": "Apoyá antebrazos y mové solo la muñeca."
  },
  "wrist_ext_bar": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Palms-Down_Wrist_Curl_Over_A_Bench/0.jpg",
-   "Palms-Down_Wrist_Curl_Over_A_Bench/1.jpg"
+   "wrist_ext_bar-0.webp",
+   "wrist_ext_bar-1.webp"
   ],
   "steps": [
    "Apoyá los antebrazos con las palmas hacia abajo y dejá las muñecas libres por el borde.",
@@ -2069,10 +2096,10 @@
   "cue": "Antebrazos apoyados y recorrido controlado."
  },
  "wrist_curl_db": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-wrist-curl-start.webp",
-   "dumbbell-wrist-curl-peak.webp"
+   "wrist_curl_db-0.webp",
+   "wrist_curl_db-1.webp"
   ],
   "steps": [
    "Siéntate en un banco con el antebrazo sobre el muslo, palma hacia arriba.",
@@ -2085,10 +2112,10 @@
   "cue": "Mové solo la muñeca y evitá rebotes."
  },
  "wrist_ext_db": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "db-reverse-wrist-curl-start.webp",
-   "db-reverse-wrist-curl-peak.webp"
+   "wrist_ext_db-0.webp",
+   "wrist_ext_db-1.webp"
   ],
   "steps": [
    "Siéntate en un banco con el antebrazo sobre el muslo, palma hacia abajo.",
@@ -2101,10 +2128,10 @@
   "cue": "Controlá la bajada y mantené antebrazo fijo."
  },
  "reverse_ez": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "ez-bar-reverse-curl-start.webp",
-   "ez-bar-reverse-curl-peak.webp"
+   "reverse_ez-0.webp",
+   "reverse_ez-1.webp"
   ],
   "steps": [
    "Sujeta una barra Z con agarre prono.",
@@ -2115,10 +2142,10 @@
   "cue": "Muñecas firmes y codos quietos."
  },
  "cross_hammer": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cross-body-hammer-curl-start.webp",
-   "cross-body-hammer-curl-peak.webp"
+   "cross_hammer-0.webp",
+   "cross_hammer-1.webp"
   ],
   "steps": [
    "De pie, sujeta una mancuerna en cada mano con agarre neutro.",
@@ -2131,9 +2158,9 @@
   "cue": "Llevá la mancuerna hacia el hombro opuesto sin balancear."
  },
  "farmer_walk": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dumbbell-farmers-walk-main.webp"
+   "farmer_walk-0.webp"
   ],
   "steps": [
    "Párate erguido con una mancuerna en cada mano, los brazos extendidos a los lados.",
@@ -2146,10 +2173,10 @@
   "cue": "Caminá erguido con agarre firme y pasos controlados."
  },
  "plate_pinch": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "plate-pinch-start.webp",
-   "plate-pinch-peak.webp"
+   "plate_pinch-0.webp",
+   "plate_pinch-1.webp"
   ],
   "steps": [
    "Coloca un disco de canto en el suelo.",
@@ -2161,10 +2188,10 @@
   "cue": "Sostené los discos con dedos y pulgar sin compensar."
  },
  "wrist_roller": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "wrist-roller-start.webp",
-   "wrist-roller-peak.webp"
+   "wrist_roller-0.webp",
+   "wrist_roller-1.webp"
   ],
   "steps": [
    "Agarra el mango del rodillo con los codos flexionados a los costados y los antebrazos al frente a la altura de la cintura.",
@@ -2177,10 +2204,10 @@
   "cue": "Enrollá y desenrollá lentamente sin mover los hombros."
  },
  "pron_sup_db": {
-  "src": "free",
+  "src": "catalog",
   "files": [
-   "Dumbbell_Lying_Supination/0.jpg",
-   "Dumbbell_Lying_Supination/1.jpg"
+   "pron_sup_db-0.webp",
+   "pron_sup_db-1.webp"
   ],
   "steps": [
    "Apoyá el antebrazo con el codo flexionado y sujetá la mancuerna de forma que puedas controlar el giro.",
@@ -2190,10 +2217,10 @@
   "cue": "Codo apoyado y rotación lenta dentro de un rango cómodo."
  },
  "wrist_cable": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "cable-wrist-curl-start.webp",
-   "cable-wrist-curl-peak.webp"
+   "wrist_cable-0.webp",
+   "wrist_cable-1.webp"
   ],
   "steps": [
    "Engancha una barra recta corta a una polea baja y siéntate en un banco plano mirando hacia la polea, con los pies apoyados en el suelo.",
@@ -2207,9 +2234,9 @@
   "cue": "Mantené antebrazo fijo y controlá el retorno."
  },
  "dead_hang": {
-  "src": "rep",
+  "src": "catalog",
   "files": [
-   "dead-hang-main.webp"
+   "dead_hang-0.webp"
   ],
   "steps": [
    "Agarra la barra de dominadas con las palmas mirando hacia afuera, a la anchura de los hombros.",
