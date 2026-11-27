@@ -257,19 +257,19 @@
   "cue": "Pecho apoyado y escápulas controladas."
  },
  "face_pull": {
-  "src": "rep",
+  "src": "local",
   "files": [
-   "face-pull-start.webp",
-   "face-pull-peak.webp"
+   "face_pull-0.webp",
+   "face_pull-1.webp"
   ],
   "steps": [
-   "Engancha una cuerda en una polea alta.",
-   "Tira de la cuerda hacia tu cara, separando los extremos.",
-   "Aprieta los deltoides posteriores y los rotadores externos.",
-   "Regresa a la posición inicial de forma controlada."
+   "Tomá un extremo en cada mano y empezá con los brazos extendidos.",
+   "Acercá la soga a la cara separando las manos a ambos lados.",
+   "Extendé los brazos con control."
   ],
   "name": "Face pull",
-  "cue": "Llevá la cuerda hacia la cara con rotación externa."
+  "cue": "Llevá la cuerda hacia la cara con rotación externa.",
+  "attachment": "Soga · polea a la altura de la cara"
  },
  "pulldown": {
   "src": "rep",
@@ -333,20 +333,19 @@
   "cue": "Subí sin balanceo y controlá la bajada."
  },
  "row": {
-  "src": "rep",
+  "src": "local",
   "files": [
-   "seated-cable-row-start.webp",
-   "seated-cable-row-peak.webp"
+   "row-0.webp",
+   "row-1.webp"
   ],
   "steps": [
-   "Siéntate en la estación de remo y coloca los pies en los apoyos.",
-   "Sujeta la manija y siéntate erguido con una ligera inclinación hacia adelante.",
-   "Lleva los codos hacia atrás y tira de la manija hacia la parte baja del abdomen.",
-   "Contrae los omóplatos al final del tirón.",
-   "Extiende los brazos con control de vuelta a la posición inicial."
+   "Apoyá los pies y sujetá el agarre con las palmas enfrentadas.",
+   "Llevá los codos atrás y acercá el agarre al abdomen.",
+   "Extendé los brazos sin balancear el torso."
   ],
   "name": "Remo sentado en polea",
-  "cue": "No balancees el torso."
+  "cue": "No balancees el torso.",
+  "attachment": "Agarre V · polea baja"
  },
  "bar_row": {
   "src": "rep",
@@ -553,19 +552,19 @@
   "cue": "No rebotes abajo."
  },
  "cable_curl": {
-  "src": "rep",
+  "src": "local",
   "files": [
-   "cable-curl-start.webp",
-   "cable-curl-peak.webp"
+   "cable_curl-0.webp",
+   "cable_curl-1.webp"
   ],
   "steps": [
-   "Colócate de pie frente a una polea baja con una barra recta o barra Z.",
-   "Agarra la barra con agarre supino y los codos pegados a los costados.",
-   "Sube la barra hacia los hombros.",
-   "Baja de forma controlada."
+   "Sujetá la barra con las palmas hacia arriba.",
+   "Flexioná los codos y acercá la barra al torso sin inclinarte hacia atrás.",
+   "Bajá con control hasta la posición inicial."
   ],
   "name": "Curl en polea",
-  "cue": "Tensión continua."
+  "cue": "Tensión continua.",
+  "attachment": "Barra recta corta · polea baja"
  },
  "pushdown": {
   "src": "rep",
@@ -583,17 +582,19 @@
   "cue": "Codos pegados al cuerpo."
  },
  "rope_pushdown": {
-  "src": "free",
+  "src": "local",
   "files": [
-   "Triceps_Pushdown_-_Rope_Attachment/0.jpg",
-   "Triceps_Pushdown_-_Rope_Attachment/1.jpg"
+   "rope_pushdown-0.webp",
+   "rope_pushdown-1.webp"
   ],
   "steps": [
-   "Frente a la polea alta, acercá los codos al torso y sujetá los extremos de la cuerda.",
-   "Extendé los codos hacia abajo y separá suavemente los extremos. Dejá que los antebrazos vuelvan a subir."
+   "Tomá los extremos de la soga con las palmas enfrentadas.",
+   "Con los codos junto al torso, extendé los brazos hacia abajo.",
+   "Volvé con control sin adelantar los codos."
   ],
   "name": "Extensión tríceps con cuerda",
-  "cue": "Separá la cuerda al final sin mover hombros."
+  "cue": "Separá la cuerda al final sin mover hombros.",
+  "attachment": "Soga · polea alta"
  },
  "overhead_tri": {
   "src": "rep",

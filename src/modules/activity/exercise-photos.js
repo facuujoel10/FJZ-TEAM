@@ -34,7 +34,7 @@ function exercisePhotoHtml(id,assigned){
    const visual=guide.src==='diagram'?techniqueDiagram(key,i):'<img loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
    return '<figure>'+visual+'<figcaption>'+label+'</figcaption></figure>';
  }).join('');
- return '<details class="exercise-demo fjz-tech-guide" '+(assigned?'open':'')+'><summary>Guía de técnica</summary><div class="fjz-tech-frames">'+figures+'</div>'+
+ return '<details class="exercise-demo fjz-tech-guide" '+(assigned?'open':'')+'><summary>Guía de técnica</summary>'+(guide.attachment?'<p>'+esc(guide.attachment)+'</p>':'')+'<div class="fjz-tech-frames">'+figures+'</div>'+
  '<details class="fjz-tech-instructions"><summary>Cómo hacerlo</summary><ol>'+guide.steps.map(step=>'<li>'+esc(step)+'</li>').join('')+'</ol><p><strong>Clave técnica</strong> '+esc(guide.cue)+'</p></details></details>';
 }
 

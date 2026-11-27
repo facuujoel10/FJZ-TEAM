@@ -13,6 +13,11 @@ ARCHIVE_SHA256 = "2ead2fcc7e8ee07171c3d08fe23edd13ea2de92b0861117fd6df7724994770
 def package(guides, output):
     destination = output / "exercise-media"
     destination.mkdir(exist_ok=True)
+    assets = pathlib.Path(__file__).resolve().parents[1] / "src/modules/activity/illustrations"
+    for guide in guides.values():
+        if guide['src'] == 'local':
+            for name in guide['files']:
+                (destination / name).write_bytes((assets / name).read_bytes())
     url = f"https://codeload.github.com/RepDB/exercise-dataset/zip/{REVISION}"
     with urllib.request.urlopen(url, timeout=90) as response:
         archive = response.read()
