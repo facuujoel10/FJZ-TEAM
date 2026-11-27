@@ -301,8 +301,7 @@ function finishZone(view,feed,aside){
     zone.innerHTML='<div><span>Fin de la sesión</span><strong>¿Terminaste tu entrenamiento?</strong><small>Se confirmará el guardado antes de cerrar.</small></div>';
     zone.appendChild(btn);
   }
-  const target=window.matchMedia&&window.matchMedia('(min-width:1000px)').matches?aside:feed;
-  if(target&&zone.parentElement!==target)target.appendChild(zone);
+  if(feed&&feed.lastElementChild!==zone)feed.appendChild(zone);
   const old=view.querySelector('.v22v-finish-dock');if(old&&old!==zone){while(old.firstChild)old.firstChild===btn?zone.appendChild(btn):old.firstChild.remove();old.remove()}
   return zone;
 }
@@ -314,6 +313,17 @@ function workoutComposition(view){
   let aside=layout.querySelector(':scope > .v22v2-session-aside');
   if(!aside){aside=make('aside','v22v-session-rail v22v2-session-aside');aside.setAttribute('aria-label','Mapa de la sesión');layout.appendChild(aside)}
   [...view.querySelectorAll(':scope > .v22v2-exercise')].forEach(x=>feed.appendChild(x));
+  for(const panel of view.querySelectorAll('[data-v137-method]')){
+    const uid=panel.getAttribute('data-v137-method');
+    const owner=[...feed.querySelectorAll('.v22v2-exercise')].find(card=>card.dataset.exerciseUid===uid||card.querySelector('[data-exercise-uid]')?.dataset.exerciseUid===uid);
+    if(owner&&!owner.contains(panel))owner.appendChild(panel);
+    const chip=panel.querySelector('.v137-method-chip');
+    if(chip&&!panel.querySelector('.fjz-tech-guide')&&/superserie|biserie/i.test(panel.querySelector('.v137-method-badge')?.textContent||'')&&typeof exercisePhotoHtml==='function'){
+      const name=chip.textContent.replace(/\s+\d+\s*[x×].*$/i,'').trim();
+      const guide=typeof exerciseGuideId==='function'&&exerciseGuideId(null,{name});
+      if(guide)chip.insertAdjacentHTML('afterend',exercisePhotoHtml(guide,{name}));
+    }
+  }
   sessionNavigator(feed,aside);
   finishZone(view,feed,aside);
   return {layout,feed,aside};

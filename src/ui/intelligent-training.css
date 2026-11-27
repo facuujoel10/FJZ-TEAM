@@ -48,3 +48,18 @@
   .v22c-rest-actions{gap:6px}
   .v22c-rest-actions .btn{min-height:40px;padding-left:11px;padding-right:11px}
 }
+
+#app #view .v22c-rest-control{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:12px!important;padding:16px!important;border-inline-start:3px solid #ed3455!important;background:linear-gradient(115deg,#231820,#181a21)!important}
+#app #view .v22c-rest-copy{grid-column:1/-1;width:100%!important;max-width:none!important}
+#app #view .v22c-rest-time{white-space:nowrap!important;font-variant-numeric:tabular-nums;font-size:1.5rem!important}
+#app #view .v22c-rest-actions{grid-column:1/-1;display:flex;flex-wrap:wrap}
+#app #view .v22c-rest-custom{justify-self:start}
+#app #view .v22v2-finish-zone{position:static!important;inset:auto!important}
+@media(max-width:700px){
+ #app #view .v22v2-finish-zone{display:grid!important;grid-template-columns:1fr!important;gap:12px}
+ #app #view .v22v2-finish-zone button{width:100%!important}
+ #app #view .v22v2-set-row .v22-set-field::before{content:none!important}
+ #app #view .v22v2-series-header{display:grid!important;grid-template-columns:32px repeat(3,minmax(0,1fr))!important}
+ #app #view .v22v2-set-row{grid-template-columns:32px repeat(3,minmax(0,1fr))!important}
+ #app #view .v22v2-set-row>*{min-width:0!important;max-width:100%!important;box-sizing:border-box}
+}

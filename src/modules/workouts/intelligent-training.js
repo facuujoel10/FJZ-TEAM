@@ -8,6 +8,14 @@
   const REST_KEY='team_fjz_v22_rest_timer:';
   const confirmedIds=new Set();
   let timer=null;
+  let audio;
+  function soundEnabled(){try{return storage()?.getItem('fjz-rest-sound')==='on'}catch{return false}}
+  function unlockAudio(){try{const Context=globalThis.AudioContext||globalThis.webkitAudioContext;if(Context){audio ||= new Context();audio.resume().catch(()=>{})}}catch{}}
+  function playBell(){if(!soundEnabled()||audio?.state!=='running')return;
+    const tone=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime;
+    tone.frequency.value=780;gain.gain.setValueAtTime(0.09,t);gain.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+    tone.connect(gain);gain.connect(audio.destination);tone.start(t);tone.stop(t+0.36);
+  }
   let tickHandle=null;
 
   function text(v){return String(v??'').trim()}
@@ -99,7 +107,7 @@
   function advance(at=now()){
     if(!timer||timer.state!=='running')return timerSnapshot(at);
     timer.remainingMs=Math.max(0,(timer.targetAt||at)-at);
-    if(timer.remainingMs<=0){timer.remainingMs=0;timer.state='finished';timer.targetAt=null;saveTimer();syncTicker()}
+    if(timer.remainingMs<=0){timer.remainingMs=0;timer.state='finished';timer.targetAt=null;saveTimer();syncTicker();playBell()}
     return timerSnapshot(at);
   }
   function scheduleTick(){
@@ -318,6 +326,8 @@
       }[timerState]||new Set(['start']);
       node.dataset.active=active?'true':'false';
       node.dataset.timerState=timerState;
+      const sound=node.querySelector('[data-rest-sound]');
+      if(sound){sound.textContent=soundEnabled()?'Sonido activado':'Sin sonido';sound.setAttribute('aria-pressed',String(soundEnabled()))}
       const time=node.querySelector('.v22c-rest-time');
       const state=node.querySelector('.v22c-rest-state');
       if(time)time.textContent=active?fmt(snap.remainingMs):node.dataset.defaultLabel||'Descanso';
@@ -342,10 +352,11 @@
       const wrap=document.createElement('div');wrap.className='v22c-rest-control';wrap.dataset.exerciseUid=uid;wrap.dataset.source=prescribed?'coach':'personal';wrap.dataset.seconds=String(seconds);wrap.dataset.defaultLabel=prescribed?fmt(seconds*1000):'Descanso';
       wrap.innerHTML='<div class="v22c-rest-copy"><strong class="v22c-rest-time">'+(prescribed?fmt(seconds*1000):'Descanso')+'</strong><small class="v22c-rest-state">'+(prescribed?'Indicado por el Coach':'Temporizador personal')+'</small></div>'+
         (!prescribed?'<label class="v22c-rest-custom"><span>seg</span><input inputmode="numeric" min="15" max="600" step="15" value="90" aria-label="Duración personal del descanso en segundos"></label>':'')+
-        '<div class="v22c-rest-actions"><button class="btn small" data-rest-action="start">Iniciar</button><button class="btn small" data-rest-action="pause" hidden>Pausar</button><button class="btn small" data-rest-action="resume" hidden>Reanudar</button><button class="btn small" data-rest-action="reset" hidden>Reiniciar</button><button class="btn small" data-rest-action="skip" hidden>Omitir</button></div>';
+        '<button type="button" class="btn small" data-rest-sound>Sin sonido</button><div class="v22c-rest-actions"><button class="btn small" data-rest-action="start">Iniciar</button><button class="btn small" data-rest-action="pause" hidden>Pausar</button><button class="btn small" data-rest-action="resume" hidden>Reanudar</button><button class="btn small" data-rest-action="reset" hidden>Reiniciar</button><button class="btn small" data-rest-action="skip" hidden>Omitir</button></div>';
       const target=card.querySelector('.v22v2-series-block')||card.firstElementChild; target?.before(wrap);
       wrap.onclick=function(e){
-        const b=e.target.closest('[data-rest-action]');if(!b)return;
+        if(e.target.closest('[data-rest-sound]')){try{storage()?.setItem('fjz-rest-sound',soundEnabled()?'off':'on')}catch{}if(soundEnabled())unlockAudio();renderTimer();return}
+        if(soundEnabled())unlockAudio();const b=e.target.closest('[data-rest-action]');if(!b)return;
         const action=b.dataset.restAction;
         const personal=num(wrap.querySelector('input')?.value);
         if(action==='start')startRest({sessionId:sid||sessionId(),exerciseUid:uid,durationSeconds:prescribed?.seconds||personal||90,source:prescribed?'coach':'personal'});

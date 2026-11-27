@@ -5,7 +5,7 @@ function exerciseGuideId(id,assigned){
  if(Object.hasOwn(exerciseGuides,assigned?.techniqueGuideId))return assigned.techniqueGuideId;
  if(Object.hasOwn(exerciseGuides,id))return id;
  if(assigned?.name==='Press QA' && assigned.muscle==='Pecho' && assigned.equipment==='Máquina')return 'chest_press';
- return guideIdsByName.get(guideNameKey(assigned?.name));
+ return guideIdsByName.get(guideNameKey(assigned?.name)) || (guideNameKey(assigned?.name)==='facepull'?'face_pull':undefined);
 }
 
 // Movement diagrams show the moving segment in red against the fixed supports.
@@ -28,7 +28,7 @@ function techniqueDiagram(id,index){
 function exercisePhotoHtml(id,assigned){
  const key=exerciseGuideId(id,assigned),guide=exerciseGuides[key];
  if(!guide)return '';
- const base='./exercise-media/';
+ const base=guide.src==='fjz'?'':'./exercise-media/';
  const labels=guide.src==='diagram'?['Preparación','Movimiento']:guide.files.length===1?['Posición']:['Inicio','Posición de trabajo'];
  const figures=labels.map((label,i)=>{
    const visual=guide.src==='diagram'?techniqueDiagram(key,i):'<img loading="lazy" decoding="async" width="256" height="216" src="'+base+guide.files[i]+'" alt="'+esc(guide.name+' · '+label)+'">';
