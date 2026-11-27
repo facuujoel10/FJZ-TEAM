@@ -326,11 +326,12 @@
       }[timerState]||new Set(['start']);
       node.dataset.active=active?'true':'false';
       node.dataset.timerState=timerState;
+      node.style.setProperty('--rest-progress',active?(100*snap.remainingMs/snap.durationMs)+'%':'100%');
       const sound=node.querySelector('[data-rest-sound]');
       if(sound){sound.textContent=soundEnabled()?'Sonido activado':'Sin sonido';sound.setAttribute('aria-pressed',String(soundEnabled()))}
       const time=node.querySelector('.v22c-rest-time');
       const state=node.querySelector('.v22c-rest-state');
-      if(time)time.textContent=active?fmt(snap.remainingMs):node.dataset.defaultLabel||'Descanso';
+      if(time)time.textContent=active?fmt(snap.remainingMs):fmt(Number(node.querySelector('input')?.value||node.dataset.seconds)*1000);
       if(state)state.textContent=active?(snap.state==='running'?'En curso':snap.state==='paused'?'Pausado':'Finalizado'):(node.dataset.source==='coach'?'Indicado por el Coach':'Temporizador personal');
       node.querySelectorAll('[data-rest-action]').forEach(b=>{
         const show=allowed.has(b.dataset.restAction);
@@ -350,10 +351,11 @@
       const uid=exerciseUid(card)||('exercise-'+(card.dataset.exerciseIndex||'0'));
       const seconds=prescribed?.seconds||90;
       const wrap=document.createElement('div');wrap.className='v22c-rest-control';wrap.dataset.exerciseUid=uid;wrap.dataset.source=prescribed?'coach':'personal';wrap.dataset.seconds=String(seconds);wrap.dataset.defaultLabel=prescribed?fmt(seconds*1000):'Descanso';
-      wrap.innerHTML='<div class="v22c-rest-copy"><strong class="v22c-rest-time">'+(prescribed?fmt(seconds*1000):'Descanso')+'</strong><small class="v22c-rest-state">'+(prescribed?'Indicado por el Coach':'Temporizador personal')+'</small></div>'+
+      wrap.innerHTML='<div class="v22c-rest-copy"><span class="fjz-rest-title">Descanso</span><strong class="v22c-rest-time">'+(prescribed?fmt(seconds*1000):'Descanso')+'</strong><small class="v22c-rest-state">'+(prescribed?'Indicado por el Coach':'Temporizador personal')+'</small></div>'+
         (!prescribed?'<label class="v22c-rest-custom"><span>seg</span><input inputmode="numeric" min="15" max="600" step="15" value="90" aria-label="Duración personal del descanso en segundos"></label>':'')+
         '<button type="button" class="btn small" data-rest-sound>Sin sonido</button><div class="v22c-rest-actions"><button class="btn small" data-rest-action="start">Iniciar</button><button class="btn small" data-rest-action="pause" hidden>Pausar</button><button class="btn small" data-rest-action="resume" hidden>Reanudar</button><button class="btn small" data-rest-action="reset" hidden>Reiniciar</button><button class="btn small" data-rest-action="skip" hidden>Omitir</button></div>';
       const target=card.querySelector('.v22v2-series-block')||card.firstElementChild; target?.before(wrap);
+      wrap.oninput=()=>renderTimer();
       wrap.onclick=function(e){
         if(e.target.closest('[data-rest-sound]')){try{storage()?.setItem('fjz-rest-sound',soundEnabled()?'off':'on')}catch{}if(soundEnabled())unlockAudio();renderTimer();return}
         if(soundEnabled())unlockAudio();const b=e.target.closest('[data-rest-action]');if(!b)return;

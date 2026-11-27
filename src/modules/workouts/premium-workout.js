@@ -64,9 +64,10 @@
     setSaveState('draft_saved',{when:label});
   }
   function labelSetGrid(grid,cardIndex,setIndex){
-    const inputs=Array.from(grid.querySelectorAll('input'));
+    const labels=Array.from(grid.children).filter(node=>node.tagName==='LABEL');
     [['weight',0],['reps',1],['rir',2]].forEach(function(pair){
-      const field=pair[0],pos=pair[1],input=inputs[pos];
+      const field=pair[0],pos=pair[1],label=labels[pos],input=label?.querySelector('input');
+      label?.classList.add('v22-set-field','v22-set-field-'+field);
       if(!input)return;
       const contract=fieldContract(field);
       input.dataset.v22Field=field;
@@ -76,8 +77,7 @@
       if(contract.max!=null)input.setAttribute('max',contract.max);
       input.setAttribute('aria-label',contract.label+' · ejercicio '+(cardIndex+1)+' · serie '+(setIndex+1));
       input.autocomplete='off';
-      const label=input.closest('label');
-      if(label)label.classList.add('v22-set-field','v22-set-field-'+field);
+
     });
     grid.classList.add('v22-premium-set');
     grid.dataset.series=String(setIndex+1);
@@ -122,7 +122,7 @@
     const grids=Array.from(document.querySelectorAll('#view .set-grid'));
     const completed=grids.filter(function(grid){
       const inputs=Array.from(grid.querySelectorAll('input'));
-      return inputs.length>=3&&inputs.every(function(input){
+      return inputs.length>=(grid.querySelector('.v150-load-static')?2:3)&&inputs.every(function(input){
         const v=String(input.value??'').trim();
         return v!==''&&Number.isFinite(Number(v.replace(',','.')));
       });

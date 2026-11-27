@@ -8,6 +8,13 @@ function exerciseGuideId(id,assigned){
  return guideIdsByName.get(guideNameKey(assigned?.name)) || (guideNameKey(assigned?.name)==='facepull'?'face_pull':undefined);
 }
 
+function resolveCompanionGuide(value){
+ const clean=guideNameKey(value).replace(/\b\d+\s*(?:series|reps|[x×]\s*\d+).*$/,'').replace(/[.,:;–-]+$/,'').trim();
+ const normalize=name=>guideNameKey(name).replace(/\b(?:soga|cuerda)\b/g,'cuerda').replace(/\b(?:con|en|de|del|la|el)\b/g,' ').replace(/\s+/g,' ').trim();
+ const key=normalize(clean);
+ const aliases={'martillo cuerda':'rope_hammer','martillo':'hammer','posterior peck deck':'reverse_pec','posterior pec deck':'reverse_pec','facepull':'face_pull'};
+ return aliases[key]||Object.keys(exerciseGuides).find(id=>!exerciseGuides[id].archived&&normalize(exerciseGuides[id].name)===key);
+}
 function exercisePhotoHtml(id,assigned){
  const key=exerciseGuideId(id,assigned),guide=exerciseGuides[key];
  if(!guide)return '';

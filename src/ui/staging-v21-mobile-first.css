@@ -966,3 +966,18 @@ body.fjz-stage-student-preview :is(#fjzCoachGlobalNav,#bottomNav,#studentMainTab
 .fjz-tech-guide .fjz-tech-frames .fjz-tech-cool{filter:url(#fjz-tech-cool)}
 .fjz-tech-guide .fjz-tech-frames .fjz-tech-warm{filter:url(#fjz-tech-warm)}
 .fjz-tech-guide .fjz-tech-frames figure figcaption{display:block;text-align:center;margin:0;padding:7px 4px;background:#1d1d23;color:#f4f4f5;border-top:2px solid #cd2441;font:600 .78rem/1.3 system-ui}
+
+#app .fjz-tech-guide .fjz-tech-frames figcaption{flex:1 0 auto!important;display:grid!important;place-items:center;background:#191a20!important}
+#app #view .v22v2-exercise>.v22v2-exercise-name{display:block!important;position:static!important;font-size:1.25rem!important;line-height:1.25!important;margin:0 0 12px!important}
+#app #view .v22v2-exercise{border-left:1px solid #393941!important}
+#app #view .v22v2-exercise::before,#app #view .v22v2-exercise::after{content:none!important}
+#app #view .v22v2-exercise :is(.v22v2-technique-disclosure,.v22v2-guidance,.v22c-rest-control){border-left:1px solid #393941!important}
+#app #view .v22v2-set-row>label{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:stretch!important;position:static!important;gap:0!important;font-size:0!important;line-height:0!important}
+#app #view .v22v2-set-row>label::before,#app #view .v22v2-set-row>label::after{content:none!important}
+#app #view .v22v2-set-row .v150-load-static{position:static!important;display:grid!important;place-items:center;min-height:44px!important;white-space:normal!important;line-height:1.15!important;font-size:.68rem!important;margin:0!important}
+#app #view .v22c-rest-control{background:linear-gradient(125deg,#30202a,#191b24 70%)!important;padding:16px!important;gap:12px!important;border-radius:16px!important}
+#app #view .v22c-rest-copy{display:grid!important;grid-template-columns:84px minmax(0,1fr)!important;column-gap:16px!important;align-items:end!important}
+#app #view .v22c-rest-time{grid-column:1;grid-row:1/3;display:grid;place-items:center;width:82px;height:82px;box-sizing:border-box;border-radius:50%;background:radial-gradient(circle,#191920 63%,transparent 65%),conic-gradient(#f03b58 var(--rest-progress,100%),#48434c 0);font:750 1.35rem/1 system-ui!important;color:white!important}
+#app #view .fjz-rest-title{grid-column:2;grid-row:1;font-size:1.05rem;font-weight:750}
+#app #view .v22c-rest-state{grid-column:2;grid-row:2;align-self:start}
+#app #view .v22c-rest-actions button:is([data-rest-action=start],[data-rest-action=resume]){background:#aa2039!important;color:white!important;border-color:#cb334d!important}

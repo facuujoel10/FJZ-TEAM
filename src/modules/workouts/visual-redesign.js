@@ -225,7 +225,7 @@ function secondaryContext(card,seriesBlock){
 }
 function technique(card){
   const existing=card.querySelector(':scope > .v22v-disclosure');
-  if(existing){existing.classList.add('v22v2-technique-disclosure','fjz-disclosure');existing.open=false;existing.removeAttribute('open');return}
+  if(existing){existing.classList.add('v22v2-technique-disclosure','fjz-disclosure');return}
   const layout=card.querySelector(':scope > .v72-tech-layout');
   let node=layout;
   if(!node)node=[...card.children].find(n=>{
@@ -276,6 +276,8 @@ function exercise(card,index){
   const seriesBlock=buildSeries(card);
   secondaryContext(card,seriesBlock);
   technique(card);
+  const title=card.querySelector('.v22v2-exercise-name');
+  if(title&&card.firstElementChild!==title)card.prepend(title);
   compactFeedbackStatus(card);
   if(index===0)card.classList.add('is-active');
 }
@@ -320,7 +322,7 @@ function workoutComposition(view){
     const chip=panel.querySelector('.v137-method-chip');
     if(chip&&!panel.querySelector('.fjz-tech-guide')&&/superserie|biserie/i.test(panel.querySelector('.v137-method-badge')?.textContent||'')&&typeof exercisePhotoHtml==='function'){
       const name=chip.textContent.replace(/\s+\d+\s*[x×].*$/i,'').trim();
-      const guide=typeof exerciseGuideId==='function'&&exerciseGuideId(null,{name});
+      const guide=typeof resolveCompanionGuide==='function'&&resolveCompanionGuide(name);
       if(guide)chip.insertAdjacentHTML('afterend',exercisePhotoHtml(guide,{name}));
     }
   }
