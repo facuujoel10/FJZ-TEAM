@@ -1378,7 +1378,7 @@ if APP_ENV == "staging":
             with (staging_artifact_path.parent / "sw.js").open("a") as worker:
                 worker.write(pathlib.Path("src/modules/activity/checkin-push-sw.js").read_text())
         if module == "exercise-photos":
-            staging_artifact = staging_artifact.replace("['pulldown','Jalón al pecho'", "['fjz_pulldown_v', 'Jalón al pecho con agarre V', 'Espalda', 'Polea', 'Pecho alto, codos hacia abajo.'],['fjz_pulldown_rope', 'Jalón al pecho con soga', 'Espalda', 'Polea', 'Pecho alto, codos hacia abajo.'],['fjz_pulldown_bar', 'Jalón al pecho con barra larga', 'Espalda', 'Polea', 'Pecho alto, codos hacia abajo.'],['pulldown','Jalón al pecho'", 1)
+            staging_artifact = staging_artifact.replace("['pulldown','Jalón al pecho'", "['fjz_pulldown_v', 'Jalón al pecho con agarre V', 'Espalda', 'Polea', 'Pecho alto, codos hacia abajo.'],['fjz_pulldown_bar', 'Jalón al pecho con barra larga', 'Espalda', 'Polea', 'Pecho alto, codos hacia abajo.'],['pulldown','Jalón al pecho'", 1)
             guides = json.loads(pathlib.Path("src/modules/activity/exercise-guides.json").read_text())
             from scripts.staging_exercise_assets import package
             package(guides, staging_artifact_path.parent)

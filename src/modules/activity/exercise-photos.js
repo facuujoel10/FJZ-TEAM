@@ -1,6 +1,6 @@
 // The catalog is supplied by the staging build. Custom exercises match only an exact name.
 const guideNameKey = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-const guideIdsByName = new Map(Object.entries(exerciseGuides).map(([id,g])=>[guideNameKey(g.name),id]));
+const guideIdsByName = new Map(Object.entries(exerciseGuides).filter(([,g])=>!g.archived).map(([id,g])=>[guideNameKey(g.name),id]));
 function exerciseGuideId(id,assigned){
  if(Object.hasOwn(exerciseGuides,assigned?.techniqueGuideId))return assigned.techniqueGuideId;
  if(Object.hasOwn(exerciseGuides,id))return id;
@@ -51,7 +51,7 @@ function installExerciseGuidePicker(modal,exercise){
  const select=document.createElement('select');select.id='fjzGuidePicker';select.className='input';
  select.add(new Option('Elegir una guía de la biblioteca',''));
  for(const [id,guide] of Object.entries(exerciseGuides).sort((a,b)=>a[1].name.localeCompare(b[1].name,'es'))){
-   select.add(new Option(guide.name,id));
+   if(!guide.archived||exercise?.techniqueGuideId===id)select.add(new Option(guide.name,id));
  }
  select.value=exerciseGuideId(exercise?.libId,exercise)||'';
  select.onchange=()=>{preview.innerHTML=exercisePhotoHtml(id,{...exercise,techniqueGuideId:select.value})};
